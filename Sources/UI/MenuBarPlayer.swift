@@ -29,7 +29,7 @@ struct MenuBarPlayer: View {
     }
 
     private func openMain() {
-        NSApp.setActivationPolicy(.regular)
+        DockPresence.show(true)
         openWindow(id: "main")
         NSApp.activate()
     }

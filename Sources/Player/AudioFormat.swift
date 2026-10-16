@@ -1,7 +1,7 @@
 import AudioToolbox
 import Foundation
 
-/// Formato e taxa para o display: "FLAC 24/96", "MP3 44.1".
+/// Formato, taxa e bitrate para o display: "FLAC 24/96 · 4608 kbps", "MP3 44.1 · 320 kbps".
 enum AudioFormat {
     static func label(for url: URL) -> String {
         let ext = url.pathExtension.uppercased()
@@ -19,9 +19,20 @@ enum AudioFormat {
         AudioFileGetProperty(file, kAudioFilePropertySourceBitDepth, &size, &depth)
         if depth == 0 { depth = Int32(asbd.mBitsPerChannel) }
 
+        // Bitrate médio do ficheiro (FLAC e MP3 VBR variam ao longo da faixa).
+        var bitRate: UInt32 = 0
+        size = UInt32(MemoryLayout<UInt32>.size)
+        AudioFileGetProperty(file, kAudioFilePropertyBitRate, &size, &bitRate)
+
         let rate = kHz(asbd.mSampleRate)
         // Profundidades negativas indicam formato com perdas (MP3, AAC).
-        return depth > 0 ? "\(ext) \(depth)/\(rate)" : "\(ext) \(rate)"
+        let base = depth > 0 ? "\(ext) \(depth)/\(rate)" : "\(ext) \(rate)"
+        return bitRate > 0 ? "\(base) · \(kbps(bitRate)) kbps" : base
+    }
+
+    /// 1668595 → "1669".
+    static func kbps(_ bitsPerSecond: UInt32) -> String {
+        String(Int((Double(bitsPerSecond) / 1000).rounded()))
     }
 
     /// 44100 → "44.1", 48000 → "48".

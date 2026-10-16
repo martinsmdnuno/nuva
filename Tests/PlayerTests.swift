@@ -60,7 +60,7 @@ struct PlayerTests {
         try await wait { player.isPlaying && player.duration > 1 }
         #expect(abs(player.duration - 1.5) < 0.1)
         try await wait { player.formatLabel.contains("/") }
-        #expect(player.formatLabel.hasPrefix("FLAC ") && player.formatLabel.hasSuffix("/44.1"))
+        #expect(player.formatLabel.hasPrefix("FLAC ") && player.formatLabel.contains("/44.1 · ") && player.formatLabel.hasSuffix(" kbps"))
         #expect(player.current?.entry == entries[0])
 
         try await wait { player.current?.entry == entries[1] }
@@ -139,7 +139,7 @@ struct PlayerTests {
         player.setQueue([Entry(sourceID: UUID(), path: "real.flac", name: "real.flac", kind: .track)])
         try await wait { player.isPlaying && player.duration > 0 && player.formatLabel.contains("/") }
         print("real.flac:", player.formatLabel, player.duration)
-        #expect(player.formatLabel == "FLAC 24/48")
+        #expect(player.formatLabel == "FLAC 24/48 · 1669 kbps")
         player.pause()
     }
 }

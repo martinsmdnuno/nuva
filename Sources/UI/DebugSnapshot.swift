@@ -50,7 +50,7 @@ enum DebugSnapshot {
         }
         let lengths: [Double] = [163, 257, 122, 191, 218, 200, 270, 211, 196, 234, 296]
         for (e, d) in zip(entries, lengths) { model.durations.debugSet(e, d) }
-        model.player.debugSet(queue: entries, current: 1, time: 67, duration: 257, format: "FLAC 24/48")
+        model.player.debugSet(queue: entries, current: 1, time: 67, duration: 257, format: "FLAC 24/48 · 1669 kbps")
         model.windowMode = .player
         return model
     }
@@ -87,7 +87,7 @@ enum DebugSnapshot {
         RunLoop.main.run(until: Date().addingTimeInterval(0.5))
         let player = sampleModel().player
         model.player.debugSet(
-            queue: player.queue.map(\.entry), current: 1, time: 67, duration: 257, format: "FLAC 24/48")
+            queue: player.queue.map(\.entry), current: 1, time: 67, duration: 257, format: "FLAC 24/48 · 1669 kbps")
         return model
     }
 }

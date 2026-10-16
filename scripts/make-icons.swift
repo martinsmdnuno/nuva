@@ -1,12 +1,13 @@
 // Gera o ícone da NuVa a partir das mesmas medidas: PNG (CoreGraphics) e SVG.
-// Uso: swift scripts/make-icons.swift <pasta-de-saída> [variante: device|display|key]
+// Uso: swift scripts/make-icons.swift <pasta-de-saída> [variante: folder|device|display|key] [--all]
+// Corre na raiz do repositório: o logótipo usa Resources/Fonts/IBMPlexMono-Medium.ttf.
 // Cores de docs/design-system/tokens.json (tema Chumbo).
 import AppKit
 import Foundation
 
 let args = CommandLine.arguments
 let out = URL(fileURLWithPath: args.count > 1 ? args[1] : "icon-out")
-let variant = args.count > 2 ? args[2] : "device"
+let variant = args.count > 2 && !args[2].hasPrefix("--") ? args[2] : "folder"
 try? FileManager.default.createDirectory(at: out, withIntermediateDirectories: true)
 
 struct C { static let surface0 = "#1E2023", surface1 = "#2B2D30", display = "#141517", displayInk = "#E8E6E1",
@@ -23,9 +24,50 @@ enum Shape {
 /// Grelha dos ícones do macOS: corpo de 824 com raio 185, centrado em 1024.
 let body = (x: 100.0, y: 100.0, w: 824.0, h: 824.0, r: 185.0)
 
+/// Pasta com medidor de VU, em coordenadas de 0 a 100. A versão pequena tem menos barras e um LED maior.
+func folderGlyph(small: Bool) -> [Shape] {
+    if small {
+        return [
+            .rect(x: 8, y: 12, w: 30, h: 24, r: 7, fill: C.display),
+            .triangle([(20, 12), (38, 12), (50, 24), (20, 24)], fill: C.display),
+            .rect(x: 8, y: 22, w: 84, h: 66, r: 8, fill: C.display),
+            .circle(cx: 21, cy: 20, r: 5.5, fill: C.signal),
+            .rect(x: 20, y: 52, w: 14, h: 26, r: 3, fill: C.displayInk),
+            .rect(x: 43, y: 38, w: 14, h: 40, r: 3, fill: C.displayInk),
+            .rect(x: 66, y: 56, w: 14, h: 22, r: 3, fill: C.displayInk),
+        ]
+    }
+    let bars: [(x: Double, h: Double)] = [(22.5, 18), (34.5, 30), (46.5, 40), (58.5, 26), (70.5, 14)]
+    return [
+        .rect(x: 8, y: 14, w: 30, h: 22, r: 6, fill: C.display),
+        .triangle([(20, 14), (36, 14), (46, 24), (20, 24)], fill: C.display),
+        .rect(x: 8, y: 24, w: 84, h: 64, r: 7, fill: C.display),
+        .circle(cx: 19, cy: 20.5, r: 3.6, fill: C.signal),
+    ] + bars.map { .rect(x: $0.x, y: 78 - $0.h, w: 7, h: $0.h, r: 2, fill: C.displayInk) }
+}
+
+/// Escala e desloca formas de 0–100 para o ícone.
+func place(_ shapes: [Shape], x: Double, y: Double, k: Double) -> [Shape] {
+    func r2(_ v: Double) -> Double { (v * 100).rounded() / 100 }
+    return shapes.map {
+        switch $0 {
+        case let .rect(rx, ry, w, h, r, fill, stroke, sw):
+            return .rect(x: r2(x + rx * k), y: r2(y + ry * k), w: r2(w * k), h: r2(h * k), r: r2(r * k), fill: fill, stroke: stroke, sw: r2(sw * k))
+        case let .circle(cx, cy, r, fill):
+            return .circle(cx: r2(x + cx * k), cy: r2(y + cy * k), r: r2(r * k), fill: fill)
+        case let .triangle(points, fill):
+            return .triangle(points.map { (r2(x + $0.0 * k), r2(y + $0.1 * k)) }, fill: fill)
+        }
+    }
+}
+
 func shapes(small: Bool) -> [Shape] {
     var s: [Shape] = [.rect(x: body.x, y: body.y, w: body.w, h: body.h, r: body.r, fill: C.surface1, stroke: C.line, sw: 8)]
     switch variant {
+    case "folder":
+        // Pasta com VU, centrada no corpo. Em 16 e 32 px, a versão simplificada e maior.
+        s += small ? place(folderGlyph(small: true), x: 192, y: 192, k: 6.4)
+                   : place(folderGlyph(small: false), x: 232, y: 226.4, k: 5.6)
     case "display":
         // Só o display, grande, com LED e barra.
         s += [
@@ -43,7 +85,7 @@ func shapes(small: Bool) -> [Shape] {
             .rect(x: 272, y: 744, w: 480, h: 12, r: 6, fill: "#00000059"),
             .triangle([(450, 452), (450, 672), (632, 562)], fill: C.ink),
         ]
-    default:
+    default:  // "device"
         // Frente do aparelho: display com LED, título e progresso; três teclas por baixo.
         if small {
             s += [
@@ -128,12 +170,13 @@ func png(_ px: Int, name: String, shadow: Bool = true) {
     try! rep.representation(using: .png, properties: [:])!.write(to: out.appendingPathComponent(name))
 }
 
-func svg(small: Bool) -> String {
-    func fillAttr(_ hex: String) -> String {
-        hex.count == 9 ? "fill=\"\(hex.prefix(7))\" fill-opacity=\"\(String(format: "%.2f", Double(UInt8(hex.suffix(2), radix: 16)!) / 255))\"" : "fill=\"\(hex)\""
-    }
+func fillAttr(_ hex: String) -> String {
+    hex.count == 9 ? "fill=\"\(hex.prefix(7))\" fill-opacity=\"\(String(format: "%.2f", Double(UInt8(hex.suffix(2), radix: 16)!) / 255))\"" : "fill=\"\(hex)\""
+}
+
+func svgElements(_ shapes: [Shape], small: Bool) -> String {
     var body = ""
-    for (i, shape) in shapes(small: small).enumerated() {
+    for (i, shape) in shapes.enumerated() {
         switch shape {
         case let .rect(x, y, w, h, r, fill, stroke, sw):
             if let stroke, sw > 0, !(small && i == 0) {
@@ -147,9 +190,51 @@ func svg(small: Bool) -> String {
             body += "  <polygon points=\"\(points.map { "\($0.0),\($0.1)" }.joined(separator: " "))\" \(fillAttr(fill))/>\n"
         }
     }
+    return body
+}
+
+func svg(small: Bool) -> String {
     // Sem margem da grelha no favicon: recorta ao corpo.
     let viewBox = small ? "100 100 824 824" : "0 0 1024 1024"
-    return "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"\(viewBox)\">\n\(body)</svg>\n"
+    return "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"\(viewBox)\">\n\(svgElements(shapes(small: small), small: small))</svg>\n"
+}
+
+/// Logótipo: pasta + "NuVa" em IBM Plex Mono Medium, com o texto em contornos.
+func logoSVG(ink: String) -> String {
+    let fontURL = URL(fileURLWithPath: "Resources/Fonts/IBMPlexMono-Medium.ttf") as CFURL
+    let desc = (CTFontManagerCreateFontDescriptorsFromURL(fontURL) as! [CTFontDescriptor])[0]
+    let font = CTFontCreateWithFontDescriptor(desc, 66, nil)
+    let text = Array("NuVa".utf16)
+    var glyphs = [CGGlyph](repeating: 0, count: text.count)
+    CTFontGetGlyphsForCharacters(font, text, &glyphs, text.count)
+    var advances = [CGSize](repeating: .zero, count: glyphs.count)
+    CTFontGetAdvancesForGlyphs(font, .horizontal, glyphs, &advances, glyphs.count)
+    // Texto centrado na altura da pasta (14 a 88), afastado 32 da borda direita.
+    let baseline = 51 + CTFontGetCapHeight(font) / 2
+    var x = 124.0
+    var d = ""
+    for (g, adv) in zip(glyphs, advances) {
+        var t = CGAffineTransform(translationX: x, y: baseline).scaledBy(x: 1, y: -1)
+        if let path = CTFontCreatePathForGlyph(font, g, &t) {
+            path.applyWithBlock { el in
+                let p = el.pointee.points
+                func f(_ q: CGPoint) -> String { String(format: "%.2f %.2f", q.x, q.y) }
+                switch el.pointee.type {
+                case .moveToPoint: d += "M\(f(p[0]))"
+                case .addLineToPoint: d += "L\(f(p[0]))"
+                case .addQuadCurveToPoint: d += "Q\(f(p[0])) \(f(p[1]))"
+                case .addCurveToPoint: d += "C\(f(p[0])) \(f(p[1])) \(f(p[2]))"
+                case .closeSubpath: d += "Z"
+                @unknown default: break
+                }
+            }
+        }
+        x += adv.width
+    }
+    let w = Int(ceil(x)) - 8 + 4
+    return "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"8 12 \(w) 78\">\n"
+        + svgElements(folderGlyph(small: false), small: false)
+        + "  <path d=\"\(d)\" fill=\"\(ink)\"/>\n</svg>\n"
 }
 
 /// ICO com PNGs embebidos (aceite por todos os browsers atuais).
@@ -175,6 +260,9 @@ func ico(_ sizes: [Int], name: String) {
 png(1024, name: "icon-1024.png")
 try! svg(small: false).write(to: out.appendingPathComponent("icon.svg"), atomically: true, encoding: .utf8)
 try! svg(small: true).write(to: out.appendingPathComponent("favicon.svg"), atomically: true, encoding: .utf8)
+// Logótipo para fundos escuros (Chumbo) e claros (Alumínio).
+try! logoSVG(ink: C.displayInk).write(to: out.appendingPathComponent("logo-chumbo.svg"), atomically: true, encoding: .utf8)
+try! logoSVG(ink: "#1E2023").write(to: out.appendingPathComponent("logo-aluminio.svg"), atomically: true, encoding: .utf8)
 if args.contains("--all") {
     // AppIcon.appiconset do macOS
     let set = out.appendingPathComponent("AppIcon.appiconset")

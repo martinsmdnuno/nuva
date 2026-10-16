@@ -40,7 +40,9 @@ struct KeyButtonStyle: ButtonStyle {
         let size: KeySize
         let isOn: Bool
         let isText: Bool
-        @Environment(\.isFocused) private var isFocused
+        /// Foco do próprio botão (o ambiente `isFocused` também acende quando
+        /// a lista à volta tem foco, o que acendia todas as teclas lá dentro).
+        @FocusState private var isFocused: Bool
 
         var body: some View {
             let pressed = configuration.isPressed || isOn
@@ -75,6 +77,9 @@ struct KeyButtonStyle: ButtonStyle {
                     }
                 }
                 .contentShape(shape)
+                // Só entra no ciclo de foco com o acesso total pelo teclado, como os botões nativos.
+                .focusable(interactions: .activate)
+                .focused($isFocused)
         }
     }
 }

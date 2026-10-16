@@ -98,3 +98,13 @@ final class SourceStore {
         }
     }
 }
+
+extension SourceStore {
+    /// URL tocável de uma faixa, pela fonte a que pertence.
+    func resolve(_ entry: Entry) async throws -> URL {
+        guard let source = source(entry.sourceID) else {
+            throw SourceError.missingFolder(entry.folderName)
+        }
+        return try await source.url(for: entry)
+    }
+}

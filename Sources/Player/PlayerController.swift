@@ -342,6 +342,21 @@ final class PlayerController {
     }
 }
 
+#if DEBUG
+extension PlayerController {
+    /// Estado fixo para capturas e previews, sem tocar nada.
+    func debugSet(queue entries: [Entry], current: Int, time: Double, duration: Double, format: String) {
+        queue = entries.map { QueueItem(entry: $0) }
+        order = queue.map(\.id)
+        currentID = queue[current].id
+        isPlaying = true
+        currentTime = time
+        self.duration = duration
+        formatLabel = format
+    }
+}
+#endif
+
 private extension Float {
     var clamped: Float { Swift.min(1, Swift.max(0, self)) }
 }

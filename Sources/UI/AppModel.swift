@@ -33,7 +33,7 @@ final class AppModel {
         let sources = SourceStore(defaults: defaults)
         let resolve: PlayerController.Resolver = { entry in try await sources.resolve(entry) }
         self.sources = sources
-        self.player = PlayerController(resolve: resolve)
+        self.player = PlayerController(resolve: resolve, equalizer: Equalizer(defaults: defaults))
         self.durations = TrackDurations(resolve: resolve)
         self.browser = Browser(sources: sources)
         self.output = OutputRoute(player: systemIntegration ? self.player.avPlayer : nil)

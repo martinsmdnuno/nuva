@@ -38,6 +38,9 @@ Dentro:
 - Media keys e Now Playing do macOS.
 - Botão AirPlay (`AVRoutePickerView` embrulhado em `NSViewRepresentable`).
 - Janela "Player com playlist" (360 × 480) e "Com navegador" (720 × 480).
+- Gaveta das pastas abre e fecha (tecla na barra de controlos, ⌘B).
+- Fechar a janela não para a música: a app sai do Dock e fica na barra de menus com um mini player.
+- Equalizador de 10 bandas com presets, num `MTAudioProcessingTap` em cada `AVPlayerItem` (biquads do Accelerate).
 
 Fora (por agora): fonte Servidor genérica, pesquisa, favoritos, mini barra, capas, contas.
 

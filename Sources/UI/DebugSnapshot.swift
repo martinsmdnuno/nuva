@@ -16,6 +16,7 @@ enum DebugSnapshot {
             ("navegador", AnyView(ContentView()), browserModel),
             ("teclas", AnyView(KeyPreview().frame(width: 360, height: 480)), model),
             ("barra", AnyView(MenuBarPlayer()), model),
+            ("equalizador", AnyView(EqualizerPanel(eq: model.player.equalizer)), model),
         ]
         for (viewName, view, model) in views {
             for (scheme, name) in [(ColorScheme.dark, "chumbo"), (.light, "aluminio")] {

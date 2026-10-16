@@ -90,6 +90,9 @@ extension ButtonStyle where Self == KeyButtonStyle {
     }
 
     static var keyText: KeyButtonStyle { KeyButtonStyle(isText: true) }
+
+    /// Botão de texto que fica premido quando ligado (preset ativo, equalizador ligado).
+    static func keyText(isOn: Bool) -> KeyButtonStyle { KeyButtonStyle(isOn: isOn, isText: true) }
 }
 
 extension View {

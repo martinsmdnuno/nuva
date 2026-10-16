@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// "Player com playlist" (360 × 480): display, progresso e volume, controlos, fila.
+/// "Player com playlist" (360 × 480): display, progresso, volume e equalizador, controlos, fila.
 struct PlayerView: View {
     var body: some View {
         VStack(spacing: 0) {
@@ -8,6 +8,7 @@ struct PlayerView: View {
             HStack(spacing: Space.s4) {
                 ProgressBar()
                 VolumeControl()
+                EqualizerKey()
             }
             .padding(.vertical, Space.s2)
             VStack(spacing: 0) {

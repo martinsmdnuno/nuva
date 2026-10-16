@@ -67,6 +67,9 @@ final class PlayerController {
     /// Chamado depois de um seek (para o Now Playing).
     @ObservationIgnored var onSeek: (() -> Void)?
 
+    /// Equalizador aplicado a cada faixa.
+    let equalizer: Equalizer
+
     /// O AVPlayer por baixo, para o seletor AirPlay.
     var avPlayer: AVPlayer { player }
 
@@ -83,8 +86,9 @@ final class PlayerController {
     @ObservationIgnored private var observations: [NSKeyValueObservation] = []
     @ObservationIgnored private var timeObserver: Any?
 
-    init(resolve: @escaping Resolver) {
+    init(resolve: @escaping Resolver, equalizer: Equalizer? = nil) {
         self.resolve = resolve
+        self.equalizer = equalizer ?? Equalizer()
         player.actionAtItemEnd = .advance
         observations.append(player.observe(\.currentItem) { [weak self] _, _ in
             Task { @MainActor in self?.currentItemChanged() }
@@ -299,7 +303,9 @@ final class PlayerController {
     private func makeItem(_ item: QueueItem) async -> QueuePlayerItem? {
         do {
             let url = try await resolve(item.entry)
-            return QueuePlayerItem(url: url, queueID: item.id)
+            let avItem = QueuePlayerItem(url: url, queueID: item.id)
+            await equalizer.attach(to: avItem)
+            return avItem
         } catch {
             errorMessage = error.localizedDescription
             return nil

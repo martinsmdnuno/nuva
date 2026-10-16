@@ -30,12 +30,21 @@ struct DisplayView: View {
                 .help(entry?.name ?? "")
                 .frame(height: 20)
 
-            Text(entry?.folderName ?? "Escolher uma pasta para tocar")
-                .font(.dsCaption)
-                .foregroundStyle(Color.displayMuted)
-                .lineLimit(1)
-                .truncationMode(.tail)
-                .help(entry?.parentPath ?? "")
+            HStack(spacing: Space.s2) {
+                Text(entry?.folderName ?? "Escolher uma pasta para tocar")
+                    .font(.dsCaption)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .help(entry?.parentPath ?? "")
+                    .layoutPriority(1)
+                Spacer(minLength: 0)
+                Text(model.output.label)
+                    .font(.dsDisplayMeta)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .help(model.output.detail)
+            }
+            .foregroundStyle(Color.displayMuted)
 
             HStack(alignment: .lastTextBaseline) {
                 Text(timeText(player))

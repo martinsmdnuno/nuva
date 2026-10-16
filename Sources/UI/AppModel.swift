@@ -9,6 +9,7 @@ final class AppModel {
     let player: PlayerController
     let durations: TrackDurations
     let browser: Browser
+    let output: OutputRoute
 
     enum WindowMode: String {
         /// Player com playlist, 360 × 480.
@@ -32,6 +33,7 @@ final class AppModel {
         self.player = PlayerController(resolve: resolve)
         self.durations = TrackDurations(resolve: resolve)
         self.browser = Browser(sources: sources)
+        self.output = OutputRoute(player: systemIntegration ? self.player.avPlayer : nil)
         self.defaults = defaults
         self.windowMode = WindowMode(rawValue: defaults.string(forKey: "windowMode") ?? "") ?? .player
         if systemIntegration { nowPlaying = NowPlaying(player: player) }

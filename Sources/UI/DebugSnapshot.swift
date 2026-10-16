@@ -52,6 +52,7 @@ enum DebugSnapshot {
         for (e, d) in zip(entries, lengths) { model.durations.debugSet(e, d) }
         model.player.debugSet(queue: entries, current: 1, time: 67, duration: 257, format: "FLAC 24/48 · 1669 kbps")
         model.windowMode = .player
+        model.output.debugSet("→ Colunas · 48 kHz")
         return model
     }
 

@@ -22,8 +22,10 @@ final class AppModel {
     }
 
     @ObservationIgnored private let defaults: UserDefaults
+    @ObservationIgnored private var nowPlaying: NowPlaying?
 
-    init(defaults: UserDefaults = .standard) {
+    /// `systemIntegration`: media keys e Now Playing (desligado em capturas).
+    init(defaults: UserDefaults = .standard, systemIntegration: Bool = false) {
         let sources = SourceStore(defaults: defaults)
         let resolve: PlayerController.Resolver = { entry in try await sources.resolve(entry) }
         self.sources = sources
@@ -32,6 +34,7 @@ final class AppModel {
         self.browser = Browser(sources: sources)
         self.defaults = defaults
         self.windowMode = WindowMode(rawValue: defaults.string(forKey: "windowMode") ?? "") ?? .player
+        if systemIntegration { nowPlaying = NowPlaying(player: player) }
         if sources.sources.count == 1, let only = sources.sources.first {
             browser.open(BrowserLocation(sourceID: only.id, path: ""))
         }

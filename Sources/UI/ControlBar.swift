@@ -1,3 +1,4 @@
+import AVKit
 import SwiftUI
 
 /// Transporte à esquerda; repetir, aleatório e AirPlay à direita.
@@ -43,12 +44,40 @@ struct ControlBar: View {
     }
 }
 
-/// Tecla AirPlay. O seletor de destino nativo entra no passo de sistema.
+/// Tecla AirPlay: o seletor de destino nativo (AVRoutePickerView) dentro da tecla.
 struct AirPlayKey: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.isSnapshot) private var isSnapshot
+
     var body: some View {
-        Button {} label: { Image(systemName: "airplayaudio") }
-            .buttonStyle(.key(.sm))
-            .keyFocus()
-            .help("AirPlay")
+        Button {} label: {
+            if isSnapshot {
+                Image(systemName: "airplayaudio")
+            } else {
+                RoutePicker(player: model.player.avPlayer).frame(width: 20, height: 20)
+            }
+        }
+        .buttonStyle(.key(.sm))
+        .keyFocus()
+        .help("AirPlay")
+    }
+}
+
+private struct RoutePicker: NSViewRepresentable {
+    let player: AVPlayer
+
+    func makeNSView(context: Context) -> AVRoutePickerView {
+        let view = AVRoutePickerView()
+        view.player = player
+        view.isRoutePickerButtonBordered = false
+        let ink = NSColor(named: "ink") ?? .labelColor
+        for state in [AVRoutePickerView.ButtonState.normal, .normalHighlighted, .active, .activeHighlighted] {
+            view.setRoutePickerButtonColor(ink, for: state)
+        }
+        return view
+    }
+
+    func updateNSView(_ view: AVRoutePickerView, context: Context) {
+        view.player = player
     }
 }

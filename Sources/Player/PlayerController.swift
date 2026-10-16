@@ -64,6 +64,12 @@ final class PlayerController {
 
     var current: QueueItem? { queue.first { $0.id == currentID } }
 
+    /// Chamado depois de um seek (para o Now Playing).
+    @ObservationIgnored var onSeek: (() -> Void)?
+
+    /// O AVPlayer por baixo, para o seletor AirPlay.
+    var avPlayer: AVPlayer { player }
+
     @ObservationIgnored private let player = AVQueuePlayer()
     @ObservationIgnored private let resolve: Resolver
     /// Ordem de reprodução (ids da fila). Igual à fila sem aleatório.
@@ -229,6 +235,7 @@ final class PlayerController {
         let target = max(0, duration > 0 ? min(seconds, duration) : seconds)
         currentTime = target
         player.seek(to: CMTime(seconds: target, preferredTimescale: 600), toleranceBefore: .zero, toleranceAfter: .zero)
+        onSeek?()
     }
 
     func skip(by seconds: Double) { seek(to: currentTime + seconds) }

@@ -28,11 +28,10 @@ struct NuVaCommands: Commands {
 
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
-            Button("Adicionar fonte…") {
-                model.windowMode = .browser
-                model.addSource()
-            }
-            .keyboardShortcut("o")
+            Button("Adicionar pasta…") { model.addFolder() }
+                .keyboardShortcut("o")
+            Button("Adicionar Jellyfin…") { model.addJellyfin() }
+                .keyboardShortcut("o", modifiers: [.command, .shift])
         }
         CommandGroup(after: .sidebar) {
             Button("Player com playlist") { model.windowMode = .player }

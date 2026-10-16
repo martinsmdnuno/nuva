@@ -8,6 +8,8 @@ struct Entry: Identifiable, Hashable, Sendable {
     let path: String
     let name: String
     let kind: Kind
+    /// Duração em segundos quando a fonte já a sabe (Jellyfin); nil na fonte Local.
+    var duration: Double? = nil
 
     var id: String { "\(sourceID.uuidString)/\(path)" }
 
@@ -33,9 +35,16 @@ struct Entry: Identifiable, Hashable, Sendable {
 }
 
 enum SourceKind: String, Codable, Sendable {
-    case local, server
+    case local, server, jellyfin
 
-    var label: String { self == .local ? "Local" : "Servidor" }
+    var label: String {
+        switch self {
+        case .local: "Local"
+        case .server: "Servidor"
+        case .jellyfin: "Jellyfin"
+        }
+    }
+
     var symbol: String { self == .local ? "internaldrive" : "server.rack" }
 }
 
@@ -53,11 +62,17 @@ protocol MusicSource: Sendable {
 enum SourceError: LocalizedError {
     case missingFolder(String)
     case serverUnavailable
+    case loginFailed
+    case noMusicLibrary
+    case unexpectedResponse
 
     var errorDescription: String? {
         switch self {
         case .missingFolder(let name): "Pasta em falta: \(name)"
         case .serverUnavailable: "Servidor offline. Tentar de novo"
+        case .loginFailed: "Utilizador ou palavra-passe errados"
+        case .noMusicLibrary: "Sem biblioteca de música neste utilizador"
+        case .unexpectedResponse: "Resposta inesperada. Confirmar o endereço do servidor"
         }
     }
 }

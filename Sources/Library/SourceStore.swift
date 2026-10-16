@@ -11,6 +11,8 @@ final class SourceStore {
         var name: String
         let kind: SourceKind
         var bookmark: Data?
+        var server: URL?
+        var username: String?
     }
 
     private(set) var sources: [any MusicSource] = []
@@ -59,7 +61,39 @@ final class SourceStore {
         return source
     }
 
+    /// Entra no Jellyfin para validar os dados e junta-o como fonte. A palavra-passe fica no Keychain.
+    func addJellyfin(server: URL, username: String, password: String) async throws -> any MusicSource {
+        _ = try await JellyfinSource.login(server: server, username: username, password: password, deviceID: deviceID)
+        let record = Record(
+            id: UUID(), name: "Jellyfin · \(server.host() ?? server.absoluteString)", kind: .jellyfin,
+            server: server, username: username)
+        Keychain.setPassword(password, for: record.id.uuidString)
+        let source = jellyfin(record, server: server, username: username)
+        records.append(record)
+        sources.append(source)
+        save()
+        return source
+    }
+
+    private func jellyfin(_ record: Record, server: URL, username: String) -> JellyfinSource {
+        let account = record.id.uuidString
+        return JellyfinSource(
+            id: record.id, name: record.name, server: server, username: username, deviceID: deviceID,
+            password: { Keychain.password(for: account) })
+    }
+
+    /// Identifica este Mac no Jellyfin (aparece em Dispositivos no painel).
+    private var deviceID: String {
+        if let id = defaults.string(forKey: "deviceID") { return id }
+        let id = UUID().uuidString
+        defaults.set(id, forKey: "deviceID")
+        return id
+    }
+
     func remove(_ id: UUID) {
+        if records.first(where: { $0.id == id })?.kind == .jellyfin {
+            Keychain.deletePassword(for: id.uuidString)
+        }
         records.removeAll { $0.id == id }
         sources.removeAll { $0.id == id }
         failed[id] = nil
@@ -85,6 +119,9 @@ final class SourceStore {
                 } catch {
                     failed[record.id] = SourceError.missingFolder(record.name).localizedDescription
                 }
+            case .jellyfin:
+                guard let server = record.server, let username = record.username else { continue }
+                sources.append(jellyfin(record, server: server, username: username))
             case .server:
                 break
             }

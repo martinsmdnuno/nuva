@@ -15,6 +15,10 @@ final class TrackDurations {
 
     func load(_ entry: Entry) async {
         guard values[entry.id] == nil, !pending.contains(entry.id) else { return }
+        if let known = entry.duration {
+            values[entry.id] = known
+            return
+        }
         pending.insert(entry.id)
         defer { pending.remove(entry.id) }
         guard let url = try? await resolve(entry),

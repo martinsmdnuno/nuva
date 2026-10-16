@@ -76,9 +76,14 @@ struct QueueList: View {
                 .font(.dsCaption)
                 .foregroundStyle(Color.inkMuted)
             if model.sources.sources.isEmpty {
-                Button("Adicionar fonte") { model.sources.addLocal() }
-                    .buttonStyle(.keyText)
-                    .keyFocus()
+                HStack(spacing: Space.s2) {
+                    Button("Adicionar pasta") { model.addFolder() }
+                        .buttonStyle(.keyText)
+                        .keyFocus()
+                    Button("Adicionar Jellyfin") { model.addJellyfin() }
+                        .buttonStyle(.keyText)
+                        .keyFocus()
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -102,8 +102,11 @@ struct BrowserView: View {
                     .contextMenu { menu(row) }
             }
             if browser.location == nil {
-                HStack {
-                    Button("Adicionar fonte") { model.addSource() }
+                HStack(spacing: Space.s2) {
+                    Button("Adicionar pasta") { model.addFolder() }
+                        .buttonStyle(.keyText)
+                        .keyFocus()
+                    Button("Adicionar Jellyfin") { model.addJellyfin() }
                         .buttonStyle(.keyText)
                         .keyFocus()
                     Spacer()

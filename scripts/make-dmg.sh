@@ -23,14 +23,16 @@ NuVa (versão de teste)
    (não está assinada com um certificado da Apple). Carregar em OK.
 3. Abrir Definições do Sistema › Privacidade e segurança, descer até
    "A NuVa foi bloqueada" e carregar em "Abrir mesmo assim".
-4. Na janela da NuVa: ⌘2 abre o navegador, "Adicionar fonte" escolhe
-   a pasta da música (pasta = álbum).
+4. Na janela da NuVa: ⌘2 abre o navegador. "Adicionar pasta" escolhe
+   uma pasta de música no Mac; "Adicionar Jellyfin" entra num servidor
+   Jellyfin com o teu utilizador (pasta = álbum nos dois casos).
 
 Alternativa no Terminal, depois do passo 1:
   xattr -dr com.apple.quarantine /Applications/NuVa.app
 
 Atalhos: Espaço tocar/pausa · ⌘→ seguinte · ⌘← anterior · ⌘↑ ⌘↓ volume
-⌘1 ⌘2 tamanho da janela · ⌘L faixa atual · ⌘O adicionar fonte
+⌘1 ⌘2 tamanho da janela · ⌘L faixa atual · ⌘O adicionar pasta
+⇧⌘O adicionar Jellyfin
 TXT
 
 mkdir -p dist

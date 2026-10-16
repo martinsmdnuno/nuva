@@ -18,6 +18,9 @@ final class AppModel {
         case browser
     }
 
+    /// Folha "Adicionar Jellyfin" aberta.
+    var showingJellyfinLogin = false
+
     var windowMode: WindowMode {
         didSet { defaults.set(windowMode.rawValue, forKey: "windowMode") }
     }
@@ -58,9 +61,16 @@ final class AppModel {
     }
 
     /// Adiciona uma fonte Local e abre-a no navegador.
-    func addSource() {
+    func addFolder() {
+        windowMode = .browser
         guard let source = sources.addLocal() else { return }
         browser.open(BrowserLocation(sourceID: source.id, path: ""))
+    }
+
+    /// Abre a folha para juntar um servidor Jellyfin.
+    func addJellyfin() {
+        windowMode = .browser
+        showingJellyfinLogin = true
     }
 
     /// Toca uma pasta (com subpastas), a começar numa faixa se indicada.

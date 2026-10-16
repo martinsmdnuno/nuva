@@ -25,7 +25,8 @@ protocol MusicSource {
 }
 ```
 - `LocalSource` devolve `file://`. Guarda o acesso à pasta com security-scoped bookmark.
-- `ServerSource` fica para a fase 2: só o protocolo e um stub agora.
+- `JellyfinSource` entra com utilizador e palavra-passe (Keychain), navega pelo `Path` dos itens (pastas do disco, nunca as tags do Jellyfin) e toca o original com `/Audio/{id}/stream.<ext>?static=true`.
+- `ServerSource` (servidor HTTP genérico) continua só o protocolo e um stub.
 - Extensões tocáveis: flac, mp3, m4a, aac, alac, wav, aiff.
 - Ordem das faixas: ordenação natural pelo nome do ficheiro (`localizedStandardCompare`).
 
@@ -38,7 +39,7 @@ Dentro:
 - Botão AirPlay (`AVRoutePickerView` embrulhado em `NSViewRepresentable`).
 - Janela "Player com playlist" (360 × 480) e "Com navegador" (720 × 480).
 
-Fora (por agora): fonte Servidor, pesquisa, favoritos, mini barra, capas, contas.
+Fora (por agora): fonte Servidor genérica, pesquisa, favoritos, mini barra, capas, contas.
 
 ## Design system
 Em `docs/design-system/`. Ler `README.md` e `tokens.json` antes de qualquer UI, e o ficheiro do componente em `components/` antes de o construir.

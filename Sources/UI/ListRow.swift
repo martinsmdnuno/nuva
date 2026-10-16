@@ -5,6 +5,7 @@ struct ListRow: View {
     enum Leading {
         case folder
         case number(Int)
+        case symbol(String)
     }
 
     let leading: Leading
@@ -14,6 +15,8 @@ struct ListRow: View {
     var trailingIsDuration = true
     var isSelected = false
     var isPlaying = false
+    /// Fonte em erro: nome e ícone em `danger`.
+    var isError = false
 
     @State private var hovering = false
 
@@ -25,6 +28,10 @@ struct ListRow: View {
                     Image(systemName: "folder")
                         .font(.system(size: 12))
                         .foregroundStyle(Color.inkMuted)
+                case .symbol(let name):
+                    Image(systemName: name)
+                        .font(.system(size: 12))
+                        .foregroundStyle(isError ? Color.danger : Color.inkMuted)
                 case .number(let n):
                     Text("\(n)")
                         .font(.dsDuration)
@@ -35,7 +42,7 @@ struct ListRow: View {
 
             Text(name)
                 .font(.dsBody)
-                .foregroundStyle(isPlaying ? Color.signal : Color.ink)
+                .foregroundStyle(isError ? Color.danger : isPlaying ? Color.signal : Color.ink)
                 .lineLimit(1)
                 .truncationMode(.tail)
                 .frame(maxWidth: .infinity, alignment: .leading)

@@ -8,6 +8,20 @@ final class AppModel {
     let sources: SourceStore
     let player: PlayerController
     let durations: TrackDurations
+    let browser: Browser
+
+    enum WindowMode: String {
+        /// Player com playlist, 360 × 480.
+        case player
+        /// Com navegador, 720 × 480.
+        case browser
+    }
+
+    var windowMode: WindowMode {
+        didSet { defaults.set(windowMode.rawValue, forKey: "windowMode") }
+    }
+
+    @ObservationIgnored private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {
         let sources = SourceStore(defaults: defaults)
@@ -15,6 +29,12 @@ final class AppModel {
         self.sources = sources
         self.player = PlayerController(resolve: resolve)
         self.durations = TrackDurations(resolve: resolve)
+        self.browser = Browser(sources: sources)
+        self.defaults = defaults
+        self.windowMode = WindowMode(rawValue: defaults.string(forKey: "windowMode") ?? "") ?? .player
+        if sources.sources.count == 1, let only = sources.sources.first {
+            browser.open(BrowserLocation(sourceID: only.id, path: ""))
+        }
     }
 
     /// Rótulo da fonte da faixa atual ("Local", "Servidor").
@@ -23,12 +43,35 @@ final class AppModel {
         return sources.source(entry.sourceID)?.kind.label ?? ""
     }
 
-    /// Play sem fila: por agora pede uma fonte se não houver nenhuma.
+    /// Play sem fila abre o navegador de pastas.
     func playOrBrowse() {
         if player.queue.isEmpty {
-            if sources.sources.isEmpty { sources.addLocal() }
+            windowMode = .browser
         } else {
             player.togglePlayPause()
+        }
+    }
+
+    /// Adiciona uma fonte Local e abre-a no navegador.
+    func addSource() {
+        guard let source = sources.addLocal() else { return }
+        browser.open(BrowserLocation(sourceID: source.id, path: ""))
+    }
+
+    /// Toca uma pasta (com subpastas), a começar numa faixa se indicada.
+    func playFolder(_ folder: BrowserLocation, startingAt track: Entry? = nil) async {
+        let tracks = await browser.tracks(in: folder)
+        guard !tracks.isEmpty else { return }
+        player.setQueue(tracks, startAt: track.flatMap { t in tracks.firstIndex { $0.id == t.id } } ?? 0)
+    }
+
+    /// Junta ao fim da fila uma faixa ou uma pasta inteira.
+    func enqueue(_ entry: Entry) async {
+        switch entry.kind {
+        case .track:
+            player.append([entry])
+        case .folder:
+            player.append(await browser.tracks(in: BrowserLocation(sourceID: entry.sourceID, path: entry.path)))
         }
     }
 }

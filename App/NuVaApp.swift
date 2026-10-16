@@ -18,6 +18,13 @@ struct NuVaApp: App {
                 .environment(model)
         }
         .windowResizability(.contentSize)
-        .defaultSize(width: 360, height: 480)
+        .commands {
+            CommandGroup(after: .sidebar) {
+                Button("Player com playlist") { model.windowMode = .player }
+                    .keyboardShortcut("1")
+                Button("Com navegador") { model.windowMode = .browser }
+                    .keyboardShortcut("2")
+            }
+        }
     }
 }

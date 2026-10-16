@@ -9,12 +9,14 @@ enum DebugSnapshot {
     static func runIfRequested() {
         guard CommandLine.arguments.contains("--snapshot") else { return }
         let model = sampleModel()
+        let browserModel = sampleBrowserModel()
         let dir = URL(fileURLWithPath: NSTemporaryDirectory())
-        let views: [(String, AnyView)] = [
-            ("player", AnyView(ContentView())),
-            ("teclas", AnyView(KeyPreview().frame(width: 360, height: 480))),
+        let views: [(String, AnyView, AppModel)] = [
+            ("player", AnyView(ContentView()), model),
+            ("navegador", AnyView(ContentView()), browserModel),
+            ("teclas", AnyView(KeyPreview().frame(width: 360, height: 480)), model),
         ]
-        for (viewName, view) in views {
+        for (viewName, view, model) in views {
             for (scheme, name) in [(ColorScheme.dark, "chumbo"), (.light, "aluminio")] {
                 let content = view
                     .environment(model)
@@ -49,6 +51,43 @@ enum DebugSnapshot {
         let lengths: [Double] = [163, 257, 122, 191, 218, 200, 270, 211, 196, 234, 296]
         for (e, d) in zip(entries, lengths) { model.durations.debugSet(e, d) }
         model.player.debugSet(queue: entries, current: 1, time: 67, duration: 257, format: "FLAC 24/48")
+        model.windowMode = .player
+        return model
+    }
+
+    /// Fonte Local falsa (ficheiros vazios) no contentor, aberta no navegador.
+    @MainActor
+    static func sampleBrowserModel() -> AppModel {
+        let defaults = UserDefaults(suiteName: "snapshot-browser")!
+        defaults.removePersistentDomain(forName: "snapshot-browser")
+        let root = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("Música")
+        let fm = FileManager.default
+        try? fm.removeItem(at: root)
+        let artist = root.appendingPathComponent("Fleetwood Mac")
+        let albums = ["Rumours (1977)": 11, "Tango in the Night (1987)": 12, "Fleetwood Mac (1975)": 0]
+        for (album, count) in albums {
+            let dir = artist.appendingPathComponent(album)
+            try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
+            for i in 0..<count {
+                fm.createFile(atPath: dir.appendingPathComponent(String(format: "%02d - Faixa.flac", i + 1)).path, contents: nil)
+            }
+        }
+        for cd in ["CD 01", "CD 02"] {
+            try? fm.createDirectory(at: artist.appendingPathComponent("Tusk (1979)/\(cd)"), withIntermediateDirectories: true)
+        }
+        let model = AppModel(defaults: defaults)
+        model.windowMode = .browser
+        guard let source = model.sources.addLocal(root) else { return model }
+        model.browser.open(BrowserLocation(sourceID: source.id, path: "Fleetwood Mac"))
+        // Deixa a listagem e os resumos acabarem antes de desenhar.
+        RunLoop.main.run(until: Date().addingTimeInterval(0.5))
+        for e in model.browser.entries {
+            Task { await model.browser.loadSummary(e) }
+        }
+        RunLoop.main.run(until: Date().addingTimeInterval(0.5))
+        let player = sampleModel().player
+        model.player.debugSet(
+            queue: player.queue.map(\.entry), current: 1, time: 67, duration: 257, format: "FLAC 24/48")
         return model
     }
 }

@@ -20,5 +20,8 @@ struct ContentView: View {
         .sheet(isPresented: $model.showingJellyfinLogin) {
             JellyfinLoginView()
         }
+        // Com a janela fechada, a NuVa sai do Dock e fica só na barra de menus.
+        .onAppear { _ = NSApp?.setActivationPolicy(.regular) }
+        .onDisappear { _ = NSApp?.setActivationPolicy(.accessory) }
     }
 }

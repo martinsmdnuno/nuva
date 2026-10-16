@@ -2,6 +2,7 @@ import SwiftUI
 
 @main
 struct NuVaApp: App {
+    @NSApplicationDelegateAdaptor private var delegate: AppDelegate
     @State private var model: AppModel
 
     init() {
@@ -19,7 +20,20 @@ struct NuVaApp: App {
         }
         .windowResizability(.contentSize)
         .commands { NuVaCommands(model: model) }
+
+        MenuBarExtra {
+            MenuBarPlayer()
+                .environment(model)
+        } label: {
+            Image("MenuBarIcon")
+        }
+        .menuBarExtraStyle(.window)
     }
+}
+
+/// Fechar a janela não sai da app: a música continua e a NuVa fica na barra de menus.
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
 }
 
 /// Atalhos do README. Enter e ⌘Enter vivem nas listas (dependem da seleção).

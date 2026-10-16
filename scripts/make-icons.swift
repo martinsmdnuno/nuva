@@ -123,6 +123,7 @@ func shapes(small: Bool) -> [Shape] {
 }
 
 func color(_ hex: String) -> CGColor {
+    if hex == "clear" { return CGColor(gray: 0, alpha: 1) }
     let h = hex.dropFirst()
     let v = UInt64(h, radix: 16)!
     if h.count == 8 {
@@ -143,6 +144,9 @@ func png(_ px: Int, name: String, shadow: Bool = true, art: [Shape]? = nil) {
     ctx.scaleBy(x: k, y: -k)
     for (i, shape) in (art ?? shapes(small: small)).enumerated() {
         ctx.saveGState()
+        // "clear" recorta (ícone da barra de menus: barras e LED vazados).
+        if case let .rect(_, _, _, _, _, fill, _, _) = shape, fill == "clear" { ctx.setBlendMode(.clear) }
+        if case let .circle(_, _, _, fill) = shape, fill == "clear" { ctx.setBlendMode(.clear) }
         if i == 0, shadow, !small {
             ctx.setShadow(offset: CGSize(width: 0, height: -12), blur: 28, color: CGColor(gray: 0, alpha: 0.35))
         }
@@ -288,6 +292,30 @@ if args.contains("--all") {
                                       "info": ["author": "xcode", "version": 1]]
     try! JSONSerialization.data(withJSONObject: artContents, options: [.prettyPrinted, .sortedKeys])
         .write(to: artSet.appendingPathComponent("Contents.json"))
+    // Ícone da barra de menus: modelo (template) preto, 18 pt, com as barras e o LED vazados.
+    let barSet = out.appendingPathComponent("MenuBarIcon.imageset")
+    try? FileManager.default.createDirectory(at: barSet, withIntermediateDirectories: true)
+    let template: [Shape] = folderGlyph(small: true).map {
+        switch $0 {
+        case let .rect(x, y, w, h, r, fill, _, _):
+            return .rect(x: x, y: y, w: w, h: h, r: r, fill: fill == C.display ? "#000000" : "clear")
+        case let .circle(cx, cy, r, _):
+            return .circle(cx: cx, cy: cy, r: r, fill: "clear")
+        case let .triangle(points, _):
+            return .triangle(points, fill: "#000000")
+        }
+    }
+    var barImages: [[String: String]] = []
+    for scale in [1, 2] {
+        let name = "menubar\(scale == 2 ? "@2x" : "").png"
+        png(18 * scale, name: "MenuBarIcon.imageset/\(name)", shadow: false,
+            art: place(template, x: 0, y: 0, k: 10.24))  // png() desenha em coordenadas de 1024
+        barImages.append(["idiom": "universal", "filename": name, "scale": "\(scale)x"])
+    }
+    let barContents: [String: Any] = ["images": barImages, "info": ["author": "xcode", "version": 1],
+                                      "properties": ["template-rendering-intent": "template"]]
+    try! JSONSerialization.data(withJSONObject: barContents, options: [.prettyPrinted, .sortedKeys])
+        .write(to: barSet.appendingPathComponent("Contents.json"))
     // Favicons
     png(32, name: "favicon-32.png", shadow: false)
     png(180, name: "apple-touch-icon.png", shadow: false)

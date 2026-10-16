@@ -1,0 +1,44 @@
+import SwiftUI
+
+/// Mini player na barra de menus. Fica quando a janela fecha: a música continua.
+struct MenuBarPlayer: View {
+    @Environment(AppModel.self) private var model
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        let player = model.player
+        VStack(spacing: Space.s3) {
+            DisplayView()
+            ProgressBar()
+            HStack(spacing: Space.s1) {
+                key("backward.end", .md, "Anterior") { player.previous() }
+                key(player.isPlaying ? "pause.fill" : "play.fill", .lg, player.isPlaying ? "Pausa" : "Tocar") {
+                    if player.queue.isEmpty { openMain() } else { player.togglePlayPause() }
+                }
+                key("forward.end", .md, "Seguinte") { player.next() }
+                Spacer(minLength: Space.s2)
+                Button("Abrir NuVa") { openMain() }
+                    .buttonStyle(.keyText)
+                Button("Sair") { NSApp.terminate(nil) }
+                    .buttonStyle(.keyText)
+            }
+        }
+        .padding(Space.s3)
+        .frame(width: 320)
+        .background(Color.surface0)
+    }
+
+    private func openMain() {
+        NSApp.setActivationPolicy(.regular)
+        openWindow(id: "main")
+        NSApp.activate()
+    }
+
+    private func key(
+        _ symbol: String, _ size: KeyButtonStyle.KeySize, _ help: String, action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) { Image(systemName: symbol) }
+            .buttonStyle(.key(size))
+            .help(help)
+    }
+}

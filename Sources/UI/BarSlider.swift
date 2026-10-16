@@ -65,7 +65,9 @@ struct BarSlider: View {
             }
         }
         .frame(height: 16)
-        .focusable()
+        // Como as teclas: só no ciclo de foco com o acesso total pelo teclado,
+        // para o foco inicial da janela ir para a fila e não para a barra.
+        .focusable(interactions: .activate)
         .focused($focused)
         .focusEffectDisabled()
         .onKeyPress(.leftArrow) { onStep(-1); return .handled }

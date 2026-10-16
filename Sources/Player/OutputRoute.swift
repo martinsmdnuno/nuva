@@ -55,7 +55,7 @@ final class OutputRoute {
         guard newLabel != label else { return }
         label = newLabel
         detail = newDetail
-        log.info("saída: \(newLabel, privacy: .public) external=\(external) uid=\(uid ?? "nil", privacy: .public) transport=\(device?.transport ?? "?", privacy: .public)")
+        log.notice("saída: \(newLabel, privacy: .public) external=\(external) uid=\(uid ?? "nil", privacy: .public) transport=\(device?.transport ?? "?", privacy: .public)")
     }
 
     #if DEBUG

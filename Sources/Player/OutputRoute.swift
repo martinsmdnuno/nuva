@@ -33,9 +33,14 @@ final class OutputRoute {
         let uid = player.audioOutputDeviceUniqueID
         let device = uid.flatMap(CoreAudioDevice.init(uid:)) ?? CoreAudioDevice.defaultOutput()
 
+        let routed = Self.routedDeviceNames()
         let newLabel: String
         let newDetail: String
-        if external {
+        if let routed, !routed.isEmpty, !routed.contains(where: { $0 == device?.name }) {
+            // Seletor AirPlay da app: o destino vive no AVOutputContext, não no CoreAudio.
+            newLabel = "→ AirPlay \(routed.joined(separator: " + "))"
+            newDetail = "Saída AirPlay: \(routed.joined(separator: ", ")). O formato do stream não é exposto pelo macOS"
+        } else if external {
             newLabel = "→ AirPlay"
             newDetail = "Saída AirPlay. O formato do stream não é exposto pelo macOS"
         } else if let device {
@@ -55,7 +60,33 @@ final class OutputRoute {
         guard newLabel != label else { return }
         label = newLabel
         detail = newDetail
+        #if DEBUG
+        let dump = "\(Date()) label=\(newLabel) routed=\(routed ?? ["nil"]) external=\(external) uid=\(uid ?? "nil") default=\(device?.name ?? "nil")/\(device?.transport ?? "")\n"
+        let file = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("output.log")
+        if let h = try? FileHandle(forWritingTo: file) {
+            h.seekToEndOfFile(); h.write(Data(dump.utf8)); try? h.close()
+        } else {
+            try? dump.write(to: file, atomically: true, encoding: .utf8)
+        }
+        #endif
         log.notice("saída: \(newLabel, privacy: .public) external=\(external) uid=\(uid ?? "nil", privacy: .public) transport=\(device?.transport ?? "?", privacy: .public)")
+    }
+
+    /// Nomes dos destinos do AVOutputContext partilhado da app (API privada no macOS,
+    /// pública no iOS). nil se a classe ou os métodos não existirem.
+    private static func routedDeviceNames() -> [String]? {
+        guard let cls = NSClassFromString("AVOutputContext") as? NSObject.Type else { return nil }
+        let shared = NSSelectorFromString("defaultSharedOutputContext")
+        guard cls.responds(to: shared),
+              let context = cls.perform(shared)?.takeUnretainedValue() as? NSObject else { return nil }
+        if context.responds(to: NSSelectorFromString("outputDevices")),
+           let devices = context.value(forKey: "outputDevices") as? [NSObject] {
+            return devices.compactMap { $0.value(forKey: "name") as? String }
+        }
+        if context.responds(to: NSSelectorFromString("deviceName")) {
+            return (context.value(forKey: "deviceName") as? String).map { [$0] }
+        }
+        return nil
     }
 
     #if DEBUG

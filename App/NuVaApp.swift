@@ -38,6 +38,8 @@ struct NuVaCommands: Commands {
                 .keyboardShortcut("1")
             Button("Com navegador") { model.windowMode = .browser }
                 .keyboardShortcut("2")
+            Button(model.windowMode == .browser ? "Esconder pastas" : "Mostrar pastas") { model.toggleBrowser() }
+                .keyboardShortcut("b")
         }
         CommandMenu("Controlos") {
             Button(model.player.isPlaying ? "Pausa" : "Tocar") { model.playOrBrowse() }

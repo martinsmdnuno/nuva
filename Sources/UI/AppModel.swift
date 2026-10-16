@@ -51,6 +51,11 @@ final class AppModel {
         return sources.source(entry.sourceID)?.kind.label ?? ""
     }
 
+    /// Abre ou fecha a gaveta das pastas.
+    func toggleBrowser() {
+        windowMode = windowMode == .browser ? .player : .browser
+    }
+
     /// Play sem fila abre o navegador de pastas.
     func playOrBrowse() {
         if player.queue.isEmpty {

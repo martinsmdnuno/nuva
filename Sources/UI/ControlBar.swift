@@ -1,7 +1,7 @@
 import AVKit
 import SwiftUI
 
-/// Transporte à esquerda; repetir, aleatório e AirPlay à direita.
+/// Transporte à esquerda; gaveta das pastas, repetir, aleatório e AirPlay à direita.
 struct ControlBar: View {
     @Environment(AppModel.self) private var model
 
@@ -14,8 +14,10 @@ struct ControlBar: View {
             key("forward.end", .md, "Seguinte ⌘→") { player.next() }
             key("stop", .md, "Parar") { player.stop() }
 
-            Spacer(minLength: Space.s4)
+            Spacer(minLength: Space.s2)
 
+            key("sidebar.left", .sm, model.windowMode == .browser ? "Esconder pastas ⌘B" : "Mostrar pastas ⌘B",
+                isOn: model.windowMode == .browser) { model.toggleBrowser() }
             key(player.repeatMode == .one ? "repeat.1" : "repeat", .sm, repeatHelp(player.repeatMode),
                 isOn: player.repeatMode != .off) { player.repeatMode = player.repeatMode.next }
             key("shuffle", .sm, player.shuffle ? "Aleatório ligado" : "Aleatório", isOn: player.shuffle) {

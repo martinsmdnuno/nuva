@@ -133,7 +133,7 @@ func color(_ hex: String) -> CGColor {
                    blue: Double(v & 0xff) / 255, alpha: 1)
 }
 
-func png(_ px: Int, name: String, shadow: Bool = true) {
+func png(_ px: Int, name: String, shadow: Bool = true, art: [Shape]? = nil) {
     let small = px <= 32
     let ctx = CGContext(data: nil, width: px, height: px, bitsPerComponent: 8, bytesPerRow: 0,
                         space: CGColorSpace(name: CGColorSpace.sRGB)!,
@@ -141,7 +141,7 @@ func png(_ px: Int, name: String, shadow: Bool = true) {
     let k = Double(px) / 1024
     ctx.translateBy(x: 0, y: Double(px))
     ctx.scaleBy(x: k, y: -k)
-    for (i, shape) in shapes(small: small).enumerated() {
+    for (i, shape) in (art ?? shapes(small: small)).enumerated() {
         ctx.saveGState()
         if i == 0, shadow, !small {
             ctx.setShadow(offset: CGSize(width: 0, height: -12), blur: 28, color: CGColor(gray: 0, alpha: 0.35))
@@ -278,6 +278,16 @@ if args.contains("--all") {
     let contents: [String: Any] = ["images": images, "info": ["author": "xcode", "version": 1]]
     try! JSONSerialization.data(withJSONObject: contents, options: [.prettyPrinted, .sortedKeys])
         .write(to: set.appendingPathComponent("Contents.json"))
+    // Capa do Now Playing: quadrada e sem margem, o macOS arredonda os cantos.
+    let artSet = out.appendingPathComponent("NowPlayingArtwork.imageset")
+    try? FileManager.default.createDirectory(at: artSet, withIntermediateDirectories: true)
+    let art = [Shape.rect(x: 0, y: 0, w: 1024, h: 1024, r: 0, fill: C.surface1)]
+        + place(folderGlyph(small: false), x: 192, y: 185.6, k: 6.4)
+    png(1024, name: "NowPlayingArtwork.imageset/artwork.png", shadow: false, art: art)
+    let artContents: [String: Any] = ["images": [["idiom": "universal", "filename": "artwork.png"]],
+                                      "info": ["author": "xcode", "version": 1]]
+    try! JSONSerialization.data(withJSONObject: artContents, options: [.prettyPrinted, .sortedKeys])
+        .write(to: artSet.appendingPathComponent("Contents.json"))
     // Favicons
     png(32, name: "favicon-32.png", shadow: false)
     png(180, name: "apple-touch-icon.png", shadow: false)

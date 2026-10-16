@@ -5,6 +5,10 @@ import MediaPlayer
 @MainActor
 final class NowPlaying {
     private let player: PlayerController
+    /// Sem capas (pasta, não metadados): o Now Playing mostra sempre a pasta da NuVa.
+    private let artwork = MPMediaItemArtwork(boundsSize: CGSize(width: 1024, height: 1024)) { _ in
+        NSImage(named: "NowPlayingArtwork") ?? NSImage()
+    }
 
     init(player: PlayerController) {
         self.player = player
@@ -71,6 +75,7 @@ final class NowPlaying {
         center.nowPlayingInfo = [
             MPMediaItemPropertyTitle: entry.title,
             MPMediaItemPropertyAlbumTitle: entry.folderName,
+            MPMediaItemPropertyArtwork: artwork,
             MPMediaItemPropertyPlaybackDuration: player.duration,
             MPNowPlayingInfoPropertyElapsedPlaybackTime: player.currentTime,
             MPNowPlayingInfoPropertyPlaybackRate: player.isPlaying ? 1.0 : 0.0,

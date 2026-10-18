@@ -31,7 +31,7 @@ struct MenuBarPlayer: View {
         .padding(Space.s3)
         .frame(width: 360)
         .background(Color.surface0)
-        .id(SkinStore.shared.current.id)
+        .id(SkinStore.shared.renderID)
     }
 
     private func openMain() {

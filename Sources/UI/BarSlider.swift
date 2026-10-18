@@ -151,7 +151,7 @@ private struct VolumeScale: View {
                 Spacer()
                 Text("10")
             }
-            .font(Typography.mono(9, .regular))
+            .font(.dsScale)
             .foregroundStyle(Color.inkMuted)
         }
     }

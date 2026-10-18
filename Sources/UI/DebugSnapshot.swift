@@ -27,18 +27,26 @@ enum DebugSnapshot {
             ("barra", AnyView(MenuBarPlayer()), model),
             ("equalizador", AnyView(EqualizerPanel(eq: model.player.equalizer)), model),
         ]
-        for (viewName, view, model) in views {
-            for (scheme, name) in [(ColorScheme.dark, "chumbo"), (.light, "aluminio")] {
-                let content = view
-                    .environment(model)
-                    .environment(\.isSnapshot, true)
-                    .environment(\.colorScheme, scheme)
-                let renderer = ImageRenderer(content: content)
-                renderer.scale = 2
-                if let image = renderer.nsImage,
-                   let tiff = image.tiffRepresentation,
-                   let png = NSBitmapImageRep(data: tiff)?.representation(using: .png, properties: [:]) {
-                    try? png.write(to: dir.appendingPathComponent("snapshot-\(viewName)-\(name).png"))
+        // Every view with Inter + Plex Mono; the main ones again with SF Pro + SF Mono ("-sf").
+        let fontRuns: [(FontSet, String, Set<String>?)] = [
+            (.inter, "", nil),
+            (.system, "-sf", ["player", "navegador", "compacto", "barra"]),
+        ]
+        for (fontSet, suffix, only) in fontRuns {
+            SkinStore.activeFonts.withLock { $0 = fontSet }
+            for (viewName, view, model) in views where only?.contains(viewName) ?? true {
+                for (scheme, name) in [(ColorScheme.dark, "chumbo"), (.light, "aluminio")] {
+                    let content = view
+                        .environment(model)
+                        .environment(\.isSnapshot, true)
+                        .environment(\.colorScheme, scheme)
+                    let renderer = ImageRenderer(content: content)
+                    renderer.scale = 2
+                    if let image = renderer.nsImage,
+                       let tiff = image.tiffRepresentation,
+                       let png = NSBitmapImageRep(data: tiff)?.representation(using: .png, properties: [:]) {
+                        try? png.write(to: dir.appendingPathComponent("snapshot-\(viewName)\(suffix)-\(name).png"))
+                    }
                 }
             }
         }

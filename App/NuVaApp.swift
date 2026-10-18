@@ -62,6 +62,7 @@ struct NuVaCommands: Commands {
                 .keyboardShortcut("b")
             Divider()
             Menu("Skin") { SkinMenuItems() }
+            Menu("Fonte") { FontMenuItems() }
         }
         CommandMenu("Controlos") {
             Button(model.player.isPlaying ? String(localized: "Pausa") : String(localized: "Tocar")) { model.playOrBrowse() }

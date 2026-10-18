@@ -26,13 +26,13 @@ struct SkinTests {
     }
 
     @Test func paletteFollowsAppearance() {
-        let skin = Skin(id: "t", name: "T", appearance: .followsSystem, palette: [.ink: .init(light: 0x111111, dark: 0xEEEEEE)])
+        let skin = Skin(id: "t", name: "T", appearance: .followsSystem, fontSet: .inter, palette: [.ink: .init(light: 0x111111, dark: 0xEEEEEE)])
         #expect(hex(skin.color(.ink, for: light)) == 0x111111)
         #expect(hex(skin.color(.ink, for: dark)) == 0xEEEEEE)
     }
 
     @Test func alwaysDarkIgnoresLightAppearance() {
-        let skin = Skin(id: "t", name: "T", appearance: .alwaysDark, palette: [.ink: .init(light: 0x111111, dark: 0xEEEEEE)])
+        let skin = Skin(id: "t", name: "T", appearance: .alwaysDark, fontSet: .inter, palette: [.ink: .init(light: 0x111111, dark: 0xEEEEEE)])
         #expect(hex(skin.color(.ink, for: light)) == 0xEEEEEE)
     }
 
@@ -46,5 +46,23 @@ struct SkinTests {
         defaults.removePersistentDomain(forName: "skin-tests")
         defaults.set("gone", forKey: "skin")
         #expect(SkinStore(defaults: defaults).current == .nuno)
+    }
+
+    @Test func fontSetFollowsSkinUntilChosen() {
+        let defaults = UserDefaults(suiteName: "skin-tests-fonts")!
+        defaults.removePersistentDomain(forName: "skin-tests-fonts")
+        let store = SkinStore(defaults: defaults)
+        #expect(store.fontChoice == nil)
+        #expect(store.fontSet == Skin.nuno.fontSet)
+
+        store.fontChoice = .system
+        #expect(store.fontSet == .system)
+        #expect(SkinStore.activeFonts.withLock { $0 } == .system)
+        #expect(SkinStore(defaults: defaults).fontChoice == .system)
+
+        store.fontChoice = nil
+        #expect(defaults.string(forKey: "fontSet") == "skin")
+        #expect(SkinStore(defaults: defaults).fontChoice == nil)
+        #expect(SkinStore.activeFonts.withLock { $0 } == Skin.nuno.fontSet)
     }
 }

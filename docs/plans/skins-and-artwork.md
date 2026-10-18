@@ -68,6 +68,8 @@ What this rules out from the Graphite spec: its layout (1050 × 650, three panes
 - Menu **View ▸ Font ▸ Skin default / Inter + Plex Mono / SF Pro + SF Mono**.
 - **Check:** `--snapshot` with each set in all three window modes: truncated names, display time width, Compact height.
 
+Done. In the snapshots SF Mono makes the display about 4 pt shorter (and Compact with it); names didn't truncate in the samples.
+
 Risks: SF Pro is wider than Inter, so verbatim names truncate sooner in the fixed 360 / 720 pt widths; different ascenders change how 13 px text sits in a 28 pt row and the Compact height.
 
 ### Phase 4. Graphite skins (the test)

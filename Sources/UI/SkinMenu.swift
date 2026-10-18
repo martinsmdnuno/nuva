@@ -13,3 +13,21 @@ struct SkinMenuItems: View {
         }
     }
 }
+
+/// View ▸ Font: follow the skin, or a fixed font set.
+struct FontMenuItems: View {
+    var body: some View {
+        let store = SkinStore.shared
+        Toggle(String(localized: "Predefinição da skin (\(store.current.fontSet.name))"), isOn: Binding(
+            get: { store.fontChoice == nil },
+            set: { if $0 { store.fontChoice = nil } }
+        ))
+        Divider()
+        ForEach(FontSet.allCases, id: \.self) { set in
+            Toggle(set.name, isOn: Binding(
+                get: { store.fontChoice == set },
+                set: { if $0 { store.fontChoice = set } }
+            ))
+        }
+    }
+}

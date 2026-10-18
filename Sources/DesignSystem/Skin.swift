@@ -29,7 +29,7 @@ enum ColorToken: String, CaseIterable, Sendable {
     case focus
 }
 
-/// A skin: colours and appearance policy. Same views, layout and sizes in every skin.
+/// A skin: colours, appearance policy and default font set. Same views, layout and sizes in every skin.
 struct Skin: Identifiable, Sendable, Equatable {
     enum Appearance: Sendable {
         /// Light and dark variants, following the system (Nuno: Aluminium and Lead).
@@ -47,10 +47,12 @@ struct Skin: Identifiable, Sendable, Equatable {
     let id: String
     let name: String
     let appearance: Appearance
+    /// Used unless the user picks another set in View ▸ Font.
+    let fontSet: FontSet
     /// `nil`: the colour sets in Assets.xcassets, named like the tokens.
     let palette: [ColorToken: Pair]?
 
-    static let nuno = Skin(id: "nuno", name: "Nuno", appearance: .followsSystem, palette: nil)
+    static let nuno = Skin(id: "nuno", name: "Nuno", appearance: .followsSystem, fontSet: .inter, palette: nil)
 
     static let all: [Skin] = [.nuno]
 
@@ -79,7 +81,7 @@ struct Skin: Identifiable, Sendable, Equatable {
     }
 }
 
-/// The current skin, persisted in UserDefaults (`skin`).
+/// The current skin and font set, persisted in UserDefaults (`skin`, `fontSet`).
 @MainActor
 @Observable
 final class SkinStore {
@@ -91,12 +93,29 @@ final class SkinStore {
             defaults.set(current.id, forKey: "skin")
             let skin = current
             Self.active.withLock { $0 = skin }
+            publishFontSet()
             applyAppearance()
         }
     }
 
+    /// The font set the user picked; `nil` follows the skin.
+    var fontChoice: FontSet? {
+        didSet {
+            guard fontChoice != oldValue else { return }
+            defaults.set(fontChoice?.rawValue ?? "skin", forKey: "fontSet")
+            publishFontSet()
+        }
+    }
+
+    var fontSet: FontSet { fontChoice ?? current.fontSet }
+
+    /// Changes when anything drawn changes: the window rebuilds on it.
+    var renderID: String { "\(current.id)-\(fontSet.rawValue)" }
+
     /// Read by the dynamic colours, which AppKit may resolve off the main thread.
     nonisolated static let active = OSAllocatedUnfairLock(initialState: Skin.nuno)
+    /// Read by Typography, from any view.
+    nonisolated static let activeFonts = OSAllocatedUnfairLock(initialState: FontSet.inter)
 
     @ObservationIgnored private let defaults: UserDefaults
 
@@ -104,7 +123,14 @@ final class SkinStore {
         self.defaults = defaults
         let skin = Skin.with(id: defaults.string(forKey: "skin"))
         current = skin
+        fontChoice = FontSet(rawValue: defaults.string(forKey: "fontSet") ?? "")
         Self.active.withLock { $0 = skin }
+        publishFontSet()
+    }
+
+    private func publishFontSet() {
+        let set = fontSet
+        Self.activeFonts.withLock { $0 = set }
     }
 
     /// Always-dark skins force the dark appearance; the others follow the system.

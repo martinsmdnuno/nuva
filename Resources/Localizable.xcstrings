@@ -657,6 +657,22 @@
         }
       }
     },
+    "Fonte": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Font"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fonte"
+          }
+        }
+      }
+    },
     "Fontes": {
       "localizations": {
         "en": {
@@ -1021,6 +1037,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Posição"
+          }
+        }
+      }
+    },
+    "Predefinição da skin (%@)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skin default (%@)"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Predefinição da skin (%@)"
           }
         }
       }

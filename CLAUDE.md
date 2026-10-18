@@ -41,7 +41,9 @@ In:
 - Skins (View ▸ Skin, ⌥⌘1, ⌥⌘2…, and a key in the mini player): colours only, same layout and sizes. Default "Nuno" (the 1.0 look). Plan in `docs/plans/skins-and-artwork.md`.
 - The folder drawer opens and closes with the folders key in the queue header, the key in the drawer header, or ⌘B.
 - Closing the window doesn't stop the music: the app leaves the Dock and stays in the menu bar with a mini player.
-- Folder artwork (View ▸ Show Artwork, ⌥⌘A; off by default): an image file in the folder (`cover`, `folder`, `front`, `album`, `capa` · jpg/jpeg/png), never from tags. Small, inside the display and the mini player, not in Compact; also in Now Playing. Local sources only (Jellyfin's images may come from tags).
+- Album artwork (View ▸ Show Artwork, ⌥⌘A; off by default), never from tags. Order: an image file in the folder (`cover`, `folder`, `front`, `album`, `capa` · jpg/jpeg/png; a disc folder also looks in its album folder), then the user's choice for that folder, then online: artist and album inferred from the folder names (`AlbumGuess`), MusicBrainz + Cover Art Archive, confident matches only. The one fallback is "Wrong or Missing Artwork…" (search again with corrected names, choose an image, or no artwork). Covers live in Application Support, never in the user's folders. Small, inside the display and the mini player, not in Compact; also in Now Playing. Online lookup is the one agreed exception to "no online lookups".
+- Update check: GitHub `releases/latest` at launch (at most daily) and NuVa ▸ Check for Updates…; an alert only, never downloads.
+- Terms and privacy: `TERMS.md` (EN + PT), bundled and shown in NuVa ▸ Terms and Privacy. Update it whenever the app gains a network call.
 - 10-band equalizer with presets, in an `MTAudioProcessingTap` on each `AVPlayerItem` (Accelerate biquads).
 
 Out (for now): generic server source, search, favourites, accounts.

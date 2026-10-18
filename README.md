@@ -54,6 +54,12 @@ Send the music to a WiiM, a HomePod, an Apple TV or any AirPlay speaker from the
 
 NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that say what they do by their colour, and small amber lights for what's on. An always-dark display shows the format, the bit depth and where the sound is going. It follows your Mac's appearance, in dark **Lead** or light **Aluminium**.
 
+## Skins and fonts
+
+<p align="center"><img src="docs/screenshots/skins.png" width="760" alt="NuVa in the Graphite Orange and Graphite Green skins"></p>
+
+The look above is the **Nuno** skin. **Graphite Orange** and **Graphite Green** are always dark, with a single bright accent on the play key, the lights and the playing track. Switch in **View › Skin** (⌥⌘1, ⌥⌘2, ⌥⌘3) or from the mini player. Skins change colours only: the keys, the layout and the shortcuts stay where your hands expect them. **View › Font** picks Inter + IBM Plex Mono or Apple's SF Pro + SF Mono.
+
 ## Browse folders, play a whole album
 
 <p align="center"><img src="docs/screenshots/browser.png" width="760" alt="Folder browser next to the player"></p>
@@ -172,6 +178,7 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 - **AirPlay 2.** WiiM, HomePod, Apple TV ou qualquer coluna AirPlay.
 - **Jellyfin sem confusão.** Navega pelas pastas reais do servidor e toca os ficheiros originais.
 - **Três tamanhos.** Player, com navegador e compacto. A janela estica na vertical para veres o álbum inteiro.
+- **Skins:** Nuno (claro ou escuro, como o sistema), Graphite Orange e Graphite Green (sempre escuras), em Visualização › Skin. Fonte Inter + IBM Plex Mono ou SF Pro + SF Mono, em Visualização › Fonte.
 - **Equalizador de 10 bandas**, media keys, Centro de Controlo e mini player na barra de menus.
 - Em português e inglês, conforme a língua do sistema. macOS 14 ou posterior, Apple silicon e Intel.
 

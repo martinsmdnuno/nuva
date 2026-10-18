@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Gera dist/NuVa-<versão>.dmg com a app em Release (universal) e um atalho para Aplicações.
+# Gera dist/NuVa-<versão>.dmg (e dist/NuVa.dmg) com a app em Release (universal) e um atalho para Aplicações.
 # Sem Developer ID a app vai com assinatura ad-hoc: quem a recebe tem de a desbloquear (ver "Ler primeiro.txt").
 set -euo pipefail
 cd "${0:a:h}/.."
@@ -15,24 +15,43 @@ trap 'rm -rf "$STAGE"' EXIT
 
 ditto "$APP" "$STAGE/NuVa.app"
 ln -s /Applications "$STAGE/Aplicações"
-cat > "$STAGE/Ler primeiro.txt" <<'TXT'
-NuVa (versão de teste)
+cat > "$STAGE/Ler primeiro · Read me first.txt" <<'TXT'
+NuVa
+
+PORTUGUÊS
 
 1. Arrastar a NuVa para Aplicações.
-2. Abrir a NuVa. O macOS vai dizer que não consegue verificar a app
-   (não está assinada com um certificado da Apple). Carregar em OK.
+2. Abrir a NuVa. O macOS diz que não consegue verificar a app, porque
+   a NuVa não está assinada com um certificado pago da Apple. Carregar em OK.
 3. Abrir Definições do Sistema › Privacidade e segurança, descer até
    "A NuVa foi bloqueada" e carregar em "Abrir mesmo assim".
-4. Na janela da NuVa: ⌘2 abre o navegador. "Adicionar pasta" escolhe
-   uma pasta de música no Mac; "Adicionar Jellyfin" entra num servidor
-   Jellyfin com o teu utilizador (pasta = álbum nos dois casos).
+   Só é preciso fazer isto uma vez.
+4. Na NuVa: "Adicionar pasta" (⌘O) escolhe a pasta da música, no Mac ou
+   num disco de rede. "Adicionar Jellyfin" (⇧⌘O) entra num servidor Jellyfin.
 
-Alternativa no Terminal, depois do passo 1:
+Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume
+⌘B pastas · ⌘1 ⌘2 ⌘3 tamanho da janela · ⌘L faixa atual
+
+
+ENGLISH
+
+1. Drag NuVa to Applications.
+2. Open NuVa. macOS says it can't check the app, because NuVa isn't
+   signed with a paid Apple certificate. Click OK.
+3. Open System Settings › Privacy & Security, scroll down to
+   "NuVa was blocked" and click "Open Anyway".
+   You only need to do this once.
+4. In NuVa: "Add Folder" (⌘O) picks your music folder, on the Mac or a
+   network drive. "Add Jellyfin" (⇧⌘O) signs in to a Jellyfin server.
+
+Shortcuts: Space play/pause · ⌘→ ⌘← next/previous · ⌘↑ ⌘↓ volume
+⌘B folders · ⌘1 ⌘2 ⌘3 window size · ⌘L current track
+
+
+Terminal (em vez dos passos 2–3 / instead of steps 2–3):
   xattr -dr com.apple.quarantine /Applications/NuVa.app
 
-Atalhos: Espaço tocar/pausa · ⌘→ seguinte · ⌘← anterior · ⌘↑ ⌘↓ volume
-⌘B mostrar pastas · ⌘1 ⌘2 ⌘3 tamanho da janela · ⌘L faixa atual · ⌘O adicionar pasta
-⇧⌘O adicionar Jellyfin
+https://github.com/martinsmdnuno/nuva
 TXT
 
 mkdir -p dist
@@ -40,4 +59,6 @@ DMG="dist/NuVa-$VERSION.dmg"
 rm -f "$DMG"
 hdiutil create -volname "NuVa $VERSION" -srcfolder "$STAGE" -fs HFS+ -format UDZO -ov "$DMG" -quiet
 hdiutil verify "$DMG" -quiet
+# Cópia com nome fixo para o GitHub: releases/latest/download/NuVa.dmg aponta sempre para a última.
+cp "$DMG" dist/NuVa.dmg
 echo "$DMG"

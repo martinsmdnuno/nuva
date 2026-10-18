@@ -17,6 +17,7 @@ Quem não conhece a app tem de ver que há uma gaveta. No cabeçalho da fila, à
 - `ink-muted` em repouso, `ink` no hover e com a gaveta aberta. LED aceso com a gaveta aberta.
 - Clicar abre ou fecha a gaveta, como ⌘B. Tooltip "Mostrar pastas ⌘B" / "Esconder pastas ⌘B".
 - Está sempre lá, mesmo com a fila vazia.
+- Para fechar, a gaveta tem também, no canto direito do cabeçalho (junto à divisória), uma tecla de modo com o mesmo ícone `sidebar.left`. Tooltip "Esconder pastas ⌘B".
 
 ## Pista da fila
 À direita do mesmo cabeçalho: LED + "fila" em `legend` + total em mono 10px. LED aceso com a fila à vista. Clicar alterna entre o player e o compacto (⌘1 / ⌘3).

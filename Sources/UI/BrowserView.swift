@@ -172,6 +172,12 @@ struct BrowserView: View {
                     .buttonStyle(.keyText)
                     .keyFocus()
             }
+            // Fechar a gaveta: o mesmo ícone da pista "pastas", junto à divisória,
+            // do lado para onde a gaveta recolhe.
+            Button { model.toggleBrowser() } label: { Image(systemName: "sidebar.left") }
+                .buttonStyle(.key(.mode))
+                .keyFocus()
+                .help(String(localized: "Esconder pastas ⌘B"))
         }
         .frame(height: Size.key)
     }

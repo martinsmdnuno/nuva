@@ -16,6 +16,12 @@ struct MenuBarPlayer: View {
                 }
                 key("forward.end", .transport, String(localized: "Seguinte")) { player.next() }
                 Spacer(minLength: Space.s2)
+                Menu { SkinMenuItems() } label: { Image(systemName: "circle.lefthalf.filled") }
+                    .menuStyle(.button)
+                    .menuIndicator(.hidden)
+                    .buttonStyle(.key(.mode))
+                    .fixedSize()
+                    .help("Skin")
                 Button("Abrir NuVa") { openMain() }
                     .buttonStyle(.keyText)
                 Button("Sair") { NSApp.terminate(nil) }
@@ -23,7 +29,7 @@ struct MenuBarPlayer: View {
             }
         }
         .padding(Space.s3)
-        .frame(width: 320)
+        .frame(width: 360)
         .background(Color.surface0)
         .id(SkinStore.shared.current.id)
     }

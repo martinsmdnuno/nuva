@@ -60,6 +60,8 @@ struct NuVaCommands: Commands {
                 .keyboardShortcut("3")
             Button(model.windowMode == .browser ? String(localized: "Esconder pastas") : String(localized: "Mostrar pastas")) { model.toggleBrowser() }
                 .keyboardShortcut("b")
+            Divider()
+            Menu("Skin") { SkinMenuItems() }
         }
         CommandMenu("Controlos") {
             Button(model.player.isPlaying ? String(localized: "Pausa") : String(localized: "Tocar")) { model.playOrBrowse() }

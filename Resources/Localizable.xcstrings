@@ -1345,6 +1345,22 @@
         }
       }
     },
+    "Skin": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skin"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skin"
+          }
+        }
+      }
+    },
     "Subir ←": {
       "localizations": {
         "en": {

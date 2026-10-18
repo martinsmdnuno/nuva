@@ -130,6 +130,7 @@ xattr -dr com.apple.quarantine /Applications/NuVa.app
 | ⌘↑ · ⌘↓ | Volume up · down |
 | ⌘B | Show or hide folders |
 | ⌘1 · ⌘2 · ⌘3 | Player · with browser · compact |
+| ⌥⌘1 · ⌥⌘2 … | Skin (also in View ▸ Skin) |
 | ⌘L | Go to the current track |
 | Enter · ⌘Enter | Play the selection · add it to the queue |
 | ⌘O · ⇧⌘O | Add a folder · add Jellyfin |
@@ -183,4 +184,4 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 
 Só é preciso uma vez.
 
-Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume · ⌘B pastas · ⌘1 ⌘2 ⌘3 tamanho da janela · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin.
+Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume · ⌘B pastas · ⌘1 ⌘2 ⌘3 tamanho da janela · ⌥⌘1 ⌥⌘2 … skin · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin.

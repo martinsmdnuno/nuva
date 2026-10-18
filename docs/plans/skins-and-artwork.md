@@ -53,8 +53,8 @@ What this rules out from the Graphite spec: its layout (1050 × 650, three panes
 ### Phase 2. Switching skins
 
 - Menu **View ▸ Skin ▸ Nuno / Graphite Orange / Graphite Green**, with shortcuts (keyboard first, no pixels on the chassis).
-- Same submenu in the menu bar mini player.
-- No key or picker in the window or title bar: a control used once a month would take permanent space on a 360 pt chassis, against "function first".
+- Same submenu in the menu bar mini player, behind a mode key (`circle.lefthalf.filled`); the mini player grows from 320 to 360 pt, the main window's width, so the key fits next to "Open NuVa" and "Quit".
+- No key or picker in the main window or title bar: a control used once a month would take permanent space on a 360 pt chassis, against "function first".
 
 ### Phase 3. Font sets
 

@@ -48,7 +48,8 @@ Fora (por agora): fonte Servidor genérica, pesquisa, favoritos, mini barra, cap
 Em `docs/design-system/`. Ler `README.md` e `tokens.json` antes de qualquer UI, e o ficheiro do componente em `components/` antes de o construir.
 - Cores: um `Color` por token em `Assets.xcassets` (variante Any = Alumínio, Dark = Chumbo), nomes iguais aos tokens.
 - Letra: Inter e IBM Plex Mono embebidas na app (OFL, ficheiros de Google Fonts); fallback para SF Pro/SF Mono se faltarem.
-- Teclas: um único `ButtonStyle` (`KeyButtonStyle`) com tamanhos sm, md, lg.
+- Linguagem Dieter Rams em Chumbo: um só plano, sem cartões nem contornos, hierarquia pela cor das teclas, estados por LED.
+- Teclas: um único `ButtonStyle` (`KeyButtonStyle`) com três tons: play, transporte, modo.
 - Texto da interface em português de Portugal.
 
 ## Stack e convenções

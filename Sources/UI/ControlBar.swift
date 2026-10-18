@@ -1,29 +1,33 @@
 import AVKit
 import SwiftUI
 
-/// Transporte à esquerda; gaveta das pastas, repetir, aleatório e AirPlay à direita.
+/// Teclas em três grupos com legenda, como no Braun TG 60:
+/// leitura (anterior, play/pausa, seguinte) · modo (repetir, aleatório) · saída (AirPlay, equalizador).
+/// Parar e mostrar pastas ficam só no menu e nos atalhos (⌘. e ⌘B).
 struct ControlBar: View {
     @Environment(AppModel.self) private var model
 
     var body: some View {
         @Bindable var player = model.player
-        HStack(spacing: Space.s1) {
-            key("backward.end", .md, "Anterior ⌘←") { player.previous() }
-            key(player.isPlaying ? "pause.fill" : "play.fill", .lg,
-                player.isPlaying ? "Pausa Espaço" : "Tocar Espaço") { model.playOrBrowse() }
-            key("forward.end", .md, "Seguinte ⌘→") { player.next() }
-            key("stop", .md, "Parar") { player.stop() }
-
-            Spacer(minLength: Space.s2)
-
-            key("sidebar.left", .sm, model.windowMode == .browser ? "Esconder pastas ⌘B" : "Mostrar pastas ⌘B",
-                isOn: model.windowMode == .browser) { model.toggleBrowser() }
-            key(player.repeatMode == .one ? "repeat.1" : "repeat", .sm, repeatHelp(player.repeatMode),
-                isOn: player.repeatMode != .off) { player.repeatMode = player.repeatMode.next }
-            key("shuffle", .sm, player.shuffle ? "Aleatório ligado" : "Aleatório", isOn: player.shuffle) {
-                player.shuffle.toggle()
+        HStack(alignment: .top, spacing: 0) {
+            group("leitura") {
+                key("backward.end", .transport, "Anterior ⌘←") { player.previous() }
+                key(player.isPlaying ? "pause.fill" : "play.fill", .play,
+                    player.isPlaying ? "Pausa Espaço" : "Tocar Espaço") { model.playOrBrowse() }
+                key("forward.end", .transport, "Seguinte ⌘→") { player.next() }
             }
-            AirPlayKey()
+            Spacer(minLength: Space.s4)
+            group("modo") {
+                key(player.repeatMode == .one ? "repeat.1" : "repeat", .mode, repeatHelp(player.repeatMode) + " ⌘R",
+                    led: player.repeatMode != .off) { player.repeatMode = player.repeatMode.next }
+                key("shuffle", .mode, player.shuffle ? "Aleatório ligado ⌥⌘S" : "Aleatório ⌥⌘S",
+                    led: player.shuffle) { player.shuffle.toggle() }
+            }
+            Spacer(minLength: Space.s4)
+            group("saída") {
+                AirPlayKey().keyLED(nil)
+                EqualizerKey()
+            }
         }
     }
 
@@ -35,14 +39,22 @@ struct ControlBar: View {
         }
     }
 
+    private func group(_ name: String, @ViewBuilder keys: () -> some View) -> some View {
+        VStack(alignment: .leading, spacing: Space.s1 + 2) {
+            HStack(alignment: .bottom, spacing: Space.s1) { keys() }
+            Text(name).legend()
+        }
+    }
+
     private func key(
-        _ symbol: String, _ size: KeyButtonStyle.KeySize, _ help: String,
-        isOn: Bool = false, action: @escaping () -> Void
+        _ symbol: String, _ tone: KeyButtonStyle.Tone, _ help: String,
+        led: Bool? = nil, action: @escaping () -> Void
     ) -> some View {
         Button(action: action) { Image(systemName: symbol) }
-            .buttonStyle(.key(size, isOn: isOn))
+            .buttonStyle(.key(tone))
             .keyFocus()
             .help(help)
+            .keyLED(led)
     }
 }
 
@@ -59,7 +71,7 @@ struct AirPlayKey: View {
                 RoutePicker(player: model.player.avPlayer).frame(width: 20, height: 20)
             }
         }
-        .buttonStyle(.key(.sm))
+        .buttonStyle(.key(.mode))
         .keyFocus()
         .help("AirPlay")
     }
@@ -72,7 +84,7 @@ private struct RoutePicker: NSViewRepresentable {
         let view = AVRoutePickerView()
         view.player = player
         view.isRoutePickerButtonBordered = false
-        let ink = NSColor(named: "ink") ?? .labelColor
+        let ink = NSColor(named: "key-mode-ink") ?? .labelColor
         for state in [AVRoutePickerView.ButtonState.normal, .normalHighlighted, .active, .activeHighlighted] {
             view.setRoutePickerButtonColor(ink, for: state)
         }

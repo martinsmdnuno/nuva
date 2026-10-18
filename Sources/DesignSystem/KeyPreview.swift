@@ -7,27 +7,22 @@ struct KeyPreview: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Space.s4) {
-                section("Transporte") {
-                    HStack(spacing: Space.s1) {
-                        key("backward.end", .md, "Anterior ⌘←")
-                        key("play.fill", .lg, "Tocar Espaço")
-                        key("forward.end", .md, "Seguinte ⌘→")
-                        key("stop", .md, "Parar")
-                    }
-                }
-                section("Secundárias") {
-                    HStack(spacing: Space.s1) {
+                section("Teclas") {
+                    HStack(alignment: .bottom, spacing: Space.s1) {
+                        key("backward.end", .transport, "Anterior ⌘←")
+                        key("play.fill", .play, "Tocar Espaço")
+                        key("forward.end", .transport, "Seguinte ⌘→")
+                        Spacer().frame(width: Space.s4)
                         Button { repeatOn.toggle() } label: { Image(systemName: "repeat") }
-                            .buttonStyle(.key(.sm, isOn: repeatOn)).keyFocus().help("Repetir")
+                            .buttonStyle(.key(.mode)).keyFocus().help("Repetir").keyLED(repeatOn)
                         Button { shuffleOn.toggle() } label: { Image(systemName: "shuffle") }
-                            .buttonStyle(.key(.sm, isOn: shuffleOn)).keyFocus().help("Aleatório")
-                        key("airplayaudio", .sm, "AirPlay")
+                            .buttonStyle(.key(.mode)).keyFocus().help("Aleatório").keyLED(shuffleOn)
                     }
                 }
                 section("Texto") {
                     HStack(spacing: Space.s1) {
                         Button("Cancelar") {}.buttonStyle(.keyText).keyFocus()
-                        Button("Adicionar fonte") {}.buttonStyle(.keyText).keyFocus()
+                        Button("Adicionar pasta") {}.buttonStyle(.keyText).keyFocus()
                     }
                 }
                 section("Letra") {
@@ -35,9 +30,10 @@ struct KeyPreview: View {
                         Text("01:23").font(.dsDisplayTime)
                         Text("FLAC 24/96").font(.dsDisplayMeta)
                         Text("Faixa de exemplo").font(.dsTitle)
-                        Text("02 Remix.flac").font(.dsBody)
-                        Text("Adicionar fonte").font(.dsLabel)
+                        Text("02 Remix").font(.dsBody)
+                        Text("Adicionar pasta").font(.dsLabel)
                         Text("12 faixas").font(.dsCaption)
+                        Text("leitura · modo · saída").font(.dsLegend)
                         Text("4:05").font(.dsDuration)
                     }
                     .foregroundStyle(Color.ink)
@@ -47,7 +43,6 @@ struct KeyPreview: View {
                         ForEach(swatches, id: \.self) { name in
                             RoundedRectangle(cornerRadius: Radius.sm)
                                 .fill(Color(name))
-                                .overlay(RoundedRectangle(cornerRadius: Radius.sm).strokeBorder(Color.line))
                                 .frame(height: 28)
                                 .help(name)
                         }
@@ -56,25 +51,26 @@ struct KeyPreview: View {
             }
         .padding(Space.s4)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color.surface1)
+        .background(Color.surface0)
     }
 
     private let swatches = [
-        "surface-0", "surface-1", "surface-2", "display", "display-ink", "display-muted",
-        "ink", "ink-muted", "line", "key-face", "key-face-pressed", "key-edge",
-        "track", "fill", "signal", "danger", "focus",
+        "surface-0", "surface-1", "surface-2", "display", "display-ink", "display-muted", "display-track",
+        "ink", "ink-muted", "line", "key-face", "key-mode", "key-play", "key-ink", "key-mode-ink",
+        "track", "fill", "led", "led-off", "signal", "danger", "focus",
     ]
 
-    private func key(_ symbol: String, _ size: KeyButtonStyle.KeySize, _ help: String) -> some View {
+    private func key(_ symbol: String, _ tone: KeyButtonStyle.Tone, _ help: String) -> some View {
         Button {} label: { Image(systemName: symbol) }
-            .buttonStyle(.key(size))
+            .buttonStyle(.key(tone))
             .keyFocus()
             .help(help)
+            .keyLED(nil)
     }
 
     private func section(_ title: String, @ViewBuilder content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: Space.s2) {
-            Text(title).font(.dsLabel).foregroundStyle(Color.inkMuted)
+            Text(title.lowercased()).legend()
             content()
         }
     }

@@ -8,7 +8,6 @@ struct PlayerView: View {
             HStack(spacing: Space.s4) {
                 ProgressBar()
                 VolumeControl()
-                EqualizerKey()
             }
             .padding(.vertical, Space.s2)
             VStack(spacing: 0) {

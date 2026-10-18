@@ -8,9 +8,10 @@ struct EqualizerKey: View {
     var body: some View {
         let eq = model.player.equalizer
         Button { showing.toggle() } label: { Image(systemName: "slider.vertical.3") }
-            .buttonStyle(.key(.sm, isOn: eq.enabled))
+            .buttonStyle(.key(.mode))
             .keyFocus()
             .help(eq.enabled ? "Equalizador: \(eq.presetName)" : "Equalizador desligado")
+            .keyLED(eq.enabled)
             .popover(isPresented: $showing, arrowEdge: .bottom) {
                 EqualizerPanel(eq: eq)
             }
@@ -32,7 +33,7 @@ struct EqualizerPanel: View {
                     .foregroundStyle(Color.inkMuted)
                 Spacer()
                 Button(eq.enabled ? "Ligado" : "Desligado") { eq.enabled.toggle() }
-                    .buttonStyle(.keyText(isOn: eq.enabled))
+                    .buttonStyle(.keyText)
                     .keyFocus()
             }
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: Space.s1), count: 4), spacing: Space.s1) {
@@ -40,7 +41,7 @@ struct EqualizerPanel: View {
                     Button { eq.apply(preset) } label: {
                         Text(preset.name).frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.keyText(isOn: eq.enabled && eq.presetName == preset.name))
+                    .buttonStyle(.keyText)
                     .keyFocus()
                 }
             }

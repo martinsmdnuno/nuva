@@ -11,11 +11,11 @@ struct MenuBarPlayer: View {
             DisplayView()
             ProgressBar()
             HStack(spacing: Space.s1) {
-                key("backward.end", .md, "Anterior") { player.previous() }
-                key(player.isPlaying ? "pause.fill" : "play.fill", .lg, player.isPlaying ? "Pausa" : "Tocar") {
+                key("backward.end", .transport, "Anterior") { player.previous() }
+                key(player.isPlaying ? "pause.fill" : "play.fill", .play, player.isPlaying ? "Pausa" : "Tocar") {
                     if player.queue.isEmpty { openMain() } else { player.togglePlayPause() }
                 }
-                key("forward.end", .md, "Seguinte") { player.next() }
+                key("forward.end", .transport, "Seguinte") { player.next() }
                 Spacer(minLength: Space.s2)
                 Button("Abrir NuVa") { openMain() }
                     .buttonStyle(.keyText)
@@ -35,10 +35,10 @@ struct MenuBarPlayer: View {
     }
 
     private func key(
-        _ symbol: String, _ size: KeyButtonStyle.KeySize, _ help: String, action: @escaping () -> Void
+        _ symbol: String, _ tone: KeyButtonStyle.Tone, _ help: String, action: @escaping () -> Void
     ) -> some View {
         Button(action: action) { Image(systemName: symbol) }
-            .buttonStyle(.key(size))
+            .buttonStyle(.key(tone))
             .help(help)
     }
 }

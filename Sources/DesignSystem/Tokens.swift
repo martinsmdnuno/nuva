@@ -10,14 +10,19 @@ extension Color {
     static let display = Color("display")
     static let displayInk = Color("display-ink")
     static let displayMuted = Color("display-muted")
+    static let displayTrack = Color("display-track")
     static let ink = Color("ink")
     static let inkMuted = Color("ink-muted")
     static let line = Color("line")
     static let keyFace = Color("key-face")
-    static let keyFacePressed = Color("key-face-pressed")
-    static let keyEdge = Color("key-edge")
+    static let keyMode = Color("key-mode")
+    static let keyPlay = Color("key-play")
+    static let keyInk = Color("key-ink")
+    static let keyModeInk = Color("key-mode-ink")
     static let track = Color("track")
     static let fill = Color("fill")
+    static let led = Color("led")
+    static let ledOff = Color("led-off")
     static let signal = Color("signal")
     static let danger = Color("danger")
     static let focus = Color("focus")
@@ -38,9 +43,13 @@ enum Radius {
 }
 
 enum Size {
-    static let keySm: CGFloat = 28
-    static let keyMd: CGFloat = 36
-    static let keyLg: CGFloat = 44
+    /// Altura de todas as teclas de ícone.
+    static let key: CGFloat = 36
+    static let keyWSm: CGFloat = 32
+    static let keyWMd: CGFloat = 40
+    static let keyWLg: CGFloat = 56
+    static let keyText: CGFloat = 28
+    static let led: CGFloat = 4
     static let row: CGFloat = 28
-    static let bar: CGFloat = 4
+    static let bar: CGFloat = 2
 }

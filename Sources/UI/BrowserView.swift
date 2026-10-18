@@ -162,7 +162,7 @@ struct BrowserView: View {
         HStack(spacing: Space.s2) {
             if browser.location != nil {
                 Button(action: goUp) { Image(systemName: "chevron.left") }
-                    .buttonStyle(.key(.sm))
+                    .buttonStyle(.key(.mode))
                     .keyFocus()
                     .help("Subir ←")
             }
@@ -184,7 +184,7 @@ struct BrowserView: View {
                     .keyFocus()
             }
         }
-        .frame(height: Size.keySm)
+        .frame(height: Size.key)
     }
 
     private func errorState(_ message: String) -> some View {

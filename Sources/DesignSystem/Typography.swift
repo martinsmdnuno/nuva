@@ -42,5 +42,7 @@ extension Font {
     static let dsBody = Typography.sans(13, .regular)
     static let dsLabel = Typography.sans(11, .medium)
     static let dsCaption = Typography.sans(11, .regular)
+    /// Legenda impressa no chassis, sempre em minúsculas.
+    static let dsLegend = Typography.sans(10, .regular)
     static let dsDuration = Typography.mono(12, .regular)
 }

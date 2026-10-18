@@ -69,6 +69,12 @@ final class NowPlaying {
         }
     }
 
+    /// MediaPlayer asks for the image on its own queue: the closure must not be main-actor isolated
+    /// (Swift 6 traps when it runs elsewhere), so it is built outside the class's isolation.
+    nonisolated static func artwork(for image: NSImage) -> MPMediaItemArtwork {
+        MPMediaItemArtwork(boundsSize: image.size) { @Sendable _ in image }
+    }
+
     private func update() {
         let center = MPNowPlayingInfoCenter.default()
         guard let entry = player.current?.entry else {
@@ -76,9 +82,7 @@ final class NowPlaying {
             center.playbackState = .stopped
             return
         }
-        let artwork = folderArtwork().map { image in
-            MPMediaItemArtwork(boundsSize: image.size) { _ in image }
-        } ?? defaultArtwork
+        let artwork = folderArtwork().map(Self.artwork(for:)) ?? defaultArtwork
         center.nowPlayingInfo = [
             MPMediaItemPropertyTitle: entry.title,
             MPMediaItemPropertyAlbumTitle: entry.folderName,

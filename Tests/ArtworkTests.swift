@@ -1,4 +1,5 @@
 import AppKit
+import MediaPlayer
 import Testing
 @testable import NuVa
 
@@ -34,5 +35,22 @@ struct ArtworkTests {
         let small = try #require(ArtworkStore.downsample(url))
         #expect(max(small.size.width, small.size.height) == CGFloat(ArtworkStore.maxPixels))
         #expect(ArtworkStore.downsample(URL(fileURLWithPath: "/nope.jpg")) == nil)
+    }
+}
+
+@MainActor
+struct NowPlayingArtworkTests {
+    /// 1.1 crashed here: MediaPlayer asks for the image on its own queue, and the closure was main-actor isolated.
+    @Test func artworkImageCanBeRequestedOffTheMainThread() async {
+        let image = NSImage(size: NSSize(width: 10, height: 10), flipped: false) { rect in
+            NSColor.red.setFill(); rect.fill(); return true
+        }
+        let artwork = NowPlaying.artwork(for: image)
+        let size = await withCheckedContinuation { continuation in
+            DispatchQueue.global().async {
+                continuation.resume(returning: artwork.image(at: CGSize(width: 10, height: 10))?.size)
+            }
+        }
+        #expect(size == CGSize(width: 10, height: 10))
     }
 }

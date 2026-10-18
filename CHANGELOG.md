@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1
+
+- Fixes a crash when an album cover was found (it was handed to Control Center on the wrong thread). This is also why artwork didn't appear in 1.1.
+
 ## 1.1 — skins, fonts and album artwork
 
 - Skins: **Nuno** (the 1.0 look, light or dark with the system), **Graphite Orange** and **Graphite Green** (always dark). View › Skin, ⌥⌘1–3, or the new key in the mini player.

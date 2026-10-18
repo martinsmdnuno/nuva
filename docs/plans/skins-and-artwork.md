@@ -74,6 +74,8 @@ Risks: SF Pro is wider than Inter, so verbatim names truncate sooner in the fixe
 
 ### Phase 4. Graphite skins (the test)
 
+Done; final values and reasons in `docs/design-system/skins/graphite.md`.
+
 The spec's colours, applied under NuVa's rules. Contrast fixes are not optional: "every text pair passes 4.5:1" is a principle.
 
 | NuVa token | Graphite Orange | Graphite Green | From the spec |
@@ -102,7 +104,7 @@ The spec's colours, applied under NuVa's rules. Contrast fixes are not optional:
 - `JellyfinSource` returns `nil` for now: Jellyfin's `Primary` image may have been extracted from tags, and we can't tell, so it would break "folders, not metadata".
 - Downsampled in-memory cache (`CGImageSourceCreateThumbnailAtIndex`).
 - **View ▸ Show artwork**, `@AppStorage("showsArtwork")`, **off by default**.
-- Where: a small square inside the display, at the left, the height of the time and title block (~56 pt), aspect-fit, never cropped or tinted. It sits on the device's screen, keeps one plane and isn't "giant cover art"; the window size doesn't change. Not shown in Compact. No artwork: nothing, the display looks as in 1.0.
+- Where: a small square inside the display, at the left, the height of the time and title block (~56 pt), aspect-fit, never cropped or tinted. It sits on the device's screen, keeps one plane and isn't "giant cover art"; the window size doesn't change. Also in the menu bar mini player, which uses the same display. Not shown in Compact. No artwork: nothing, the display looks as in 1.0.
 - When on, Now Playing uses the folder image instead of the NuVa icon.
 - `CLAUDE.md`: "cover art" moves from *Out* to *In* as "folder artwork (local, optional)". The design system principles stay as they are.
 
@@ -126,6 +128,22 @@ Contrast numbers are WCAG ratios computed from the spec's hex values.
 8. **The mockup breaks its own rules.** Artist/album text in folder-only mode, hardcoded "24-bit / 96 kHz", and two progress bars.
 9. **Different product.** 1050 × 650, search, queue only as a drawer, 36–42 pt rows: breaks "one small window", Compact mode and the queue.
 10. **Dark only.** Graphite won't have a light variant until someone designs one under the same rules.
+
+## Contrast gaps in Nuno (found in phase 4)
+
+The contrast test that guards the Graphite skins also ran on Nuno, the 1.0 palette. The design system says every text pair passes 4.5:1 in both themes, but these don't:
+
+| Theme | Pair | Ratio | Needs |
+|---|---|---|---|
+| Lead | `key-mode-ink` on `key-mode` (text buttons, mode icons) | 3.93 | 4.5 |
+| Lead | `ink-muted` on `surface-2` (durations on the selected row) | 4.50 (4.496) | 4.5 |
+| Aluminium | `key-ink` on `key-face` (transport icons) | 4.31 | 4.5 |
+| Aluminium | `signal` on `surface-0` (playing track) | 4.44 | 4.5 |
+| Aluminium | `led` on `surface-0` | 2.07 | 3 |
+| Aluminium | `key-play` on `surface-0` | 2.20 | 3 |
+| Aluminium | `key-face` on `surface-0` | 2.95 | 3 |
+
+Nuno is left unchanged (phase 1 promised zero visual change); the test records these as a known issue. Fixing them is a small colour change per token, to decide separately.
 
 ## Decisions settled by the principles
 

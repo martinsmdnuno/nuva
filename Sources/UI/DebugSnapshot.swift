@@ -27,15 +27,21 @@ enum DebugSnapshot {
             ("barra", AnyView(MenuBarPlayer()), model),
             ("equalizador", AnyView(EqualizerPanel(eq: model.player.equalizer)), model),
         ]
-        // Every view with Inter + Plex Mono; the main ones again with SF Pro + SF Mono ("-sf").
-        let fontRuns: [(FontSet, String, Set<String>?)] = [
-            (.inter, "", nil),
-            (.system, "-sf", ["player", "navegador", "compacto", "barra"]),
+        // Every view in Nuno; the main ones again with SF Pro + SF Mono ("-sf") and in each
+        // Graphite skin (always dark, so one file per view).
+        let main: Set<String> = ["player", "navegador", "compacto", "barra", "equalizador"]
+        let bothThemes = [(ColorScheme.dark, "chumbo"), (.light, "aluminio")]
+        let runs: [(Skin, FontSet, String, Set<String>?, [(ColorScheme, String)])] = [
+            (.nuno, .inter, "", nil, bothThemes),
+            (.nuno, .system, "-sf", main, bothThemes),
+            (.graphiteOrange, .system, "", main, [(.dark, Skin.graphiteOrange.id)]),
+            (.graphiteGreen, .system, "", main, [(.dark, Skin.graphiteGreen.id)]),
         ]
-        for (fontSet, suffix, only) in fontRuns {
+        for (skin, fontSet, suffix, only, themes) in runs {
+            SkinStore.active.withLock { $0 = skin }
             SkinStore.activeFonts.withLock { $0 = fontSet }
             for (viewName, view, model) in views where only?.contains(viewName) ?? true {
-                for (scheme, name) in [(ColorScheme.dark, "chumbo"), (.light, "aluminio")] {
+                for (scheme, name) in themes {
                     let content = view
                         .environment(model)
                         .environment(\.isSnapshot, true)

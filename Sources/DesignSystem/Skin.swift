@@ -54,7 +54,43 @@ struct Skin: Identifiable, Sendable, Equatable {
 
     static let nuno = Skin(id: "nuno", name: "Nuno", appearance: .followsSystem, fontSet: .inter, palette: nil)
 
-    static let all: [Skin] = [.nuno]
+    /// Graphite, from NuVa_Design_Spec_v1 (docs/design-system/skins/graphite.md): the spec's colours,
+    /// adjusted so every text pair passes 4.5:1 and the layers can be told apart. Only the accent differs.
+    static let graphiteOrange = graphite(id: "graphite-orange", name: "Graphite Orange", accent: 0xFF6A00, selected: 0x382E22)
+    static let graphiteGreen = graphite(id: "graphite-green", name: "Graphite Green", accent: 0x20D66B, selected: 0x1D3628)
+
+    static let all: [Skin] = [.nuno, .graphiteOrange, .graphiteGreen]
+
+    private static func graphite(id: String, name: String, accent: UInt32, selected: UInt32) -> Skin {
+        let dark: [ColorToken: UInt32] = [
+            .surface0: 0x0B0F10,
+            .surface1: 0x1C2427,
+            .surface2: selected,
+            .display: 0x050708,
+            .displayInk: 0xF2F4F5,
+            .displayMuted: 0x9AA3A7,
+            .displayTrack: 0x252C2F,
+            .ink: 0xF2F4F5,
+            .inkMuted: 0x9AA3A7,
+            .line: 0x2A3032,
+            .keyFace: 0xC9CED0,
+            .keyMode: 0x5B656C,
+            // One accent, in its three roles: the play key, the LEDs and the playing track.
+            .keyPlay: accent,
+            .keyInk: 0x0B0F10,
+            .keyModeInk: 0xF2F4F5,
+            .track: 0x363E41,
+            .fill: 0xC9CED0,
+            .led: accent,
+            .ledOff: 0x2A3032,
+            .signal: accent,
+            .danger: 0xFF6F8A,
+            .focus: 0x8FB4E3,
+        ]
+        return Skin(
+            id: id, name: name, appearance: .alwaysDark, fontSet: .system,
+            palette: dark.mapValues { Pair(light: $0, dark: $0) })
+    }
 
     static func with(id: String?) -> Skin {
         all.first { $0.id == id } ?? .nuno

@@ -30,7 +30,9 @@ Lead grey with a single accent.
 - **Error:** `danger` only on text and icons, never as a background.
 - **Focus:** `focus` as a 2px ring around the control with keyboard focus.
 
-Themes: **Lead** (`chumbo`) is the main one. **Aluminium** (`aluminio`) is the light theme and follows the system appearance. Every text pair passes 4.5:1 in both themes.
+Themes: **Lead** (`chumbo`) is the main one. **Aluminium** (`aluminio`) is the light theme and follows the system appearance. Together they are the **Nuno** skin. Every text pair should pass 4.5:1 in both themes (a few 1.0 pairs don't yet: see `docs/plans/skins-and-artwork.md`).
+
+Other skins change token values only, never roles or layout: **Graphite Orange** and **Graphite Green**, always dark (`skins/graphite.md`). View ▸ Skin, ⌥⌘1, ⌥⌘2, ⌥⌘3.
 
 ## Type
 

@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Folha para juntar um servidor Jellyfin: endereço, utilizador e palavra-passe.
+/// Sheet to add a Jellyfin server: address, username and password.
 struct JellyfinLoginView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -62,7 +62,7 @@ struct JellyfinLoginView: View {
         }
     }
 
-    /// Aceita "jellyfin.exemplo.pt" sem esquema (assume https) e tira a barra final.
+    /// Accepts "jellyfin.exemplo.pt" without a scheme (assumes https) and strips the trailing slash.
     private var serverURL: URL? {
         var text = address.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return nil }

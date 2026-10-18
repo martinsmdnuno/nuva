@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-/// Estado da app: fontes, player e durações da fila.
+/// App state: sources, player and queue durations.
 @MainActor
 @Observable
 final class AppModel {
@@ -12,15 +12,15 @@ final class AppModel {
     let output: OutputRoute
 
     enum WindowMode: String {
-        /// Player com playlist, 360 × 480.
+        /// Player with playlist, 360 × 480.
         case player
-        /// Com navegador, 720 × 480.
+        /// With browser, 720 × 480.
         case browser
-        /// Compacto: só display, teclas e volume (360 de largura, altura pelo conteúdo).
+        /// Compact: display, keys and volume only (360 wide, height from content).
         case compact
     }
 
-    /// Folha "Adicionar Jellyfin" aberta.
+    /// "Add Jellyfin" sheet open.
     var showingJellyfinLogin = false
 
     var windowMode: WindowMode {
@@ -30,7 +30,7 @@ final class AppModel {
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private var nowPlaying: NowPlaying?
 
-    /// `systemIntegration`: media keys e Now Playing (desligado em capturas).
+    /// `systemIntegration`: media keys and Now Playing (off in snapshots).
     init(defaults: UserDefaults = .standard, systemIntegration: Bool = false) {
         let sources = SourceStore(defaults: defaults)
         let resolve: PlayerController.Resolver = { entry in try await sources.resolve(entry) }
@@ -47,23 +47,23 @@ final class AppModel {
         }
     }
 
-    /// Rótulo da fonte da faixa atual ("Local", "Servidor").
+    /// Source label of the current track ("Local", "Servidor").
     var currentSourceLabel: String {
         guard let entry = player.current?.entry else { return "" }
         return sources.source(entry.sourceID)?.kind.label ?? ""
     }
 
-    /// Abre ou fecha a gaveta das pastas.
+    /// Opens or closes the folders drawer.
     func toggleBrowser() {
         windowMode = windowMode == .browser ? .player : .browser
     }
 
-    /// Mostra ou esconde a fila: alterna entre o player e o compacto.
+    /// Shows or hides the queue: toggles between the player and compact mode.
     func toggleQueue() {
         windowMode = windowMode == .compact ? .player : .compact
     }
 
-    /// Play sem fila abre o navegador de pastas.
+    /// Play with no queue opens the folder browser.
     func playOrBrowse() {
         if player.queue.isEmpty {
             windowMode = .browser
@@ -72,27 +72,27 @@ final class AppModel {
         }
     }
 
-    /// Adiciona uma fonte Local e abre-a no navegador.
+    /// Adds a Local source and opens it in the browser.
     func addFolder() {
         windowMode = .browser
         guard let source = sources.addLocal() else { return }
         browser.open(BrowserLocation(sourceID: source.id, path: ""))
     }
 
-    /// Abre a folha para juntar um servidor Jellyfin.
+    /// Opens the sheet to add a Jellyfin server.
     func addJellyfin() {
         windowMode = .browser
         showingJellyfinLogin = true
     }
 
-    /// Toca uma pasta (com subpastas), a começar numa faixa se indicada.
+    /// Plays a folder (with subfolders), starting at a track if given.
     func playFolder(_ folder: BrowserLocation, startingAt track: Entry? = nil) async {
         let tracks = await browser.tracks(in: folder)
         guard !tracks.isEmpty else { return }
         player.setQueue(tracks, startAt: track.flatMap { t in tracks.firstIndex { $0.id == t.id } } ?? 0)
     }
 
-    /// Junta ao fim da fila uma faixa ou uma pasta inteira.
+    /// Appends a track or a whole folder to the end of the queue.
     func enqueue(_ entry: Entry) async {
         switch entry.kind {
         case .track:

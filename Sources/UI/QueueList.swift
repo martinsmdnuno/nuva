@@ -1,7 +1,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// A fila. Duplo clique ou Enter toca; Delete remove; arrastar reordena.
+/// The queue. Double-click or Enter plays; Delete removes; drag reorders.
 struct QueueList: View {
     @Environment(AppModel.self) private var model
     @Environment(\.isSnapshot) private var isSnapshot
@@ -95,7 +95,7 @@ struct QueueList: View {
         }
     }
 
-    /// Primeiro arranque: as duas formas de trazer música, cada uma com o que é e o atalho.
+    /// First launch: the two ways to bring in music, each with what it is and its shortcut.
     private var firstRun: some View {
         VStack(alignment: .leading, spacing: Space.s2) {
             Text("começar").legend()
@@ -152,9 +152,9 @@ struct QueueList: View {
     }
 }
 
-/// Cabeçalho da fila, como impresso no chassis: à esquerda a pista "pastas" (do lado
-/// de onde a gaveta abre), à direita a pista "fila" com o total. Fica no compacto,
-/// para quem não conhece a app ver por onde se volta.
+/// Queue header, as if printed on the chassis: on the left the "pastas" label (on the side
+/// the drawer opens from), on the right the "fila" label with the total. Stays in compact mode,
+/// so people new to the app can see how to get back.
 struct QueueHeader: View {
     @Environment(AppModel.self) private var model
 
@@ -162,14 +162,14 @@ struct QueueHeader: View {
         let player = model.player
         let isOpen = model.windowMode == .browser
         HStack(alignment: .bottom, spacing: Space.s2) {
-            // A mesma tecla que fecha a gaveta no cabeçalho do navegador; o LED diz se está aberta.
+            // The same key that closes the drawer in the browser header; the LED shows whether it's open.
             HStack(alignment: .bottom, spacing: Space.s2) {
                 Button { model.toggleBrowser() } label: { Image(systemName: "sidebar.left") }
                     .buttonStyle(.key(.mode))
                     .keyFocus()
                     .help(isOpen ? String(localized: "Esconder pastas ⌘B") : String(localized: "Mostrar pastas ⌘B"))
                     .keyLED(isOpen)
-                // Ao meio da face da tecla.
+                // Centred on the key's face.
                 Text("pastas").legend()
                     .padding(.bottom, Space.s3)
             }
@@ -185,7 +185,7 @@ struct QueueHeader: View {
         .padding(.trailing, Space.s2)
     }
 
-    /// "11 faixas · 39:18"; sem o total enquanto faltarem durações.
+    /// "11 faixas · 39:18"; no total while durations are missing.
     private func summary(_ player: PlayerController) -> String {
         let count = player.queue.count
         let label = String(localized: "\(count) faixas")
@@ -195,8 +195,8 @@ struct QueueHeader: View {
     }
 }
 
-/// Legenda clicável com LED, como os presets do equalizador. `ink-muted` em repouso,
-/// `ink` no hover e quando ligada; o LED acende quando ligada.
+/// Clickable legend with LED, like the equalizer presets. `ink-muted` at rest,
+/// `ink` on hover and when on; the LED lights when on.
 private struct LegendToggle: View {
     let isOn: Bool
     var symbol: String?
@@ -209,7 +209,7 @@ private struct LegendToggle: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: Space.s1 + 2) {
-                // Na coluna dos LEDs das faixas, para alinhar.
+                // In the track LED column, for alignment.
                 LED(isOn: isOn).frame(width: symbol == nil ? nil : 12)
                 if let symbol {
                     Image(systemName: symbol).font(.system(size: 10))
@@ -228,7 +228,7 @@ private struct LegendToggle: View {
     }
 }
 
-/// Arrastar uma linha para outra posição da fila.
+/// Drag a row to another position in the queue.
 private struct Reorderable: ViewModifier {
     let item: QueueItem
     let index: Int
@@ -252,11 +252,11 @@ private struct Reorderable: ViewModifier {
 }
 
 extension Notification.Name {
-    /// ⌘L: mostrar e selecionar a faixa atual na fila.
+    /// ⌘L: reveal and select the current track in the queue.
     static let revealCurrentTrack = Notification.Name("revealCurrentTrack")
 }
 
 extension EnvironmentValues {
-    /// Em captura (ImageRenderer) não há ScrollView.
+    /// In snapshots (ImageRenderer) there is no ScrollView.
     @Entry var isSnapshot = false
 }

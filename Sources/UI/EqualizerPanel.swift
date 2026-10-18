@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Tecla do equalizador, ao lado do volume. Abre o painel num popover.
+/// Equalizer key, next to the volume. Opens the panel in a popover.
 struct EqualizerKey: View {
     @Environment(AppModel.self) private var model
     @State private var showing = false
@@ -20,7 +20,7 @@ struct EqualizerKey: View {
     }
 }
 
-/// Interruptor com LED por cima, presets como texto com LED, 10 bandas de -12 a +12 dB com escala impressa.
+/// Switch with LED on top, presets as text with LED, 10 bands from -12 to +12 dB with a printed scale.
 struct EqualizerPanel: View {
     @Bindable var eq: Equalizer
 
@@ -79,14 +79,14 @@ struct EqualizerPanel: View {
         .background(Color.surface1)
     }
 
-    /// Posição vertical de um ganho na escala.
+    /// Vertical position of a gain on the scale.
     static func y(_ gain: Float) -> CGFloat {
         let range = Equalizer.range
         return height * CGFloat((range.upperBound - gain) / (range.upperBound - range.lowerBound))
     }
 }
 
-/// Interruptor deslizante com LED. O texto descreve o estado, não a ação.
+/// Slide switch with LED. The text describes the state, not the action.
 private struct PowerSwitch: View {
     @Binding var isOn: Bool
 
@@ -110,7 +110,7 @@ private struct PowerSwitch: View {
     }
 }
 
-/// Uma banda: escala impressa por trás, calha de 2px e cursor de fader. Duplo clique volta a 0 dB.
+/// One band: printed scale behind, 2px track and fader cap. Double-click resets to 0 dB.
 private struct BandSlider: View {
     let value: Float
     let label: String

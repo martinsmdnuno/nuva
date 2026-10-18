@@ -2,11 +2,11 @@ import AppKit
 import CoreText
 import SwiftUI
 
-// Estilos de letra do design system. Inter e IBM Plex Mono vêm embebidas;
-// se não carregarem, cai para SF Pro / SF Mono.
+// Design-system text styles. Inter and IBM Plex Mono are embedded;
+// if they fail to load, falls back to SF Pro / SF Mono.
 
 enum Typography {
-    /// Regista as fontes embebidas no bundle. Chamar uma vez no arranque.
+    /// Registers the fonts embedded in the bundle. Call once at launch.
     static func registerFonts() {
         let urls = Bundle.main.urls(forResourcesWithExtension: "ttf", subdirectory: nil) ?? []
         for url in urls {
@@ -42,7 +42,7 @@ extension Font {
     static let dsBody = Typography.sans(13, .regular)
     static let dsLabel = Typography.sans(11, .medium)
     static let dsCaption = Typography.sans(11, .regular)
-    /// Legenda impressa no chassis, sempre em minúsculas.
+    /// Legend printed on the chassis, always lowercase.
     static let dsLegend = Typography.sans(10, .regular)
     static let dsDuration = Typography.mono(12, .regular)
 }

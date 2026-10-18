@@ -1,7 +1,7 @@
 import AVFoundation
 import Observation
 
-/// Uma entrada da fila. A mesma faixa pode aparecer mais de uma vez.
+/// A queue entry. The same track can appear more than once.
 struct QueueItem: Identifiable, Hashable, Sendable {
     let id = UUID()
     let entry: Entry
@@ -19,7 +19,7 @@ enum RepeatMode: Sendable {
     }
 }
 
-/// AVPlayerItem que sabe a que entrada da fila pertence.
+/// AVPlayerItem that knows which queue entry it belongs to.
 private final class QueuePlayerItem: AVPlayerItem {
     let queueID: QueueItem.ID
     let url: URL
@@ -31,8 +31,8 @@ private final class QueuePlayerItem: AVPlayerItem {
     }
 }
 
-/// Reprodução sobre AVQueuePlayer. O AVQueuePlayer tem sempre no máximo duas
-/// faixas: a atual e a seguinte (pré-carregada, para não haver silêncio entre faixas).
+/// Playback on top of AVQueuePlayer. The AVQueuePlayer always holds at most two
+/// tracks: the current one and the next (preloaded, so there's no silence between tracks).
 @MainActor
 @Observable
 final class PlayerController {
@@ -64,21 +64,21 @@ final class PlayerController {
 
     var current: QueueItem? { queue.first { $0.id == currentID } }
 
-    /// Chamado depois de um seek (para o Now Playing).
+    /// Called after a seek (for Now Playing).
     @ObservationIgnored var onSeek: (() -> Void)?
 
-    /// Equalizador aplicado a cada faixa.
+    /// Equalizer applied to every track.
     let equalizer: Equalizer
 
-    /// O AVPlayer por baixo, para o seletor AirPlay.
+    /// The underlying AVPlayer, for the AirPlay picker.
     var avPlayer: AVPlayer { player }
 
     @ObservationIgnored private let player = AVQueuePlayer()
     @ObservationIgnored private let resolve: Resolver
-    /// Ordem de reprodução (ids da fila). Igual à fila sem aleatório.
+    /// Playback order (queue ids). Same as the queue without shuffle.
     @ObservationIgnored private var order: [QueueItem.ID] = []
     @ObservationIgnored private var currentAVItem: QueuePlayerItem?
-    /// Se a faixa em carregamento deve começar a tocar (pausa durante o carregamento).
+    /// Whether the loading track should start playing (pause while loading).
     @ObservationIgnored private var autoplay = true
     @ObservationIgnored private var isLoading = false
     @ObservationIgnored private var playToken = 0
@@ -103,9 +103,9 @@ final class PlayerController {
         }
     }
 
-    // MARK: Fila
+    // MARK: Queue
 
-    /// Substitui a fila (tocar pasta) e começa em `startAt`.
+    /// Replaces the queue (play folder) and starts at `startAt`.
     func setQueue(_ entries: [Entry], startAt: Int = 0) {
         queue = entries.map { QueueItem(entry: $0) }
         guard queue.indices.contains(startAt) else {
@@ -117,7 +117,7 @@ final class PlayerController {
         play(queue[startAt].id)
     }
 
-    /// Junta ao fim da fila.
+    /// Appends to the end of the queue.
     func append(_ entries: [Entry]) {
         let items = entries.map { QueueItem(entry: $0) }
         queue.append(contentsOf: items)
@@ -137,7 +137,7 @@ final class PlayerController {
         let wasPlaying = isPlaying
         var replacement: QueueItem.ID?
         if let currentID, removed.contains(currentID) {
-            // A faixa atual saiu: segue para a próxima que fica.
+            // The current track was removed: move on to the next remaining one.
             replacement = order.drop { $0 != currentID }.first { !removed.contains($0) }
         }
         queue.remove(atOffsets: offsets)
@@ -166,7 +166,7 @@ final class PlayerController {
         stopAll()
     }
 
-    // MARK: Transporte
+    // MARK: Transport
 
     func play(_ id: QueueItem.ID) {
         guard let item = queue.first(where: { $0.id == id }) else { return }
@@ -223,7 +223,7 @@ final class PlayerController {
         play(id)
     }
 
-    /// Volta ao início da faixa se já passaram 3 s; senão vai para a anterior.
+    /// Goes back to the start of the track if 3 s have passed; otherwise to the previous one.
     func previous() {
         guard let currentID else { return }
         if currentTime > 3 {
@@ -246,7 +246,7 @@ final class PlayerController {
 
     func changeVolume(by delta: Float) { volume = (volume + delta).clamped }
 
-    // MARK: Interno
+    // MARK: Internal
 
     private func stopAll() {
         playToken += 1
@@ -266,7 +266,7 @@ final class PlayerController {
             order = ids
             return
         }
-        // Aleatório: a atual fica primeiro, o resto baralhado.
+        // Shuffle: the current track stays first, the rest shuffled.
         let rest = ids.filter { $0 != currentID }.shuffled()
         order = (currentID.map { [$0] } ?? []) + rest
     }
@@ -279,14 +279,14 @@ final class PlayerController {
         return order[(j + order.count) % order.count]
     }
 
-    /// O que toca depois da atual, sem intervenção.
+    /// What plays after the current track, without intervention.
     private var upcomingID: QueueItem.ID? {
         guard let currentID else { return nil }
         if repeatMode == .one { return currentID }
         return step(from: currentID, by: 1, wrap: repeatMode == .all)
     }
 
-    /// Garante que o AVQueuePlayer tem a faixa seguinte certa depois da atual.
+    /// Ensures the AVQueuePlayer has the right next track after the current one.
     private func refreshUpcoming() {
         upcomingToken += 1
         let token = upcomingToken
@@ -326,7 +326,7 @@ final class PlayerController {
             return
         }
         guard item !== currentAVItem else { return }
-        // O AVQueuePlayer avançou sozinho para a faixa pré-carregada.
+        // The AVQueuePlayer advanced on its own to the preloaded track.
         currentAVItem = item
         currentID = item.queueID
         currentTime = 0
@@ -338,7 +338,7 @@ final class PlayerController {
 
     private func statusChanged() {
         if player.currentItem == nil, currentAVItem != nil {
-            // Fim da fila: fica na última faixa, pronta a tocar de novo.
+            // End of queue: stays on the last track, ready to play again.
             player.pause()
             currentAVItem = nil
             currentTime = 0
@@ -357,7 +357,7 @@ final class PlayerController {
 
 #if DEBUG
 extension PlayerController {
-    /// Estado fixo para capturas e previews, sem tocar nada.
+    /// Fixed state for screenshots and previews, without playing anything.
     func debugSet(queue entries: [Entry], current: Int, time: Double, duration: Double, format: String) {
         queue = entries.map { QueueItem(entry: $0) }
         order = queue.map(\.id)

@@ -31,12 +31,12 @@ struct NuVaApp: App {
     }
 }
 
-/// Fechar a janela não sai da app: a música continua e a NuVa fica na barra de menus.
+/// Closing the window doesn't quit the app: the music keeps playing and NuVa stays in the menu bar.
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
 }
 
-/// Atalhos do README. Enter e ⌘Enter vivem nas listas (dependem da seleção).
+/// Shortcuts from the README. Enter and ⌘Enter live in the lists (they depend on the selection).
 struct NuVaCommands: Commands {
     let model: AppModel
 

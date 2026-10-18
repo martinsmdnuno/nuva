@@ -4,7 +4,7 @@ import Testing
 
 @MainActor
 struct PlayerTests {
-    /// Gera FLACs curtos a 44.1 kHz numa pasta temporária.
+    /// Generates short 44.1 kHz FLACs in a temporary folder.
     private func makeFlacs(_ count: Int, seconds: Double) throws -> (URL, [Entry]) {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
@@ -91,7 +91,7 @@ struct PlayerTests {
         player.seek(to: 5)
         try await wait { player.currentTime >= 5 }
 
-        player.previous()  // passou 3 s: volta ao início da mesma faixa
+        player.previous()  // past 3 s: back to the start of the same track
         try await wait { player.currentTime < 1 }
         #expect(player.current?.entry == entries[0])
 
@@ -119,7 +119,7 @@ struct PlayerTests {
         #expect(player.queue.map(\.entry) == [entries[0], entries[2], entries[3], entries[1]])
         #expect(player.current?.entry == entries[1])
 
-        player.remove(atOffsets: [3])  // remove a atual: segue para nenhuma (é a última)
+        player.remove(atOffsets: [3])  // removes the current one: moves to none (it's the last)
         #expect(player.queue.count == 3)
         player.remove(atOffsets: [0])
         #expect(player.queue.map(\.entry) == [entries[2], entries[3]])
@@ -130,7 +130,7 @@ struct PlayerTests {
         player.pause()
     }
 
-    /// Ficheiro real, se existir (copiado à mão para o contentor da app).
+    /// Real file, if present (copied by hand into the app's container).
     @Test func realFlacIfPresent() async throws {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("real.flac")
         guard FileManager.default.fileExists(atPath: url.path) else { return }

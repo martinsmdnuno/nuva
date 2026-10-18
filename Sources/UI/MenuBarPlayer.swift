@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Mini player na barra de menus. Fica quando a janela fecha: a música continua.
+/// Mini player in the menu bar. Stays when the window closes: the music keeps playing.
 struct MenuBarPlayer: View {
     @Environment(AppModel.self) private var model
     @Environment(\.openWindow) private var openWindow

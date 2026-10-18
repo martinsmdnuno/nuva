@@ -1,9 +1,9 @@
 import AVKit
 import SwiftUI
 
-/// Teclas em três grupos com legenda, como no Braun TG 60:
-/// leitura (anterior, play/pausa, seguinte) · modo (repetir, aleatório) · saída (AirPlay, equalizador).
-/// Parar e mostrar pastas ficam só no menu e nos atalhos (⌘. e ⌘B).
+/// Keys in three groups with a legend, as on the Braun TG 60:
+/// playback (previous, play/pause, next) · mode (repeat, shuffle) · output (AirPlay, equalizer).
+/// Stop and show folders live only in the menu and shortcuts (⌘. and ⌘B).
 struct ControlBar: View {
     @Environment(AppModel.self) private var model
 
@@ -58,7 +58,7 @@ struct ControlBar: View {
     }
 }
 
-/// Tecla AirPlay: o seletor de destino nativo (AVRoutePickerView) dentro da tecla.
+/// AirPlay key: the native route picker (AVRoutePickerView) inside the key.
 struct AirPlayKey: View {
     @Environment(AppModel.self) private var model
     @Environment(\.isSnapshot) private var isSnapshot

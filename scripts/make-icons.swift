@@ -1,7 +1,7 @@
-// Gera o ícone da NuVa a partir das mesmas medidas: PNG (CoreGraphics) e SVG.
-// Uso: swift scripts/make-icons.swift <pasta-de-saída> [variante: folder|device|display|key] [--all]
-// Corre na raiz do repositório: o logótipo usa Resources/Fonts/IBMPlexMono-Medium.ttf.
-// Cores de docs/design-system/tokens.json (tema Chumbo).
+// Generates the NuVa icon from the same measurements: PNG (CoreGraphics) and SVG.
+// Usage: swift scripts/make-icons.swift <output-folder> [variant: folder|device|display|key] [--all]
+// Run from the repository root: the logo uses Resources/Fonts/IBMPlexMono-Medium.ttf.
+// Colours from docs/design-system/tokens.json (Lead theme).
 import AppKit
 import Foundation
 
@@ -14,18 +14,18 @@ struct C { static let surface0 = "#1E2023", surface1 = "#2B2D30", display = "#14
            displayMuted = "#8E8C87", line = "#44474B", keyFace = "#3A3D41", keyEdge = "#74787D",
            track = "#44474B", fill = "#C9C6BF", signal = "#E0A93E", ink = "#E8E6E1" }
 
-/// Uma forma do ícone, em coordenadas de 1024 com origem no canto superior esquerdo.
+/// An icon shape, in 1024 coordinates with a top-left origin.
 enum Shape {
     case rect(x: Double, y: Double, w: Double, h: Double, r: Double, fill: String, stroke: String? = nil, sw: Double = 0)
     case circle(cx: Double, cy: Double, r: Double, fill: String)
     case triangle([(Double, Double)], fill: String)
 }
 
-/// Grelha dos ícones do macOS: corpo de 824 com raio 185, centrado em 1024.
+/// macOS icon grid: 824 body with radius 185, centred in 1024.
 let body = (x: 100.0, y: 100.0, w: 824.0, h: 824.0, r: 185.0)
 
-/// Pasta com medidor de VU, em coordenadas de 0 a 100: a pasta é sempre a parte mais escura
-/// (`display`), com três barras largas claras e o LED âmbar. As barras largas leem-se no Dock.
+/// Folder with a VU meter, in 0 to 100 coordinates: the folder is always the darkest part
+/// (`display`), with three wide light bars and the amber LED. The wide bars read well in the Dock.
 func folderGlyph() -> [Shape] {
     [
         .rect(x: 8, y: 12, w: 30, h: 24, r: 7, fill: C.display),
@@ -38,10 +38,10 @@ func folderGlyph() -> [Shape] {
     ]
 }
 
-/// Escala da pasta no corpo do ícone: ocupa 77% da largura, como os ícones do sistema.
+/// Folder scale in the icon body: 77% of the width, like system icons.
 let glyphScale = 7.6
 
-/// Escala e desloca formas de 0–100 para o ícone.
+/// Scales and offsets 0–100 shapes into the icon.
 func place(_ shapes: [Shape], x: Double, y: Double, k: Double) -> [Shape] {
     func r2(_ v: Double) -> Double { (v * 100).rounded() / 100 }
     return shapes.map {
@@ -60,10 +60,10 @@ func shapes(small: Bool) -> [Shape] {
     var s: [Shape] = [.rect(x: body.x, y: body.y, w: body.w, h: body.h, r: body.r, fill: C.surface1, stroke: C.line, sw: 8)]
     switch variant {
     case "folder":
-        // Pasta escura com VU, grande e centrada no corpo.
+        // Dark folder with VU, large and centred in the body.
         s += place(folderGlyph(), x: 512 - 50 * glyphScale, y: 512 - 50 * glyphScale, k: glyphScale)
     case "display":
-        // Só o display, grande, com LED e barra.
+        // Just the display, large, with LED and bar.
         s += [
             .rect(x: 180, y: 300, w: 664, h: 424, r: 56, fill: C.display),
             .circle(cx: 276, cy: 396, r: 30, fill: C.signal),
@@ -72,7 +72,7 @@ func shapes(small: Bool) -> [Shape] {
         ]
         if !small { s.append(.rect(x: 256, y: 480, w: 360, h: 40, r: 20, fill: C.displayInk)) }
     case "key":
-        // Uma tecla de play grande, com o LED por cima.
+        // A large play key, with the LED above.
         s += [
             .circle(cx: 512, cy: 250, r: 28, fill: C.signal),
             .rect(x: 262, y: 352, w: 500, h: 420, r: 64, fill: C.keyFace, stroke: C.keyEdge, sw: 10),
@@ -80,7 +80,7 @@ func shapes(small: Bool) -> [Shape] {
             .triangle([(450, 452), (450, 672), (632, 562)], fill: C.ink),
         ]
     default:  // "device"
-        // Frente do aparelho: display com LED, título e progresso; três teclas por baixo.
+        // Device front: display with LED, title and progress; three keys below.
         if small {
             s += [
                 .rect(x: 180, y: 260, w: 664, h: 504, r: 64, fill: C.display),
@@ -103,7 +103,7 @@ func shapes(small: Bool) -> [Shape] {
                 s.append(.rect(x: k.x, y: k.y, w: k.w, h: k.h, r: 24, fill: C.keyFace, stroke: C.keyEdge, sw: 6))
                 s.append(.rect(x: k.x + 6, y: k.y + k.h - 14, w: k.w - 12, h: 8, r: 4, fill: "#00000059"))
             }
-            // Anterior | play | seguinte, em `ink`.
+            // Previous | play | next, in `ink`.
             s += [
                 .triangle([(300, 676), (300, 724), (262, 700)], fill: C.ink),
                 .rect(x: 250, y: 676, w: 9, h: 48, r: 2, fill: C.ink),
@@ -138,7 +138,7 @@ func png(_ px: Int, name: String, shadow: Bool = true, art: [Shape]? = nil) {
     ctx.scaleBy(x: k, y: -k)
     for (i, shape) in (art ?? shapes(small: small)).enumerated() {
         ctx.saveGState()
-        // "clear" recorta (ícone da barra de menus: barras e LED vazados).
+        // "clear" cuts out (menu bar icon: bars and LED knocked out).
         if case let .rect(_, _, _, _, _, fill, _, _) = shape, fill == "clear" { ctx.setBlendMode(.clear) }
         if case let .circle(_, _, _, fill) = shape, fill == "clear" { ctx.setBlendMode(.clear) }
         if i == 0, shadow, !small {
@@ -192,12 +192,12 @@ func svgElements(_ shapes: [Shape], small: Bool) -> String {
 }
 
 func svg(small: Bool) -> String {
-    // Sem margem da grelha no favicon: recorta ao corpo.
+    // No grid margin in the favicon: crop to the body.
     let viewBox = small ? "100 100 824 824" : "0 0 1024 1024"
     return "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"\(viewBox)\">\n\(svgElements(shapes(small: small), small: small))</svg>\n"
 }
 
-/// Logótipo: pasta + "NuVa" em IBM Plex Mono Medium, com o texto em contornos.
+/// Logo: folder + "NuVa" in IBM Plex Mono Medium, with the text as outlines.
 func logoSVG(ink: String) -> String {
     let fontURL = URL(fileURLWithPath: "Resources/Fonts/IBMPlexMono-Medium.ttf") as CFURL
     let desc = (CTFontManagerCreateFontDescriptorsFromURL(fontURL) as! [CTFontDescriptor])[0]
@@ -207,7 +207,7 @@ func logoSVG(ink: String) -> String {
     CTFontGetGlyphsForCharacters(font, text, &glyphs, text.count)
     var advances = [CGSize](repeating: .zero, count: glyphs.count)
     CTFontGetAdvancesForGlyphs(font, .horizontal, glyphs, &advances, glyphs.count)
-    // Texto centrado na altura da pasta (12 a 88), afastado 32 da borda direita.
+    // Text centred on the folder's height (12 to 88), 32 from the right edge.
     let baseline = 50 + CTFontGetCapHeight(font) / 2
     var x = 124.0
     var d = ""
@@ -235,7 +235,7 @@ func logoSVG(ink: String) -> String {
         + "  <path d=\"\(d)\" fill=\"\(ink)\"/>\n</svg>\n"
 }
 
-/// ICO com PNGs embebidos (aceite por todos os browsers atuais).
+/// ICO with embedded PNGs (accepted by all current browsers).
 func ico(_ sizes: [Int], name: String) {
     let pngs = sizes.map { px -> Data in
         png(px, name: "_ico\(px).png", shadow: false)
@@ -258,11 +258,11 @@ func ico(_ sizes: [Int], name: String) {
 png(1024, name: "icon-1024.png")
 try! svg(small: false).write(to: out.appendingPathComponent("icon.svg"), atomically: true, encoding: .utf8)
 try! svg(small: true).write(to: out.appendingPathComponent("favicon.svg"), atomically: true, encoding: .utf8)
-// Logótipo para fundos escuros (Chumbo) e claros (Alumínio).
+// Logo for dark (Lead) and light (Aluminium) backgrounds.
 try! logoSVG(ink: C.displayInk).write(to: out.appendingPathComponent("logo-chumbo.svg"), atomically: true, encoding: .utf8)
 try! logoSVG(ink: "#1E2023").write(to: out.appendingPathComponent("logo-aluminio.svg"), atomically: true, encoding: .utf8)
 if args.contains("--all") {
-    // AppIcon.appiconset do macOS
+    // macOS AppIcon.appiconset
     let set = out.appendingPathComponent("AppIcon.appiconset")
     try? FileManager.default.createDirectory(at: set, withIntermediateDirectories: true)
     var images: [[String: String]] = []
@@ -276,7 +276,7 @@ if args.contains("--all") {
     let contents: [String: Any] = ["images": images, "info": ["author": "xcode", "version": 1]]
     try! JSONSerialization.data(withJSONObject: contents, options: [.prettyPrinted, .sortedKeys])
         .write(to: set.appendingPathComponent("Contents.json"))
-    // Capa do Now Playing: quadrada e sem margem, o macOS arredonda os cantos.
+    // Now Playing artwork: square and without margin, macOS rounds the corners.
     let artSet = out.appendingPathComponent("NowPlayingArtwork.imageset")
     try? FileManager.default.createDirectory(at: artSet, withIntermediateDirectories: true)
     let art = [Shape.rect(x: 0, y: 0, w: 1024, h: 1024, r: 0, fill: C.surface1)]
@@ -286,7 +286,7 @@ if args.contains("--all") {
                                       "info": ["author": "xcode", "version": 1]]
     try! JSONSerialization.data(withJSONObject: artContents, options: [.prettyPrinted, .sortedKeys])
         .write(to: artSet.appendingPathComponent("Contents.json"))
-    // Ícone da barra de menus: modelo (template) preto, 18 pt, com as barras e o LED vazados.
+    // Menu bar icon: black template, 18 pt, with the bars and LED knocked out.
     let barSet = out.appendingPathComponent("MenuBarIcon.imageset")
     try? FileManager.default.createDirectory(at: barSet, withIntermediateDirectories: true)
     let template: [Shape] = folderGlyph().map {
@@ -303,7 +303,7 @@ if args.contains("--all") {
     for scale in [1, 2] {
         let name = "menubar\(scale == 2 ? "@2x" : "").png"
         png(18 * scale, name: "MenuBarIcon.imageset/\(name)", shadow: false,
-            art: place(template, x: 0, y: 0, k: 10.24))  // png() desenha em coordenadas de 1024
+            art: place(template, x: 0, y: 0, k: 10.24))  // png() draws in 1024 coordinates
         barImages.append(["idiom": "universal", "filename": name, "scale": "\(scale)x"])
     }
     let barContents: [String: Any] = ["images": barImages, "info": ["author": "xcode", "version": 1],

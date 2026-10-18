@@ -1,7 +1,7 @@
 import Foundation
 
-/// Fonte num servidor Jellyfin. Navega pelas pastas do disco do servidor (o `Path` de cada item),
-/// não pelos artistas e álbuns do Jellyfin. Toca o ficheiro original, sem conversão.
+/// Source on a Jellyfin server. Browses the server's disk folders (each item's `Path`),
+/// not Jellyfin's artists and albums. Plays the original file, without conversion.
 actor JellyfinSource: MusicSource {
     nonisolated let id: UUID
     nonisolated let name: String
@@ -31,7 +31,7 @@ actor JellyfinSource: MusicSource {
             case runTimeTicks = "RunTimeTicks", collectionType = "CollectionType"
         }
 
-        /// Caminho com barras normais (servidores Windows usam `\`).
+        /// Path with forward slashes (Windows servers use `\`).
         var unixPath: String? { path?.replacingOccurrences(of: "\\", with: "/") }
     }
 
@@ -40,7 +40,7 @@ actor JellyfinSource: MusicSource {
         enum CodingKeys: String, CodingKey { case items = "Items" }
     }
 
-    /// Pasta conhecida: id do item e caminho no disco do servidor (nil na raiz da biblioteca).
+    /// Known folder: item id and path on the server's disk (nil at the library root).
     private struct Node {
         let id: String
         let abs: String?
@@ -49,7 +49,7 @@ actor JellyfinSource: MusicSource {
     private var session: Session?
     private var legacyRoutes = false
     private var rootLoaded = false
-    /// Com mais de uma biblioteca de música, a raiz mostra as bibliotecas.
+    /// With more than one music library, the root shows the libraries.
     private var libraries: [Item] = []
     private var nodes: [String: Node] = [:]
     private var tracks: [String: String] = [:]
@@ -84,7 +84,7 @@ actor JellyfinSource: MusicSource {
         let placed = children.map { ($0, register($0, anchorRel: anchorRel, anchorAbs: anchor.abs)) }
         listed.insert(path)
 
-        // Filhos diretos de `path`; itens mais fundos (um álbum com CD1/CD2) dão pastas a partir do caminho.
+        // Direct children of `path`; deeper items (an album with CD1/CD2) yield folders from the path.
         var result: [Entry] = []
         var seen: Set<String> = []
         let prefix = path.isEmpty ? "" : path + "/"
@@ -112,16 +112,16 @@ actor JellyfinSource: MusicSource {
         guard let itemID = tracks[track.path] else { throw SourceError.missingFolder(track.folderName) }
         let token = try await currentSession().token
         let ext = (track.name as NSString).pathExtension.lowercased()
-        // static=true: o ficheiro original, sem transcodificação.
+        // static=true: the original file, no transcoding.
         return server.appending(path: "Audio/\(itemID)/stream.\(ext)").appending(queryItems: [
             URLQueryItem(name: "static", value: "true"),
             URLQueryItem(name: "api_key", value: token),
         ])
     }
 
-    // MARK: Árvore de pastas
+    // MARK: Folder tree
 
-    /// Caminho relativo de um item: a parte do `Path` abaixo da pasta-âncora ou, sem ela, o último nome.
+    /// Relative path of an item: the part of `Path` below the anchor folder or, without one, the last name.
     static func relativePath(of item: Item, anchorRel: String, anchorAbs: String?) -> String {
         let leaf: String
         if let abs = anchorAbs, let path = item.unixPath, path.hasPrefix(abs + "/") {
@@ -145,8 +145,8 @@ actor JellyfinSource: MusicSource {
         return rel
     }
 
-    /// A pasta conhecida mais próxima de `path`. Depois de reabrir a app os ids não estão em memória:
-    /// lista cada nível desde a raiz até os encontrar.
+    /// The closest known folder to `path`. After reopening the app the ids aren't in memory:
+    /// lists each level from the root until they're found.
     private func anchor(for path: String) async throws -> (String, Node) {
         var prefix = ""
         for part in path.split(separator: "/").map(String.init) {
@@ -218,7 +218,7 @@ actor JellyfinSource: MusicSource {
         request.setValue(Self.authorization(deviceID: deviceID, token: session.token), forHTTPHeaderField: "Authorization")
         let (data, status) = try await Self.send(request, urlSession)
         if status == 401, retry {
-            // Token revogado ou expirado: entra de novo com a palavra-passe guardada.
+            // Token revoked or expired: sign in again with the saved password.
             self.session = nil
             return try await get(path, query, retry: false)
         }

@@ -1,6 +1,6 @@
 import AppKit
 
-/// Põe ou tira a NuVa do Dock (com a janela fechada fica só na barra de menus).
+/// Adds NuVa to or removes it from the Dock (with the window closed it stays only in the menu bar).
 @MainActor
 enum DockPresence {
     static func show(_ visible: Bool) {
@@ -8,8 +8,8 @@ enum DockPresence {
         let policy: NSApplication.ActivationPolicy = visible ? .regular : .accessory
         guard app.activationPolicy() != policy else { return }
         app.setActivationPolicy(policy)
-        // Ao voltar ao Dock com a app já aberta, o macOS mostra o ícone genérico
-        // se a app não repuser o seu.
+        // When returning to the Dock with the app already open, macOS shows the generic icon
+        // unless the app restores its own.
         if visible { app.applicationIconImage = NSImage(named: NSImage.applicationIconName) }
     }
 }

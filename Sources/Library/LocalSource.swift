@@ -1,7 +1,7 @@
 import Foundation
 
-/// Fonte numa pasta do Mac (incluindo partilhas SMB montadas).
-/// O acesso fica guardado num security-scoped bookmark.
+/// Source in a folder on the Mac (including mounted SMB shares).
+/// Access is kept in a security-scoped bookmark.
 final class LocalSource: MusicSource {
     let id: UUID
     let name: String
@@ -9,8 +9,8 @@ final class LocalSource: MusicSource {
     let root: URL
     private let accessing: Bool
 
-    /// Resolve o bookmark e começa o acesso à pasta. Devolve também o bookmark
-    /// renovado se o original estava desatualizado.
+    /// Resolves the bookmark and starts accessing the folder. Also returns a
+    /// refreshed bookmark if the original was stale.
     init(id: UUID, name: String, bookmark: Data) throws {
         var stale = false
         let url = try URL(
@@ -23,7 +23,7 @@ final class LocalSource: MusicSource {
         self.refreshedBookmark = stale ? try? Self.bookmark(for: url) : nil
     }
 
-    /// Bookmark novo quando o guardado estava desatualizado; nil se não mudou.
+    /// New bookmark when the saved one was stale; nil if unchanged.
     let refreshedBookmark: Data?
 
     deinit {

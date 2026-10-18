@@ -4,15 +4,15 @@ import MediaToolbox
 import Observation
 import os
 
-/// Preset do equalizador: ganho em dB para cada uma das 10 bandas.
+/// Equalizer preset: gain in dB for each of the 10 bands.
 struct EQPreset: Identifiable, Sendable {
     let name: String
     let gains: [Float]
     var id: String { name }
 }
 
-/// Equalizador de 10 bandas. Corre dentro do AVPlayer, num MTAudioProcessingTap
-/// por faixa: o som continua a ser o do motor nativo, só filtrado.
+/// 10-band equalizer. Runs inside the AVPlayer, in an MTAudioProcessingTap
+/// per track: the sound is still the native engine's, just filtered.
 @MainActor
 @Observable
 final class Equalizer {
@@ -21,7 +21,7 @@ final class Equalizer {
     static let range: ClosedRange<Float> = -12...12
     static let custom = "Personalizado"
 
-    /// Nome de um preset na língua da app. Os nomes em português são a chave (e o que fica guardado).
+    /// A preset's name in the app's language. The Portuguese names are the key (and what gets saved).
     nonisolated static func displayName(_ name: String) -> String {
         Bundle.main.localizedString(forKey: name, value: name, table: nil)
     }
@@ -41,10 +41,10 @@ final class Equalizer {
         didSet { push() }
     }
     private(set) var gains: [Float]
-    /// Nome do preset ativo, ou "Personalizado" depois de mexer numa banda.
+    /// Name of the active preset, or "Personalizado" after changing a band.
     private(set) var presetName: String
 
-    /// Ganhos partilhados com a thread de áudio.
+    /// Gains shared with the audio thread.
     nonisolated let shared: EQShared
     @ObservationIgnored private let defaults: UserDefaults
 
@@ -78,7 +78,7 @@ final class Equalizer {
         defaults.set(presetName, forKey: "eq.preset")
     }
 
-    /// Liga o equalizador à faixa de áudio do item, antes de tocar.
+    /// Attaches the equalizer to the item's audio track, before playing.
     func attach(to item: AVPlayerItem) async {
         guard let track = try? await item.asset.loadTracks(withMediaType: .audio).first,
               let tap = EQTap.make(shared) else { return }
@@ -90,7 +90,7 @@ final class Equalizer {
     }
 }
 
-/// Estado lido pela thread de áudio. `version` muda a cada alteração para o tap refazer os filtros.
+/// State read by the audio thread. `version` changes on every edit so the tap rebuilds its filters.
 final class EQShared: Sendable {
     struct State: Sendable {
         var gains: [Float]
@@ -111,7 +111,7 @@ final class EQShared: Sendable {
     }
 }
 
-/// O tap: 10 filtros peaking (RBJ) em cascata por canal, com pré-ganho negativo para não saturar.
+/// The tap: 10 cascaded peaking (RBJ) filters per channel, with negative pre-gain to avoid clipping.
 final class EQTap: @unchecked Sendable {
     private let shared: EQShared
     private var sampleRate: Double = 44_100
@@ -159,7 +159,7 @@ final class EQTap: @unchecked Sendable {
 
     private func prepare(_ format: AudioStreamBasicDescription) {
         sampleRate = format.mSampleRate
-        // O AVPlayer entrega Float32 não intercalado (um buffer por canal); outro formato passa sem filtro.
+        // The AVPlayer delivers non-interleaved Float32 (one buffer per channel); any other format passes unfiltered.
         supported = format.mFormatFlags & kAudioFormatFlagIsFloat != 0
             && format.mFormatFlags & kAudioFormatFlagIsNonInterleaved != 0
             && format.mBitsPerChannel == 32
@@ -194,7 +194,7 @@ final class EQTap: @unchecked Sendable {
         preGain = pow(10, -max(0, gains.max() ?? 0) / 20)
     }
 
-    /// Coeficientes [b0, b1, b2, a1, a2] normalizados de um filtro peaking (Audio EQ Cookbook, Q 1,41).
+    /// Normalized [b0, b1, b2, a1, a2] coefficients of a peaking filter (Audio EQ Cookbook, Q 1.41).
     static func peaking(frequency: Double, gain: Double, sampleRate: Double) -> [Double] {
         guard gain != 0, frequency < sampleRate / 2 else { return [1, 0, 0, 0, 0] }
         let a = pow(10, gain / 40)

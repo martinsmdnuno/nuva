@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Pré-visualização do design system: todas as teclas, letra e cores.
+/// Design-system preview: all keys, type and colours.
 struct KeyPreview: View {
     @State private var repeatOn = true
     @State private var shuffleOn = false

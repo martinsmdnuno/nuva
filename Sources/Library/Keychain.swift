@@ -1,7 +1,7 @@
 import Foundation
 import Security
 
-/// Palavras-passe das fontes no Keychain, uma por fonte (conta = id da fonte).
+/// Source passwords in the Keychain, one per source (account = source id).
 enum Keychain {
     private static let service = "pt.nunomartins.nuva"
 

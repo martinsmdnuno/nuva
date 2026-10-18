@@ -1,6 +1,6 @@
 import Foundation
 
-/// Fonte num servidor HTTP. Fase 2: por agora só o stub.
+/// Source on an HTTP server. Phase 2: just the stub for now.
 final class ServerSource: MusicSource {
     let id: UUID
     let name: String

@@ -25,7 +25,7 @@ struct BrowserTests {
         let tracks = await browser.tracks(in: BrowserLocation(sourceID: source.id, path: "Tusk"))
         #expect(tracks.map(\.path) == ["Tusk/0 Intro.flac", "Tusk/CD 02/2 A.flac", "Tusk/CD 02/10 B.flac", "Tusk/CD 10/1 Z.flac"])
 
-        // A fonte é lembrada noutra instância com as mesmas preferências.
+        // The source is remembered by another instance with the same defaults.
         #expect(SourceStore(defaults: defaults).sources.map(\.id) == [source.id])
     }
 }

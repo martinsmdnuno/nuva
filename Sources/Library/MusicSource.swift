@@ -1,6 +1,6 @@
 import Foundation
 
-/// Uma pasta ou uma faixa dentro de uma fonte. O caminho é relativo à raiz da fonte.
+/// A folder or a track inside a source. The path is relative to the source root.
 struct Entry: Identifiable, Hashable, Sendable {
     enum Kind: Sendable { case folder, track }
 
@@ -8,18 +8,18 @@ struct Entry: Identifiable, Hashable, Sendable {
     let path: String
     let name: String
     let kind: Kind
-    /// Duração em segundos quando a fonte já a sabe (Jellyfin); nil na fonte Local.
+    /// Duration in seconds when the source already knows it (Jellyfin); nil for the Local source.
     var duration: Double? = nil
 
     var id: String { "\(sourceID.uuidString)/\(path)" }
 
-    /// Extensão em maiúsculas, para o display ("FLAC").
+    /// Uppercase extension, for the display ("FLAC").
     var format: String { (name as NSString).pathExtension.uppercased() }
 
-    /// Nome para as listas: o do ficheiro sem extensão (o formato está no display), o da pasta tal como está.
+    /// Name for lists: the file name without extension (the format is on the display), the folder name as is.
     var listName: String { kind == .track ? (name as NSString).deletingPathExtension : name }
 
-    /// Nome do ficheiro sem extensão nem número inicial ("01 - ", "1. ", "01_").
+    /// File name without extension or leading number ("01 - ", "1. ", "01_").
     var title: String {
         let base = (name as NSString).deletingPathExtension
         let stripped = base.replacingOccurrences(
@@ -27,13 +27,13 @@ struct Entry: Identifiable, Hashable, Sendable {
         return stripped.isEmpty ? base : stripped
     }
 
-    /// Nome da pasta que contém a entrada.
+    /// Name of the folder containing the entry.
     var folderName: String {
         let parent = (path as NSString).deletingLastPathComponent
         return (parent as NSString).lastPathComponent
     }
 
-    /// Caminho da pasta que contém a entrada.
+    /// Path of the folder containing the entry.
     var parentPath: String { (path as NSString).deletingLastPathComponent }
 }
 
@@ -51,14 +51,14 @@ enum SourceKind: String, Codable, Sendable {
     var symbol: String { self == .local ? "internaldrive" : "server.rack" }
 }
 
-/// Uma árvore de pastas de onde a app toca. O player não sabe de onde vem a música.
+/// A folder tree the app plays from. The player doesn't know where the music comes from.
 protocol MusicSource: Sendable {
     var id: UUID { get }
     var name: String { get }
     var kind: SourceKind { get }
-    /// Pastas e faixas em `path` ("" é a raiz), pastas primeiro, ordem natural.
+    /// Folders and tracks in `path` ("" is the root), folders first, natural order.
     func list(_ path: String) async throws -> [Entry]
-    /// URL tocável da faixa: file:// ou https://.
+    /// Playable URL of the track: file:// or https://.
     func url(for track: Entry) async throws -> URL
 }
 
@@ -89,7 +89,7 @@ enum Playable {
 }
 
 extension [Entry] {
-    /// Pastas primeiro, depois faixas; dentro de cada grupo, ordem natural do nome.
+    /// Folders first, then tracks; within each group, natural name order.
     func naturallySorted() -> [Entry] {
         sorted { a, b in
             if a.kind != b.kind { return a.kind == .folder }

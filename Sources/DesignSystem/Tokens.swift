@@ -1,7 +1,7 @@
 import SwiftUI
 
-// Tokens de docs/design-system/tokens.json. As cores vivem em Assets.xcassets
-// com o mesmo nome do token (Any = Alumínio, Dark = Chumbo).
+// Tokens from docs/design-system/tokens.json. Colours live in Assets.xcassets
+// under the same name as the token (Any = Aluminium, Dark = Lead).
 
 extension Color {
     static let surface0 = Color("surface-0")
@@ -43,7 +43,7 @@ enum Radius {
 }
 
 enum Size {
-    /// Altura de todas as teclas de ícone.
+    /// Height of all icon keys.
     static let key: CGFloat = 36
     static let keyWSm: CGFloat = 32
     static let keyWMd: CGFloat = 40

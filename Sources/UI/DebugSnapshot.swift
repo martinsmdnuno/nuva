@@ -2,8 +2,8 @@
 import AppKit
 import SwiftUI
 
-/// Só em Debug: `NuVa --snapshot` grava PNG da janela nos dois temas
-/// em NSTemporaryDirectory() e sai. Serve para rever a UI sem abrir a janela.
+/// Debug only: `NuVa --snapshot` writes PNGs of the window in both themes
+/// to NSTemporaryDirectory() and exits. Used to review the UI without opening the window.
 enum DebugSnapshot {
     @MainActor
     static func runIfRequested() {
@@ -13,7 +13,7 @@ enum DebugSnapshot {
         let compactModel = sampleModel()
         compactModel.windowMode = .compact
         let firstRunModel = sampleFirstRunModel()
-        // Com a fonte do navegador (já guardada nas definições), mas sem fila.
+        // With the browser's source (already saved in settings), but no queue.
         let emptyQueueModel = AppModel(defaults: UserDefaults(suiteName: "snapshot-browser")!)
         emptyQueueModel.windowMode = .player
         let dir = URL(fileURLWithPath: NSTemporaryDirectory())
@@ -64,13 +64,13 @@ enum DebugSnapshot {
         model.player.debugSet(queue: entries, current: 1, time: 67, duration: 257, format: "FLAC 24/48 · 1669 kbps")
         model.windowMode = .player
         model.output.debugSet("→ AirPlay WiiM")
-        // Equalizador ligado com um preset, para a captura mostrar as bandas.
+        // Equalizer on with a preset, so the snapshot shows the bands.
         model.player.equalizer.apply(Equalizer.presets.first { $0.name == "Rock" } ?? Equalizer.presets[0])
         model.player.equalizer.enabled = true
         return model
     }
 
-    /// Primeiro arranque: sem fontes e sem fila.
+    /// First launch: no sources and no queue.
     @MainActor
     static func sampleFirstRunModel() -> AppModel {
         let defaults = UserDefaults(suiteName: "snapshot-first")!
@@ -80,7 +80,7 @@ enum DebugSnapshot {
         return model
     }
 
-    /// Fonte Local falsa (ficheiros vazios) no contentor, aberta no navegador.
+    /// Fake Local source (empty files) in the container, open in the browser.
     @MainActor
     static func sampleBrowserModel() -> AppModel {
         let defaults = UserDefaults(suiteName: "snapshot-browser")!
@@ -104,7 +104,7 @@ enum DebugSnapshot {
         model.windowMode = .browser
         guard let source = model.sources.addLocal(root) else { return model }
         model.browser.open(BrowserLocation(sourceID: source.id, path: "Fleetwood Mac"))
-        // Deixa a listagem e os resumos acabarem antes de desenhar.
+        // Lets the listing and summaries finish before drawing.
         RunLoop.main.run(until: Date().addingTimeInterval(0.5))
         for e in model.browser.entries {
             Task { await model.browser.loadSummary(e) }

@@ -1,15 +1,15 @@
 import AppKit
 import SwiftUI
 
-/// Barra fina de posição/volume: calha e parte percorrida de 2px.
-/// Área clicável de 16px; cabeça (traço de 2 × 10px) só no hover ou a arrastar.
+/// Thin position/volume bar: 2px track and filled part.
+/// 16px hit area; thumb (2 × 10px line) only on hover or while dragging.
 struct BarSlider: View {
     /// 0...1
     var value: Double
     var onChange: (Double) -> Void
-    /// Setas do teclado com foco: -1 ou +1.
+    /// Arrow keys when focused: -1 or +1.
     var onStep: (Int) -> Void
-    /// Texto do tooltip no ponto do hover (0...1), ou nil para não mostrar.
+    /// Tooltip text at the hover point (0...1), or nil to hide it.
     var hoverText: ((Double) -> String)?
     var trackColor = Color.track
     var fillColor = Color.fill
@@ -67,8 +67,8 @@ struct BarSlider: View {
             }
         }
         .frame(height: 16)
-        // Como as teclas: só no ciclo de foco com o acesso total pelo teclado,
-        // para o foco inicial da janela ir para a fila e não para a barra.
+        // Like the keys: only in the focus loop with full keyboard access,
+        // so the window's initial focus goes to the queue and not the bar.
         .focusable(interactions: .activate)
         .focused($focused)
         .focusEffectDisabled()
@@ -84,7 +84,7 @@ struct BarSlider: View {
     }
 }
 
-/// Barra de posição da faixa atual, dentro do display. Setas: 5 segundos.
+/// Position bar for the current track, inside the display. Arrows: 5 seconds.
 struct ProgressBar: View {
     @Environment(AppModel.self) private var model
 
@@ -103,7 +103,7 @@ struct ProgressBar: View {
     }
 }
 
-/// Volume da app (ou do destino AirPlay), com escala impressa de 0 a 10. ⌘↑ ⌘↓ e scroll mudam 5%.
+/// App volume (or AirPlay destination volume), with a printed 0 to 10 scale. ⌘↑ ⌘↓ and scroll change 5%.
 struct VolumeControl: View {
     @Environment(AppModel.self) private var model
     @Environment(\.isSnapshot) private var isSnapshot
@@ -132,7 +132,7 @@ struct VolumeControl: View {
     }
 }
 
-/// Escala impressa por baixo do volume: 11 traços, 0, 5 e 10 numerados.
+/// Printed scale under the volume: 11 ticks, 0, 5 and 10 numbered.
 private struct VolumeScale: View {
     var body: some View {
         VStack(spacing: 2) {
@@ -157,7 +157,7 @@ private struct VolumeScale: View {
     }
 }
 
-/// Lê o scroll do rato por cima da vista, sem roubar cliques.
+/// Reads mouse scroll over the view without stealing clicks.
 struct ScrollWheelReader: NSViewRepresentable {
     var onScroll: (CGFloat) -> Void
 

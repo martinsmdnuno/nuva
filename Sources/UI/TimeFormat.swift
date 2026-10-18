@@ -7,7 +7,7 @@ enum TimeFormat {
         return h > 0 ? String(format: "%d:%02d:%02d", h, m, s) : String(format: "%02d:%02d", m, s)
     }
 
-    /// Lista: "4:05", "1:02:03".
+    /// List: "4:05", "1:02:03".
     static func short(_ seconds: Double) -> String {
         let (h, m, s) = parts(seconds)
         return h > 0 ? String(format: "%d:%02d:%02d", h, m, s) : String(format: "%d:%02d", m, s)

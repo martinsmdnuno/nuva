@@ -1,7 +1,7 @@
-// Imagens do README a partir das capturas da app: janelas com moldura do macOS e a imagem de abertura.
-// Uso, na raiz do repositório:
-//   NuVa.app/Contents/MacOS/NuVa --snapshot -AppleLanguages '(en)'   (imprime a pasta das capturas)
-//   swift scripts/make-readme-images.swift <pasta-das-capturas> docs/screenshots
+// README images from the app's screenshots: windows with a macOS frame and the hero image.
+// Usage, from the repository root:
+//   NuVa.app/Contents/MacOS/NuVa --snapshot -AppleLanguages '(en)'   (prints the screenshots folder)
+//   swift scripts/make-readme-images.swift <screenshots-folder> docs/screenshots
 import AppKit
 import CoreText
 
@@ -29,13 +29,13 @@ func snapshot(_ name: String) -> NSImage {
     NSImage(contentsOf: snaps.appendingPathComponent("snapshot-\(name).png"))!
 }
 
-/// Tamanho em pixels (as capturas são a 2x).
+/// Size in pixels (screenshots are at 2x).
 func px(_ image: NSImage) -> CGSize {
     let rep = image.representations.first!
     return CGSize(width: rep.pixelsWide, height: rep.pixelsHigh)
 }
 
-/// Desenha numa tela com origem no canto superior esquerdo e grava o PNG.
+/// Draws on a canvas with a top-left origin and writes the PNG.
 func canvas(_ size: CGSize, _ name: String, background: NSColor? = nil, draw: () -> Void) {
     let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: Int(size.width), pixelsHigh: Int(size.height),
                                bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
@@ -62,14 +62,14 @@ enum Chrome { case window(dark: Bool), popover }
 let titleBar = 56.0
 let radius = 22.0
 
-/// Tamanho da janela emoldurada para uma captura, à escala `k`.
+/// Size of the framed window for a screenshot, at scale `k`.
 func framedSize(_ image: NSImage, _ chrome: Chrome, k: Double) -> CGSize {
     let s = px(image)
     if case .window = chrome { return CGSize(width: s.width * k, height: (s.height + titleBar) * k) }
     return CGSize(width: s.width * k, height: s.height * k)
 }
 
-/// Uma janela do macOS (barra de título com semáforos) ou um popover, com sombra.
+/// A macOS window (title bar with traffic lights) or a popover, with a shadow.
 func drawFramed(_ image: NSImage, _ chrome: Chrome, at origin: CGPoint, k: Double) {
     let size = framedSize(image, chrome, k: k)
     let rect = CGRect(origin: origin, size: size)
@@ -110,13 +110,13 @@ func drawFramed(_ image: NSImage, _ chrome: Chrome, at origin: CGPoint, k: Doubl
                from: .zero, operation: .sourceOver, fraction: 1, respectFlipped: true, hints: nil)
     NSGraphicsContext.restoreGraphicsState()
 
-    // Contorno fino, como as janelas do sistema.
+    // Thin outline, like system windows.
     NSColor(white: 1, alpha: 0.08).setStroke()
     path.lineWidth = k
     path.stroke()
 }
 
-/// Uma ou mais janelas lado a lado sobre fundo transparente, com margem para a sombra.
+/// One or more windows side by side on a transparent background, with room for the shadow.
 func framed(_ items: [(NSImage, Chrome)], name: String, k: Double = 1, gap: Double = 64) {
     let sizes = items.map { framedSize($0.0, $0.1, k: k) }
     let pad = 110.0
@@ -131,7 +131,7 @@ func framed(_ items: [(NSImage, Chrome)], name: String, k: Double = 1, gap: Doub
     }
 }
 
-// Abertura: ícone, nome e frase por cima; navegador em Chumbo e player em Alumínio por baixo.
+// Hero: icon, name and tagline on top; browser in Lead and player in Aluminium below.
 let browser = snapshot("navegador-chumbo")
 let playerLight = snapshot("player-aluminio")
 let heroSize = CGSize(width: 2400, height: 1480)

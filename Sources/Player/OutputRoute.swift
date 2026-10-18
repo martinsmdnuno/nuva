@@ -3,14 +3,14 @@ import CoreAudio
 import Observation
 import os
 
-/// Para onde está a sair o som: nome do dispositivo e taxa real da saída.
-/// Por AirPlay o macOS não expõe o formato do stream, por isso só há nome.
+/// Where the sound is going: device name and actual output sample rate.
+/// Over AirPlay macOS doesn't expose the stream format, so there's only a name.
 @MainActor
 @Observable
 final class OutputRoute {
-    /// Texto curto para o display: "→ Colunas (MacBook Neo) · 48 kHz", "→ AirPlay Sala".
+    /// Short text for the display: "→ Colunas (MacBook Neo) · 48 kHz", "→ AirPlay Sala".
     private(set) var label = ""
-    /// Tooltip com o detalhe.
+    /// Tooltip with the details.
     private(set) var detail = ""
 
     @ObservationIgnored private let player: AVPlayer?
@@ -21,7 +21,7 @@ final class OutputRoute {
         self.player = player
         guard player != nil else { return }
         refresh()
-        // Barato (algumas leituras CoreAudio); apanha também as mudanças do seletor AirPlay.
+        // Cheap (a few CoreAudio reads); also catches changes from the AirPlay picker.
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.refresh() }
         }
@@ -37,7 +37,7 @@ final class OutputRoute {
         let newLabel: String
         let newDetail: String
         if let routed, !routed.isEmpty, !routed.contains(where: { $0 == device?.name }) {
-            // Seletor AirPlay da app: o destino vive no AVOutputContext, não no CoreAudio.
+            // The app's AirPlay picker: the destination lives in AVOutputContext, not CoreAudio.
             newLabel = "→ AirPlay \(routed.joined(separator: " + "))"
             newDetail = String(localized: "Saída AirPlay: \(routed.joined(separator: ", ")). O formato do stream não é exposto pelo macOS")
         } else if external {
@@ -72,8 +72,8 @@ final class OutputRoute {
         log.notice("saída: \(newLabel, privacy: .public) external=\(external) uid=\(uid ?? "nil", privacy: .public) transport=\(device?.transport ?? "?", privacy: .public)")
     }
 
-    /// Nomes dos destinos do AVOutputContext partilhado da app (API privada no macOS,
-    /// pública no iOS). nil se a classe ou os métodos não existirem.
+    /// Names of the destinations of the app's shared AVOutputContext (private API on macOS,
+    /// public on iOS). nil if the class or methods don't exist.
     private static func routedDeviceNames() -> [String]? {
         guard let cls = NSClassFromString("AVOutputContext") as? NSObject.Type else { return nil }
         let shared = NSSelectorFromString("defaultSharedOutputContext")
@@ -94,14 +94,14 @@ final class OutputRoute {
     #endif
 }
 
-/// Leitura mínima de um dispositivo de saída CoreAudio.
+/// Minimal reading of a CoreAudio output device.
 struct CoreAudioDevice {
     let id: AudioObjectID
     let name: String
     let sampleRate: Double
     let transport: String
 
-    /// Sem o parêntese final: "Colunas (MacBook Neo)" → "Colunas".
+    /// Without the trailing parenthesis: "Colunas (MacBook Neo)" → "Colunas".
     var shortName: String {
         let short = name.replacingOccurrences(of: #"\s*\([^)]*\)$"#, with: "", options: .regularExpression)
         return short.isEmpty ? name : short

@@ -1,86 +1,86 @@
-# Leitor de música
+# NuVa design system
 
-Pastas, som nativo, nada a mais. Um leitor para macOS que toca a música de uma pasta local ou do servidor, numa janela pequena, com a linguagem limpa de um aparelho hi-fi (linha Cambridge Audio, B&O).
+Folders, native sound, nothing extra. A macOS player for music in a local folder or on a server, in a small window, with the clean language of a hi-fi component (Braun under Dieter Rams, Cambridge Audio, B&O).
 
-Este documento guia quem constrói a app em SwiftUI. Utilidade primeiro: cada regra aqui existe para tornar a app mais rápida de usar, não mais bonita.
+This document guides whoever builds the app in SwiftUI. Utility first: every rule here exists to make the app faster to use, not prettier.
 
-## Princípios
+## Principles
 
-1. **Função primeiro.** Cada elemento serve uma ação ou mostra uma informação. Se não serve, sai. Sem animações decorativas, sem gradientes, sem capas gigantes.
-2. **Menos, mas melhor (Dieter Rams).** Um só plano. Sem cartões dentro de cartões, sem contornos à volta de teclas, sem réguas entre linhas. As zonas separam-se por espaço. A hierarquia vem da cor e da largura das teclas, nunca de mais traço.
-3. **Pastas, não metadados.** Pasta = álbum. Mostramos o nome da pasta e o nome do ficheiro tal como estão. Nunca reorganizamos por tags.
-4. **Uma janela.** Tudo cabe numa janela compacta. Não há páginas, separadores ou navegação profunda.
-5. **Teclado primeiro.** Tudo o que se faz com o rato tem atalho. Media keys do Mac funcionam sempre.
-6. **O aparelho, não a app.** O display é sempre escuro, como o de um amplificador. O resto do chassis segue o tema (Chumbo ou Alumínio).
+1. **Function first.** Every element performs an action or shows information. If it does neither, it goes. No decorative animation, no gradients, no giant cover art.
+2. **Less, but better (Dieter Rams).** One flat plane. No cards inside cards, no outlines around keys, no rules between rows. Zones are separated by space. Hierarchy comes from the colour and width of the keys, never from more lines.
+3. **Folders, not metadata.** Folder = album. We show folder and file names exactly as they are. We never reorganise by tags.
+4. **One window.** Everything fits in a compact window. No pages, tabs or deep navigation.
+5. **Keyboard first.** Everything you can do with the mouse has a shortcut. The Mac's media keys always work.
+6. **The device, not the app.** The display is always dark, like an amplifier's. The rest of the chassis follows the theme (Lead or Aluminium).
 
-## Fontes de música
+## Music sources
 
-A interface não distingue a origem. Local e Servidor aparecem como fontes na mesma lista, com o mesmo comportamento. O único sinal da origem é o ícone ao lado do nome da fonte (`internaldrive` ou `server.rack` em SF Symbols) e, em erro, a mensagem em `danger`.
+The interface doesn't tell sources apart. Local folders and servers appear in the same list and behave the same. The only sign of the origin is the icon next to the source name (`internaldrive` or `server.rack` in SF Symbols) and, on error, the message in `danger`.
 
-## Cor
+## Colour
 
-Cinza chumbo com um único acento.
+Lead grey with a single accent.
 
-- **Chassis:** `surface-0` é o único plano da janela: display, teclas e fila assentam todos nele. `surface-1` fica para popovers (equalizador) e `surface-2` para a linha selecionada.
-- **Display:** `display` com `display-ink`, `display-muted` e `display-track` (calha da posição). Igual nos dois temas, recuado com `shadow-display`.
-- **Texto:** `ink` para o principal, `ink-muted` para durações, metadados, legendas e ícones em repouso.
-- **Teclas:** três tons, como numa calculadora Braun. `key-play` (âmbar) só na tecla play/pausa. `key-face` (cinzento claro) no transporte. `key-mode` (cinzento médio) em modo, saída e botões de texto.
-- **Acento:** âmbar, um só, em três papéis ligados entre si: a tecla que toca (`key-play`), os LEDs (`led`) e o nome da faixa a tocar (`signal`). Nunca em fundos, hovers ou texto que não seja a faixa atual.
-- **LED:** ponto de 4px, `led` aceso, `led-off` apagado. Mostra estados: reprodução no display, repetir/aleatório/equalizador ligados por cima da tecla, a faixa a tocar na lista.
-- **Erro:** `danger` só em texto e ícone, nunca como fundo.
-- **Foco:** `focus` num anel de 2px à volta do controlo com foco de teclado.
+- **Chassis:** `surface-0` is the window's only plane: display, keys and queue all sit on it. `surface-1` is for popovers (equalizer) and `surface-2` for the selected row.
+- **Display:** `display` with `display-ink`, `display-muted` and `display-track` (the position track). The same in both themes, recessed with `shadow-display`.
+- **Text:** `ink` for primary text, `ink-muted` for durations, metadata, legends and resting icons.
+- **Keys:** three tones, as on a Braun calculator. `key-play` (amber) only on the play/pause key. `key-face` (light grey) on transport. `key-mode` (mid grey) on mode, output and text buttons.
+- **Accent:** amber, only one, in three linked roles: the key that plays (`key-play`), the LEDs (`led`) and the name of the track that's playing (`signal`). Never on backgrounds, hovers or any text other than the current track.
+- **LED:** a 4px dot, `led` on, `led-off` off. It shows state: playback on the display, repeat/shuffle/equalizer on above their key, the playing track in the list.
+- **Error:** `danger` only on text and icons, never as a background.
+- **Focus:** `focus` as a 2px ring around the control with keyboard focus.
 
-Temas: **Chumbo** é o principal. **Alumínio** é o tema claro e segue a aparência do sistema. Todos os pares de texto passam 4.5:1 nos dois temas.
+Themes: **Lead** (`chumbo`) is the main one. **Aluminium** (`aluminio`) is the light theme and follows the system appearance. Every text pair passes 4.5:1 in both themes.
 
-## Letra
+## Type
 
-Duas famílias, carregadas do Google Fonts ou embebidas na app (`Inter` e `IBM Plex Mono`, ambas OFL):
+Two families, embedded in the app (`Inter` and `IBM Plex Mono`, both OFL):
 
-- **Inter** para a interface: títulos de faixa (`title`), listas (`body`), rótulos (`label`), notas (`caption`).
-- **Legendas** (`legend`, Inter 10px, minúsculas, `ink-muted`): o nome impresso no chassis por baixo de cada grupo de teclas (leitura, modo, saída) e de cada zona (volume, fila), como no Braun TG 60.
-- **IBM Plex Mono** para números e o display: tempo (`display-time`), formato e taxa (`display-meta`), durações na lista (`duration`). Algarismos de largura fixa para o tempo não saltar.
+- **Inter** for the interface: track titles (`title`), lists (`body`), labels (`label`), notes (`caption`).
+- **Legends** (`legend`, Inter 10px, lowercase, `ink-muted`): the name printed on the chassis under each group of keys (playback, mode, output) and each zone (volume, queue), as on the Braun TG 60.
+- **IBM Plex Mono** for numbers and the display: time (`display-time`), format and rate (`display-meta`), durations in lists (`duration`). Fixed-width digits so the time doesn't jump.
 
-Nomes japoneses e outros alfabetos caem para a fonte do sistema (Hiragino), o que é aceitável. Nunca truncar com reticências a meio: trunca no fim, e o nome completo aparece no tooltip.
+Japanese names and other scripts fall back to the system font (Hiragino), which is fine. Never truncate with an ellipsis in the middle: truncate at the end, with the full name in the tooltip.
 
-## Botões
+## Keys
 
-Teclas lisas, como numa calculadora ou num gravador Braun:
+Flat keys, as on a Braun calculator or tape recorder:
 
-- Sem contorno nem lábio. A face é o limite. Cantos `radius-sm`.
-- Todas as teclas de ícone têm a mesma altura (`key`, 36px). A importância vem da cor e da largura: play `key-w-lg` 56px em `key-play`, transporte `key-w-md` 40px em `key-face`, modo e saída `key-w-sm` 32px em `key-mode`.
-- Premida: a face escurece 15% enquanto o rato está em baixo. Não há tecla "afundada" para estados.
-- Ligada (repetir, aleatório, equalizador): LED de 4px aceso por cima da tecla. Teclas com estado têm sempre o LED, aceso ou apagado.
-- As teclas agrupam-se por função, com espaço entre grupos e uma legenda por baixo: **leitura** (anterior, play/pausa, seguinte), **modo** (repetir, aleatório), **saída** (AirPlay, equalizador).
-- Botões de texto (Adicionar pasta, Tocar pasta) usam `key-mode` com rótulo `label`, altura `key-text` 28px.
+- No outline, no lip. The face is the edge. Corners `radius-sm`.
+- Every icon key has the same height (`key`, 36px). Importance comes from colour and width: play `key-w-lg` 56px in `key-play`, transport `key-w-md` 40px in `key-face`, mode and output `key-w-sm` 32px in `key-mode`.
+- Pressed: the face darkens 15% while the mouse is down. There is no "sunken" key for state.
+- On (repeat, shuffle, equalizer): a 4px LED lit above the key. Keys with state always have their LED, on or off.
+- Keys are grouped by function, with space between groups and a legend underneath: **playback** (previous, play/pause, next), **mode** (repeat, shuffle), **output** (AirPlay, equalizer).
+- Text buttons (Add Folder, Play Folder) use `key-mode` with a `label`, height `key-text` 28px.
 
-## Ícones
+## Icons
 
-SF Symbols, peso regular, nunca preenchidos exceto `play.fill` e `pause.fill` dentro da tecla de play. Símbolos fixos: `backward.end`, `forward.end`, `play.fill`, `pause.fill`, `repeat`, `shuffle`, `airplayaudio`, `folder`, `music.note`, `internaldrive`, `server.rack`, `speaker.wave.2`.
+SF Symbols, regular weight, never filled except `play.fill` and `pause.fill` inside the play key. Fixed symbols: `backward.end`, `forward.end`, `play.fill`, `pause.fill`, `repeat`, `shuffle`, `airplayaudio`, `slider.vertical.3`, `sidebar.left`, `folder`, `internaldrive`, `server.rack`.
 
-## Janelas
+## Windows
 
-Três tamanhos, mesmo conteúdo, a app escolhe pelo tamanho da janela:
+Three sizes, same content:
 
-- **Compacto** (360 × ~320, altura pelo conteúdo): display, teclas, volume e o cabeçalho com as pistas "pastas" e "fila". Sem fila.
-- **Player com playlist** (360 × 480 ou mais alta): display com a posição, teclas em três grupos, volume, fila. Tudo no mesmo plano.
-- **Com navegador** (720 × 480 ou mais alta): navegador de pastas à esquerda, player com fila à direita.
+- **Compact** (360 × ~320, height from content): display, keys, volume and the queue header with the folders key and the queue legend. No queue rows.
+- **Player with queue** (360 × 480 or taller): display with position, keys in three groups, volume, queue. All on one plane.
+- **With browser** (720 × 480 or taller): folder browser on the left, player with queue on the right.
 
-No player e no navegador a altura é livre (mínimo 480) e a largura fixa: só as listas crescem. A app lembra a altura entre modos e arranques. O duplo clique na barra de título (zoom) estica a janela até à altura do ecrã. O compacto não muda de tamanho.
+In the player and browser the height is free (minimum 480) and the width fixed: only the lists grow. The app remembers the height between modes and launches. Double-clicking the title bar (zoom) stretches the window to the screen's height. Compact doesn't resize.
 
-## Atalhos
+## Shortcuts
 
-Espaço play/pausa · ⌘→ seguinte · ⌘← anterior · ⌘↑ ⌘↓ volume · ⌘F procurar pasta · ⌘L ir para a faixa atual · Enter tocar seleção · ⌘Enter adicionar à fila · ⌘B mostrar ou esconder as pastas · ⌘1 ⌘2 ⌘3 tamanho da janela.
+Space play/pause · ⌘→ next · ⌘← previous · ⌘↑ ⌘↓ volume · ⌘L go to the current track · Enter play selection · ⌘Enter add to queue · ⌘B show or hide folders · ⌘1 ⌘2 ⌘3 window size · ⌘O add folder · ⇧⌘O add Jellyfin.
 
-## Texto da interface
+## Interface text
 
-Português de Portugal, frases curtas, verbo primeiro, sem pontos finais em botões. "Adicionar fonte", "Tocar pasta", "Servidor offline. Tentar de novo". Nada de "por favor" nem pontos de exclamação.
+The app is in European Portuguese and English and follows the system language; any other language falls back to English. Portuguese strings are the keys in `Resources/Localizable.xcstrings`.
 
-A app está em português de Portugal e em inglês e segue a língua do sistema; noutras línguas cai para inglês. Em inglês valem as mesmas regras: frases curtas, verbo primeiro, legendas do chassis em minúsculas ("playback", "mode", "output", "volume", "queue", "folders"), menus em Title Case como no macOS.
+In both languages: short sentences, verb first, no full stops on buttons, no "please", no exclamation marks. Chassis legends in lowercase ("playback", "mode", "output", "volume", "queue", "folders"). English menus in Title Case, as on macOS. Examples: "Add Folder", "Play Folder", "Server offline. Try again" · "Adicionar pasta", "Tocar pasta", "Servidor offline. Tentar de novo".
 
-## Para quem implementa (SwiftUI)
+## For implementers (SwiftUI)
 
-- Tokens de cor como `Color` em `Assets.xcassets` com variante clara e escura, nomes iguais aos tokens.
-- Tempo com `.font(.custom("IBMPlexMono-Light", size: 28)).monospacedDigit()`.
-- Teclas como um `ButtonStyle` único com os três tamanhos.
-- Áudio por AVFoundation (`AVPlayer`/`AVQueuePlayer`), saída AirPlay por `AVRoutePickerView` na tecla `airplayaudio`.
-- Media keys e Centro de Controlo por `MPRemoteCommandCenter` e `MPNowPlayingInfoCenter`.
+- Colour tokens as `Color` in `Assets.xcassets` with light and dark variants, named like the tokens.
+- Time with IBM Plex Mono Light 28 and `.monospacedDigit()`.
+- Keys as a single `ButtonStyle` (`KeyButtonStyle`) with three tones.
+- Audio through AVFoundation (`AVQueuePlayer`), AirPlay output through `AVRoutePickerView` in the output key.
+- Media keys and Control Center through `MPRemoteCommandCenter` and `MPNowPlayingInfoCenter`.

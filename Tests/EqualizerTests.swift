@@ -6,13 +6,13 @@ import Testing
 struct EqualizerTests {
     @Test func flatBandPassesThrough() {
         #expect(EQTap.peaking(frequency: 1000, gain: 0, sampleRate: 48_000) == [1, 0, 0, 0, 0])
-        // Acima de Nyquist (16 kHz a 22,05 kHz de amostragem) fica plano.
+        // Above Nyquist (16 kHz at a 22.05 kHz sample rate) it stays flat.
         #expect(EQTap.peaking(frequency: 16_000, gain: 6, sampleRate: 22_050) == [1, 0, 0, 0, 0])
     }
 
     @Test func boostRaisesGainAtCentre() {
         let c = EQTap.peaking(frequency: 1000, gain: 6, sampleRate: 48_000)
-        // Ganho em w0: |H(e^jw0)| deve ser ~6 dB.
+        // Gain at w0: |H(e^jw0)| should be ~6 dB.
         let w = 2 * Double.pi * 1000 / 48_000
         func mag(_ b0: Double, _ b1: Double, _ b2: Double) -> Double {
             let re = b0 + b1 * cos(w) + b2 * cos(2 * w)

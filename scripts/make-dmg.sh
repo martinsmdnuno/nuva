@@ -1,6 +1,6 @@
 #!/bin/zsh
-# Gera dist/NuVa-<versão>.dmg (e dist/NuVa.dmg) com a app em Release (universal) e um atalho para Aplicações.
-# Sem Developer ID a app vai com assinatura ad-hoc: quem a recebe tem de a desbloquear (ver "Ler primeiro.txt").
+# Builds dist/NuVa-<version>.dmg (and dist/NuVa.dmg) with the Release (universal) app and an Applications shortcut.
+# Without a Developer ID the app is ad-hoc signed: recipients have to unblock it (see "Ler primeiro.txt").
 set -euo pipefail
 cd "${0:a:h}/.."
 
@@ -59,6 +59,6 @@ DMG="dist/NuVa-$VERSION.dmg"
 rm -f "$DMG"
 hdiutil create -volname "NuVa $VERSION" -srcfolder "$STAGE" -fs HFS+ -format UDZO -ov "$DMG" -quiet
 hdiutil verify "$DMG" -quiet
-# Cópia com nome fixo para o GitHub: releases/latest/download/NuVa.dmg aponta sempre para a última.
+# Fixed-name copy for GitHub: releases/latest/download/NuVa.dmg always points to the latest.
 cp "$DMG" dist/NuVa.dmg
 echo "$DMG"

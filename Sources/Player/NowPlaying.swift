@@ -1,11 +1,11 @@
 import AppKit
 import MediaPlayer
 
-/// Media keys, Centro de Controlo e Now Playing do macOS.
+/// Media keys, Control Centre and macOS Now Playing.
 @MainActor
 final class NowPlaying {
     private let player: PlayerController
-    /// Sem capas (pasta, não metadados): o Now Playing mostra sempre a pasta da NuVa.
+    /// No artwork (folders, not metadata): Now Playing always shows the NuVa folder.
     private let artwork = MPMediaItemArtwork(boundsSize: CGSize(width: 1024, height: 1024)) { _ in
         NSImage(named: "NowPlayingArtwork") ?? NSImage()
     }
@@ -51,7 +51,7 @@ final class NowPlaying {
         }
     }
 
-    /// Atualiza quando muda a faixa, o estado ou a duração.
+    /// Updates when the track, state or duration changes.
     private func observe() {
         withObservationTracking {
             _ = player.currentID

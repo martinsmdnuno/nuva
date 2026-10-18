@@ -1,16 +1,16 @@
 # Display
 
-O ecrã do aparelho: mostra o que está a tocar e onde vai. Sempre escuro (`display`) nos dois temas, recuado no chassis.
+The device's screen: what's playing and where it's going. Always dark (`display`) in both themes, recessed into the chassis.
 
-## Conteúdo, de cima para baixo
-1. LED (6px, `led`) quando a tocar, `led-off` em pausa · formato e taxa em `display-meta` (`FLAC 24/96`) · nome da fonte à direita.
-2. Título da faixa em `title`, `display-ink`. É o nome do ficheiro sem extensão nem número inicial.
-3. Nome da pasta em `caption`, `display-muted` · saída de áudio em `display-meta` à direita.
-4. Tempo decorrido em `display-time` à esquerda, duração em `display-meta` à direita.
-5. Barra de posição (ver Progresso.md), a toda a largura.
+## Content, top to bottom
+1. LED (6px, `led`) while playing, `led-off` when paused · format and rate in `display-meta` (`FLAC 24/96`) · source name on the right.
+2. Track title in `title`, `display-ink`: the file name without extension or leading number.
+3. Folder name in `caption`, `display-muted` · audio output in `display-meta` on the right.
+4. Elapsed time in `display-time` on the left, duration in `display-meta` on the right.
+5. Position bar (see PositionBar.md), full width.
 
-## Regras
-- Padding `space-3`, cantos `radius-sm`, sombra `shadow-display`. Sem contorno.
-- Clicar no tempo alterna entre decorrido e restante.
-- Sem capa de álbum.
-- Na mini barra: só título e tempo (`display-time-mini`), numa linha.
+## Rules
+- Padding `space-3`, corners `radius-sm`, shadow `shadow-display`. No outline.
+- Clicking the time switches between elapsed and remaining.
+- No cover art.
+- With no sources: "No music · Add a folder or a Jellyfin server". With sources and nothing playing: "No track · Choose a folder to play".

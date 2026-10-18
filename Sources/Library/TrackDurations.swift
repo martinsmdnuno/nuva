@@ -1,7 +1,7 @@
 import AVFoundation
 import Observation
 
-/// Durações das faixas para a lista, carregadas a pedido e guardadas em memória.
+/// Track durations for the list, loaded on demand and cached in memory.
 @MainActor
 @Observable
 final class TrackDurations {

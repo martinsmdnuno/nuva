@@ -1,10 +1,10 @@
 # Volume
 
-Controlo de volume da app, numa linha própria por baixo das teclas.
+The app's volume, on its own line under the keys.
 
-## Regras
-- Legenda "volume" (`legend`) à esquerda, barra a ocupar o resto: calha `track`, parte percorrida `fill`, espessura `bar` (2px).
-- Escala impressa por baixo: 11 traços em `line` (0, 5 e 10 mais altos em `ink-muted`) e os números 0, 5, 10 em mono 9px.
-- No hover aparece um traço vertical de 2 × 10px em `fill`.
-- Controla o volume da app, não o do sistema. Em AirPlay, controla o do dispositivo de destino.
-- ⌘↑ e ⌘↓ mudam 5%. Scroll em cima do controlo também.
+## Rules
+- "volume" legend (`legend`) on the left, the bar filling the rest: track `track`, filled part `fill`, thickness `bar` (2px).
+- Printed scale underneath: 11 ticks in `line` (0, 5 and 10 taller, in `ink-muted`) and the numbers 0, 5, 10 in 9px mono.
+- On hover, a 2 × 10px vertical tick in `fill`.
+- Controls the app's volume, not the system's. Over AirPlay, it controls the receiving device.
+- ⌘↑ and ⌘↓ change it by 5%. So does scrolling over the control.

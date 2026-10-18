@@ -1,8 +1,8 @@
 import SwiftUI
 
-/// "Player com playlist" (360 × 480): display com a posição, teclas, volume, fila.
-/// No compacto a fila sai e fica só o cabeçalho com as pistas "pastas" e "fila".
-/// Tudo no mesmo plano do chassis; as zonas separam-se por espaço.
+/// "Player with queue" (360 × 480 or taller): display with position, keys, volume, queue.
+/// In compact mode the queue goes away, leaving only the header with the "pastas" and "fila" labels.
+/// Everything on the chassis plane; zones are separated by space.
 struct PlayerView: View {
     @Environment(AppModel.self) private var model
 

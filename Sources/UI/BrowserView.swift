@@ -1,8 +1,8 @@
 import SwiftUI
 
-/// Navegador de pastas (janela 720 × 480, à esquerda).
-/// Enter ou duplo clique: entra na pasta ou toca a partir da faixa.
-/// ⌘Enter junta à fila. ← ou Delete sobe um nível.
+/// Folder browser (720 × 480 window, on the left).
+/// Enter or double-click: opens the folder or plays from the track.
+/// ⌘Enter adds to the queue. ← or Delete goes up one level.
 struct BrowserView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.isSnapshot) private var isSnapshot
@@ -51,7 +51,7 @@ struct BrowserView: View {
         .onChange(of: browser.location) { selection = nil }
     }
 
-    // MARK: Linhas
+    // MARK: Rows
 
     private enum Row: Identifiable {
         case source(id: UUID, name: String, symbol: String, error: String?)
@@ -145,7 +145,7 @@ struct BrowserView: View {
         }
     }
 
-    // MARK: Cabeçalho e estados
+    // MARK: Header and states
 
     private func header(_ browser: Browser) -> some View {
         HStack(spacing: Space.s2) {
@@ -172,8 +172,8 @@ struct BrowserView: View {
                     .buttonStyle(.keyText)
                     .keyFocus()
             }
-            // Fechar a gaveta: o mesmo ícone da pista "pastas", junto à divisória,
-            // do lado para onde a gaveta recolhe.
+            // Close the drawer: the same icon as the "pastas" label, next to the divider,
+            // on the side the drawer collapses towards.
             Button { model.toggleBrowser() } label: { Image(systemName: "sidebar.left") }
                 .buttonStyle(.key(.mode))
                 .keyFocus()
@@ -194,7 +194,7 @@ struct BrowserView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    // MARK: Ações
+    // MARK: Actions
 
     private var selectedRow: Row? {
         currentRows(model.browser).first { $0.id == selection }
@@ -217,7 +217,7 @@ struct BrowserView: View {
     private func goUp() {
         let from = model.browser.location
         model.browser.up()
-        // Ao subir, a pasta de onde se veio fica selecionada.
+        // When going up, the folder you came from stays selected.
         if let from, !from.path.isEmpty {
             selection = "\(from.sourceID.uuidString)/\(from.path)"
         } else if let from {

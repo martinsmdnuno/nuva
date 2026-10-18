@@ -1,60 +1,66 @@
-# Leitor de música (PoC)
+# NuVa
 
-App macOS nativa em SwiftUI para tocar música a partir de pastas. Simplicidade estilo Winamp, linguagem visual hi-fi limpa (Cambridge Audio, B&O). Utilidade primeiro, não design first.
+Native macOS app in SwiftUI that plays music from folders. Winamp-like simplicity, clean hi-fi visual language (Braun/Dieter Rams, Cambridge Audio, B&O). Utility first, not design first.
 
-## Porquê
-- A app Jellyfin para Mac é fraca; outras apps baralham a biblioteca por causa de metadados (remixes, covers, mixes espalhados).
-- Apple Music não abre FLAC; a biblioteca é FLAC.
-- O VLC soa mal com auscultadores Bluetooth; o QuickTime não. Usar o motor de áudio nativo da Apple.
-- Tem de dar para enviar o som para um WiiM (AirPlay 2).
+## Why
+- The Jellyfin app for Mac is weak; other apps scramble the library because of metadata (remixes, covers, mixes scattered around).
+- Apple Music doesn't open FLAC; the library is FLAC.
+- VLC sounds bad over Bluetooth headphones; QuickTime doesn't. Use Apple's native audio engine.
+- It must be able to send the sound to a WiiM (AirPlay 2).
 
-## Princípios (não negociáveis)
-1. **Pastas, não metadados.** Pasta = álbum. Mostrar nome da pasta e nome do ficheiro tal como estão. Não ler tags para organizar.
-2. **Áudio nativo.** AVFoundation (`AVQueuePlayer`). Sem VLC, sem ffmpeg, sem bibliotecas de áudio de terceiros.
-3. **Uma janela pequena.** Sem navegação profunda.
-4. **Teclado primeiro.** Media keys, atalhos, `MPRemoteCommandCenter` e `MPNowPlayingInfoCenter`.
-5. **Fontes variáveis.** A app toca de "fontes". Cada fonte é uma árvore de pastas. Local (pasta no Mac, incluindo partilhas SMB montadas) e, mais tarde, Servidor (HTTP). O player não sabe de onde vem a música.
+## Principles (non-negotiable)
+1. **Folders, not metadata.** Folder = album. Show folder and file names exactly as they are. Never read tags to organise.
+2. **Native audio.** AVFoundation (`AVQueuePlayer`). No VLC, no ffmpeg, no third-party audio libraries.
+3. **One small window.** No deep navigation.
+4. **Keyboard first.** Media keys, shortcuts, `MPRemoteCommandCenter` and `MPNowPlayingInfoCenter`.
+5. **Pluggable sources.** The app plays from "sources". Each source is a folder tree: Local (a folder on the Mac, including mounted SMB shares), Jellyfin, and later a generic HTTP server. The player doesn't know where the music comes from.
 
-## Arquitetura
+## Architecture
 ```swift
 protocol MusicSource {
     var id: UUID { get }
     var name: String { get }
-    func list(_ path: String) async throws -> [Entry]   // pastas e faixas
-    func url(for track: Entry) async throws -> URL      // file:// ou https://
+    func list(_ path: String) async throws -> [Entry]   // folders and tracks
+    func url(for track: Entry) async throws -> URL      // file:// or https://
 }
 ```
-- `LocalSource` devolve `file://`. Guarda o acesso à pasta com security-scoped bookmark.
-- `JellyfinSource` entra com utilizador e palavra-passe (Keychain), navega pelo `Path` dos itens (pastas do disco, nunca as tags do Jellyfin) e toca o original com `/Audio/{id}/stream.<ext>?static=true`.
-- `ServerSource` (servidor HTTP genérico) continua só o protocolo e um stub.
-- Extensões tocáveis: flac, mp3, m4a, aac, alac, wav, aiff.
-- Ordem das faixas: ordenação natural pelo nome do ficheiro (`localizedStandardCompare`).
+- `LocalSource` returns `file://`. Keeps folder access with a security-scoped bookmark.
+- `JellyfinSource` signs in with username and password (Keychain), browses by the items' `Path` (the disk folders, never Jellyfin's tags) and plays the original with `/Audio/{id}/stream.<ext>?static=true`.
+- `ServerSource` (generic HTTP server) is still only the protocol and a stub.
+- Playable extensions: flac, mp3, m4a, aac, alac, wav, aiff.
+- Track order: natural sort by file name (`localizedStandardCompare`).
 
-## Âmbito do PoC
-Dentro:
-- Adicionar uma fonte Local (NSOpenPanel), lembrada entre arranques.
-- Navegar pastas, tocar uma pasta, fila (adicionar, remover, reordenar).
-- Play/pausa, anterior, seguinte, seek, volume, repetir, aleatório.
-- Media keys e Now Playing do macOS.
-- Botão AirPlay (`AVRoutePickerView` embrulhado em `NSViewRepresentable`).
-- Janela "Player com playlist" (360 × 480), "Com navegador" (720 × 480) e "Compacto" (só display, teclas e volume; ⌘3).
-- Gaveta das pastas abre e fecha (tecla na barra de controlos, ⌘B).
-- Fechar a janela não para a música: a app sai do Dock e fica na barra de menus com um mini player.
-- Equalizador de 10 bandas com presets, num `MTAudioProcessingTap` em cada `AVPlayerItem` (biquads do Accelerate).
+## Scope
+In:
+- Local sources (NSOpenPanel) and Jellyfin, remembered between launches.
+- Browse folders, play a folder, queue (add, remove, reorder).
+- Play/pause, previous, next, seek, volume, repeat, shuffle.
+- Media keys and macOS Now Playing.
+- AirPlay key (`AVRoutePickerView` wrapped in `NSViewRepresentable`).
+- Windows: "Player with queue" (360 × 480 or taller), "With browser" (720 × 480 or taller) and "Compact" (display, keys and volume only; ⌘3). Height is free in the first two.
+- The folder drawer opens and closes with the folders key in the queue header, the key in the drawer header, or ⌘B.
+- Closing the window doesn't stop the music: the app leaves the Dock and stays in the menu bar with a mini player.
+- 10-band equalizer with presets, in an `MTAudioProcessingTap` on each `AVPlayerItem` (Accelerate biquads).
 
-Fora (por agora): fonte Servidor genérica, pesquisa, favoritos, mini barra, capas, contas.
+Out (for now): generic server source, search, favourites, cover art, accounts.
 
 ## Design system
-Em `docs/design-system/`. Ler `README.md` e `tokens.json` antes de qualquer UI, e o ficheiro do componente em `components/` antes de o construir.
-- Cores: um `Color` por token em `Assets.xcassets` (variante Any = Alumínio, Dark = Chumbo), nomes iguais aos tokens.
-- Letra: Inter e IBM Plex Mono embebidas na app (OFL, ficheiros de Google Fonts); fallback para SF Pro/SF Mono se faltarem.
-- Linguagem Dieter Rams em Chumbo: um só plano, sem cartões nem contornos, hierarquia pela cor das teclas, estados por LED.
-- Teclas: um único `ButtonStyle` (`KeyButtonStyle`) com três tons: play, transporte, modo.
-- Texto da interface em português de Portugal e inglês, pela língua do sistema (fallback inglês). O texto em português é a chave em `Resources/Localizable.xcstrings`; cada texto novo leva a tradução inglesa lá. Texto que passa por `String` (ternários, parâmetros, modelo) usa `String(localized:)`.
+In `docs/design-system/`. Read `README.md` and `tokens.json` before any UI work, and the component's file in `components/` before building it.
+- Colours: one `Color` per token in `Assets.xcassets` (Any variant = Aluminium, Dark = Lead), named like the tokens.
+- Type: Inter and IBM Plex Mono embedded in the app (OFL, Google Fonts files); falls back to SF Pro/SF Mono if missing.
+- Dieter Rams language in Lead: one plane, no cards or outlines, hierarchy from key colour, state shown by LEDs.
+- Keys: a single `ButtonStyle` (`KeyButtonStyle`) with three tones: play, transport, mode.
+- Interface text in European Portuguese and English, following the system language (English fallback). The Portuguese text is the key in `Resources/Localizable.xcstrings`; every new string gets its English translation there. Text that goes through `String` (ternaries, parameters, model) uses `String(localized:)`.
 
-## Stack e convenções
-- Swift 6, SwiftUI, macOS 14+. Projeto gerado com XcodeGen (`project.yml`), não editar o `.xcodeproj` à mão.
-- Sem dependências externas no PoC.
-- Pastas: `App/`, `Sources/Player/`, `Sources/Library/`, `Sources/UI/`, `Sources/DesignSystem/`.
-- Compilar com `xcodebuild` depois de cada passo e corrigir erros antes de seguir.
-- Commits pequenos, um por passo.
+## Stack and conventions
+- Swift 6, SwiftUI, macOS 14+. Project generated with XcodeGen (`project.yml`); don't edit the `.xcodeproj` by hand.
+- No external dependencies.
+- Folders: `App/`, `Sources/Player/`, `Sources/Library/`, `Sources/UI/`, `Sources/DesignSystem/`.
+- Build with `xcodebuild` after each step and fix errors before moving on.
+- Small commits, one per step. Code comments, docs and commit messages in English (the repository is public).
+
+## Releases
+- Bump `MARKETING_VERSION` in `project.yml`, commit "Version X", run `scripts/make-dmg.sh` (writes `dist/NuVa-X.dmg` and `dist/NuVa.dmg`).
+- Tag `vX`, push, `gh release create vX dist/NuVa.dmg dist/NuVa-X.dmg`, and add the version to `CHANGELOG.md`.
+- `releases/latest/download/NuVa.dmg` is the fixed download link in the README.
+- README images: `NuVa --snapshot -AppleLanguages '(en)'` from a Debug build, then `swift scripts/make-readme-images.swift <snapshot folder> docs/screenshots`.

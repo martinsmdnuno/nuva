@@ -2,7 +2,7 @@ import AppKit
 import Foundation
 import Observation
 
-/// As fontes da app, lembradas entre arranques em UserDefaults.
+/// The app's sources, remembered across launches in UserDefaults.
 @MainActor
 @Observable
 final class SourceStore {
@@ -16,7 +16,7 @@ final class SourceStore {
     }
 
     private(set) var sources: [any MusicSource] = []
-    /// Fontes guardadas que não abriram (pasta apagada, disco desligado), por id.
+    /// Saved sources that failed to open (folder deleted, disk disconnected), by id.
     private(set) var failed: [UUID: String] = [:]
 
     private var records: [Record] = []
@@ -32,7 +32,7 @@ final class SourceStore {
         sources.first { $0.id == id }
     }
 
-    /// Abre o NSOpenPanel e junta a pasta escolhida como fonte Local.
+    /// Opens the NSOpenPanel and adds the chosen folder as a Local source.
     @discardableResult
     func addLocal() -> (any MusicSource)? {
         let panel = NSOpenPanel()
@@ -61,7 +61,7 @@ final class SourceStore {
         return source
     }
 
-    /// Entra no Jellyfin para validar os dados e junta-o como fonte. A palavra-passe fica no Keychain.
+    /// Signs in to Jellyfin to validate the details and adds it as a source. The password goes in the Keychain.
     func addJellyfin(server: URL, username: String, password: String) async throws -> any MusicSource {
         _ = try await JellyfinSource.login(server: server, username: username, password: password, deviceID: deviceID)
         let record = Record(
@@ -82,7 +82,7 @@ final class SourceStore {
             password: { Keychain.password(for: account) })
     }
 
-    /// Identifica este Mac no Jellyfin (aparece em Dispositivos no painel).
+    /// Identifies this Mac to Jellyfin (shown under Devices in the dashboard).
     private var deviceID: String {
         if let id = defaults.string(forKey: "deviceID") { return id }
         let id = UUID().uuidString
@@ -137,7 +137,7 @@ final class SourceStore {
 }
 
 extension SourceStore {
-    /// URL tocável de uma faixa, pela fonte a que pertence.
+    /// Playable URL of a track, via the source it belongs to.
     func resolve(_ entry: Entry) async throws -> URL {
         guard let source = source(entry.sourceID) else {
             throw SourceError.missingFolder(entry.folderName)

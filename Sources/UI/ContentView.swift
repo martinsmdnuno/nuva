@@ -1,16 +1,16 @@
 import AppKit
 import SwiftUI
 
-/// A janela escolhe o conteúdo pelo modo: player (360 de largura), com navegador (720)
-/// ou compacto (360, sem fila, altura pelo conteúdo).
-/// No player e no navegador a altura é livre (mínimo 480), para ver um álbum inteiro;
-/// a largura é fixa. O zoom da barra de título estica a janela até à altura do ecrã.
-/// Tudo no mesmo plano; o navegador separa-se do player por uma divisória vertical.
+/// The window picks its content by mode: player (360 wide), with browser (720)
+/// or compact (360, no queue, height from content).
+/// In player and browser modes the height is free (minimum 480), to see a whole album;
+/// the width is fixed. Title bar zoom stretches the window to the screen height.
+/// Everything on one plane; the browser is separated from the player by a vertical divider.
 struct ContentView: View {
     @Environment(AppModel.self) private var model
-    /// Última altura do player ou do navegador, entre modos e entre arranques.
+    /// Last player or browser height, across modes and launches.
     @AppStorage("listHeight") private var listHeight = Double(Self.minHeight)
-    /// Altura a repor ao sair do compacto (guardada ao entrar, antes de a janela encolher).
+    /// Height to restore when leaving compact mode (saved on entry, before the window shrinks).
     @State private var heightToRestore: Double?
     @State private var window: NSWindow?
 
@@ -35,7 +35,7 @@ struct ContentView: View {
             idealHeight: compact ? nil : Self.minHeight,
             maxHeight: compact ? nil : .infinity
         )
-        // No compacto a altura é a do conteúdo, sem resize.
+        // In compact mode the height follows the content, no resize.
         .fixedSize(horizontal: false, vertical: compact)
         .background(Color.surface0)
         .onGeometryChange(for: CGFloat.self, of: { $0.size.height }) { height in
@@ -50,19 +50,19 @@ struct ContentView: View {
                 heightToRestore = listHeight
             } else if old == .compact, let window {
                 let target = heightToRestore ?? listHeight
-                // Depois de a janela se ajustar ao novo conteúdo.
+                // After the window adjusts to the new content.
                 DispatchQueue.main.async { setHeight(target, of: window) }
             }
         }
         .sheet(isPresented: $model.showingJellyfinLogin) {
             JellyfinLoginView()
         }
-        // Com a janela fechada, a NuVa sai do Dock e fica só na barra de menus.
+        // With the window closed, NuVa leaves the Dock and stays only in the menu bar.
         .onAppear { DockPresence.show(true) }
         .onDisappear { DockPresence.show(false) }
     }
 
-    /// Muda a altura do conteúdo mantendo o topo da janela no sítio.
+    /// Changes the content height while keeping the window's top in place.
     private func setHeight(_ height: Double, of window: NSWindow) {
         let maxHeight = window.screen.map { window.contentRect(forFrameRect: $0.visibleFrame).height } ?? .infinity
         let target = min(max(CGFloat(height), Self.minHeight), maxHeight)
@@ -75,7 +75,7 @@ struct ContentView: View {
     }
 }
 
-/// Dá acesso à NSWindow que contém a vista.
+/// Gives access to the NSWindow containing the view.
 private struct WindowReader: NSViewRepresentable {
     var onWindow: (NSWindow?) -> Void
 

@@ -2,7 +2,7 @@ import Foundation
 import Testing
 @testable import NuVa
 
-/// Servidor Jellyfin falso: responde por caminho e parentId.
+/// Fake Jellyfin server: responds by path and parentId.
 final class FakeJellyfin: URLProtocol, @unchecked Sendable {
     nonisolated(unsafe) static var requests: [String] = []
 
@@ -62,7 +62,7 @@ struct JellyfinTests {
     }
 
     @Test func findsTrackAfterRelaunch() async throws {
-        // Fonte nova, sem ids em memória: percorre a árvore a partir do caminho.
+        // New source, no ids in memory: walks the tree from the path.
         let jf = source()
         let entry = Entry(sourceID: jf.id, path: "Artist/2001 Álbum/CD2/01 Um.flac", name: "01 Um.flac", kind: .track)
         let url = try await jf.url(for: entry)

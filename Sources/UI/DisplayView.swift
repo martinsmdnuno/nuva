@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// O ecrã do aparelho, recuado no chassis. Sempre escuro, nos dois temas.
-/// A barra de posição vive aqui, por baixo do tempo.
+/// The device's screen, recessed into the chassis. Always dark, in both themes.
+/// The position bar lives here, below the time.
 struct DisplayView: View {
     @Environment(AppModel.self) private var model
     @AppStorage("showsRemaining") private var showsRemaining = false
@@ -68,7 +68,7 @@ struct DisplayView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background {
             let shape = RoundedRectangle(cornerRadius: Radius.sm, style: .continuous)
-            // shadow-display: recuado no chassis.
+            // shadow-display: recessed into the chassis.
             shape.fill(Color.display)
                 .overlay(alignment: .top) { Rectangle().fill(Color.black.opacity(0.5)).frame(height: 1) }
                 .clipShape(shape)

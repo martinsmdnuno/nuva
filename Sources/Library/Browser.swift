@@ -1,20 +1,20 @@
 import Foundation
 import Observation
 
-/// Onde o navegador está: na lista de fontes ou numa pasta de uma fonte.
+/// Where the browser is: in the source list or in a folder of a source.
 struct BrowserLocation: Hashable, Sendable {
     let sourceID: UUID
     let path: String
 }
 
-/// Estado do navegador de pastas.
+/// Folder browser state.
 @MainActor
 @Observable
 final class Browser {
     private(set) var location: BrowserLocation?
     private(set) var entries: [Entry] = []
     private(set) var errorMessage: String?
-    /// Resumo por pasta: "12 faixas", "2 pastas".
+    /// Summary per folder: "12 faixas", "2 pastas".
     private(set) var summaries: [Entry.ID: String] = [:]
 
     @ObservationIgnored private let sources: SourceStore
@@ -26,7 +26,7 @@ final class Browser {
 
     var source: (any MusicSource)? { location.flatMap { sources.source($0.sourceID) } }
 
-    /// Nome do sítio atual: pasta, fonte, ou "Fontes".
+    /// Name of the current location: folder, source, or "Fontes".
     var title: String {
         guard let location else { return String(localized: "Fontes") }
         if location.path.isEmpty { return source?.name ?? "" }
@@ -54,12 +54,12 @@ final class Browser {
 
     func reload() { open(location) }
 
-    /// Entrar numa pasta.
+    /// Enter a folder.
     func enter(_ folder: Entry) {
         open(BrowserLocation(sourceID: folder.sourceID, path: folder.path))
     }
 
-    /// Subir um nível; da raiz de uma fonte volta à lista de fontes.
+    /// Go up one level; from a source's root, back to the source list.
     func up() {
         guard let location else { return }
         if location.path.isEmpty {
@@ -80,7 +80,7 @@ final class Browser {
             else { String(localized: "vazia") }
     }
 
-    /// Faixas de uma pasta e das subpastas, por ordem natural (CD 01 antes de CD 02).
+    /// Tracks in a folder and its subfolders, in natural order (CD 01 before CD 02).
     func tracks(in folder: BrowserLocation) async -> [Entry] {
         guard let source = sources.source(folder.sourceID) else { return [] }
         return await Self.collect(source, folder.path)

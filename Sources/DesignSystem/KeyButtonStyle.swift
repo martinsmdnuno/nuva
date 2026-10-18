@@ -1,14 +1,14 @@
 import SwiftUI
 
-/// A tecla lisa do aparelho, como numa calculadora Braun. Único estilo de botão da app.
-/// Sem contorno: o tom da face diz a função. Com ícone (todas a 36px de altura) ou com rótulo.
+/// The device's flat key, like on a Braun calculator. The app's only button style.
+/// No outline: the face tone tells the function. With an icon (all 36px tall) or a label.
 struct KeyButtonStyle: ButtonStyle {
     enum Tone {
-        /// Play/pausa: âmbar, 56px. Uma por janela.
+        /// Play/pause: amber, 56px. One per window.
         case play
-        /// Anterior e seguinte: cinzento claro, 40px.
+        /// Previous and next: light grey, 40px.
         case transport
-        /// Modo, saída e botões de texto: cinzento médio, 32px.
+        /// Mode, output and text buttons: mid grey, 32px.
         case mode
 
         var face: Color {
@@ -39,7 +39,7 @@ struct KeyButtonStyle: ButtonStyle {
     }
 
     var tone: Tone = .transport
-    /// Botão de texto: altura key-text, largura pelo rótulo, sempre no tom de modo.
+    /// Text button: key-text height, width from the label, always in the mode tone.
     var isText = false
 
     func makeBody(configuration: Configuration) -> some View {
@@ -50,8 +50,8 @@ struct KeyButtonStyle: ButtonStyle {
         let configuration: Configuration
         let tone: Tone
         let isText: Bool
-        /// Foco do próprio botão (o ambiente `isFocused` também acende quando
-        /// a lista à volta tem foco, o que acendia todas as teclas lá dentro).
+        /// The button's own focus (the `isFocused` environment also lights up when
+        /// the surrounding list has focus, which lit every key inside it).
         @FocusState private var isFocused: Bool
 
         var body: some View {
@@ -64,7 +64,7 @@ struct KeyButtonStyle: ButtonStyle {
                 .frame(width: isText ? nil : tone.width, height: isText ? Size.keyText : Size.key)
                 .background {
                     shape.fill(tone.face)
-                    // Premida: a face escurece enquanto o rato está em baixo.
+                    // Pressed: the face darkens while the mouse is down.
                     if configuration.isPressed { shape.fill(Color.black.opacity(0.15)) }
                 }
                 .overlay {
@@ -75,7 +75,7 @@ struct KeyButtonStyle: ButtonStyle {
                     }
                 }
                 .contentShape(shape)
-                // Só entra no ciclo de foco com o acesso total pelo teclado, como os botões nativos.
+                // Only joins the focus loop with full keyboard access, like native buttons.
                 .focusable(interactions: .activate)
                 .focused($isFocused)
         }
@@ -88,7 +88,7 @@ extension ButtonStyle where Self == KeyButtonStyle {
     static var keyText: KeyButtonStyle { KeyButtonStyle(isText: true) }
 }
 
-/// Ponto de luz: estado ligado, reprodução, faixa a tocar.
+/// Indicator light: on state, playback, track playing.
 struct LED: View {
     var isOn: Bool
     var size: CGFloat = Size.led
@@ -101,11 +101,11 @@ struct LED: View {
 }
 
 extension View {
-    /// Desliga o anel nativo; o KeyButtonStyle desenha o seu em `focus`.
+    /// Turns off the native ring; KeyButtonStyle draws its own in `focus`.
     func keyFocus() -> some View { focusEffectDisabled() }
 
-    /// LED por cima da tecla. `nil` deixa o espaço vazio, para as faces alinharem
-    /// com as das teclas que têm estado.
+    /// LED above the key. `nil` leaves the space empty, so the faces line up
+    /// with those of keys that have a state.
     func keyLED(_ isOn: Bool?) -> some View {
         VStack(spacing: Space.s1) {
             if let isOn {
@@ -117,7 +117,7 @@ extension View {
         }
     }
 
-    /// Legenda impressa no chassis por baixo de um grupo de teclas ou à frente de uma zona.
+    /// Legend printed on the chassis below a group of keys or in front of an area.
     func legend() -> some View {
         font(.dsLegend).foregroundStyle(Color.inkMuted)
     }

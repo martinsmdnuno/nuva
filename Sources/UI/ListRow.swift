@@ -1,10 +1,10 @@
 import SwiftUI
 
-/// Linha de lista: pastas no navegador e faixas na fila. Sem divisórias entre linhas.
+/// List row: folders in the browser and tracks in the queue. No dividers between rows.
 struct ListRow: View {
     enum Leading {
         case folder
-        /// Faixa: LED aceso quando está a tocar.
+        /// Track: LED lit while playing.
         case track
         case symbol(String)
     }
@@ -12,13 +12,13 @@ struct ListRow: View {
     let leading: Leading
     let name: String
     var trailing: String = ""
-    /// Duração em `duration` (mono) ou contagem em `caption`.
+    /// Duration in `duration` (mono) or count in `caption`.
     var trailingIsDuration = true
     var isSelected = false
     var isPlaying = false
-    /// Fonte em erro: nome e ícone em `danger`.
+    /// Source in error: name and icon in `danger`.
     var isError = false
-    /// Tooltip: o nome completo, com extensão.
+    /// Tooltip: the full name, with extension.
     var help: String?
 
     @State private var hovering = false

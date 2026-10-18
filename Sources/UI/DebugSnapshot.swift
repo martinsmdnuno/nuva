@@ -10,10 +10,13 @@ enum DebugSnapshot {
         guard CommandLine.arguments.contains("--snapshot") else { return }
         let model = sampleModel()
         let browserModel = sampleBrowserModel()
+        let compactModel = sampleModel()
+        compactModel.windowMode = .compact
         let dir = URL(fileURLWithPath: NSTemporaryDirectory())
         let views: [(String, AnyView, AppModel)] = [
             ("player", AnyView(ContentView()), model),
             ("navegador", AnyView(ContentView()), browserModel),
+            ("compacto", AnyView(ContentView()), compactModel),
             ("teclas", AnyView(KeyPreview().frame(width: 360, height: 480)), model),
             ("barra", AnyView(MenuBarPlayer()), model),
             ("equalizador", AnyView(EqualizerPanel(eq: model.player.equalizer)), model),

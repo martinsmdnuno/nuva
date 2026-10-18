@@ -16,6 +16,8 @@ final class AppModel {
         case player
         /// Com navegador, 720 × 480.
         case browser
+        /// Compacto: só display, teclas e volume (360 de largura, altura pelo conteúdo).
+        case compact
     }
 
     /// Folha "Adicionar Jellyfin" aberta.
@@ -54,6 +56,11 @@ final class AppModel {
     /// Abre ou fecha a gaveta das pastas.
     func toggleBrowser() {
         windowMode = windowMode == .browser ? .player : .browser
+    }
+
+    /// Mostra ou esconde a fila: alterna entre o player e o compacto.
+    func toggleQueue() {
+        windowMode = windowMode == .compact ? .player : .compact
     }
 
     /// Play sem fila abre o navegador de pastas.

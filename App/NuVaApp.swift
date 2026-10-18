@@ -52,6 +52,8 @@ struct NuVaCommands: Commands {
                 .keyboardShortcut("1")
             Button("Com navegador") { model.windowMode = .browser }
                 .keyboardShortcut("2")
+            Button("Compacto") { model.windowMode = .compact }
+                .keyboardShortcut("3")
             Button(model.windowMode == .browser ? "Esconder pastas" : "Mostrar pastas") { model.toggleBrowser() }
                 .keyboardShortcut("b")
         }

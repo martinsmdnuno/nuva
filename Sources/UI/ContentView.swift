@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// A janela escolhe o conteúdo pelo modo: player (360 × 480) ou com navegador (720 × 480).
+/// A janela escolhe o conteúdo pelo modo: player (360 × 480), com navegador (720 × 480)
+/// ou compacto (360 de largura, sem fila, altura pelo conteúdo).
 /// Tudo no mesmo plano; o navegador separa-se do player por uma divisória vertical.
 struct ContentView: View {
     @Environment(AppModel.self) private var model
@@ -17,7 +18,7 @@ struct ContentView: View {
             PlayerView()
                 .frame(width: 360)
         }
-        .frame(width: model.windowMode == .browser ? 720 : 360, height: 480)
+        .frame(width: model.windowMode == .browser ? 720 : 360, height: model.windowMode == .compact ? nil : 480)
         .background(Color.surface0)
         .sheet(isPresented: $model.showingJellyfinLogin) {
             JellyfinLoginView()

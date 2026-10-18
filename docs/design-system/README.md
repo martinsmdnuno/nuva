@@ -61,7 +61,7 @@ SF Symbols, peso regular, nunca preenchidos exceto `play.fill` e `pause.fill` de
 
 Três tamanhos, mesmo conteúdo, a app escolhe pelo tamanho da janela:
 
-- **Mini barra** (360 × 64): display mini + play/pausa + seguinte. Fica por cima das outras janelas se o utilizador quiser.
+- **Compacto** (360 × ~320, altura pelo conteúdo): display, teclas, volume e o cabeçalho com as pistas "pastas" e "fila". Sem fila.
 - **Player com playlist** (360 × 480): display com a posição, teclas em três grupos, volume, fila. Tudo no mesmo plano.
 - **Com navegador** (720 × 480): navegador de pastas à esquerda, player com fila à direita.
 

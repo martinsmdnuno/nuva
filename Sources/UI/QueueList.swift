@@ -10,35 +10,7 @@ struct QueueList: View {
 
     var body: some View {
         let player = model.player
-        VStack(spacing: Space.s1 + 2) {
-            header(player)
-            list(player)
-        }
-    }
-
-    /// À esquerda, a pista para a gaveta das pastas (do lado de onde ela abre);
-    /// à direita, a legenda "fila" e o total, como impresso no chassis.
-    private func header(_ player: PlayerController) -> some View {
-        HStack(spacing: Space.s2) {
-            DrawerToggle()
-            Spacer()
-            Text("fila").legend()
-            if !player.queue.isEmpty {
-                Text(summary(player))
-                    .font(Typography.mono(10, .regular))
-                    .foregroundStyle(Color.inkMuted)
-            }
-        }
-        .padding(.horizontal, Space.s2)
-    }
-
-    /// "11 faixas · 39:18"; sem o total enquanto faltarem durações.
-    private func summary(_ player: PlayerController) -> String {
-        let count = player.queue.count
-        let label = count == 1 ? "1 faixa" : "\(count) faixas"
-        let known = player.queue.compactMap { model.durations.values[$0.entry.id] }
-        guard known.count == count else { return label }
-        return "\(label) · \(TimeFormat.short(known.reduce(0, +)))"
+        list(player)
     }
 
     private func list(_ player: PlayerController) -> some View {
@@ -144,29 +116,69 @@ struct QueueList: View {
     }
 }
 
-/// "pastas" com LED: abre e fecha a gaveta das pastas (⌘B). O LED acende com a gaveta aberta.
-/// Texto com LED, como os presets do equalizador; no hover passa a `ink`.
-private struct DrawerToggle: View {
+/// Cabeçalho da fila, como impresso no chassis: à esquerda a pista "pastas" (do lado
+/// de onde a gaveta abre), à direita a pista "fila" com o total. Fica no compacto,
+/// para quem não conhece a app ver por onde se volta.
+struct QueueHeader: View {
     @Environment(AppModel.self) private var model
+
+    var body: some View {
+        let player = model.player
+        HStack(spacing: Space.s2) {
+            LegendToggle(
+                isOn: model.windowMode == .browser, symbol: "sidebar.left", label: "pastas",
+                help: model.windowMode == .browser ? "Esconder pastas ⌘B" : "Mostrar pastas ⌘B"
+            ) { model.toggleBrowser() }
+            Spacer()
+            LegendToggle(
+                isOn: model.windowMode != .compact, label: "fila",
+                detail: player.queue.isEmpty ? nil : summary(player),
+                help: model.windowMode == .compact ? "Mostrar fila ⌘1" : "Esconder fila ⌘3"
+            ) { model.toggleQueue() }
+        }
+        .padding(.horizontal, Space.s2)
+    }
+
+    /// "11 faixas · 39:18"; sem o total enquanto faltarem durações.
+    private func summary(_ player: PlayerController) -> String {
+        let count = player.queue.count
+        let label = count == 1 ? "1 faixa" : "\(count) faixas"
+        let known = player.queue.compactMap { model.durations.values[$0.entry.id] }
+        guard known.count == count else { return label }
+        return "\(label) · \(TimeFormat.short(known.reduce(0, +)))"
+    }
+}
+
+/// Legenda clicável com LED, como os presets do equalizador. `ink-muted` em repouso,
+/// `ink` no hover e quando ligada; o LED acende quando ligada.
+private struct LegendToggle: View {
+    let isOn: Bool
+    var symbol: String?
+    let label: String
+    var detail: String?
+    let help: String
+    let action: () -> Void
     @State private var hovering = false
 
     var body: some View {
-        let isOpen = model.windowMode == .browser
-        Button { model.toggleBrowser() } label: {
+        Button(action: action) {
             HStack(spacing: Space.s1 + 2) {
                 // Na coluna dos LEDs das faixas, para alinhar.
-                LED(isOn: isOpen).frame(width: 12)
-                Image(systemName: "sidebar.left")
-                    .font(.system(size: 10))
-                Text("pastas")
-                    .font(.dsLegend)
+                LED(isOn: isOn).frame(width: symbol == nil ? nil : 12)
+                if let symbol {
+                    Image(systemName: symbol).font(.system(size: 10))
+                }
+                Text(label).font(.dsLegend)
+                if let detail {
+                    Text(detail).font(Typography.mono(10, .regular))
+                }
             }
-            .foregroundStyle(hovering || isOpen ? Color.ink : Color.inkMuted)
+            .foregroundStyle(hovering || isOn ? Color.ink : Color.inkMuted)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .onHover { hovering = $0 }
-        .help(isOpen ? "Esconder pastas ⌘B" : "Mostrar pastas ⌘B")
+        .help(help)
     }
 }
 

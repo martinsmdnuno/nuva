@@ -401,6 +401,22 @@
         }
       }
     },
+    "Capa da pasta": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folder artwork"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capa da pasta"
+          }
+        }
+      }
+    },
     "Clássica": {
       "localizations": {
         "en": {
@@ -765,6 +781,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Loudness"
+          }
+        }
+      }
+    },
+    "Mostrar capas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show Artwork"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar capas"
           }
         }
       }

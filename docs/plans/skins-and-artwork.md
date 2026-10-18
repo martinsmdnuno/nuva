@@ -99,6 +99,8 @@ The spec's colours, applied under NuVa's rules. Contrast fixes are not optional:
 
 ### Phase 5. Artwork, folder-based, small and optional
 
+Done. The tile is 76 pt (the height of the title, folder and time rows); `capa` was added to the names, since Portuguese folders use it.
+
 - `MusicSource` gains `func artwork(for folder: Entry) async throws -> URL?`, default `nil`.
 - `LocalSource` only: looks in the folder for `cover`, `folder`, `front`, `album` with `.jpg/.jpeg/.png` (case-insensitive). Never reads embedded tags.
 - `JellyfinSource` returns `nil` for now: Jellyfin's `Primary` image may have been extracted from tags, and we can't tell, so it would break "folders, not metadata".

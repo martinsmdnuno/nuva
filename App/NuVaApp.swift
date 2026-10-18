@@ -60,6 +60,8 @@ struct NuVaCommands: Commands {
                 .keyboardShortcut("3")
             Button(model.windowMode == .browser ? String(localized: "Esconder pastas") : String(localized: "Mostrar pastas")) { model.toggleBrowser() }
                 .keyboardShortcut("b")
+            Toggle("Mostrar capas", isOn: Binding(get: { model.showsArtwork }, set: { model.showsArtwork = $0 }))
+                .keyboardShortcut("a", modifiers: [.command, .option])
             Divider()
             Menu("Skin") { SkinMenuItems() }
             Menu("Fonte") { FontMenuItems() }

@@ -38,7 +38,7 @@ struct JellyfinLoginView: View {
                 Button("Cancelar") { dismiss() }
                     .buttonStyle(.keyText)
                     .keyboardShortcut(.cancelAction)
-                Button(busy ? "A entrar…" : "Entrar") { submit() }
+                Button(busy ? String(localized: "A entrar…") : String(localized: "Entrar")) { submit() }
                     .buttonStyle(.keyText)
                     .keyboardShortcut(.defaultAction)
                     .disabled(busy || serverURL == nil || username.isEmpty)
@@ -50,7 +50,7 @@ struct JellyfinLoginView: View {
         .background(Color.surface1)
     }
 
-    private func field(_ label: String, @ViewBuilder _ content: () -> some View) -> some View {
+    private func field(_ label: LocalizedStringKey, @ViewBuilder _ content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: Space.s1) {
             Text(label)
                 .font(.dsLabel)

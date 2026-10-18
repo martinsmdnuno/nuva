@@ -21,7 +21,7 @@ struct DisplayView: View {
             .foregroundStyle(Color.displayMuted)
             .frame(height: 14)
 
-            Text(entry?.title ?? "Sem faixa")
+            Text(entry?.title ?? String(localized: "Sem faixa"))
                 .font(.dsTitle)
                 .foregroundStyle(entry == nil ? Color.displayMuted : Color.displayInk)
                 .lineLimit(1)
@@ -30,7 +30,7 @@ struct DisplayView: View {
                 .frame(height: 20)
 
             HStack(spacing: Space.s2) {
-                Text(entry?.folderName ?? "Escolher uma pasta para tocar")
+                Text(entry?.folderName ?? String(localized: "Escolher uma pasta para tocar"))
                     .font(.dsCaption)
                     .lineLimit(1)
                     .truncationMode(.tail)
@@ -51,7 +51,7 @@ struct DisplayView: View {
                     .foregroundStyle(Color.displayInk)
                     .contentShape(Rectangle())
                     .onTapGesture { showsRemaining.toggle() }
-                    .help(showsRemaining ? "Mostrar tempo decorrido" : "Mostrar tempo restante")
+                    .help(showsRemaining ? String(localized: "Mostrar tempo decorrido") : String(localized: "Mostrar tempo restante"))
                 Spacer()
                 Text(TimeFormat.display(player.duration))
                     .font(.dsDisplayMeta)

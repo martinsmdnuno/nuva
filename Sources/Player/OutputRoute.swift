@@ -39,18 +39,18 @@ final class OutputRoute {
         if let routed, !routed.isEmpty, !routed.contains(where: { $0 == device?.name }) {
             // Seletor AirPlay da app: o destino vive no AVOutputContext, não no CoreAudio.
             newLabel = "→ AirPlay \(routed.joined(separator: " + "))"
-            newDetail = "Saída AirPlay: \(routed.joined(separator: ", ")). O formato do stream não é exposto pelo macOS"
+            newDetail = String(localized: "Saída AirPlay: \(routed.joined(separator: ", ")). O formato do stream não é exposto pelo macOS")
         } else if external {
             newLabel = "→ AirPlay"
-            newDetail = "Saída AirPlay. O formato do stream não é exposto pelo macOS"
+            newDetail = String(localized: "Saída AirPlay. O formato do stream não é exposto pelo macOS")
         } else if let device {
             if device.isAirPlay {
                 newLabel = "→ AirPlay \(device.shortName)"
-                newDetail = "Saída AirPlay: \(device.name). O formato do stream não é exposto pelo macOS"
+                newDetail = String(localized: "Saída AirPlay: \(device.name). O formato do stream não é exposto pelo macOS")
             } else {
                 let rate = device.sampleRate > 0 ? " · \(AudioFormat.kHz(device.sampleRate)) kHz" : ""
                 newLabel = "→ \(device.shortName)\(rate)"
-                newDetail = "Saída: \(device.name)\(device.isBluetooth ? " (Bluetooth)" : "")\(rate)"
+                newDetail = String(localized: "Saída: \(device.name)\(device.isBluetooth ? " (Bluetooth)" : "")\(rate)")
             }
         } else {
             newLabel = ""

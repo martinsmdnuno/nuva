@@ -1,5 +1,6 @@
 name: NuVa
 options:
+  developmentLanguage: en
   bundleIdPrefix: pt.nunomartins
   deploymentTarget:
     macOS: "14.0"

@@ -10,11 +10,11 @@ struct MenuBarPlayer: View {
         VStack(spacing: Space.s3) {
             DisplayView()
             HStack(spacing: Space.s1) {
-                key("backward.end", .transport, "Anterior") { player.previous() }
-                key(player.isPlaying ? "pause.fill" : "play.fill", .play, player.isPlaying ? "Pausa" : "Tocar") {
+                key("backward.end", .transport, String(localized: "Anterior")) { player.previous() }
+                key(player.isPlaying ? "pause.fill" : "play.fill", .play, player.isPlaying ? String(localized: "Pausa") : String(localized: "Tocar")) {
                     if player.queue.isEmpty { openMain() } else { player.togglePlayPause() }
                 }
-                key("forward.end", .transport, "Seguinte") { player.next() }
+                key("forward.end", .transport, String(localized: "Seguinte")) { player.next() }
                 Spacer(minLength: Space.s2)
                 Button("Abrir NuVa") { openMain() }
                     .buttonStyle(.keyText)

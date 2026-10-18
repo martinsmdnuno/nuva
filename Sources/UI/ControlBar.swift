@@ -11,16 +11,16 @@ struct ControlBar: View {
         @Bindable var player = model.player
         HStack(alignment: .top, spacing: 0) {
             group("leitura") {
-                key("backward.end", .transport, "Anterior ⌘←") { player.previous() }
+                key("backward.end", .transport, String(localized: "Anterior ⌘←")) { player.previous() }
                 key(player.isPlaying ? "pause.fill" : "play.fill", .play,
-                    player.isPlaying ? "Pausa Espaço" : "Tocar Espaço") { model.playOrBrowse() }
-                key("forward.end", .transport, "Seguinte ⌘→") { player.next() }
+                    player.isPlaying ? String(localized: "Pausa Espaço") : String(localized: "Tocar Espaço")) { model.playOrBrowse() }
+                key("forward.end", .transport, String(localized: "Seguinte ⌘→")) { player.next() }
             }
             Spacer(minLength: Space.s4)
             group("modo") {
                 key(player.repeatMode == .one ? "repeat.1" : "repeat", .mode, repeatHelp(player.repeatMode) + " ⌘R",
                     led: player.repeatMode != .off) { player.repeatMode = player.repeatMode.next }
-                key("shuffle", .mode, player.shuffle ? "Aleatório ligado ⌥⌘S" : "Aleatório ⌥⌘S",
+                key("shuffle", .mode, player.shuffle ? String(localized: "Aleatório ligado ⌥⌘S") : String(localized: "Aleatório ⌥⌘S"),
                     led: player.shuffle) { player.shuffle.toggle() }
             }
             Spacer(minLength: Space.s4)
@@ -33,13 +33,13 @@ struct ControlBar: View {
 
     private func repeatHelp(_ mode: RepeatMode) -> String {
         switch mode {
-        case .off: "Repetir"
-        case .all: "Repetir tudo"
-        case .one: "Repetir uma"
+        case .off: String(localized: "Repetir")
+        case .all: String(localized: "Repetir tudo")
+        case .one: String(localized: "Repetir uma")
         }
     }
 
-    private func group(_ name: String, @ViewBuilder keys: () -> some View) -> some View {
+    private func group(_ name: LocalizedStringKey, @ViewBuilder keys: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: Space.s1 + 2) {
             HStack(alignment: .bottom, spacing: Space.s1) { keys() }
             Text(name).legend()

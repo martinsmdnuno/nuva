@@ -42,8 +42,8 @@ enum SourceKind: String, Codable, Sendable {
 
     var label: String {
         switch self {
-        case .local: "Local"
-        case .server: "Servidor"
+        case .local: String(localized: "Local")
+        case .server: String(localized: "Servidor")
         case .jellyfin: "Jellyfin"
         }
     }
@@ -71,11 +71,11 @@ enum SourceError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .missingFolder(let name): "Pasta em falta: \(name)"
-        case .serverUnavailable: "Servidor offline. Tentar de novo"
-        case .loginFailed: "Utilizador ou palavra-passe errados"
-        case .noMusicLibrary: "Sem biblioteca de música neste utilizador"
-        case .unexpectedResponse: "Resposta inesperada. Confirmar o endereço do servidor"
+        case .missingFolder(let name): String(localized: "Pasta em falta: \(name)")
+        case .serverUnavailable: String(localized: "Servidor offline. Tentar de novo")
+        case .loginFailed: String(localized: "Utilizador ou palavra-passe errados")
+        case .noMusicLibrary: String(localized: "Sem biblioteca de música neste utilizador")
+        case .unexpectedResponse: String(localized: "Resposta inesperada. Confirmar o endereço do servidor")
         }
     }
 }

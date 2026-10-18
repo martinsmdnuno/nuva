@@ -21,6 +21,11 @@ final class Equalizer {
     static let range: ClosedRange<Float> = -12...12
     static let custom = "Personalizado"
 
+    /// Nome de um preset na língua da app. Os nomes em português são a chave (e o que fica guardado).
+    nonisolated static func displayName(_ name: String) -> String {
+        Bundle.main.localizedString(forKey: name, value: name, table: nil)
+    }
+
     static let presets: [EQPreset] = [
         EQPreset(name: "Plano", gains: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
         EQPreset(name: "Graves", gains: [6, 5, 4, 2, 0, 0, 0, 0, 0, 0]),

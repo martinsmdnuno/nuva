@@ -73,6 +73,8 @@ Espaço play/pausa · ⌘→ seguinte · ⌘← anterior · ⌘↑ ⌘↓ volume
 
 Português de Portugal, frases curtas, verbo primeiro, sem pontos finais em botões. "Adicionar fonte", "Tocar pasta", "Servidor offline. Tentar de novo". Nada de "por favor" nem pontos de exclamação.
 
+A app está em português de Portugal e em inglês e segue a língua do sistema; noutras línguas cai para inglês. Em inglês valem as mesmas regras: frases curtas, verbo primeiro, legendas do chassis em minúsculas ("playback", "mode", "output", "volume", "queue", "folders"), menus em Title Case como no macOS.
+
 ## Para quem implementa (SwiftUI)
 
 - Tokens de cor como `Color` em `Assets.xcassets` com variante clara e escura, nomes iguais aos tokens.

@@ -50,7 +50,7 @@ Em `docs/design-system/`. Ler `README.md` e `tokens.json` antes de qualquer UI, 
 - Letra: Inter e IBM Plex Mono embebidas na app (OFL, ficheiros de Google Fonts); fallback para SF Pro/SF Mono se faltarem.
 - Linguagem Dieter Rams em Chumbo: um só plano, sem cartões nem contornos, hierarquia pela cor das teclas, estados por LED.
 - Teclas: um único `ButtonStyle` (`KeyButtonStyle`) com três tons: play, transporte, modo.
-- Texto da interface em português de Portugal.
+- Texto da interface em português de Portugal e inglês, pela língua do sistema (fallback inglês). O texto em português é a chave em `Resources/Localizable.xcstrings`; cada texto novo leva a tradução inglesa lá. Texto que passa por `String` (ternários, parâmetros, modelo) usa `String(localized:)`.
 
 ## Stack e convenções
 - Swift 6, SwiftUI, macOS 14+. Projeto gerado com XcodeGen (`project.yml`), não editar o `.xcodeproj` à mão.

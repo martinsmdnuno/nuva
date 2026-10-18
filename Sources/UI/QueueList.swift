@@ -127,13 +127,15 @@ struct QueueHeader: View {
         HStack(spacing: Space.s2) {
             LegendToggle(
                 isOn: model.windowMode == .browser, symbol: "sidebar.left", label: "pastas",
-                help: model.windowMode == .browser ? "Esconder pastas ⌘B" : "Mostrar pastas ⌘B"
+                help: model.windowMode == .browser
+                    ? String(localized: "Esconder pastas ⌘B") : String(localized: "Mostrar pastas ⌘B")
             ) { model.toggleBrowser() }
             Spacer()
             LegendToggle(
                 isOn: model.windowMode != .compact, label: "fila",
                 detail: player.queue.isEmpty ? nil : summary(player),
-                help: model.windowMode == .compact ? "Mostrar fila ⌘1" : "Esconder fila ⌘3"
+                help: model.windowMode == .compact
+                    ? String(localized: "Mostrar fila ⌘1") : String(localized: "Esconder fila ⌘3")
             ) { model.toggleQueue() }
         }
         .padding(.horizontal, Space.s2)
@@ -142,7 +144,7 @@ struct QueueHeader: View {
     /// "11 faixas · 39:18"; sem o total enquanto faltarem durações.
     private func summary(_ player: PlayerController) -> String {
         let count = player.queue.count
-        let label = count == 1 ? "1 faixa" : "\(count) faixas"
+        let label = String(localized: "\(count) faixas")
         let known = player.queue.compactMap { model.durations.values[$0.entry.id] }
         guard known.count == count else { return label }
         return "\(label) · \(TimeFormat.short(known.reduce(0, +)))"
@@ -154,7 +156,7 @@ struct QueueHeader: View {
 private struct LegendToggle: View {
     let isOn: Bool
     var symbol: String?
-    let label: String
+    let label: LocalizedStringKey
     var detail: String?
     let help: String
     let action: () -> Void

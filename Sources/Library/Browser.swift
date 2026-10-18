@@ -28,7 +28,7 @@ final class Browser {
 
     /// Nome do sítio atual: pasta, fonte, ou "Fontes".
     var title: String {
-        guard let location else { return "Fontes" }
+        guard let location else { return String(localized: "Fontes") }
         if location.path.isEmpty { return source?.name ?? "" }
         return (location.path as NSString).lastPathComponent
     }
@@ -75,9 +75,9 @@ final class Browser {
         let tracks = items.count { $0.kind == .track }
         let folders = items.count - tracks
         summaries[folder.id] =
-            if tracks > 0 { tracks == 1 ? "1 faixa" : "\(tracks) faixas" }
-            else if folders > 0 { folders == 1 ? "1 pasta" : "\(folders) pastas" }
-            else { "vazia" }
+            if tracks > 0 { String(localized: "\(tracks) faixas") }
+            else if folders > 0 { String(localized: "\(folders) pastas") }
+            else { String(localized: "vazia") }
     }
 
     /// Faixas de uma pasta e das subpastas, por ordem natural (CD 01 antes de CD 02).

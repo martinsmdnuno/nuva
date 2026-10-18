@@ -39,8 +39,8 @@ final class SourceStore {
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.allowsMultipleSelection = false
-        panel.prompt = "Adicionar fonte"
-        panel.message = "Escolher a pasta da música"
+        panel.prompt = String(localized: "Adicionar fonte")
+        panel.message = String(localized: "Escolher a pasta da música")
         guard panel.runModal() == .OK, let url = panel.url else { return nil }
         return addLocal(url)
     }

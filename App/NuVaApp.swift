@@ -54,11 +54,11 @@ struct NuVaCommands: Commands {
                 .keyboardShortcut("2")
             Button("Compacto") { model.windowMode = .compact }
                 .keyboardShortcut("3")
-            Button(model.windowMode == .browser ? "Esconder pastas" : "Mostrar pastas") { model.toggleBrowser() }
+            Button(model.windowMode == .browser ? String(localized: "Esconder pastas") : String(localized: "Mostrar pastas")) { model.toggleBrowser() }
                 .keyboardShortcut("b")
         }
         CommandMenu("Controlos") {
-            Button(model.player.isPlaying ? "Pausa" : "Tocar") { model.playOrBrowse() }
+            Button(model.player.isPlaying ? String(localized: "Pausa") : String(localized: "Tocar")) { model.playOrBrowse() }
                 .keyboardShortcut(.space, modifiers: [])
             Button("Parar") { model.player.stop() }
                 .keyboardShortcut(".")
@@ -74,7 +74,7 @@ struct NuVaCommands: Commands {
             Divider()
             Button("Repetir") { model.player.repeatMode = model.player.repeatMode.next }
                 .keyboardShortcut("r")
-            Button(model.player.shuffle ? "Desligar aleatório" : "Aleatório") { model.player.shuffle.toggle() }
+            Button(model.player.shuffle ? String(localized: "Desligar aleatório") : String(localized: "Aleatório")) { model.player.shuffle.toggle() }
                 .keyboardShortcut("s", modifiers: [.command, .option])
             Divider()
             Button("Ir para a faixa atual") {

@@ -277,7 +277,7 @@ actor JellyfinSource: MusicSource {
     enum HTTPError: LocalizedError {
         case status(Int)
         var errorDescription: String? {
-            switch self { case .status(let code): "O servidor respondeu \(code). Tentar de novo" }
+            switch self { case .status(let code): String(localized: "O servidor respondeu \(code). Tentar de novo") }
         }
     }
 }

@@ -10,7 +10,9 @@ struct EqualizerKey: View {
         Button { showing.toggle() } label: { Image(systemName: "slider.vertical.3") }
             .buttonStyle(.key(.mode))
             .keyFocus()
-            .help(eq.enabled ? "Equalizador: \(eq.presetName)" : "Equalizador desligado")
+            .help(eq.enabled
+                ? String(localized: "Equalizador: \(Equalizer.displayName(eq.presetName))")
+                : String(localized: "Equalizador desligado"))
             .keyLED(eq.enabled)
             .popover(isPresented: $showing, arrowEdge: .bottom) {
                 EqualizerPanel(eq: eq)
@@ -43,7 +45,7 @@ struct EqualizerPanel: View {
                     Button { eq.apply(preset) } label: {
                         HStack(spacing: Space.s1 + 2) {
                             LED(isOn: active)
-                            Text(preset.name.lowercased())
+                            Text(Equalizer.displayName(preset.name).lowercased())
                                 .font(.dsCaption)
                                 .foregroundStyle(active ? Color.ink : Color.inkMuted)
                         }
@@ -51,7 +53,7 @@ struct EqualizerPanel: View {
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .help("Preset \(preset.name)")
+                    .help(String(localized: "Preset \(Equalizer.displayName(preset.name))"))
                 }
             }
             HStack(alignment: .top, spacing: Space.s2) {
@@ -92,7 +94,7 @@ private struct PowerSwitch: View {
         Button { isOn.toggle() } label: {
             HStack(spacing: Space.s1 + 2) {
                 LED(isOn: isOn)
-                Text(isOn ? "ligado" : "desligado").legend()
+                Text(isOn ? String(localized: "ligado") : String(localized: "desligado")).legend()
                 ZStack(alignment: isOn ? .trailing : .leading) {
                     RoundedRectangle(cornerRadius: 2).fill(Color.surface0)
                     RoundedRectangle(cornerRadius: 1).fill(Color.keyFace)
@@ -104,7 +106,7 @@ private struct PowerSwitch: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .help(isOn ? "Desligar o equalizador" : "Ligar o equalizador")
+        .help(isOn ? String(localized: "Desligar o equalizador") : String(localized: "Ligar o equalizador"))
     }
 }
 

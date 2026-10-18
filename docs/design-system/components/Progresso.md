@@ -1,10 +1,9 @@
-# Barra de progresso
+# Barra de posição
 
-Mostra e controla a posição na faixa.
+Mostra e controla a posição na faixa. Vive dentro do display, por baixo do tempo.
 
 ## Regras
-- Calha `track`, parte percorrida `fill`, espessura `bar` (4px), cantos `radius-sm`.
-- Sem cabeça visível em repouso. No hover aparece um círculo de 10px em `fill` e um tooltip com o tempo nesse ponto.
+- Calha `display-track`, parte percorrida `display-ink`, espessura `bar` (2px), sem cantos.
+- Sem cabeça visível em repouso. No hover aparece um traço vertical de 2 × 10px em `display-ink` e um tooltip com o tempo nesse ponto.
 - Área clicável de 16px de altura, maior do que a barra.
 - Setas do teclado avançam 5 segundos quando tem foco.
-- Em streaming, a parte já carregada pode aparecer em `line` entre `fill` e `track`. Só se ajudar; senão omitir.

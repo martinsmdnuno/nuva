@@ -96,16 +96,6 @@ struct SkinTests {
     ]
 
     @Test(arguments: Skin.all) func textPassesAA(skin: Skin) {
-        if skin == .nuno {
-            // The 1.0 palette misses a few pairs (docs/plans/skins-and-artwork.md, "Contrast gaps in Nuno").
-            // Kept as is until decided; this fails once they are fixed, so the exception can go.
-            withKnownIssue("Nuno 1.0 contrast gaps") { checkContrast(skin) }
-        } else {
-            checkContrast(skin)
-        }
-    }
-
-    private func checkContrast(_ skin: Skin) {
         for appearance in [light, dark] {
             for (a, b) in Self.textPairs {
                 let r = ratio(skin, a, b, appearance)
@@ -123,6 +113,10 @@ struct SkinTests {
             #expect(ratio(skin, .surface1, .surface0, dark) >= 1.2)
             #expect(ratio(skin, .surface2, .surface0, dark) >= 1.4)
             #expect(ratio(skin, .keyMode, .surface0, dark) >= 3)
+        }
+        // Mode keys read as keys, with no outline, in Nuno too.
+        for appearance in [light, dark] {
+            #expect(ratio(.nuno, .keyMode, .surface0, appearance) >= 3)
         }
     }
 

@@ -145,7 +145,19 @@ The contrast test that guards the Graphite skins also ran on Nuno, the 1.0 palet
 | Aluminium | `key-play` on `surface-0` | 2.20 | 3 |
 | Aluminium | `key-face` on `surface-0` | 2.95 | 3 |
 
-Nuno is left unchanged (phase 1 promised zero visual change); the test records these as a known issue. Fixing them is a small colour change per token, to decide separately.
+Fixed after phase 5, with the smallest change per token; the test now holds Nuno to the same rule:
+
+| Theme | Token | 1.0 | Now |
+|---|---|---|---|
+| Lead | key-mode | #6E7176 | #6B6E73 |
+| Lead | key-mode-ink | #E8E6E1 | #F8F7F4 |
+| Lead | ink-muted | #A3A19C | #A6A49F |
+| Aluminium | key-face | #85837E | #7E7C77 |
+| Aluminium | key-ink | #1E2023 | #0E0F10 |
+| Aluminium | signal | #8A5E0E | #845A0D |
+| Aluminium | led, key-play | #D98F12, #CC8E1A | #AE7410 |
+
+The Aluminium amber is the visible one: 3:1 on a light chassis needs a darker amber, and the play key's dark icon still passes on it (4.85:1).
 
 ## Decisions settled by the principles
 

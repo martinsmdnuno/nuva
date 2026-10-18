@@ -12,12 +12,11 @@ Tudo assenta no chassis `surface-0`, margem `space-4`. Não há cartões.
 ## Compacto (⌘3)
 Os passos 1 a 3 e o cabeçalho da fila, sem as linhas. A janela fica com a altura do conteúdo. O cabeçalho fica para quem não conhece a app ver por onde se volta.
 
-## Pista das pastas
-Quem não conhece a app tem de ver que há uma gaveta. No cabeçalho da fila, à esquerda (o lado de onde a gaveta abre): LED + `sidebar.left` 10px + "pastas" em `legend`.
-- `ink-muted` em repouso, `ink` no hover e com a gaveta aberta. LED aceso com a gaveta aberta.
+## Tecla das pastas
+Quem não conhece a app tem de ver que há uma gaveta, e como a abre e fecha. No cabeçalho da fila, à esquerda (o lado de onde a gaveta abre): uma tecla de modo com `sidebar.left`, LED por cima (aceso com a gaveta aberta) e a legenda "pastas" ao lado.
 - Clicar abre ou fecha a gaveta, como ⌘B. Tooltip "Mostrar pastas ⌘B" / "Esconder pastas ⌘B".
-- Está sempre lá, mesmo com a fila vazia.
-- Para fechar, a gaveta tem também, no canto direito do cabeçalho (junto à divisória), uma tecla de modo com o mesmo ícone `sidebar.left`. Tooltip "Esconder pastas ⌘B".
+- Está sempre lá, mesmo com a fila vazia e no compacto.
+- Com a gaveta aberta, o cabeçalho do navegador tem a mesma tecla no canto direito, junto à divisória, para a fechar.
 
 ## Pista da fila
 À direita do mesmo cabeçalho: LED + "fila" em `legend` + total em mono 10px. LED aceso com a fila à vista. Clicar alterna entre o player e o compacto (⌘1 / ⌘3).

@@ -97,7 +97,7 @@ struct QueueList: View {
 
     /// Primeiro arranque: as duas formas de trazer música, cada uma com o que é e o atalho.
     private var firstRun: some View {
-        VStack(alignment: .leading, spacing: Space.s3) {
+        VStack(alignment: .leading, spacing: Space.s2) {
             Text("começar").legend()
             source("Adicionar pasta", detail: "Música no Mac ou num disco de rede", shortcut: "⌘O") {
                 model.addFolder()
@@ -107,7 +107,7 @@ struct QueueList: View {
             }
         }
         .padding(.horizontal, Space.s2)
-        .padding(.top, Space.s3)
+        .padding(.top, Space.s1)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
@@ -160,12 +160,19 @@ struct QueueHeader: View {
 
     var body: some View {
         let player = model.player
-        HStack(spacing: Space.s2) {
-            LegendToggle(
-                isOn: model.windowMode == .browser, symbol: "sidebar.left", label: "pastas",
-                help: model.windowMode == .browser
-                    ? String(localized: "Esconder pastas ⌘B") : String(localized: "Mostrar pastas ⌘B")
-            ) { model.toggleBrowser() }
+        let isOpen = model.windowMode == .browser
+        HStack(alignment: .bottom, spacing: Space.s2) {
+            // A mesma tecla que fecha a gaveta no cabeçalho do navegador; o LED diz se está aberta.
+            HStack(alignment: .bottom, spacing: Space.s2) {
+                Button { model.toggleBrowser() } label: { Image(systemName: "sidebar.left") }
+                    .buttonStyle(.key(.mode))
+                    .keyFocus()
+                    .help(isOpen ? String(localized: "Esconder pastas ⌘B") : String(localized: "Mostrar pastas ⌘B"))
+                    .keyLED(isOpen)
+                // Ao meio da face da tecla.
+                Text("pastas").legend()
+                    .padding(.bottom, Space.s3)
+            }
             Spacer()
             LegendToggle(
                 isOn: model.windowMode != .compact, label: "fila",
@@ -173,8 +180,9 @@ struct QueueHeader: View {
                 help: model.windowMode == .compact
                     ? String(localized: "Mostrar fila ⌘1") : String(localized: "Esconder fila ⌘3")
             ) { model.toggleQueue() }
+            .padding(.bottom, Space.s3)
         }
-        .padding(.horizontal, Space.s2)
+        .padding(.trailing, Space.s2)
     }
 
     /// "11 faixas · 39:18"; sem o total enquanto faltarem durações.

@@ -33,6 +33,10 @@ struct NuVaApp: App {
 
 /// Closing the window doesn't quit the app: the music keeps playing and NuVa stays in the menu bar.
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        SkinStore.shared.applyAppearance()
+    }
+
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
 }
 

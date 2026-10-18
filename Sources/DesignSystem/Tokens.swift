@@ -1,31 +1,35 @@
 import SwiftUI
 
-// Tokens from docs/design-system/tokens.json. Colours live in Assets.xcassets
-// under the same name as the token (Any = Aluminium, Dark = Lead).
+// Tokens from docs/design-system/tokens.json. Colours come from the current skin
+// (Skin.swift); the Nuno skin reads Assets.xcassets (Any = Aluminium, Dark = Lead).
 
 extension Color {
-    static let surface0 = Color("surface-0")
-    static let surface1 = Color("surface-1")
-    static let surface2 = Color("surface-2")
-    static let display = Color("display")
-    static let displayInk = Color("display-ink")
-    static let displayMuted = Color("display-muted")
-    static let displayTrack = Color("display-track")
-    static let ink = Color("ink")
-    static let inkMuted = Color("ink-muted")
-    static let line = Color("line")
-    static let keyFace = Color("key-face")
-    static let keyMode = Color("key-mode")
-    static let keyPlay = Color("key-play")
-    static let keyInk = Color("key-ink")
-    static let keyModeInk = Color("key-mode-ink")
-    static let track = Color("track")
-    static let fill = Color("fill")
-    static let led = Color("led")
-    static let ledOff = Color("led-off")
-    static let signal = Color("signal")
-    static let danger = Color("danger")
-    static let focus = Color("focus")
+    init(_ token: ColorToken) {
+        self.init(nsColor: .skin(token))
+    }
+
+    static let surface0 = Color(ColorToken.surface0)
+    static let surface1 = Color(ColorToken.surface1)
+    static let surface2 = Color(ColorToken.surface2)
+    static let display = Color(ColorToken.display)
+    static let displayInk = Color(ColorToken.displayInk)
+    static let displayMuted = Color(ColorToken.displayMuted)
+    static let displayTrack = Color(ColorToken.displayTrack)
+    static let ink = Color(ColorToken.ink)
+    static let inkMuted = Color(ColorToken.inkMuted)
+    static let line = Color(ColorToken.line)
+    static let keyFace = Color(ColorToken.keyFace)
+    static let keyMode = Color(ColorToken.keyMode)
+    static let keyPlay = Color(ColorToken.keyPlay)
+    static let keyInk = Color(ColorToken.keyInk)
+    static let keyModeInk = Color(ColorToken.keyModeInk)
+    static let track = Color(ColorToken.track)
+    static let fill = Color(ColorToken.fill)
+    static let led = Color(ColorToken.led)
+    static let ledOff = Color(ColorToken.ledOff)
+    static let signal = Color(ColorToken.signal)
+    static let danger = Color(ColorToken.danger)
+    static let focus = Color(ColorToken.focus)
 }
 
 enum Space {

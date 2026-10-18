@@ -60,6 +60,12 @@ NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that
 
 The look above is the **Nuno** skin. **Graphite Orange** and **Graphite Green** are always dark, with a single bright accent on the play key, the lights and the playing track. Switch in **View › Skin** (⌥⌘1, ⌥⌘2, ⌥⌘3) or from the mini player. Skins change colours only: the keys, the layout and the shortcuts stay where your hands expect them. **View › Font** picks Inter + IBM Plex Mono or Apple's SF Pro + SF Mono.
 
+## Folder artwork, if you want it
+
+<p align="center"><img src="docs/screenshots/artwork.png" width="760" alt="Folder artwork on the display and in the menu bar mini player"></p>
+
+Turn on **View › Show Artwork** (⌥⌘A) and NuVa shows the image you keep in each album folder (`cover`, `folder`, `front`, `album` or `capa`, as JPEG or PNG) in a small square on the display, in the mini player and in Control Center. It never reads artwork from tags and never looks anything up online. Off by default.
+
 ## Browse folders, play a whole album
 
 <p align="center"><img src="docs/screenshots/browser.png" width="760" alt="Folder browser next to the player"></p>
@@ -103,6 +109,7 @@ On first launch NuVa tells you what to do: add a folder, or sign in to Jellyfin.
 - Folders on your Mac, on an external disk or on a mounted network share (SMB).
 - Queue: play a folder, add more, drag to reorder, delete to remove.
 - Repeat (all or one), shuffle, seek, volume with a scroll of the mouse.
+- Optional folder artwork from an image in the folder, never from tags.
 - Media keys, Control Center, the lock screen and AirPods controls.
 - Keyboard first: every action has a shortcut.
 - English and Portuguese, following your system language.
@@ -137,6 +144,7 @@ xattr -dr com.apple.quarantine /Applications/NuVa.app
 | ⌘B | Show or hide folders |
 | ⌘1 · ⌘2 · ⌘3 | Player · with browser · compact |
 | ⌥⌘1 · ⌥⌘2 … | Skin (also in View ▸ Skin) |
+| ⌥⌘A | Show or hide folder artwork |
 | ⌘L | Go to the current track |
 | Enter · ⌘Enter | Play the selection · add it to the queue |
 | ⌘O · ⇧⌘O | Add a folder · add Jellyfin |
@@ -179,6 +187,7 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 - **Jellyfin sem confusão.** Navega pelas pastas reais do servidor e toca os ficheiros originais.
 - **Três tamanhos.** Player, com navegador e compacto. A janela estica na vertical para veres o álbum inteiro.
 - **Skins:** Nuno (claro ou escuro, como o sistema), Graphite Orange e Graphite Green (sempre escuras), em Visualização › Skin. Fonte Inter + IBM Plex Mono ou SF Pro + SF Mono, em Visualização › Fonte.
+- **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A) mostra a imagem que está na pasta (`cover`, `folder`, `front`, `album` ou `capa`) no display, no mini player e no Centro de Controlo. Nunca das tags. Desligado por defeito.
 - **Equalizador de 10 bandas**, media keys, Centro de Controlo e mini player na barra de menus.
 - Em português e inglês, conforme a língua do sistema. macOS 14 ou posterior, Apple silicon e Intel.
 
@@ -191,4 +200,4 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 
 Só é preciso uma vez.
 
-Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume · ⌘B pastas · ⌘1 ⌘2 ⌘3 tamanho da janela · ⌥⌘1 ⌥⌘2 … skin · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin.
+Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume · ⌘B pastas · ⌘1 ⌘2 ⌘3 tamanho da janela · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin.

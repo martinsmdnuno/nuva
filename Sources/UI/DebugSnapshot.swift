@@ -33,10 +33,14 @@ enum DebugSnapshot {
             ("equalizador", AnyView(EqualizerPanel(eq: model.player.equalizer)), model),
             ("player-capa", AnyView(ContentView()), artworkModel),
             ("barra-capa", AnyView(MenuBarPlayer()), artworkModel),
+            ("capa-errada", AnyView(artworkModel.player.current.map {
+                ArtworkFixView(entry: $0.entry, guess: AlbumGuess.from(path: $0.entry.parentPath))
+            }), artworkModel),
+            ("termos", AnyView(TermsView().frame(width: 520, height: 620)), model),
         ]
         // Every view in Nuno; the main ones again with SF Pro + SF Mono ("-sf") and in each
         // Graphite skin (always dark, so one file per view).
-        let main: Set<String> = ["player", "navegador", "compacto", "barra", "equalizador"]
+        let main: Set<String> = ["player", "navegador", "compacto", "barra", "equalizador", "capa-errada"]
         let bothThemes = [(ColorScheme.dark, "chumbo"), (.light, "aluminio")]
         let runs: [(Skin, FontSet, String, Set<String>?, [(ColorScheme, String)])] = [
             (.nuno, .inter, "", nil, bothThemes),
@@ -70,6 +74,8 @@ enum DebugSnapshot {
     @MainActor
     static func sampleModel() -> AppModel {
         let model = AppModel(defaults: UserDefaults(suiteName: "snapshot")!)
+        // The artwork snapshot turns it on in the same suite; never look anything up here.
+        model.showsArtwork = false
         let id = UUID()
         let names = [
             "01 - Second Hand News.flac", "02 - Dreams.flac", "03 - Never Going Back Again.flac",

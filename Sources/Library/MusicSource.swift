@@ -63,10 +63,13 @@ protocol MusicSource: Sendable {
     /// An image file the user put in the folder (cover.jpg, folder.png…), or nil.
     /// Never from tags: folders, not metadata.
     func artwork(inFolder path: String) async -> URL?
+    /// Name of the source's own folder, when it is a real folder (the artist, if the user added one artist).
+    var rootFolderName: String? { get }
 }
 
 extension MusicSource {
     func artwork(inFolder path: String) async -> URL? { nil }
+    var rootFolderName: String? { nil }
 }
 
 enum Artwork {

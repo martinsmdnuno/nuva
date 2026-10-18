@@ -8,7 +8,7 @@ struct PlayerView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            DisplayView(allowsArtwork: model.windowMode != .compact)
+            DisplayView(allowsArtwork: model.windowMode != .compact, opensArtworkFix: true)
             ControlBar()
                 .padding(.top, Space.s4)
             VolumeControl()

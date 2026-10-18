@@ -59,6 +59,9 @@ struct ContentView: View {
         .sheet(isPresented: $model.showingJellyfinLogin) {
             JellyfinLoginView()
         }
+        .sheet(item: $model.fixingArtwork) { entry in
+            ArtworkFixView(entry: entry, guess: model.artworkResolver.query(for: entry))
+        }
         // With the window closed, NuVa leaves the Dock and stays only in the menu bar.
         .onAppear { DockPresence.show(true) }
         .onDisappear { DockPresence.show(false) }

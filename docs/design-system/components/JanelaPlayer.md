@@ -25,3 +25,8 @@ Quem não conhece a app tem de ver que há uma gaveta. No cabeçalho da fila, à
 - Nada acima do display além da barra de título nativa do macOS (semáforos).
 - A fila mostra a pasta atual por defeito. Adicionar outra pasta junta-a ao fim.
 - No tamanho com navegador (720 × 480), o navegador de pastas entra à esquerda, no mesmo plano, separado por uma divisória vertical `line`.
+
+## Primeiro arranque e fila vazia
+- **Sem fontes:** o display diz "Sem música · Adicionar uma pasta ou um servidor Jellyfin". No lugar da fila, a legenda "começar" e as duas formas de trazer música, cada uma com um botão de texto, uma linha a dizer o que é e o atalho: "Adicionar pasta" (música no Mac ou num disco de rede, ⌘O) e "Adicionar Jellyfin" (servidor Jellyfin com o teu utilizador, ⇧⌘O).
+- **Com fontes, fila vazia:** "Fila vazia · Abrir as pastas e tocar uma" e o botão "Mostrar pastas" (⌘B).
+- Play sem fila abre as pastas.

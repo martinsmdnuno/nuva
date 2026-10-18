@@ -21,7 +21,7 @@ struct DisplayView: View {
             .foregroundStyle(Color.displayMuted)
             .frame(height: 14)
 
-            Text(entry?.title ?? String(localized: "Sem faixa"))
+            Text(entry?.title ?? (model.sources.sources.isEmpty ? String(localized: "Sem música") : String(localized: "Sem faixa")))
                 .font(.dsTitle)
                 .foregroundStyle(entry == nil ? Color.displayMuted : Color.displayInk)
                 .lineLimit(1)
@@ -30,7 +30,9 @@ struct DisplayView: View {
                 .frame(height: 20)
 
             HStack(spacing: Space.s2) {
-                Text(entry?.folderName ?? String(localized: "Escolher uma pasta para tocar"))
+                Text(entry?.folderName ?? (model.sources.sources.isEmpty
+                    ? String(localized: "Adicionar uma pasta ou um servidor Jellyfin")
+                    : String(localized: "Escolher uma pasta para tocar")))
                     .font(.dsCaption)
                     .lineLimit(1)
                     .truncationMode(.tail)

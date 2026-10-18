@@ -113,6 +113,22 @@
         }
       }
     },
+    "Abrir as pastas e tocar uma.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open the folders and play one."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir as pastas e tocar uma."
+          }
+        }
+      }
+    },
     "Adicionar Jellyfin": {
       "localizations": {
         "en": {
@@ -189,6 +205,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Adicionar pasta…"
+          }
+        }
+      }
+    },
+    "Adicionar uma pasta ou um servidor Jellyfin": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a folder or a Jellyfin server"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adicionar uma pasta ou um servidor Jellyfin"
           }
         }
       }
@@ -801,6 +833,22 @@
         }
       }
     },
+    "Música no Mac ou num disco de rede": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Music on this Mac or a network drive"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Música no Mac ou num disco de rede"
+          }
+        }
+      }
+    },
     "Noite": {
       "localizations": {
         "en": {
@@ -1233,6 +1281,22 @@
         }
       }
     },
+    "Sem música": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No music"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sem música"
+          }
+        }
+      }
+    },
     "Servidor": {
       "localizations": {
         "en": {
@@ -1245,6 +1309,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Servidor"
+          }
+        }
+      }
+    },
+    "Servidor Jellyfin, com o teu utilizador": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A Jellyfin server, with your account"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Servidor Jellyfin, com o teu utilizador"
           }
         }
       }
@@ -1389,6 +1469,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Voz"
+          }
+        }
+      }
+    },
+    "começar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "get started"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "começar"
           }
         }
       }

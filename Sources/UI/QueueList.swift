@@ -74,23 +74,59 @@ struct QueueList: View {
         }
     }
 
+    @ViewBuilder
     private var emptyState: some View {
-        VStack(spacing: Space.s3) {
-            Text("Fila vazia")
-                .font(.dsCaption)
-                .foregroundStyle(Color.inkMuted)
-            if model.sources.sources.isEmpty {
-                HStack(spacing: Space.s2) {
-                    Button("Adicionar pasta") { model.addFolder() }
-                        .buttonStyle(.keyText)
-                        .keyFocus()
-                    Button("Adicionar Jellyfin") { model.addJellyfin() }
-                        .buttonStyle(.keyText)
-                        .keyFocus()
+        if model.sources.sources.isEmpty {
+            firstRun
+        } else {
+            VStack(alignment: .leading, spacing: Space.s3) {
+                VStack(alignment: .leading, spacing: Space.s1) {
+                    Text("Fila vazia").font(.dsBody).foregroundStyle(Color.ink)
+                    Text("Abrir as pastas e tocar uma.").font(.dsCaption).foregroundStyle(Color.inkMuted)
                 }
+                Button("Mostrar pastas") { model.windowMode = .browser }
+                    .buttonStyle(.keyText)
+                    .keyFocus()
+                    .help("⌘B")
+            }
+            .padding(.horizontal, Space.s2)
+            .padding(.top, Space.s4)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        }
+    }
+
+    /// Primeiro arranque: as duas formas de trazer música, cada uma com o que é e o atalho.
+    private var firstRun: some View {
+        VStack(alignment: .leading, spacing: Space.s3) {
+            Text("começar").legend()
+            source("Adicionar pasta", detail: "Música no Mac ou num disco de rede", shortcut: "⌘O") {
+                model.addFolder()
+            }
+            source("Adicionar Jellyfin", detail: "Servidor Jellyfin, com o teu utilizador", shortcut: "⇧⌘O") {
+                model.addJellyfin()
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.horizontal, Space.s2)
+        .padding(.top, Space.s3)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    private func source(
+        _ title: LocalizedStringKey, detail: LocalizedStringKey, shortcut: String, action: @escaping () -> Void
+    ) -> some View {
+        HStack(alignment: .center, spacing: Space.s3) {
+            Button(action: action) { Text(title).frame(width: 116) }
+                .buttonStyle(.keyText)
+                .keyFocus()
+            VStack(alignment: .leading, spacing: 2) {
+                Text(detail)
+                    .font(.dsCaption)
+                    .foregroundStyle(Color.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(shortcut).font(Typography.mono(10, .regular)).foregroundStyle(Color.inkMuted)
+            }
+            .layoutPriority(1)
+        }
     }
 
     private func moveSelection(_ delta: Int) {

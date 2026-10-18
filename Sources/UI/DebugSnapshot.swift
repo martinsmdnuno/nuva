@@ -12,11 +12,17 @@ enum DebugSnapshot {
         let browserModel = sampleBrowserModel()
         let compactModel = sampleModel()
         compactModel.windowMode = .compact
+        let firstRunModel = sampleFirstRunModel()
+        // Com a fonte do navegador (já guardada nas definições), mas sem fila.
+        let emptyQueueModel = AppModel(defaults: UserDefaults(suiteName: "snapshot-browser")!)
+        emptyQueueModel.windowMode = .player
         let dir = URL(fileURLWithPath: NSTemporaryDirectory())
         let views: [(String, AnyView, AppModel)] = [
             ("player", AnyView(ContentView()), model),
             ("navegador", AnyView(ContentView()), browserModel),
             ("compacto", AnyView(ContentView()), compactModel),
+            ("primeiro", AnyView(ContentView()), firstRunModel),
+            ("fila-vazia", AnyView(ContentView()), emptyQueueModel),
             ("teclas", AnyView(KeyPreview().frame(width: 360, height: 480)), model),
             ("barra", AnyView(MenuBarPlayer()), model),
             ("equalizador", AnyView(EqualizerPanel(eq: model.player.equalizer)), model),
@@ -58,6 +64,16 @@ enum DebugSnapshot {
         model.player.debugSet(queue: entries, current: 1, time: 67, duration: 257, format: "FLAC 24/48 · 1669 kbps")
         model.windowMode = .player
         model.output.debugSet("→ Colunas · 48 kHz")
+        return model
+    }
+
+    /// Primeiro arranque: sem fontes e sem fila.
+    @MainActor
+    static func sampleFirstRunModel() -> AppModel {
+        let defaults = UserDefaults(suiteName: "snapshot-first")!
+        defaults.removePersistentDomain(forName: "snapshot-first")
+        let model = AppModel(defaults: defaults)
+        model.windowMode = .player
         return model
     }
 

@@ -30,7 +30,9 @@ Lead grey with a single accent.
 - **Error:** `danger` only on text and icons, never as a background.
 - **Focus:** `focus` as a 2px ring around the control with keyboard focus.
 
-Themes: **Lead** (`chumbo`) is the main one. **Aluminium** (`aluminio`) is the light theme and follows the system appearance. Every text pair passes 4.5:1 in both themes.
+Themes: **Lead** (`chumbo`) is the main one. **Aluminium** (`aluminio`) is the light theme and follows the system appearance. Together they are the **Nuno** skin. Every text pair passes 4.5:1 in both themes, and keys, LEDs and focus 3:1 (checked in `Tests/SkinTests.swift`).
+
+Other skins change token values only, never roles or layout: **Graphite Orange** and **Graphite Green**, always dark (`skins/graphite.md`). View ▸ Skin, ⌥⌘1, ⌥⌘2, ⌥⌘3.
 
 ## Type
 
@@ -38,7 +40,9 @@ Two families, embedded in the app (`Inter` and `IBM Plex Mono`, both OFL):
 
 - **Inter** for the interface: track titles (`title`), lists (`body`), labels (`label`), notes (`caption`).
 - **Legends** (`legend`, Inter 10px, lowercase, `ink-muted`): the name printed on the chassis under each group of keys (playback, mode, output) and each zone (volume, queue), as on the Braun TG 60.
-- **IBM Plex Mono** for numbers and the display: time (`display-time`), format and rate (`display-meta`), durations in lists (`duration`). Fixed-width digits so the time doesn't jump.
+- **IBM Plex Mono** for numbers and the display: time (`display-time`), format and rate (`display-meta`), durations in lists (`duration`), the volume scale (`scale`) and hints beside labels (`hint`). Fixed-width digits so the time doesn't jump.
+
+**Font sets** (View ▸ Font): *Inter + IBM Plex Mono* (above, the default) or *SF Pro + SF Mono* from the system. Each skin names its default set and the user can override it. Only the family changes: every style keeps its size and weight, and the mono keeps tabular digits. SF Mono's lines are slightly shorter, so the display (and Compact mode) is a few points lower.
 
 Japanese names and other scripts fall back to the system font (Hiragino), which is fine. Never truncate with an ellipsis in the middle: truncate at the end, with the full name in the tooltip.
 

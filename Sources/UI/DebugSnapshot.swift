@@ -13,6 +13,11 @@ enum DebugSnapshot {
         let compactModel = sampleModel()
         compactModel.windowMode = .compact
         let firstRunModel = sampleFirstRunModel()
+        let artworkModel = sampleModel()
+        artworkModel.showsArtwork = true
+        if let entry = artworkModel.player.current?.entry {
+            artworkModel.artwork.debugSet(sampleArtwork(), for: entry)
+        }
         // With the browser's source (already saved in settings), but no queue.
         let emptyQueueModel = AppModel(defaults: UserDefaults(suiteName: "snapshot-browser")!)
         emptyQueueModel.windowMode = .player
@@ -26,19 +31,35 @@ enum DebugSnapshot {
             ("teclas", AnyView(KeyPreview().frame(width: 360, height: 480)), model),
             ("barra", AnyView(MenuBarPlayer()), model),
             ("equalizador", AnyView(EqualizerPanel(eq: model.player.equalizer)), model),
+            ("player-capa", AnyView(ContentView()), artworkModel),
+            ("barra-capa", AnyView(MenuBarPlayer()), artworkModel),
         ]
-        for (viewName, view, model) in views {
-            for (scheme, name) in [(ColorScheme.dark, "chumbo"), (.light, "aluminio")] {
-                let content = view
-                    .environment(model)
-                    .environment(\.isSnapshot, true)
-                    .environment(\.colorScheme, scheme)
-                let renderer = ImageRenderer(content: content)
-                renderer.scale = 2
-                if let image = renderer.nsImage,
-                   let tiff = image.tiffRepresentation,
-                   let png = NSBitmapImageRep(data: tiff)?.representation(using: .png, properties: [:]) {
-                    try? png.write(to: dir.appendingPathComponent("snapshot-\(viewName)-\(name).png"))
+        // Every view in Nuno; the main ones again with SF Pro + SF Mono ("-sf") and in each
+        // Graphite skin (always dark, so one file per view).
+        let main: Set<String> = ["player", "navegador", "compacto", "barra", "equalizador"]
+        let bothThemes = [(ColorScheme.dark, "chumbo"), (.light, "aluminio")]
+        let runs: [(Skin, FontSet, String, Set<String>?, [(ColorScheme, String)])] = [
+            (.nuno, .inter, "", nil, bothThemes),
+            (.nuno, .system, "-sf", main, bothThemes),
+            (.graphiteOrange, .system, "", main, [(.dark, Skin.graphiteOrange.id)]),
+            (.graphiteGreen, .system, "", main, [(.dark, Skin.graphiteGreen.id)]),
+        ]
+        for (skin, fontSet, suffix, only, themes) in runs {
+            SkinStore.active.withLock { $0 = skin }
+            SkinStore.activeFonts.withLock { $0 = fontSet }
+            for (viewName, view, model) in views where only?.contains(viewName) ?? true {
+                for (scheme, name) in themes {
+                    let content = view
+                        .environment(model)
+                        .environment(\.isSnapshot, true)
+                        .environment(\.colorScheme, scheme)
+                    let renderer = ImageRenderer(content: content)
+                    renderer.scale = 2
+                    if let image = renderer.nsImage,
+                       let tiff = image.tiffRepresentation,
+                       let png = NSBitmapImageRep(data: tiff)?.representation(using: .png, properties: [:]) {
+                        try? png.write(to: dir.appendingPathComponent("snapshot-\(viewName)\(suffix)-\(name).png"))
+                    }
                 }
             }
         }
@@ -68,6 +89,25 @@ enum DebugSnapshot {
         model.player.equalizer.apply(Equalizer.presets.first { $0.name == "Rock" } ?? Equalizer.presets[0])
         model.player.equalizer.enabled = true
         return model
+    }
+
+    /// A made-up cover (no real album art in the repository): bands of colour, like a 70s sleeve.
+    static func sampleArtwork() -> NSImage {
+        NSImage(size: NSSize(width: 600, height: 600), flipped: false) { rect in
+            let colors = ["#E8D9B5", "#D9A441", "#C2562B", "#7A2E2A", "#2F3B45"].map { hex -> NSColor in
+                let v = UInt64(hex.dropFirst(), radix: 16)!
+                return NSColor(srgbRed: Double((v >> 16) & 0xff) / 255, green: Double((v >> 8) & 0xff) / 255,
+                               blue: Double(v & 0xff) / 255, alpha: 1)
+            }
+            let band = rect.height / CGFloat(colors.count)
+            for (i, color) in colors.enumerated() {
+                color.setFill()
+                NSRect(x: 0, y: CGFloat(i) * band, width: rect.width, height: band).fill()
+            }
+            NSColor(white: 1, alpha: 0.9).setFill()
+            NSBezierPath(ovalIn: NSRect(x: 380, y: 380, width: 140, height: 140)).fill()
+            return true
+        }
     }
 
     /// First launch: no sources and no queue.

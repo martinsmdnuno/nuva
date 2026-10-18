@@ -123,7 +123,7 @@ struct QueueList: View {
                     .font(.dsCaption)
                     .foregroundStyle(Color.ink)
                     .fixedSize(horizontal: false, vertical: true)
-                Text(shortcut).font(Typography.mono(10, .regular)).foregroundStyle(Color.inkMuted)
+                Text(shortcut).font(.dsHint).foregroundStyle(Color.inkMuted)
             }
             .layoutPriority(1)
         }
@@ -216,7 +216,7 @@ private struct LegendToggle: View {
                 }
                 Text(label).font(.dsLegend)
                 if let detail {
-                    Text(detail).font(Typography.mono(10, .regular))
+                    Text(detail).font(.dsHint)
                 }
             }
             .foregroundStyle(hovering || isOn ? Color.ink : Color.inkMuted)

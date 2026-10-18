@@ -162,3 +162,7 @@ framed([(snapshot("compacto-chumbo"), .window(dark: true))], name: "compact.png"
 framed([(snapshot("primeiro-chumbo"), .window(dark: true))], name: "first-run.png")
 framed([(snapshot("equalizador-chumbo"), .popover)], name: "equalizer.png")
 framed([(snapshot("barra-chumbo"), .popover)], name: "menubar.png")
+framed([(snapshot("player-graphite-orange"), .window(dark: true)), (snapshot("player-graphite-green"), .window(dark: true))],
+       name: "skins.png")
+framed([(snapshot("player-capa-chumbo"), .window(dark: true)), (snapshot("barra-capa-aluminio"), .popover)],
+       name: "artwork.png")

@@ -33,6 +33,10 @@ struct NuVaApp: App {
 
 /// Closing the window doesn't quit the app: the music keeps playing and NuVa stays in the menu bar.
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        SkinStore.shared.applyAppearance()
+    }
+
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
 }
 
@@ -56,6 +60,11 @@ struct NuVaCommands: Commands {
                 .keyboardShortcut("3")
             Button(model.windowMode == .browser ? String(localized: "Esconder pastas") : String(localized: "Mostrar pastas")) { model.toggleBrowser() }
                 .keyboardShortcut("b")
+            Toggle("Mostrar capas", isOn: Binding(get: { model.showsArtwork }, set: { model.showsArtwork = $0 }))
+                .keyboardShortcut("a", modifiers: [.command, .option])
+            Divider()
+            Menu("Skin") { SkinMenuItems() }
+            Menu("Fonte") { FontMenuItems() }
         }
         CommandMenu("Controlos") {
             Button(model.player.isPlaying ? String(localized: "Pausa") : String(localized: "Tocar")) { model.playOrBrowse() }

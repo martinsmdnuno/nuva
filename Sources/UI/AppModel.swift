@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import Observation
 
@@ -10,6 +11,7 @@ final class AppModel {
     let durations: TrackDurations
     let browser: Browser
     let output: OutputRoute
+    let artwork: ArtworkStore
 
     enum WindowMode: String {
         /// Player with playlist, 360 × 480.
@@ -27,6 +29,17 @@ final class AppModel {
         didSet { defaults.set(windowMode.rawValue, forKey: "windowMode") }
     }
 
+    /// Folder artwork in the display, the mini player and Now Playing. Off by default.
+    var showsArtwork: Bool {
+        didSet { defaults.set(showsArtwork, forKey: "showsArtwork") }
+    }
+
+    /// Artwork of the current track's folder, when artwork is on.
+    var currentArtwork: NSImage? {
+        guard showsArtwork, let entry = player.current?.entry else { return nil }
+        return artwork.image(for: entry)
+    }
+
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private var nowPlaying: NowPlaying?
 
@@ -39,9 +52,11 @@ final class AppModel {
         self.durations = TrackDurations(resolve: resolve)
         self.browser = Browser(sources: sources)
         self.output = OutputRoute(player: systemIntegration ? self.player.avPlayer : nil)
+        self.artwork = ArtworkStore { entry in await sources.artwork(for: entry) }
         self.defaults = defaults
         self.windowMode = WindowMode(rawValue: defaults.string(forKey: "windowMode") ?? "") ?? .player
-        if systemIntegration { nowPlaying = NowPlaying(player: player) }
+        self.showsArtwork = defaults.bool(forKey: "showsArtwork")
+        if systemIntegration { nowPlaying = NowPlaying(player: player, artwork: { [unowned self] in currentArtwork }) }
         if sources.sources.count == 1, let only = sources.sources.first {
             browser.open(BrowserLocation(sourceID: only.id, path: ""))
         }

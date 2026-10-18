@@ -5,13 +5,16 @@ import MediaPlayer
 @MainActor
 final class NowPlaying {
     private let player: PlayerController
-    /// No artwork (folders, not metadata): Now Playing always shows the NuVa folder.
-    private let artwork = MPMediaItemArtwork(boundsSize: CGSize(width: 1024, height: 1024)) { _ in
+    /// The folder's artwork when the user turned artwork on; nil otherwise.
+    private let folderArtwork: @MainActor () -> NSImage?
+    /// Never from tags (folders, not metadata): without folder artwork, the NuVa folder.
+    private let defaultArtwork = MPMediaItemArtwork(boundsSize: CGSize(width: 1024, height: 1024)) { _ in
         NSImage(named: "NowPlayingArtwork") ?? NSImage()
     }
 
-    init(player: PlayerController) {
+    init(player: PlayerController, artwork: @escaping @MainActor () -> NSImage?) {
         self.player = player
+        self.folderArtwork = artwork
         registerCommands()
         player.onSeek = { [weak self] in self?.update() }
         observe()
@@ -57,6 +60,7 @@ final class NowPlaying {
             _ = player.currentID
             _ = player.isPlaying
             _ = player.duration
+            _ = folderArtwork()
         } onChange: { [weak self] in
             Task { @MainActor in
                 self?.update()
@@ -72,6 +76,9 @@ final class NowPlaying {
             center.playbackState = .stopped
             return
         }
+        let artwork = folderArtwork().map { image in
+            MPMediaItemArtwork(boundsSize: image.size) { _ in image }
+        } ?? defaultArtwork
         center.nowPlayingInfo = [
             MPMediaItemPropertyTitle: entry.title,
             MPMediaItemPropertyAlbumTitle: entry.folderName,

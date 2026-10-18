@@ -40,11 +40,11 @@ struct KeyPreview: View {
                 }
                 section("Cores") {
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 28), spacing: Space.s1)], spacing: Space.s1) {
-                        ForEach(swatches, id: \.self) { name in
+                        ForEach(ColorToken.allCases, id: \.self) { token in
                             RoundedRectangle(cornerRadius: Radius.sm)
-                                .fill(Color(name))
+                                .fill(Color(token))
                                 .frame(height: 28)
-                                .help(name)
+                                .help(token.rawValue)
                         }
                     }
                 }
@@ -53,12 +53,6 @@ struct KeyPreview: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Color.surface0)
     }
-
-    private let swatches = [
-        "surface-0", "surface-1", "surface-2", "display", "display-ink", "display-muted", "display-track",
-        "ink", "ink-muted", "line", "key-face", "key-mode", "key-play", "key-ink", "key-mode-ink",
-        "track", "fill", "led", "led-off", "signal", "danger", "focus",
-    ]
 
     private func key(_ symbol: String, _ tone: KeyButtonStyle.Tone, _ help: String) -> some View {
         Button {} label: { Image(systemName: symbol) }

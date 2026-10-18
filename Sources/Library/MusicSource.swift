@@ -60,6 +60,33 @@ protocol MusicSource: Sendable {
     func list(_ path: String) async throws -> [Entry]
     /// Playable URL of the track: file:// or https://.
     func url(for track: Entry) async throws -> URL
+    /// An image file the user put in the folder (cover.jpg, folder.png…), or nil.
+    /// Never from tags: folders, not metadata.
+    func artwork(inFolder path: String) async -> URL?
+}
+
+extension MusicSource {
+    func artwork(inFolder path: String) async -> URL? { nil }
+}
+
+enum Artwork {
+    /// File names that count as the folder's artwork, in order of preference ("capa" is Portuguese).
+    static let names = ["cover", "folder", "front", "album", "capa"]
+    static let extensions: Set<String> = ["jpg", "jpeg", "png"]
+
+    /// The artwork among a folder's file names, or nil. Case-insensitive.
+    static func pick(from fileNames: [String]) -> String? {
+        let candidates = fileNames.filter { extensions.contains(($0 as NSString).pathExtension.lowercased()) }
+        for name in names {
+            if let match = candidates
+                .filter({ ($0 as NSString).deletingPathExtension.lowercased() == name })
+                .sorted()
+                .first {
+                return match
+            }
+        }
+        return nil
+    }
 }
 
 enum SourceError: LocalizedError {

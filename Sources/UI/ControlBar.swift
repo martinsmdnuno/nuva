@@ -84,7 +84,7 @@ private struct RoutePicker: NSViewRepresentable {
         let view = AVRoutePickerView()
         view.player = player
         view.isRoutePickerButtonBordered = false
-        let ink = NSColor(named: "key-mode-ink") ?? .labelColor
+        let ink = NSColor.skin(.keyModeInk)
         for state in [AVRoutePickerView.ButtonState.normal, .normalHighlighted, .active, .activeHighlighted] {
             view.setRoutePickerButtonColor(ink, for: state)
         }

@@ -144,4 +144,9 @@ extension SourceStore {
         }
         return try await source.url(for: entry)
     }
+
+    /// The image file in the folder that holds `entry`, if its source has one.
+    func artwork(for entry: Entry) async -> URL? {
+        await source(entry.sourceID)?.artwork(inFolder: entry.parentPath)
+    }
 }

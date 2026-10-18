@@ -29,6 +29,8 @@ struct ContentView: View {
             PlayerView()
                 .frame(width: 360)
         }
+        // A new skin or font set rebuilds the content, so every colour and font is resolved again.
+        .id(SkinStore.shared.renderID)
         .frame(width: model.windowMode == .browser ? 720 : 360)
         .frame(
             minHeight: compact ? nil : Self.minHeight,

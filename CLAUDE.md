@@ -38,16 +38,18 @@ In:
 - Media keys and macOS Now Playing.
 - AirPlay key (`AVRoutePickerView` wrapped in `NSViewRepresentable`).
 - Windows: "Player with queue" (360 × 480 or taller), "With browser" (720 × 480 or taller) and "Compact" (display, keys and volume only; ⌘3). Height is free in the first two.
+- Skins (View ▸ Skin, ⌥⌘1, ⌥⌘2…, and a key in the mini player): colours only, same layout and sizes. Default "Nuno" (the 1.0 look). Plan in `docs/plans/skins-and-artwork.md`.
 - The folder drawer opens and closes with the folders key in the queue header, the key in the drawer header, or ⌘B.
 - Closing the window doesn't stop the music: the app leaves the Dock and stays in the menu bar with a mini player.
+- Folder artwork (View ▸ Show Artwork, ⌥⌘A; off by default): an image file in the folder (`cover`, `folder`, `front`, `album`, `capa` · jpg/jpeg/png), never from tags. Small, inside the display and the mini player, not in Compact; also in Now Playing. Local sources only (Jellyfin's images may come from tags).
 - 10-band equalizer with presets, in an `MTAudioProcessingTap` on each `AVPlayerItem` (Accelerate biquads).
 
-Out (for now): generic server source, search, favourites, cover art, accounts.
+Out (for now): generic server source, search, favourites, accounts.
 
 ## Design system
 In `docs/design-system/`. Read `README.md` and `tokens.json` before any UI work, and the component's file in `components/` before building it.
 - Colours: one `Color` per token in `Assets.xcassets` (Any variant = Aluminium, Dark = Lead), named like the tokens.
-- Type: Inter and IBM Plex Mono embedded in the app (OFL, Google Fonts files); falls back to SF Pro/SF Mono if missing.
+- Type: Inter and IBM Plex Mono embedded in the app (OFL, Google Fonts files); falls back to SF Pro/SF Mono if missing. Font sets (View ▸ Font): Inter + Plex Mono or SF Pro + SF Mono; text styles are computed `Font.ds…` properties that read the current set, so never use `Typography.sans/mono` directly in views.
 - Dieter Rams language in Lead: one plane, no cards or outlines, hierarchy from key colour, state shown by LEDs.
 - Keys: a single `ButtonStyle` (`KeyButtonStyle`) with three tones: play, transport, mode.
 - Interface text in European Portuguese and English, following the system language (English fallback). The Portuguese text is the key in `Resources/Localizable.xcstrings`; every new string gets its English translation there. Text that goes through `String` (ternaries, parameters, model) uses `String(localized:)`.

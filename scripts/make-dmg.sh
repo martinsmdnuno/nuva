@@ -31,7 +31,7 @@ Alternativa no Terminal, depois do passo 1:
   xattr -dr com.apple.quarantine /Applications/NuVa.app
 
 Atalhos: Espaço tocar/pausa · ⌘→ seguinte · ⌘← anterior · ⌘↑ ⌘↓ volume
-⌘1 ⌘2 tamanho da janela · ⌘L faixa atual · ⌘O adicionar pasta
+⌘B mostrar pastas · ⌘1 ⌘2 tamanho da janela · ⌘L faixa atual · ⌘O adicionar pasta
 ⇧⌘O adicionar Jellyfin
 TXT
 

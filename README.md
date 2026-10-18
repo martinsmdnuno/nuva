@@ -1,71 +1,138 @@
-<p align="center"><img src="docs/brand/icon-512.png" width="128" alt="NuVa icon"></p>
-
-<h1 align="center">NuVa</h1>
-
-<p align="center">A small music player for macOS that plays your folders as they are.<br>
-<a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg"><b>Download NuVa for Mac</b></a> · macOS 14 or later · Apple silicon and Intel<br>
-<a href="#português">Português</a></p>
-
-<p align="center"><img src="docs/screenshots/browser.png" width="720" alt="NuVa with the folder browser open"></p>
-
-## Why
-
-- **Folders, not tags.** A folder is an album. NuVa shows folder and file names exactly as they are, so remixes, covers and mixes stay where you put them.
-- **FLAC and the native audio engine.** NuVa plays through Apple's own audio engine (AVFoundation). It sounds like QuickTime, also over Bluetooth headphones.
-- **AirPlay 2.** Send the sound to a WiiM, a HomePod or any AirPlay speaker.
-- **One small window.** No library to build, no accounts, nothing to sync.
-
-## What it does
-
-- Plays FLAC, ALAC, MP3, AAC/M4A, WAV and AIFF.
-- Music from a folder on your Mac or a network drive, or from a **Jellyfin** server (it browses the server's folders and plays the original files).
-- Queue: play a folder, add more, reorder, remove.
-- Play/pause, previous, next, seek, volume, repeat, shuffle.
-- 10-band equalizer with presets.
-- Media keys, Control Center and the lock screen.
-- Three window sizes: player with queue, with folder browser, and compact. The window grows vertically to show a whole album.
-- Closing the window keeps the music playing in a mini player in the menu bar.
-- English and Portuguese, following your system language.
+<p align="center">
+  <img src="docs/screenshots/hero.png" alt="NuVa: your music folders, played as they are">
+</p>
 
 <p align="center">
-<img src="docs/screenshots/player-light.png" width="300" alt="Player with queue, light theme">
-<img src="docs/screenshots/compact.png" width="300" alt="Compact mode">
+  <a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg"><img src="https://img.shields.io/badge/Download_for_Mac-NuVa.dmg-E0A93E?style=for-the-badge&logo=apple&logoColor=white" alt="Download NuVa for Mac"></a>
 </p>
+
+<p align="center">
+  <img src="https://img.shields.io/github/v/release/martinsmdnuno/nuva?style=flat-square&label=version&color=2B2D30" alt="Latest version">
+  <img src="https://img.shields.io/badge/macOS-14%2B-2B2D30?style=flat-square" alt="macOS 14 or later">
+  <img src="https://img.shields.io/badge/Apple_silicon_%2B_Intel-2B2D30?style=flat-square" alt="Apple silicon and Intel">
+  <img src="https://img.shields.io/github/license/martinsmdnuno/nuva?style=flat-square&color=2B2D30" alt="MIT license">
+  <br>
+  <b>English</b> · <a href="#português">Português</a>
+</p>
+
+---
+
+**NuVa is a small, free music player for the Mac, made for people who keep their music in folders.**
+
+You spent years naming your folders and files just right. Most players throw that away and rebuild your library from tags, so remixes, covers and live sets end up scattered across albums you've never heard of. NuVa doesn't. A folder is an album, a file is a track, and the names you see are the names you gave them.
+
+It plays FLAC through Apple's own audio engine, sends it to your AirPlay speakers, and fits in a window the size of a hi-fi faceplate.
+
+## Why you'll like it
+
+<table>
+<tr>
+<td width="33%" valign="top">
+
+**📁 Your folders, untouched**<br>
+No import, no scanning, no tag clean-up. Point NuVa at a folder and play. Natural sort order, so track 2 comes before track 10.
+
+</td>
+<td width="33%" valign="top">
+
+**🎧 Sounds the way it should**<br>
+FLAC, ALAC, WAV and AIFF play through AVFoundation, the same engine as QuickTime. No bundled codecs, no surprises over Bluetooth.
+
+</td>
+<td width="33%" valign="top">
+
+**📡 AirPlay 2 built in**<br>
+Send the music to a WiiM, a HomePod, an Apple TV or any AirPlay speaker from the output key. The display shows where it's going.
+
+</td>
+</tr>
+</table>
+
+## A player that feels like hardware
+
+<p align="center"><img src="docs/screenshots/themes.png" width="760" alt="NuVa in the dark Lead theme and the light Aluminium theme"></p>
+
+NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that say what they do by their colour, and small amber lights for what's on. An always-dark display shows the format, the bit depth and where the sound is going. It follows your Mac's appearance, in dark **Lead** or light **Aluminium**.
+
+## Browse folders, play a whole album
+
+<p align="center"><img src="docs/screenshots/browser.png" width="760" alt="Folder browser next to the player"></p>
+
+Open the folder drawer with the **folders** key or **⌘B**. Each folder shows how many tracks it holds; double-click one to play it from the top, or **⌘Enter** to add it to the queue. Drag the window taller to see the whole album at once, or double-click the title bar to fill the screen height.
+
+## Your Jellyfin server, without the mess
+
+Sign in to a **Jellyfin** server with your own account and NuVa browses it by the server's real folders, not by Jellyfin's tags. It streams the original files, so a FLAC stays a FLAC. Your password goes in the macOS Keychain.
+
+<table>
+<tr>
+<td width="50%" valign="top" align="center">
+<img src="docs/screenshots/compact.png" alt="Compact mode"><br>
+<b>Compact mode (⌘3)</b><br>
+Just the display, the keys and the volume, for when the music is playing in the background.
+</td>
+<td width="50%" valign="top" align="center">
+<img src="docs/screenshots/equalizer.png" alt="10-band equalizer"><br>
+<b>10-band equalizer</b><br>
+Presets for bass, treble, vocals, loudness and late nights, or set each band by hand.
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top" align="center">
+<img src="docs/screenshots/menubar.png" alt="Menu bar mini player"><br>
+<b>Lives in the menu bar</b><br>
+Close the window and the music keeps going. A mini player waits in the menu bar until you need it.
+</td>
+<td width="50%" valign="top" align="center">
+<img src="docs/screenshots/first-run.png" alt="First launch"><br>
+<b>Ready in a minute</b><br>
+On first launch NuVa tells you what to do: add a folder, or sign in to Jellyfin.
+</td>
+</tr>
+</table>
+
+## Everything else
+
+- Plays FLAC, ALAC, MP3, AAC/M4A, WAV and AIFF.
+- Folders on your Mac, on an external disk or on a mounted network share (SMB).
+- Queue: play a folder, add more, drag to reorder, delete to remove.
+- Repeat (all or one), shuffle, seek, volume with a scroll of the mouse.
+- Media keys, Control Center, the lock screen and AirPods controls.
+- Keyboard first: every action has a shortcut.
+- English and Portuguese, following your system language.
+- No account, no analytics, no network calls except to your own Jellyfin server.
 
 ## Install
 
-1. [Download NuVa.dmg](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg) and open it.
+1. **[Download NuVa.dmg](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg)** and open it.
 2. Drag **NuVa** to **Applications**.
-3. Open NuVa. macOS says it can't check the app, because NuVa isn't signed with a paid Apple certificate. Click **Done** (or **OK**).
-4. Open **System Settings › Privacy & Security**, scroll down to *"NuVa was blocked"* and click **Open Anyway**. Confirm with your password.
+3. Open NuVa. macOS will say it can't check the app, because NuVa isn't signed with a paid Apple developer certificate. Click **Done**.
+4. Open **System Settings › Privacy & Security**, scroll down to *"NuVa was blocked"* and click **Open Anyway**.
 
-You only need to do this once. After that NuVa opens like any other app.
+You only do this once. After that, NuVa opens like any other app.
 
 <details>
 <summary>Prefer the Terminal?</summary>
 
-After step 2, run:
+After step 2:
 
 ```
 xattr -dr com.apple.quarantine /Applications/NuVa.app
 ```
 </details>
 
-## First steps
-
-- **Add Folder** (⌘O): pick the folder with your music. Folders on a mounted network drive work too.
-- **Add Jellyfin** (⇧⌘O): the server address, your username and password. The password is kept in your Keychain.
-- **folders** (⌘B) opens the folder drawer. Double-click a folder, or press Enter, to play it.
+## Keyboard
 
 | Shortcut | Action |
 |---|---|
 | Space | Play / pause |
-| ⌘→ / ⌘← | Next / previous |
-| ⌘↑ / ⌘↓ | Volume |
+| ⌘→ · ⌘← | Next · previous |
+| ⌘↑ · ⌘↓ | Volume up · down |
 | ⌘B | Show or hide folders |
-| ⌘1 ⌘2 ⌘3 | Player · with browser · compact |
+| ⌘1 · ⌘2 · ⌘3 | Player · with browser · compact |
 | ⌘L | Go to the current track |
-| Enter / ⌘Enter | Play the selection / add it to the queue |
+| Enter · ⌘Enter | Play the selection · add it to the queue |
+| ⌘O · ⇧⌘O | Add a folder · add Jellyfin |
 
 ## Build from source
 
@@ -77,13 +144,11 @@ xcodegen generate
 open NuVa.xcodeproj
 ```
 
-`scripts/make-dmg.sh` builds a universal release and the DMG in `dist/`. The design system lives in [`docs/design-system`](docs/design-system).
+`scripts/make-dmg.sh` builds a universal release and the DMG in `dist/`. `scripts/make-readme-images.swift` builds the images on this page from the app's own snapshots. The design system lives in [`docs/design-system`](docs/design-system).
 
 ## Credits
 
-Type: [Inter](https://github.com/rsms/inter) and [IBM Plex Mono](https://github.com/IBM/plex), both under the SIL Open Font License. Built with Claude Code.
-
-## License
+Type: [Inter](https://github.com/rsms/inter) and [IBM Plex Mono](https://github.com/IBM/plex), both under the SIL Open Font License. Built with [Claude Code](https://claude.com/claude-code).
 
 [MIT](LICENSE) © 2026 Nuno Martins
 
@@ -91,32 +156,31 @@ Type: [Inter](https://github.com/rsms/inter) and [IBM Plex Mono](https://github.
 
 ## Português
 
-Um leitor de música pequeno para macOS que toca as tuas pastas tal como estão.
+**A NuVa é um leitor de música pequeno e gratuito para Mac, para quem guarda a música em pastas.**
 
-**[Descarregar a NuVa para Mac](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg)** · macOS 14 ou posterior · Apple silicon e Intel
+Passaste anos a dar o nome certo às pastas e aos ficheiros. A maioria dos leitores deita isso fora e refaz a biblioteca a partir das tags, e os remixes, covers e sets ao vivo acabam espalhados por álbuns que nunca ouviste. A NuVa não. Uma pasta é um álbum, um ficheiro é uma faixa, e os nomes que vês são os que lhes deste.
 
-### Porquê
+Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colunas AirPlay e cabe numa janela do tamanho da frente de um amplificador.
 
-- **Pastas, não tags.** Uma pasta é um álbum. A NuVa mostra os nomes das pastas e dos ficheiros tal como estão, e os remixes, covers e mixes ficam onde os puseste.
-- **FLAC e o motor de áudio nativo.** A NuVa toca pelo motor de áudio da Apple (AVFoundation). Soa como o QuickTime, também com auscultadores Bluetooth.
-- **AirPlay 2.** Envia o som para um WiiM, um HomePod ou qualquer coluna AirPlay.
-- **Uma janela pequena.** Sem biblioteca para construir, sem contas, sem sincronizações.
+<p align="center">
+  <a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg"><img src="https://img.shields.io/badge/Descarregar_para_Mac-NuVa.dmg-E0A93E?style=for-the-badge&logo=apple&logoColor=white" alt="Descarregar a NuVa para Mac"></a>
+</p>
+
+- **As tuas pastas, intocadas.** Sem importar, sem tags. Ordem natural: a faixa 2 vem antes da 10.
+- **Soa como deve.** FLAC, ALAC, WAV e AIFF pelo AVFoundation, o mesmo motor do QuickTime.
+- **AirPlay 2.** WiiM, HomePod, Apple TV ou qualquer coluna AirPlay.
+- **Jellyfin sem confusão.** Navega pelas pastas reais do servidor e toca os ficheiros originais.
+- **Três tamanhos.** Player, com navegador e compacto. A janela estica na vertical para veres o álbum inteiro.
+- **Equalizador de 10 bandas**, media keys, Centro de Controlo e mini player na barra de menus.
+- Em português e inglês, conforme a língua do sistema. macOS 14 ou posterior, Apple silicon e Intel.
 
 ### Instalar
 
-1. [Descarregar NuVa.dmg](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg) e abrir.
+1. **[Descarregar NuVa.dmg](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg)** e abrir.
 2. Arrastar a **NuVa** para **Aplicações**.
 3. Abrir a NuVa. O macOS diz que não consegue verificar a app, porque a NuVa não está assinada com um certificado pago da Apple. Carregar em **OK**.
-4. Abrir **Definições do Sistema › Privacidade e segurança**, descer até *"A NuVa foi bloqueada"* e carregar em **Abrir mesmo assim**. Confirmar com a palavra-passe.
+4. Abrir **Definições do Sistema › Privacidade e segurança**, descer até *"A NuVa foi bloqueada"* e carregar em **Abrir mesmo assim**.
 
-Só é preciso uma vez. Depois, a NuVa abre como qualquer outra app.
+Só é preciso uma vez.
 
-### Primeiros passos
-
-- **Adicionar pasta** (⌘O): escolher a pasta da música, no Mac ou num disco de rede.
-- **Adicionar Jellyfin** (⇧⌘O): endereço do servidor, utilizador e palavra-passe. A palavra-passe fica no Porta-chaves.
-- **pastas** (⌘B) abre a gaveta das pastas. Duplo clique ou Enter numa pasta para a tocar.
-
-Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume · ⌘B pastas · ⌘1 ⌘2 ⌘3 tamanho da janela · ⌘L faixa atual.
-
-Licença [MIT](LICENSE).
+Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume · ⌘B pastas · ⌘1 ⌘2 ⌘3 tamanho da janela · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin.

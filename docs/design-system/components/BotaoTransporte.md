@@ -15,7 +15,7 @@ Todas com altura `key` (36px) e cantos `radius-sm`. Sem contorno nem lábio.
 - Nunca desativada: se não houver fila, play abre o navegador de pastas.
 
 ## Grupos
-Três grupos com espaço entre eles e uma legenda (`legend`) por baixo: **leitura** · **modo** · **saída**. Ordem fixa dentro de cada um. Não há tecla Parar (a pausa basta, ⌘. continua no menu) nem tecla para as pastas (⌘B e menu Visualização).
+Três grupos com espaço entre eles e uma legenda (`legend`) por baixo: **leitura** · **modo** · **saída**. Ordem fixa dentro de cada um. Não há tecla Parar (a pausa basta, ⌘. continua no menu). As pastas abrem-se pela pista "pastas" no cabeçalho da fila (ver JanelaPlayer.md), por ⌘B ou pelo menu Visualização.
 
 ## Regras
 - Ícone 16px (play 18px, modo e saída 14px), peso regular.

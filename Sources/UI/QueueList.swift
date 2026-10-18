@@ -11,19 +11,23 @@ struct QueueList: View {
     var body: some View {
         let player = model.player
         VStack(spacing: Space.s1 + 2) {
-            if !player.queue.isEmpty { header(player) }
+            header(player)
             list(player)
         }
     }
 
-    /// Legenda "fila" e o total, como impresso no chassis.
+    /// À esquerda, a pista para a gaveta das pastas (do lado de onde ela abre);
+    /// à direita, a legenda "fila" e o total, como impresso no chassis.
     private func header(_ player: PlayerController) -> some View {
-        HStack {
-            Text("fila").legend()
+        HStack(spacing: Space.s2) {
+            DrawerToggle()
             Spacer()
-            Text(summary(player))
-                .font(Typography.mono(10, .regular))
-                .foregroundStyle(Color.inkMuted)
+            Text("fila").legend()
+            if !player.queue.isEmpty {
+                Text(summary(player))
+                    .font(Typography.mono(10, .regular))
+                    .foregroundStyle(Color.inkMuted)
+            }
         }
         .padding(.horizontal, Space.s2)
     }
@@ -137,6 +141,32 @@ struct QueueList: View {
     private func remove(_ id: QueueItem.ID) {
         guard let i = model.player.queue.firstIndex(where: { $0.id == id }) else { return }
         model.player.remove(atOffsets: [i])
+    }
+}
+
+/// "pastas" com LED: abre e fecha a gaveta das pastas (⌘B). O LED acende com a gaveta aberta.
+/// Texto com LED, como os presets do equalizador; no hover passa a `ink`.
+private struct DrawerToggle: View {
+    @Environment(AppModel.self) private var model
+    @State private var hovering = false
+
+    var body: some View {
+        let isOpen = model.windowMode == .browser
+        Button { model.toggleBrowser() } label: {
+            HStack(spacing: Space.s1 + 2) {
+                // Na coluna dos LEDs das faixas, para alinhar.
+                LED(isOn: isOpen).frame(width: 12)
+                Image(systemName: "sidebar.left")
+                    .font(.system(size: 10))
+                Text("pastas")
+                    .font(.dsLegend)
+            }
+            .foregroundStyle(hovering || isOpen ? Color.ink : Color.inkMuted)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering = $0 }
+        .help(isOpen ? "Esconder pastas ⌘B" : "Mostrar pastas ⌘B")
     }
 }
 

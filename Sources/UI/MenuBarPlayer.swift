@@ -9,7 +9,6 @@ struct MenuBarPlayer: View {
         let player = model.player
         VStack(spacing: Space.s3) {
             DisplayView()
-            ProgressBar()
             HStack(spacing: Space.s1) {
                 key("backward.end", .transport, "Anterior") { player.previous() }
                 key(player.isPlaying ? "pause.fill" : "play.fill", .play, player.isPlaying ? "Pausa" : "Tocar") {

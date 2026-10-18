@@ -1,6 +1,7 @@
 import SwiftUI
 
 /// A janela escolhe o conteúdo pelo modo: player (360 × 480) ou com navegador (720 × 480).
+/// Tudo no mesmo plano; o navegador separa-se do player por uma divisória vertical.
 struct ContentView: View {
     @Environment(AppModel.self) private var model
 
@@ -9,8 +10,9 @@ struct ContentView: View {
         HStack(spacing: 0) {
             if model.windowMode == .browser {
                 BrowserView()
-                    .padding([.leading, .vertical], Space.s4)
-                    .frame(width: 360)
+                    .padding(Space.s4)
+                    .frame(width: 359)
+                Rectangle().fill(Color.line).frame(width: 1).padding(.vertical, Space.s4)
             }
             PlayerView()
                 .frame(width: 360)

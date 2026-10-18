@@ -13,8 +13,7 @@ struct BrowserView: View {
         let browser = model.browser
         VStack(spacing: 0) {
             header(browser)
-                .padding(Space.s3)
-            Rectangle().fill(Color.line).frame(height: 1)
+                .padding(.bottom, Space.s3)
             Group {
                 if let message = browser.errorMessage {
                     errorState(message)
@@ -29,8 +28,6 @@ struct BrowserView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
-        .background(Color.surface1, in: RoundedRectangle(cornerRadius: Radius.md, style: .continuous))
-        .clipShape(RoundedRectangle(cornerRadius: Radius.md, style: .continuous))
         .focusable()
         .focused($focused)
         .focusEffectDisabled()
@@ -103,10 +100,9 @@ struct BrowserView: View {
                         .keyFocus()
                     Spacer()
                 }
-                .padding(Space.s3)
+                .padding(.vertical, Space.s3)
             }
         }
-        .padding(.horizontal, Space.s1)
     }
 
     @ViewBuilder

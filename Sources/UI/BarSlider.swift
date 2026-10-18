@@ -1,8 +1,8 @@
 import AppKit
 import SwiftUI
 
-/// Barra fina de progresso/volume: calha `track`, parte percorrida `fill`.
-/// Área clicável de 16px; cabeça de 10px só no hover ou a arrastar.
+/// Barra fina de posição/volume: calha e parte percorrida de 2px.
+/// Área clicável de 16px; cabeça (traço de 2 × 10px) só no hover ou a arrastar.
 struct BarSlider: View {
     /// 0...1
     var value: Double
@@ -11,6 +11,8 @@ struct BarSlider: View {
     var onStep: (Int) -> Void
     /// Texto do tooltip no ponto do hover (0...1), ou nil para não mostrar.
     var hoverText: ((Double) -> String)?
+    var trackColor = Color.track
+    var fillColor = Color.fill
 
     @State private var hover: Double?
     @State private var dragging = false
@@ -21,17 +23,17 @@ struct BarSlider: View {
             let width = max(geo.size.width, 1)
             let v = min(max(value, 0), 1)
             ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: Radius.sm)
-                    .fill(Color.track)
+                Rectangle()
+                    .fill(trackColor)
                     .frame(height: Size.bar)
-                RoundedRectangle(cornerRadius: Radius.sm)
-                    .fill(Color.fill)
+                Rectangle()
+                    .fill(fillColor)
                     .frame(width: width * v, height: Size.bar)
                 if hover != nil || dragging {
-                    Circle()
-                        .fill(Color.fill)
-                        .frame(width: 10, height: 10)
-                        .offset(x: width * v - 5)
+                    Rectangle()
+                        .fill(fillColor)
+                        .frame(width: 2, height: 10)
+                        .offset(x: min(max(width * v - 1, 0), width - 2))
                 }
             }
             .frame(width: width, height: geo.size.height)
@@ -82,7 +84,7 @@ struct BarSlider: View {
     }
 }
 
-/// Barra de progresso da faixa atual. Setas: 5 segundos.
+/// Barra de posição da faixa atual, dentro do display. Setas: 5 segundos.
 struct ProgressBar: View {
     @Environment(AppModel.self) private var model
 
@@ -93,31 +95,33 @@ struct ProgressBar: View {
             value: d > 0 ? player.currentTime / d : 0,
             onChange: { if d > 0 { player.seek(to: $0 * d) } },
             onStep: { player.skip(by: Double($0) * 5) },
-            hoverText: d > 0 ? { TimeFormat.display($0 * d) } : nil
+            hoverText: d > 0 ? { TimeFormat.display($0 * d) } : nil,
+            trackColor: .displayTrack,
+            fillColor: .displayInk
         )
         .help("Posição")
     }
 }
 
-/// Volume da app (ou do destino AirPlay). ⌘↑ ⌘↓ e scroll mudam 5%.
+/// Volume da app (ou do destino AirPlay), com escala impressa de 0 a 10. ⌘↑ ⌘↓ e scroll mudam 5%.
 struct VolumeControl: View {
     @Environment(AppModel.self) private var model
     @Environment(\.isSnapshot) private var isSnapshot
 
     var body: some View {
         let player = model.player
-        HStack(spacing: Space.s1) {
-            Image(systemName: "speaker.wave.2")
-                .font(.system(size: 12))
-                .foregroundStyle(Color.inkMuted)
-                .frame(width: 16)
-            BarSlider(
-                value: Double(player.volume),
-                onChange: { player.volume = Float($0) },
-                onStep: { player.changeVolume(by: Float($0) * 0.05) },
-                hoverText: nil
-            )
-            .frame(width: 80)
+        HStack(alignment: .top, spacing: Space.s3) {
+            Text("volume").legend()
+                .frame(height: 16)
+            VStack(spacing: 0) {
+                BarSlider(
+                    value: Double(player.volume),
+                    onChange: { player.volume = Float($0) },
+                    onStep: { player.changeVolume(by: Float($0) * 0.05) },
+                    hoverText: nil
+                )
+                VolumeScale()
+            }
         }
         .background {
             if !isSnapshot {
@@ -125,6 +129,31 @@ struct VolumeControl: View {
             }
         }
         .help("Volume \(Int((player.volume * 100).rounded()))% ⌘↑ ⌘↓")
+    }
+}
+
+/// Escala impressa por baixo do volume: 11 traços, 0, 5 e 10 numerados.
+private struct VolumeScale: View {
+    var body: some View {
+        VStack(spacing: 2) {
+            HStack(alignment: .top, spacing: 0) {
+                ForEach(0...10, id: \.self) { i in
+                    Rectangle()
+                        .fill(i % 5 == 0 ? Color.inkMuted : Color.line)
+                        .frame(width: 1, height: i % 5 == 0 ? 5 : 3)
+                    if i < 10 { Spacer(minLength: 0) }
+                }
+            }
+            HStack {
+                Text("0")
+                Spacer()
+                Text("5")
+                Spacer()
+                Text("10")
+            }
+            .font(Typography.mono(9, .regular))
+            .foregroundStyle(Color.inkMuted)
+        }
     }
 }
 

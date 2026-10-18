@@ -1,10 +1,11 @@
 import SwiftUI
 
-/// Linha de lista: pastas no navegador e faixas na fila.
+/// Linha de lista: pastas no navegador e faixas na fila. Sem divisórias entre linhas.
 struct ListRow: View {
     enum Leading {
         case folder
-        case number(Int)
+        /// Faixa: LED aceso quando está a tocar.
+        case track
         case symbol(String)
     }
 
@@ -17,6 +18,8 @@ struct ListRow: View {
     var isPlaying = false
     /// Fonte em erro: nome e ícone em `danger`.
     var isError = false
+    /// Tooltip: o nome completo, com extensão.
+    var help: String?
 
     @State private var hovering = false
 
@@ -26,19 +29,17 @@ struct ListRow: View {
                 switch leading {
                 case .folder:
                     Image(systemName: "folder")
-                        .font(.system(size: 12))
+                        .font(.system(size: 11))
                         .foregroundStyle(Color.inkMuted)
                 case .symbol(let name):
                     Image(systemName: name)
-                        .font(.system(size: 12))
+                        .font(.system(size: 11))
                         .foregroundStyle(isError ? Color.danger : Color.inkMuted)
-                case .number(let n):
-                    Text("\(n)")
-                        .font(.dsDuration)
-                        .foregroundStyle(isPlaying ? Color.signal : Color.inkMuted)
+                case .track:
+                    LED(isOn: true).opacity(isPlaying ? 1 : 0)
                 }
             }
-            .frame(width: 22, alignment: .trailing)
+            .frame(width: 12)
 
             Text(name)
                 .font(.dsBody)
@@ -53,21 +54,17 @@ struct ListRow: View {
                     .foregroundStyle(Color.inkMuted)
             }
         }
-        .padding(.horizontal, Space.s3)
-        .padding(.vertical, Space.s2)
+        .padding(.horizontal, Space.s2)
         .frame(height: Size.row)
         .background {
             if isSelected {
                 RoundedRectangle(cornerRadius: Radius.sm).fill(Color.surface2)
             } else if hovering {
-                Rectangle().fill(Color.surface0)
+                RoundedRectangle(cornerRadius: Radius.sm).fill(Color.surface1)
             }
-        }
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(Color.line).frame(height: 1)
         }
         .contentShape(Rectangle())
         .onHover { hovering = $0 }
-        .help(name)
+        .help(help ?? name)
     }
 }

@@ -1,23 +1,17 @@
 import SwiftUI
 
-/// "Player com playlist" (360 × 480): display, progresso, volume e equalizador, controlos, fila.
+/// "Player com playlist" (360 × 480): display com a posição, teclas, volume, fila.
+/// Tudo no mesmo plano do chassis; as zonas separam-se por espaço.
 struct PlayerView: View {
     var body: some View {
         VStack(spacing: 0) {
             DisplayView()
-            HStack(spacing: Space.s4) {
-                ProgressBar()
-                VolumeControl()
-            }
-            .padding(.vertical, Space.s2)
-            VStack(spacing: 0) {
-                ControlBar()
-                    .padding(Space.s3)
-                Rectangle().fill(Color.line).frame(height: 1)
-                QueueList()
-            }
-            .background(Color.surface1, in: RoundedRectangle(cornerRadius: Radius.md, style: .continuous))
-            .clipShape(RoundedRectangle(cornerRadius: Radius.md, style: .continuous))
+            ControlBar()
+                .padding(.top, Space.s4)
+            VolumeControl()
+                .padding(.top, Space.s3)
+            QueueList()
+                .padding(.top, Space.s4)
         }
         .padding(Space.s4)
     }

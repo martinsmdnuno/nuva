@@ -82,17 +82,9 @@ struct BrowserView: View {
     }
 
     private func rows(_ browser: Browser) -> some View {
-        let rows = currentRows(browser)
-        var trackNumber = 0
-        let numbers: [String: Int] = rows.reduce(into: [:]) { acc, row in
-            if case .entry(let e) = row, e.kind == .track {
-                trackNumber += 1
-                acc[e.id] = trackNumber
-            }
-        }
-        return LazyVStack(spacing: 0) {
-            ForEach(rows) { row in
-                rowView(row, number: numbers[row.id] ?? 0)
+        LazyVStack(spacing: 0) {
+            ForEach(currentRows(browser)) { row in
+                rowView(row)
                     .id(row.id)
                     .onTapGesture(count: 2) { activate(row) }
                     .simultaneousGesture(TapGesture().onEnded {
@@ -118,7 +110,7 @@ struct BrowserView: View {
     }
 
     @ViewBuilder
-    private func rowView(_ row: Row, number: Int) -> some View {
+    private func rowView(_ row: Row) -> some View {
         switch row {
         case .source(_, let name, let symbol, let error):
             ListRow(leading: .symbol(symbol), name: name, isSelected: selection == row.id, isError: error != nil)
@@ -131,10 +123,11 @@ struct BrowserView: View {
             .task(id: e.id) { await model.browser.loadSummary(e) }
         case .entry(let e):
             ListRow(
-                leading: .number(number), name: e.name,
+                leading: .track, name: e.listName,
                 trailing: model.durations.values[e.id].map(TimeFormat.short) ?? "",
                 isSelected: selection == row.id,
-                isPlaying: model.player.current?.entry == e
+                isPlaying: model.player.current?.entry == e,
+                help: e.name
             )
             .task(id: e.id) { await model.durations.load(e) }
         }

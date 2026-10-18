@@ -10,6 +10,34 @@ struct QueueList: View {
 
     var body: some View {
         let player = model.player
+        VStack(spacing: Space.s1 + 2) {
+            if !player.queue.isEmpty { header(player) }
+            list(player)
+        }
+    }
+
+    /// Legenda "fila" e o total, como impresso no chassis.
+    private func header(_ player: PlayerController) -> some View {
+        HStack {
+            Text("fila").legend()
+            Spacer()
+            Text(summary(player))
+                .font(Typography.mono(10, .regular))
+                .foregroundStyle(Color.inkMuted)
+        }
+        .padding(.horizontal, Space.s2)
+    }
+
+    /// "11 faixas · 39:18"; sem o total enquanto faltarem durações.
+    private func summary(_ player: PlayerController) -> String {
+        let count = player.queue.count
+        let label = count == 1 ? "1 faixa" : "\(count) faixas"
+        let known = player.queue.compactMap { model.durations.values[$0.entry.id] }
+        guard known.count == count else { return label }
+        return "\(label) · \(TimeFormat.short(known.reduce(0, +)))"
+    }
+
+    private func list(_ player: PlayerController) -> some View {
         Group {
             if player.queue.isEmpty {
                 emptyState
@@ -47,11 +75,12 @@ struct QueueList: View {
         LazyVStack(spacing: 0) {
             ForEach(Array(player.queue.enumerated()), id: \.element.id) { index, item in
                 ListRow(
-                    leading: .number(index + 1),
-                    name: item.entry.name,
+                    leading: .track,
+                    name: item.entry.listName,
                     trailing: model.durations.values[item.entry.id].map(TimeFormat.short) ?? "",
                     isSelected: selection == item.id,
-                    isPlaying: player.currentID == item.id
+                    isPlaying: player.currentID == item.id,
+                    help: item.entry.name
                 )
                 .id(item.id)
                 .task(id: item.entry.id) { await model.durations.load(item.entry) }
@@ -67,7 +96,6 @@ struct QueueList: View {
                 .modifier(Reorderable(item: item, index: index, player: player, enabled: !isSnapshot))
             }
         }
-        .padding(.horizontal, Space.s1)
     }
 
     private var emptyState: some View {

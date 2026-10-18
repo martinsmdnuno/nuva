@@ -16,6 +16,9 @@ struct Entry: Identifiable, Hashable, Sendable {
     /// Extensão em maiúsculas, para o display ("FLAC").
     var format: String { (name as NSString).pathExtension.uppercased() }
 
+    /// Nome para as listas: o do ficheiro sem extensão (o formato está no display), o da pasta tal como está.
+    var listName: String { kind == .track ? (name as NSString).deletingPathExtension : name }
+
     /// Nome do ficheiro sem extensão nem número inicial ("01 - ", "1. ", "01_").
     var title: String {
         let base = (name as NSString).deletingPathExtension

@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// O ecrã do aparelho. Sempre escuro, nos dois temas.
+/// O ecrã do aparelho, recuado no chassis. Sempre escuro, nos dois temas.
+/// A barra de posição vive aqui, por baixo do tempo.
 struct DisplayView: View {
     @Environment(AppModel.self) private var model
     @AppStorage("showsRemaining") private var showsRemaining = false
@@ -11,9 +12,7 @@ struct DisplayView: View {
 
         VStack(alignment: .leading, spacing: Space.s1) {
             HStack(spacing: Space.s2) {
-                Circle()
-                    .fill(player.isPlaying ? Color.signal : Color.displayMuted.opacity(0.25))
-                    .frame(width: 6, height: 6)
+                LED(isOn: player.isPlaying, size: 6)
                 Text(player.formatLabel)
                 Spacer(minLength: Space.s2)
                 Text(model.currentSourceLabel)
@@ -59,10 +58,19 @@ struct DisplayView: View {
                     .foregroundStyle(Color.displayMuted)
             }
             .padding(.top, Space.s1)
+
+            ProgressBar()
         }
-        .padding(Space.s3)
+        .padding([.horizontal, .top], Space.s3)
+        .padding(.bottom, Space.s1)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.display, in: RoundedRectangle(cornerRadius: Radius.md, style: .continuous))
+        .background {
+            let shape = RoundedRectangle(cornerRadius: Radius.sm, style: .continuous)
+            // shadow-display: recuado no chassis.
+            shape.fill(Color.display)
+                .overlay(alignment: .top) { Rectangle().fill(Color.black.opacity(0.5)).frame(height: 1) }
+                .clipShape(shape)
+        }
     }
 
     private func timeText(_ player: PlayerController) -> String {

@@ -1,12 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
   <rect x="104.0" y="104.0" width="816.0" height="816.0" rx="181.0" fill="#2B2D30" stroke="#44474B" stroke-width="8.0"/>
-  <rect x="276.8" y="304.8" width="168.0" height="123.2" rx="33.6" fill="#141517"/>
-  <polygon points="344.0,304.8 433.6,304.8 489.6,360.8 344.0,360.8" fill="#141517"/>
-  <rect x="276.8" y="360.8" width="470.4" height="358.4" rx="39.2" fill="#141517"/>
-  <circle cx="338.4" cy="341.2" r="20.16" fill="#E0A93E"/>
-  <rect x="358.0" y="562.4" width="39.2" height="100.8" rx="11.2" fill="#E8E6E1"/>
-  <rect x="425.2" y="495.2" width="39.2" height="168.0" rx="11.2" fill="#E8E6E1"/>
-  <rect x="492.4" y="439.2" width="39.2" height="224.0" rx="11.2" fill="#E8E6E1"/>
-  <rect x="559.6" y="517.6" width="39.2" height="145.6" rx="11.2" fill="#E8E6E1"/>
-  <rect x="626.8" y="584.8" width="39.2" height="78.4" rx="11.2" fill="#E8E6E1"/>
+  <rect x="192.8" y="223.2" width="228.0" height="182.4" rx="53.2" fill="#141517"/>
+  <polygon points="284.0,223.2 420.8,223.2 512.0,314.4 284.0,314.4" fill="#141517"/>
+  <rect x="192.8" y="299.2" width="638.4" height="501.6" rx="60.8" fill="#141517"/>
+  <circle cx="291.6" cy="284.0" r="41.8" fill="#E0A93E"/>
+  <rect x="284.0" y="527.2" width="106.4" height="197.6" rx="22.8" fill="#E8E6E1"/>
+  <rect x="458.8" y="420.8" width="106.4" height="304.0" rx="22.8" fill="#E8E6E1"/>
+  <rect x="633.6" y="557.6" width="106.4" height="167.2" rx="22.8" fill="#E8E6E1"/>
 </svg>

@@ -24,27 +24,22 @@ enum Shape {
 /// Grelha dos ícones do macOS: corpo de 824 com raio 185, centrado em 1024.
 let body = (x: 100.0, y: 100.0, w: 824.0, h: 824.0, r: 185.0)
 
-/// Pasta com medidor de VU, em coordenadas de 0 a 100. A versão pequena tem menos barras e um LED maior.
-func folderGlyph(small: Bool) -> [Shape] {
-    if small {
-        return [
-            .rect(x: 8, y: 12, w: 30, h: 24, r: 7, fill: C.display),
-            .triangle([(20, 12), (38, 12), (50, 24), (20, 24)], fill: C.display),
-            .rect(x: 8, y: 22, w: 84, h: 66, r: 8, fill: C.display),
-            .circle(cx: 21, cy: 20, r: 5.5, fill: C.signal),
-            .rect(x: 20, y: 52, w: 14, h: 26, r: 3, fill: C.displayInk),
-            .rect(x: 43, y: 38, w: 14, h: 40, r: 3, fill: C.displayInk),
-            .rect(x: 66, y: 56, w: 14, h: 22, r: 3, fill: C.displayInk),
-        ]
-    }
-    let bars: [(x: Double, h: Double)] = [(22.5, 18), (34.5, 30), (46.5, 40), (58.5, 26), (70.5, 14)]
-    return [
-        .rect(x: 8, y: 14, w: 30, h: 22, r: 6, fill: C.display),
-        .triangle([(20, 14), (36, 14), (46, 24), (20, 24)], fill: C.display),
-        .rect(x: 8, y: 24, w: 84, h: 64, r: 7, fill: C.display),
-        .circle(cx: 19, cy: 20.5, r: 3.6, fill: C.signal),
-    ] + bars.map { .rect(x: $0.x, y: 78 - $0.h, w: 7, h: $0.h, r: 2, fill: C.displayInk) }
+/// Pasta com medidor de VU, em coordenadas de 0 a 100: a pasta é sempre a parte mais escura
+/// (`display`), com três barras largas claras e o LED âmbar. As barras largas leem-se no Dock.
+func folderGlyph() -> [Shape] {
+    [
+        .rect(x: 8, y: 12, w: 30, h: 24, r: 7, fill: C.display),
+        .triangle([(20, 12), (38, 12), (50, 24), (20, 24)], fill: C.display),
+        .rect(x: 8, y: 22, w: 84, h: 66, r: 8, fill: C.display),
+        .circle(cx: 21, cy: 20, r: 5.5, fill: C.signal),
+        .rect(x: 20, y: 52, w: 14, h: 26, r: 3, fill: C.displayInk),
+        .rect(x: 43, y: 38, w: 14, h: 40, r: 3, fill: C.displayInk),
+        .rect(x: 66, y: 56, w: 14, h: 22, r: 3, fill: C.displayInk),
+    ]
 }
+
+/// Escala da pasta no corpo do ícone: ocupa 77% da largura, como os ícones do sistema.
+let glyphScale = 7.6
 
 /// Escala e desloca formas de 0–100 para o ícone.
 func place(_ shapes: [Shape], x: Double, y: Double, k: Double) -> [Shape] {
@@ -65,9 +60,8 @@ func shapes(small: Bool) -> [Shape] {
     var s: [Shape] = [.rect(x: body.x, y: body.y, w: body.w, h: body.h, r: body.r, fill: C.surface1, stroke: C.line, sw: 8)]
     switch variant {
     case "folder":
-        // Pasta com VU, centrada no corpo. Em 16 e 32 px, a versão simplificada e maior.
-        s += small ? place(folderGlyph(small: true), x: 192, y: 192, k: 6.4)
-                   : place(folderGlyph(small: false), x: 232, y: 226.4, k: 5.6)
+        // Pasta escura com VU, grande e centrada no corpo.
+        s += place(folderGlyph(), x: 512 - 50 * glyphScale, y: 512 - 50 * glyphScale, k: glyphScale)
     case "display":
         // Só o display, grande, com LED e barra.
         s += [
@@ -213,8 +207,8 @@ func logoSVG(ink: String) -> String {
     CTFontGetGlyphsForCharacters(font, text, &glyphs, text.count)
     var advances = [CGSize](repeating: .zero, count: glyphs.count)
     CTFontGetAdvancesForGlyphs(font, .horizontal, glyphs, &advances, glyphs.count)
-    // Texto centrado na altura da pasta (14 a 88), afastado 32 da borda direita.
-    let baseline = 51 + CTFontGetCapHeight(font) / 2
+    // Texto centrado na altura da pasta (12 a 88), afastado 32 da borda direita.
+    let baseline = 50 + CTFontGetCapHeight(font) / 2
     var x = 124.0
     var d = ""
     for (g, adv) in zip(glyphs, advances) {
@@ -237,7 +231,7 @@ func logoSVG(ink: String) -> String {
     }
     let w = Int(ceil(x)) - 8 + 4
     return "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"8 12 \(w) 78\">\n"
-        + svgElements(folderGlyph(small: false), small: false)
+        + svgElements(folderGlyph(), small: false)
         + "  <path d=\"\(d)\" fill=\"\(ink)\"/>\n</svg>\n"
 }
 
@@ -286,7 +280,7 @@ if args.contains("--all") {
     let artSet = out.appendingPathComponent("NowPlayingArtwork.imageset")
     try? FileManager.default.createDirectory(at: artSet, withIntermediateDirectories: true)
     let art = [Shape.rect(x: 0, y: 0, w: 1024, h: 1024, r: 0, fill: C.surface1)]
-        + place(folderGlyph(small: false), x: 192, y: 185.6, k: 6.4)
+        + place(folderGlyph(), x: 512 - 50 * glyphScale, y: 512 - 50 * glyphScale, k: glyphScale)
     png(1024, name: "NowPlayingArtwork.imageset/artwork.png", shadow: false, art: art)
     let artContents: [String: Any] = ["images": [["idiom": "universal", "filename": "artwork.png"]],
                                       "info": ["author": "xcode", "version": 1]]
@@ -295,7 +289,7 @@ if args.contains("--all") {
     // Ícone da barra de menus: modelo (template) preto, 18 pt, com as barras e o LED vazados.
     let barSet = out.appendingPathComponent("MenuBarIcon.imageset")
     try? FileManager.default.createDirectory(at: barSet, withIntermediateDirectories: true)
-    let template: [Shape] = folderGlyph(small: true).map {
+    let template: [Shape] = folderGlyph().map {
         switch $0 {
         case let .rect(x, y, w, h, r, fill, _, _):
             return .rect(x: x, y: y, w: w, h: h, r: r, fill: fill == C.display ? "#000000" : "clear")

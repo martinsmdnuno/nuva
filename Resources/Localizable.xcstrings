@@ -81,6 +81,38 @@
         }
       }
     },
+    "A NuVa está atualizada": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NuVa is up to date"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A NuVa está atualizada"
+          }
+        }
+      }
+    },
+    "A NuVa procura a capa pelo nome das pastas. Corrige o artista ou o álbum e procura outra vez, ou escolhe uma imagem.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NuVa finds the cover by the folder names. Correct the artist or the album and search again, or choose an image."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A NuVa procura a capa pelo nome das pastas. Corrige o artista ou o álbum e procura outra vez, ou escolhe uma imagem."
+          }
+        }
+      }
+    },
     "A entrar…": {
       "localizations": {
         "en": {
@@ -93,6 +125,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "A entrar…"
+          }
+        }
+      }
+    },
+    "A procurar…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Searching…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A procurar…"
           }
         }
       }
@@ -353,6 +401,22 @@
         }
       }
     },
+    "Artista": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Artist"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Artista"
+          }
+        }
+      }
+    },
     "Aumentar volume": {
       "localizations": {
         "en": {
@@ -417,6 +481,54 @@
         }
       }
     },
+    "Capa errada ou em falta": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wrong or Missing Artwork"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capa errada ou em falta"
+          }
+        }
+      }
+    },
+    "Capa errada ou em falta…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wrong or Missing Artwork…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capa errada ou em falta…"
+          }
+        }
+      }
+    },
+    "Capa errada?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wrong artwork?"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capa errada?"
+          }
+        }
+      }
+    },
     "Clássica": {
       "localizations": {
         "en": {
@@ -477,6 +589,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Controlos"
+          }
+        }
+      }
+    },
+    "Descarregar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Descarregar"
           }
         }
       }
@@ -577,6 +705,22 @@
         }
       }
     },
+    "Escolher a imagem da capa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose the cover image"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolher a imagem da capa"
+          }
+        }
+      }
+    },
     "Escolher a pasta da música": {
       "localizations": {
         "en": {
@@ -589,6 +733,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Escolher a pasta da música"
+          }
+        }
+      }
+    },
+    "Escolher imagem…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Image…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolher imagem…"
           }
         }
       }
@@ -721,6 +881,22 @@
         }
       }
     },
+    "Ignorar esta versão": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skip This Version"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ignorar esta versão"
+          }
+        }
+      }
+    },
     "Ir para a faixa atual": {
       "localizations": {
         "en": {
@@ -781,6 +957,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Loudness"
+          }
+        }
+      }
+    },
+    "Mais tarde": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Later"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mais tarde"
           }
         }
       }
@@ -909,6 +1101,70 @@
           "stringUnit": {
             "state": "translated",
             "value": "Noite"
+          }
+        }
+      }
+    },
+    "NuVa %@ disponível": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NuVa %@ is available"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NuVa %@ disponível"
+          }
+        }
+      }
+    },
+    "Não consegui abrir esta imagem.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't open this image."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não consegui abrir esta imagem."
+          }
+        }
+      }
+    },
+    "Não encontrei esta capa. Confirma os nomes ou escolhe uma imagem.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't find this cover. Check the names or choose an image."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não encontrei esta capa. Confirma os nomes ou escolhe uma imagem."
+          }
+        }
+      }
+    },
+    "Não foi possível procurar atualizações": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't check for updates"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível procurar atualizações"
           }
         }
       }
@@ -1101,6 +1357,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Preset %@"
+          }
+        }
+      }
+    },
+    "Procurar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Procurar"
+          }
+        }
+      }
+    },
+    "Procurar atualizações…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check for Updates…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Procurar atualizações…"
           }
         }
       }
@@ -1329,6 +1617,22 @@
         }
       }
     },
+    "Sem capa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Artwork"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sem capa"
+          }
+        }
+      }
+    },
     "Sem faixa": {
       "localizations": {
         "en": {
@@ -1341,6 +1645,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sem faixa"
+          }
+        }
+      }
+    },
+    "Sem ligação ao GitHub. Tenta mais tarde.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't reach GitHub. Try again later."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sem ligação ao GitHub. Tenta mais tarde."
+          }
+        }
+      }
+    },
+    "Sem ligação ao MusicBrainz. Tenta mais tarde.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't reach MusicBrainz. Try again later."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sem ligação ao MusicBrainz. Tenta mais tarde."
           }
         }
       }
@@ -1441,6 +1777,38 @@
         }
       }
     },
+    "Tens a %@. A nova versão está no GitHub; a NuVa não descarrega nada sozinha.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You have %@. The new version is on GitHub; NuVa doesn't download anything by itself."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tens a %@. A nova versão está no GitHub; a NuVa não descarrega nada sozinha."
+          }
+        }
+      }
+    },
+    "Tens a versão mais recente (%@).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You have the latest version (%@)."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tens a versão mais recente (%@)."
+          }
+        }
+      }
+    },
     "Tentar de novo": {
       "localizations": {
         "en": {
@@ -1453,6 +1821,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tentar de novo"
+          }
+        }
+      }
+    },
+    "Termos e privacidade": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terms and Privacy"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Termos e privacidade"
           }
         }
       }
@@ -1741,6 +2125,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "volume"
+          }
+        }
+      }
+    },
+    "Álbum": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Album"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Álbum"
           }
         }
       }

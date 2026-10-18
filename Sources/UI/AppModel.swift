@@ -12,6 +12,7 @@ final class AppModel {
     let browser: Browser
     let output: OutputRoute
     let artwork: ArtworkStore
+    let artworkResolver: ArtworkResolver
 
     enum WindowMode: String {
         /// Player with playlist, 360 × 480.
@@ -35,10 +36,22 @@ final class AppModel {
     }
 
     /// Artwork of the current track's folder, when artwork is on.
-    var currentArtwork: NSImage? {
+    var currentArtwork: NSImage? { currentLoadedArtwork?.image }
+
+    var currentLoadedArtwork: ArtworkStore.Loaded? {
         guard showsArtwork, let entry = player.current?.entry else { return nil }
-        return artwork.image(for: entry)
+        return artwork.artwork(for: entry)
     }
+
+    /// "Wrong artwork…" applies to online or user artwork, and to a finished lookup that found none.
+    /// An image in the folder is the user's own and always wins.
+    var canFixArtwork: Bool {
+        guard showsArtwork, let entry = player.current?.entry, artwork.isResolved(entry) else { return false }
+        return currentLoadedArtwork?.origin != .folder
+    }
+
+    /// Folder whose artwork is being fixed (sheet open).
+    var fixingArtwork: Entry?
 
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private var nowPlaying: NowPlaying?
@@ -52,7 +65,9 @@ final class AppModel {
         self.durations = TrackDurations(resolve: resolve)
         self.browser = Browser(sources: sources)
         self.output = OutputRoute(player: systemIntegration ? self.player.avPlayer : nil)
-        self.artwork = ArtworkStore { entry in await sources.artwork(for: entry) }
+        let resolver = ArtworkResolver(sources: sources)
+        self.artwork = ArtworkStore { entry in await resolver.resolve(entry) }
+        self.artworkResolver = resolver
         self.defaults = defaults
         self.windowMode = WindowMode(rawValue: defaults.string(forKey: "windowMode") ?? "") ?? .player
         self.showsArtwork = defaults.bool(forKey: "showsArtwork")

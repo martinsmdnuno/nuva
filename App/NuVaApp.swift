@@ -21,6 +21,11 @@ struct NuVaApp: App {
         .windowResizability(.contentSize)
         .commands { NuVaCommands(model: model) }
 
+        Window("Termos e privacidade", id: "terms") {
+            TermsView()
+        }
+        .windowResizability(.contentMinSize)
+
         MenuBarExtra {
             MenuBarPlayer()
                 .environment(model)
@@ -35,6 +40,7 @@ struct NuVaApp: App {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         SkinStore.shared.applyAppearance()
+        UpdateChecker.shared.checkAtLaunch()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
@@ -43,8 +49,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 /// Shortcuts from the README. Enter and ⌘Enter live in the lists (they depend on the selection).
 struct NuVaCommands: Commands {
     let model: AppModel
+    @Environment(\.openWindow) private var openWindow
 
     var body: some Commands {
+        CommandGroup(after: .appInfo) {
+            Button("Procurar atualizações…") { UpdateChecker.shared.checkNow() }
+            Button("Termos e privacidade") { openWindow(id: "terms") }
+        }
         CommandGroup(replacing: .newItem) {
             Button("Adicionar pasta…") { model.addFolder() }
                 .keyboardShortcut("o")
@@ -62,6 +73,8 @@ struct NuVaCommands: Commands {
                 .keyboardShortcut("b")
             Toggle("Mostrar capas", isOn: Binding(get: { model.showsArtwork }, set: { model.showsArtwork = $0 }))
                 .keyboardShortcut("a", modifiers: [.command, .option])
+            Button("Capa errada ou em falta…") { model.fixingArtwork = model.player.current?.entry }
+                .disabled(!model.canFixArtwork)
             Divider()
             Menu("Skin") { SkinMenuItems() }
             Menu("Fonte") { FontMenuItems() }

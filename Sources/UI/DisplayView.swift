@@ -6,6 +6,8 @@ import SwiftUI
 struct DisplayView: View {
     /// Off in Compact mode; the mini player and the other modes show it.
     var allowsArtwork = true
+    /// Clicking online or user artwork opens "Wrong artwork…" (main window only).
+    var opensArtworkFix = false
     @Environment(AppModel.self) private var model
     @AppStorage("showsRemaining") private var showsRemaining = false
 
@@ -27,6 +29,10 @@ struct DisplayView: View {
             HStack(alignment: .top, spacing: Space.s3) {
                 if allowsArtwork, let artwork = model.currentArtwork {
                     ArtworkTile(image: artwork)
+                        .onTapGesture {
+                            if opensArtworkFix, model.canFixArtwork { model.fixingArtwork = entry }
+                        }
+                        .help(opensArtworkFix && model.canFixArtwork ? String(localized: "Capa errada?") : "")
                 }
                 VStack(alignment: .leading, spacing: Space.s1) {
                     Text(entry?.title ?? (model.sources.sources.isEmpty ? String(localized: "Sem música") : String(localized: "Sem faixa")))

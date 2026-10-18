@@ -57,6 +57,8 @@ final class LocalSource: MusicSource {
         return entries.naturallySorted()
     }
 
+    var rootFolderName: String? { root.lastPathComponent }
+
     func artwork(inFolder path: String) async -> URL? {
         let dir = path.isEmpty ? root : root.appendingPathComponent(path, isDirectory: true)
         guard let names = try? FileManager.default.contentsOfDirectory(atPath: dir.path),

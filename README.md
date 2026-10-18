@@ -60,11 +60,15 @@ NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that
 
 The look above is the **Nuno** skin. **Graphite Orange** and **Graphite Green** are always dark, with a single bright accent on the play key, the lights and the playing track. Switch in **View › Skin** (⌥⌘1, ⌥⌘2, ⌥⌘3) or from the mini player. Skins change colours only: the keys, the layout and the shortcuts stay where your hands expect them. **View › Font** picks Inter + IBM Plex Mono or Apple's SF Pro + SF Mono.
 
-## Folder artwork, if you want it
+## Album artwork, if you want it
 
 <p align="center"><img src="docs/screenshots/artwork.png" width="760" alt="Folder artwork on the display and in the menu bar mini player"></p>
 
-Turn on **View › Show Artwork** (⌥⌘A) and NuVa shows the image you keep in each album folder (`cover`, `folder`, `front`, `album` or `capa`, as JPEG or PNG) in a small square on the display, in the mini player and in Control Center. It never reads artwork from tags and never looks anything up online. Off by default.
+Turn on **View › Show Artwork** (⌥⌘A) and NuVa shows the album cover in a small square on the display, in the mini player and in Control Center. Off by default.
+
+- If the folder has an image (`cover`, `folder`, `front`, `album` or `capa`, as JPEG or PNG), that's the one. Your file always wins.
+- If not, NuVa reads the artist and album from the folder names (`Fleetwood Mac/Rumours (1977)`) and fetches the cover from [MusicBrainz](https://musicbrainz.org) and the [Cover Art Archive](https://coverartarchive.org). Only confident matches count: no cover is better than a wrong one. Never from tags.
+- Wrong or missing? Click the cover, or **View › Wrong or Missing Artwork…**: correct the artist or album and search again, or choose an image. NuVa keeps covers to itself and never writes into your folders.
 
 ## Browse folders, play a whole album
 
@@ -109,11 +113,11 @@ On first launch NuVa tells you what to do: add a folder, or sign in to Jellyfin.
 - Folders on your Mac, on an external disk or on a mounted network share (SMB).
 - Queue: play a folder, add more, drag to reorder, delete to remove.
 - Repeat (all or one), shuffle, seek, volume with a scroll of the mouse.
-- Optional folder artwork from an image in the folder, never from tags.
+- Optional album artwork: the image in the folder, or found online from the folder names. Never from tags.
 - Media keys, Control Center, the lock screen and AirPods controls.
 - Keyboard first: every action has a shortcut.
 - English and Portuguese, following your system language.
-- No account, no analytics, no network calls except to your own Jellyfin server.
+- No account, no analytics. It only goes online for your Jellyfin server, album covers (when artwork is on) and a daily check for new versions, which never downloads anything. See [Terms and privacy](TERMS.md), also in **NuVa › Terms and Privacy**.
 
 ## Install
 
@@ -187,7 +191,8 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 - **Jellyfin sem confusão.** Navega pelas pastas reais do servidor e toca os ficheiros originais.
 - **Três tamanhos.** Player, com navegador e compacto. A janela estica na vertical para veres o álbum inteiro.
 - **Skins:** Nuno (claro ou escuro, como o sistema), Graphite Orange e Graphite Green (sempre escuras), em Visualização › Skin. Fonte Inter + IBM Plex Mono ou SF Pro + SF Mono, em Visualização › Fonte.
-- **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A) mostra a imagem que está na pasta (`cover`, `folder`, `front`, `album` ou `capa`) no display, no mini player e no Centro de Controlo. Nunca das tags. Desligado por defeito.
+- **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A). Usa a imagem da pasta (`cover`, `folder`, `front`, `album` ou `capa`); se não houver, procura no MusicBrainz pelo nome das pastas. Nunca das tags. Capa errada ou em falta: carrega na capa e corrige o artista ou o álbum, ou escolhe uma imagem. Desligado por defeito.
+- **Avisa quando há versão nova** (verifica no GitHub uma vez por dia, sem descarregar nada). [Termos e privacidade](TERMS.md) em NuVa › Termos e privacidade.
 - **Equalizador de 10 bandas**, media keys, Centro de Controlo e mini player na barra de menus.
 - Em português e inglês, conforme a língua do sistema. macOS 14 ou posterior, Apple silicon e Intel.
 

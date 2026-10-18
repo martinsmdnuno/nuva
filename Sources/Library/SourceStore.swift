@@ -146,7 +146,14 @@ extension SourceStore {
     }
 
     /// The image file in the folder that holds `entry`, if its source has one.
+    /// A disc folder ("CD 01") also looks in the album folder above it.
     func artwork(for entry: Entry) async -> URL? {
-        await source(entry.sourceID)?.artwork(inFolder: entry.parentPath)
+        guard let source = source(entry.sourceID) else { return nil }
+        var folder = entry.parentPath
+        while true {
+            if let url = await source.artwork(inFolder: folder) { return url }
+            guard AlbumGuess.isDiscFolder((folder as NSString).lastPathComponent) else { return nil }
+            folder = (folder as NSString).deletingLastPathComponent
+        }
     }
 }

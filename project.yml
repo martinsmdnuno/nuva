@@ -18,6 +18,9 @@ targets:
       - Sources
       - path: Resources
         optional: true
+      # Shown in NuVa ▸ Terms and Privacy.
+      - path: TERMS.md
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: pt.nunomartins.nuva

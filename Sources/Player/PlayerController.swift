@@ -154,6 +154,18 @@ final class PlayerController {
         }
     }
 
+    /// Removes every queue entry that matches (a CD that went away). If the current
+    /// track goes too, playback stops instead of moving on.
+    func removeAll(where shouldRemove: (Entry) -> Bool) {
+        let removed = Set(queue.filter { shouldRemove($0.entry) }.map(\.id))
+        guard !removed.isEmpty else { return }
+        let stopsCurrent = currentID.map(removed.contains) ?? false
+        if stopsCurrent { stopAll() }
+        queue.removeAll { removed.contains($0.id) }
+        order.removeAll { removed.contains($0) }
+        if !stopsCurrent { refreshUpcoming() }
+    }
+
     func move(fromOffsets source: IndexSet, toOffset destination: Int) {
         queue.move(fromOffsets: source, toOffset: destination)
         if !shuffle { order = queue.map(\.id) }

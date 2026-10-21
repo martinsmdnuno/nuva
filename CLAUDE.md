@@ -13,7 +13,7 @@ Native macOS app in SwiftUI that plays music from folders. Winamp-like simplicit
 2. **Native audio.** AVFoundation (`AVQueuePlayer`). No VLC, no ffmpeg, no third-party audio libraries.
 3. **One small window.** No deep navigation.
 4. **Keyboard first.** Media keys, shortcuts, `MPRemoteCommandCenter` and `MPNowPlayingInfoCenter`.
-5. **Pluggable sources.** The app plays from "sources". Each source is a folder tree: Local (a folder on the Mac, including mounted SMB shares), Jellyfin, and later a generic HTTP server. The player doesn't know where the music comes from.
+5. **Pluggable sources.** The app plays from "sources". Each source is a folder tree: Local (a folder on the Mac, including mounted SMB shares), Jellyfin, an audio CD in the drive, and later a generic HTTP server. The player doesn't know where the music comes from.
 
 ## Architecture
 ```swift
@@ -26,6 +26,7 @@ protocol MusicSource {
 ```
 - `LocalSource` returns `file://`. Keeps folder access with a security-scoped bookmark.
 - `JellyfinSource` signs in with username and password (Keychain), browses by the items' `Path` (the disk folders, never Jellyfin's tags) and plays the original with `/Audio/{id}/stream.<ext>?static=true`.
+- `DiscSource` is an audio CD while it is in the drive (cddafs volume in `/Volumes`, never saved): one folder named "Artist – Album", tracks named from MusicBrainz by disc ID (`DiscTOC`, `DiscLookup`, cached in Application Support), else the volume's "Audio CD" / "1 Audio Track". `DiscDrive` watches mounts; inserting a disc (or launching with one in) replaces the queue and plays it. Eject CD ⌘E. Plan in `docs/plans/audio-cd.md`.
 - `ServerSource` (generic HTTP server) is still only the protocol and a stub.
 - Playable extensions: flac, mp3, m4a, aac, alac, wav, aiff.
 - Track order: natural sort by file name (`localizedStandardCompare`).
@@ -41,7 +42,7 @@ In:
 - Skins (View ▸ Skin, ⌥⌘1, ⌥⌘2…, and a key in the mini player): colours only, same layout and sizes. Default "Nuno" (the 1.0 look). Plan in `docs/plans/skins-and-artwork.md`.
 - The folder drawer opens and closes with the folders key in the queue header, the key in the drawer header, or ⌘B.
 - Closing the window doesn't stop the music: the app leaves the Dock and stays in the menu bar with a mini player.
-- Album artwork (View ▸ Show Artwork, ⌥⌘A; off by default), never from tags. Order: an image file in the folder (`cover`, `folder`, `front`, `album`, `capa` · jpg/jpeg/png; a disc folder also looks in its album folder), then the user's choice for that folder, then online: artist and album inferred from the folder names (`AlbumGuess`), MusicBrainz + Cover Art Archive, confident matches only. The one fallback is "Wrong or Missing Artwork…" (search again with corrected names, choose an image, or no artwork). Covers live in Application Support, never in the user's folders. Small, inside the display and the mini player, not in Compact; also in Now Playing. Online lookup is the one agreed exception to "no online lookups".
+- Album artwork (View ▸ Show Artwork, ⌥⌘A; off by default), never from tags. Order: an image file in the folder (`cover`, `folder`, `front`, `album`, `capa` · jpg/jpeg/png; a disc folder also looks in its album folder), then the user's choice for that folder, then online: artist and album inferred from the folder names (`AlbumGuess`), MusicBrainz + Cover Art Archive, confident matches only. The one fallback is "Wrong or Missing Artwork…" (search again with corrected names, choose an image, or no artwork). Covers live in Application Support, never in the user's folders. Small, inside the display and the mini player, not in Compact; also in Now Playing. Online lookup is one of the two agreed exceptions to "no online lookups"; the other is an audio CD's names.
 - Update check: GitHub `releases/latest` at launch (at most daily) and NuVa ▸ Check for Updates…; an alert only, never downloads.
 - Terms and privacy: `TERMS.md` (EN + PT), bundled and shown in NuVa ▸ Terms and Privacy. Update it whenever the app gains a network call.
 - 10-band equalizer with presets, in an `MTAudioProcessingTap` on each `AVPlayerItem` (Accelerate biquads).

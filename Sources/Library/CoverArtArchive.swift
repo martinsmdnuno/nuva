@@ -85,7 +85,7 @@ actor CoverArtArchive {
         s.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"")
     }
 
-    private func get(_ url: URL, accept: String? = nil) async throws -> (Data, HTTPURLResponse)? {
+    func get(_ url: URL, accept: String? = nil) async throws -> (Data, HTTPURLResponse)? {
         // At most one request per second (MusicBrainz rate limit; applied to both hosts for simplicity).
         let wait = 1.1 - Date().timeIntervalSince(lastRequest)
         if wait > 0 { try await Task.sleep(for: .seconds(wait)) }

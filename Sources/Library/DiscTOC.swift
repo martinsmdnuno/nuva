@@ -30,6 +30,7 @@ struct DiscTOC: Equatable, Sendable {
     }
 
     /// Sessions › Track Array › Point / Start Block / Data, and each session's Leadout Block.
+    /// cddafs counts blocks from the start of the disc, pregap included (track 1 starts at 150).
     init?(plist data: Data) {
         guard let root = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any],
               let sessions = root["Sessions"] as? [[String: Any]] else { return nil }
@@ -37,11 +38,11 @@ struct DiscTOC: Equatable, Sendable {
         var tracks: [Track] = []
         var leadouts: [Int] = []
         for session in sessions {
-            if let leadout = session["Leadout Block"] as? Int { leadouts.append(leadout) }
+            if let leadout = session["Leadout Block"] as? Int { leadouts.append(leadout - Self.pregap) }
             for track in session["Track Array"] as? [[String: Any]] ?? [] {
                 guard let point = track["Point"] as? Int, let start = track["Start Block"] as? Int,
                       (1...99).contains(point) else { continue }
-                tracks.append(Track(number: point, start: start, isData: track["Data"] as? Bool ?? false))
+                tracks.append(Track(number: point, start: start - Self.pregap, isData: track["Data"] as? Bool ?? false))
             }
         }
         tracks.sort { $0.number < $1.number }

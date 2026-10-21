@@ -22,11 +22,11 @@ struct DiscTests {
 
     @Test func readsTheCddafsPlist() throws {
         let plist: [String: Any] = ["Sessions": [[
-            "First Track": 1, "Last Track": 3, "Leadout Block": 30000, "Session Number": 1,
+            "First Track": 1, "Last Track": 3, "Leadout Block": 30150, "Session Number": 1,
             "Track Array": [
-                ["Point": 1, "Start Block": 0, "Data": false],
-                ["Point": 2, "Start Block": 10000, "Data": false],
-                ["Point": 3, "Start Block": 20000, "Data": false],
+                ["Point": 1, "Start Block": 150, "Data": false],
+                ["Point": 2, "Start Block": 10150, "Data": false],
+                ["Point": 3, "Start Block": 20150, "Data": false],
             ],
         ]]]
         let data = try PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
@@ -36,11 +36,11 @@ struct DiscTests {
 
     @Test func enhancedCDEndsAudioBeforeTheDataTrack() throws {
         let plist: [String: Any] = ["Sessions": [
-            ["Leadout Block": 20000, "Track Array": [
-                ["Point": 1, "Start Block": 0, "Data": false],
-                ["Point": 2, "Start Block": 10000, "Data": false],
+            ["Leadout Block": 20150, "Track Array": [
+                ["Point": 1, "Start Block": 150, "Data": false],
+                ["Point": 2, "Start Block": 10150, "Data": false],
             ]],
-            ["Leadout Block": 60000, "Track Array": [["Point": 3, "Start Block": 31400, "Data": true]]],
+            ["Leadout Block": 60150, "Track Array": [["Point": 3, "Start Block": 31550, "Data": true]]],
         ]]
         let data = try PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
         let toc = try #require(DiscTOC(plist: data))

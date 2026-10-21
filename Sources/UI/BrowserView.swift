@@ -175,6 +175,8 @@ struct BrowserView: View {
                 Button("Tocar pasta") { Task { await model.playFolder(location) } }
                     .buttonStyle(.keyText)
                     .keyFocus()
+                    // With the eject key there's less room: the title truncates, not the key.
+                    .fixedSize()
             }
             if let disc = browser.source as? DiscSource {
                 Button { model.ejectDisc(disc) } label: { Image(systemName: "eject") }

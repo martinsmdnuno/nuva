@@ -79,7 +79,8 @@ final class AppModel {
         if sources.sources.count == 1, let only = sources.sources.first {
             browser.open(BrowserLocation(sourceID: only.id, path: ""))
         }
-        if systemIntegration {
+        // Not under tests: the test host would start playing a CD left in the drive.
+        if systemIntegration, ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
             drive.onInsert = { [unowned self] volume in Task { await insertDisc(volume) } }
             drive.onRemove = { [unowned self] volume in releaseDisc(volume) }
             drive.start()

@@ -61,6 +61,10 @@ struct NuVaCommands: Commands {
                 .keyboardShortcut("o")
             Button("Adicionar Jellyfin…") { model.addJellyfin() }
                 .keyboardShortcut("o", modifiers: [.command, .shift])
+            Divider()
+            Button("Ejetar CD") { model.ejectDisc() }
+                .keyboardShortcut("e")
+                .disabled(model.ejectableDisc == nil)
         }
         CommandGroup(after: .sidebar) {
             Button("Player com playlist") { model.windowMode = .player }

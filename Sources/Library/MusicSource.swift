@@ -38,17 +38,24 @@ struct Entry: Identifiable, Hashable, Sendable {
 }
 
 enum SourceKind: String, Codable, Sendable {
-    case local, server, jellyfin
+    case local, server, jellyfin, cd
 
     var label: String {
         switch self {
         case .local: String(localized: "Local")
         case .server: String(localized: "Servidor")
         case .jellyfin: "Jellyfin"
+        case .cd: "CD"
         }
     }
 
-    var symbol: String { self == .local ? "internaldrive" : "server.rack" }
+    var symbol: String {
+        switch self {
+        case .local: "internaldrive"
+        case .server, .jellyfin: "server.rack"
+        case .cd: "opticaldisc"
+        }
+    }
 }
 
 /// A folder tree the app plays from. The player doesn't know where the music comes from.

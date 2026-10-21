@@ -133,7 +133,11 @@ struct BrowserView: View {
     private func menu(_ row: Row) -> some View {
         switch row {
         case .source(let id, _, _, _):
-            Button("Remover fonte") { model.sources.remove(id) }
+            if let disc = model.sources.source(id) as? DiscSource {
+                Button("Ejetar CD") { model.ejectDisc(disc) }
+            } else {
+                Button("Remover fonte") { model.sources.remove(id) }
+            }
         case .entry(let e) where e.kind == .folder:
             Button("Tocar pasta") {
                 Task { await model.playFolder(BrowserLocation(sourceID: e.sourceID, path: e.path)) }
@@ -171,6 +175,12 @@ struct BrowserView: View {
                 Button("Tocar pasta") { Task { await model.playFolder(location) } }
                     .buttonStyle(.keyText)
                     .keyFocus()
+            }
+            if let disc = browser.source as? DiscSource {
+                Button { model.ejectDisc(disc) } label: { Image(systemName: "eject") }
+                    .buttonStyle(.key(.mode))
+                    .keyFocus()
+                    .help(String(localized: "Ejetar CD ⌘E"))
             }
             // Close the drawer: the same icon as the "pastas" label, next to the divider,
             // on the side the drawer collapses towards.

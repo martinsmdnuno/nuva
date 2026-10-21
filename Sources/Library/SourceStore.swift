@@ -90,6 +90,15 @@ final class SourceStore {
         return id
     }
 
+    /// Adds a CD while it is in the drive. Not saved: it goes away with the disc.
+    func addDisc(_ disc: DiscSource) {
+        guard source(disc.id) == nil else { return }
+        sources.append(disc)
+    }
+
+    /// The CDs in the drive.
+    var discs: [DiscSource] { sources.compactMap { $0 as? DiscSource } }
+
     func remove(_ id: UUID) {
         if records.first(where: { $0.id == id })?.kind == .jellyfin {
             Keychain.deletePassword(for: id.uuidString)
@@ -122,7 +131,7 @@ final class SourceStore {
             case .jellyfin:
                 guard let server = record.server, let username = record.username else { continue }
                 sources.append(jellyfin(record, server: server, username: username))
-            case .server:
+            case .server, .cd:
                 break
             }
         }

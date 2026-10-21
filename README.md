@@ -76,6 +76,12 @@ Turn on **View › Show Artwork** (⌥⌘A) and NuVa shows the album cover in a 
 
 Open the folder drawer with the **folders** key or **⌘B**. Each folder shows how many tracks it holds; double-click one to play it from the top, or **⌘Enter** to add it to the queue. Drag the window taller to see the whole album at once, or double-click the title bar to fill the screen height.
 
+## Audio CDs, like a CD player
+
+Connect a CD drive and put a disc in: NuVa shows it as a source and plays it from the first track. A CD carries no names, so NuVa looks up the disc on [MusicBrainz](https://musicbrainz.org) by its table of contents and names the album and the tracks; if the disc isn't known, it stays "Audio CD" and "1 Audio Track". Eject with **⌘E** or the eject key.
+
+To open NuVa whenever a CD goes in: **System Settings › CDs & DVDs › When you insert a music CD › Open other application… › NuVa**.
+
 ## Your Jellyfin server, without the mess
 
 Sign in to a **Jellyfin** server with your own account and NuVa browses it by the server's real folders, not by Jellyfin's tags. It streams the original files, so a FLAC stays a FLAC. Your password goes in the macOS Keychain.
@@ -110,14 +116,14 @@ On first launch NuVa tells you what to do: add a folder, or sign in to Jellyfin.
 ## Everything else
 
 - Plays FLAC, ALAC, MP3, AAC/M4A, WAV and AIFF.
-- Folders on your Mac, on an external disk or on a mounted network share (SMB).
+- Folders on your Mac, on an external disk or on a mounted network share (SMB), and audio CDs.
 - Queue: play a folder, add more, drag to reorder, delete to remove.
 - Repeat (all or one), shuffle, seek, volume with a scroll of the mouse.
 - Optional album artwork: the image in the folder, or found online from the folder names. Never from tags.
 - Media keys, Control Center, the lock screen and AirPods controls.
 - Keyboard first: every action has a shortcut.
 - English and Portuguese, following your system language.
-- No account, no analytics. It only goes online for your Jellyfin server, album covers (when artwork is on) and a daily check for new versions, which never downloads anything. See [Terms and privacy](TERMS.md), also in **NuVa › Terms and Privacy**.
+- No account, no analytics. It only goes online for your Jellyfin server, album covers (when artwork is on), the names of an audio CD and a daily check for new versions, which never downloads anything. See [Terms and privacy](TERMS.md), also in **NuVa › Terms and Privacy**.
 
 ## Install
 
@@ -152,6 +158,7 @@ xattr -dr com.apple.quarantine /Applications/NuVa.app
 | ⌘L | Go to the current track |
 | Enter · ⌘Enter | Play the selection · add it to the queue |
 | ⌘O · ⇧⌘O | Add a folder · add Jellyfin |
+| ⌘E | Eject the CD |
 
 ## Build from source
 
@@ -192,6 +199,7 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 - **Três tamanhos.** Player, com navegador e compacto. A janela estica na vertical para veres o álbum inteiro.
 - **Skins:** Nuno (claro ou escuro, como o sistema), Graphite Orange e Graphite Green (sempre escuras), em Visualização › Skin. Fonte Inter + IBM Plex Mono ou SF Pro + SF Mono, em Visualização › Fonte.
 - **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A). Usa a imagem da pasta (`cover`, `folder`, `front`, `album` ou `capa`); se não houver, procura no MusicBrainz pelo nome das pastas. Nunca das tags. Capa errada ou em falta: carrega na capa e corrige o artista ou o álbum, ou escolhe uma imagem. Desligado por defeito.
+- **CDs áudio, como um leitor de CDs.** Mete um disco no leitor e a NuVa toca-o logo. Os nomes do álbum e das faixas vêm do MusicBrainz, pelo índice do disco (um CD não traz nomes). Ejetar com ⌘E. Para abrir a NuVa sempre que entra um CD: Definições do Sistema › CDs e DVDs › Ao inserir um CD de música › Abrir outra aplicação… › NuVa.
 - **Avisa quando há versão nova** (verifica no GitHub uma vez por dia, sem descarregar nada). [Termos e privacidade](TERMS.md) em NuVa › Termos e privacidade.
 - **Equalizador de 10 bandas**, media keys, Centro de Controlo e mini player na barra de menus.
 - Em português e inglês, conforme a língua do sistema. macOS 14 ou posterior, Apple silicon e Intel.

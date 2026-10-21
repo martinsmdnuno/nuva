@@ -641,6 +641,38 @@
         }
       }
     },
+    "Ejetar CD": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eject CD"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ejetar CD"
+          }
+        }
+      }
+    },
+    "Ejetar CD ⌘E": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eject CD ⌘E"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ejetar CD ⌘E"
+          }
+        }
+      }
+    },
     "Endereço": {
       "localizations": {
         "en": {

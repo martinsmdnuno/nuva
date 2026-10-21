@@ -31,7 +31,7 @@ PORTUGUÊS
 
 Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume
 ⌘B pastas · ⌘1 ⌘2 ⌘3 tamanho da janela · ⌘L faixa atual
-⌥⌘1 ⌥⌘2 ⌥⌘3 skin · ⌥⌘A capas da pasta
+⌥⌘1 ⌥⌘2 ⌥⌘3 skin · ⌥⌘A capas da pasta · ⌘E ejetar CD
 
 
 ENGLISH
@@ -47,7 +47,7 @@ ENGLISH
 
 Shortcuts: Space play/pause · ⌘→ ⌘← next/previous · ⌘↑ ⌘↓ volume
 ⌘B folders · ⌘1 ⌘2 ⌘3 window size · ⌘L current track
-⌥⌘1 ⌥⌘2 ⌥⌘3 skin · ⌥⌘A folder artwork
+⌥⌘1 ⌥⌘2 ⌥⌘3 skin · ⌥⌘A folder artwork · ⌘E eject CD
 
 
 Terminal (em vez dos passos 2–3 / instead of steps 2–3):

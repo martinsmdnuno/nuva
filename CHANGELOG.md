@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2 — audio CDs
+
+- Plays audio CDs. Put a disc in the drive and NuVa plays it from the first track, like a CD player, whether NuVa is already open or opens with the disc in. The CD shows up as a source while it's in the drive.
+- A CD carries no names, so NuVa looks up the disc on MusicBrainz by its table of contents and names the album and the tracks. Known discs are remembered and work offline. If the disc isn't found, it stays "Audio CD" and "1 Audio Track".
+- With artwork on, the album cover comes from the Cover Art Archive.
+- Eject with File › Eject CD (⌘E), the eject key in the browser or the source's menu.
+- To open NuVa whenever a CD goes in: System Settings › CDs & DVDs › When you insert a music CD › Open other application › NuVa.
+
 ## 1.1.1
 
 - Fixes a crash when an album cover was found (it was handed to Control Center on the wrong thread). This is also why artwork didn't appear in 1.1.

@@ -4,11 +4,15 @@
 set -euo pipefail
 cd "${0:a:h}/.."
 
+# Built outside the repo: in an iCloud-synced folder (Desktop, Documents) the build picks up
+# Finder attributes and codesign refuses the app. NUVA_BUILD_DIR overrides it.
+BUILD_DIR=${NUVA_BUILD_DIR:-${TMPDIR:-/tmp}/nuva-build}
+
 xcodegen generate -q
-xcodebuild -project NuVa.xcodeproj -scheme NuVa -configuration Release -derivedDataPath build \
+xcodebuild -project NuVa.xcodeproj -scheme NuVa -configuration Release -derivedDataPath "$BUILD_DIR" \
   ONLY_ACTIVE_ARCH=NO build -quiet
 
-APP=build/Build/Products/Release/NuVa.app
+APP=$BUILD_DIR/Build/Products/Release/NuVa.app
 VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$APP/Contents/Info.plist")
 STAGE=$(mktemp -d)
 trap 'rm -rf "$STAGE"' EXIT

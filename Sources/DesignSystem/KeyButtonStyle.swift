@@ -97,9 +97,12 @@ struct LED: View {
     var size: CGFloat = Size.led
 
     var body: some View {
+        // The lit LED sits over the dark one, so going out leaves a short afterglow.
         Circle()
-            .fill(isOn ? Color.led : Color.ledOff)
+            .fill(Color.ledOff)
+            .overlay { Circle().fill(Color.led).opacity(isOn ? 1 : 0) }
             .frame(width: size, height: size)
+            .motion(isOn ? Motion.ledOn : Motion.ledOff, value: isOn)
     }
 }
 

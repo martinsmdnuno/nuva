@@ -220,6 +220,7 @@ private struct LegendToggle: View {
                 }
             }
             .foregroundStyle(hovering || isOn ? Color.ink : Color.inkMuted)
+            .motion(Motion.hover, value: hovering || isOn)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

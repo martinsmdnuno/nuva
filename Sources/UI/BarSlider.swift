@@ -29,12 +29,12 @@ struct BarSlider: View {
                 Rectangle()
                     .fill(fillColor)
                     .frame(width: width * v, height: Size.bar)
-                if hover != nil || dragging {
-                    Rectangle()
-                        .fill(fillColor)
-                        .frame(width: 2, height: 10)
-                        .offset(x: min(max(width * v - 1, 0), width - 2))
-                }
+                Rectangle()
+                    .fill(fillColor)
+                    .frame(width: 2, height: 10)
+                    .offset(x: min(max(width * v - 1, 0), width - 2))
+                    .opacity(hover != nil || dragging ? 1 : 0)
+                    .motion(Motion.hover, value: hover != nil || dragging)
             }
             .frame(width: width, height: geo.size.height)
             .contentShape(Rectangle())

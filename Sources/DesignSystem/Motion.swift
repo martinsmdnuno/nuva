@@ -18,6 +18,8 @@ enum Motion {
     static let hover = Animation.easeOut(duration: 0.12)
     /// A state change in place: a new track, a switch thrown, a row added or removed.
     static let state = Animation.easeInOut(duration: 0.2)
+    /// Equalizer faders going to a preset, like motorised ones.
+    static let fader = Animation.easeInOut(duration: 0.3)
 }
 
 extension View {

@@ -64,7 +64,7 @@ Movement only shows what the hardware would do. Nothing moves on its own, nothin
 - **Keys travel.** Pressed, the face goes down 1px and darkens in 60ms; released, a short spring brings it back. Changing icons (play/pause, repeat/repeat one) swap in place.
 - **LEDs glow and fade.** On in 80ms; off in 350ms, a short afterglow like a filament.
 - **Hover** backgrounds and resting colours fade in 120ms.
-- **State in place** (a new track on the display, a switch thrown, rows added, removed or reordered, the browser going into a folder) cross-fades in 200ms. No slides between screens, no bounces on content.
+- **State in place** (a new track on the display, a switch thrown, rows added, removed or reordered, the browser going into a folder) cross-fades in 200ms. Choosing an equalizer preset moves the faders there in 300ms, like motorised ones; dragging stays direct. No slides between screens, no bounces on content.
 - The time and the position bar never animate: they are the readout.
 
 ## Icons

@@ -19,6 +19,8 @@ struct DisplayView: View {
             HStack(spacing: Space.s2) {
                 LED(isOn: player.isPlaying, size: 6)
                 Text(player.formatLabel)
+                    .contentTransition(.opacity)
+                    .motion(Motion.state, value: player.formatLabel)
                 Spacer(minLength: Space.s2)
                 Text(model.currentSourceLabel)
             }
@@ -29,6 +31,7 @@ struct DisplayView: View {
             HStack(alignment: .top, spacing: Space.s3) {
                 if allowsArtwork, let artwork = model.currentArtwork {
                     ArtworkTile(image: artwork)
+                        .transition(.opacity)
                         .onTapGesture {
                             if opensArtworkFix, model.canFixArtwork { model.fixingArtwork = entry }
                         }
@@ -42,6 +45,8 @@ struct DisplayView: View {
                         .truncationMode(.tail)
                         .help(entry?.name ?? "")
                         .frame(height: 20)
+                        .contentTransition(.opacity)
+                        .motion(Motion.state, value: entry?.id)
 
                     HStack(spacing: Space.s2) {
                         Text(entry?.folderName ?? (model.sources.sources.isEmpty
@@ -52,6 +57,8 @@ struct DisplayView: View {
                             .truncationMode(.tail)
                             .help(entry?.parentPath ?? "")
                             .layoutPriority(1)
+                            .contentTransition(.opacity)
+                            .motion(Motion.state, value: entry?.parentPath)
                         Spacer(minLength: 0)
                         Text(model.output.label)
                             .font(.dsDisplayMeta)
@@ -76,6 +83,8 @@ struct DisplayView: View {
                     .padding(.top, Space.s1)
                 }
             }
+            // A folder's artwork arriving or leaving moves the text aside in place.
+            .motion(Motion.state, value: allowsArtwork && model.currentArtwork != nil)
 
             ProgressBar()
         }

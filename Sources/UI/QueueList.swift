@@ -72,6 +72,8 @@ struct QueueList: View {
                 .modifier(Reorderable(item: item, index: index, player: player, enabled: !isSnapshot))
             }
         }
+        // Rows added, removed or moved slide to their places.
+        .motion(Motion.state, value: player.queue.map(\.id))
     }
 
     @ViewBuilder

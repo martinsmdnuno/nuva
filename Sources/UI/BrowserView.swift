@@ -103,6 +103,8 @@ struct BrowserView: View {
                 .padding(.vertical, Space.s3)
             }
         }
+        // Going into a folder or back up cross-fades the rows in place.
+        .motion(Motion.state, value: currentRows(browser).map(\.id))
     }
 
     @ViewBuilder

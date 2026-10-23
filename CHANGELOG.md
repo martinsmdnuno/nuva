@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3 — spectrum meter, one small window
+
+- A spectrum meter on the display: ten columns of amber segments, one per equalizer band, that move with what you hear. Measured after the equalizer and in step with the speakers, AirPlay included. View › Show Spectrum (⌥⌘V) hides it.
+- The folders now take the queue's place below the keys instead of opening a drawer on the left. ⌘B or the folders key swaps the two; playing a folder brings the queue back. ⌘1 queue, ⌘2 folders, ⌘3 compact.
+- The window can be widened from 360 to 480, for long file names. Width and height are remembered.
+- The position bar shows the elapsed time and the duration at its ends; click the duration to see the time left.
+- Keys travel when pressed, lights fade like filaments, and the display and lists change in place. Everything snaps with Reduce Motion.
+- With the window open, the menu bar shows only macOS's Now Playing item; NuVa's mini player appears there when you close the window.
+
 ## 1.2 — audio CDs
 
 - Plays audio CDs. Put a disc in the drive and NuVa plays it from the first track, like a CD player, whether NuVa is already open or opens with the disc in. The CD shows up as a source while it's in the drive.

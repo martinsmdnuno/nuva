@@ -43,7 +43,7 @@ struct MenuBarPlayer: View {
     private func key(
         _ symbol: String, _ tone: KeyButtonStyle.Tone, _ help: String, action: @escaping () -> Void
     ) -> some View {
-        Button(action: action) { Image(systemName: symbol) }
+        Button(action: action) { KeySymbol(name: symbol) }
             .buttonStyle(.key(tone))
             .help(help)
     }

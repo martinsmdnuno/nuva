@@ -57,23 +57,34 @@ Flat keys, as on a Braun calculator or tape recorder:
 - Keys are grouped by function, with space between groups and a legend underneath: **playback** (previous, play/pause, next), **mode** (repeat, shuffle), **output** (AirPlay, equalizer).
 - Text buttons (Add Folder, Play Folder) use `key-mode` with a `label`, height `key-text` 28px.
 
+## Motion
+
+Movement only shows what the hardware would do. Nothing moves on its own, nothing loops, and everything snaps with Reduce Motion. Tokens in `Sources/DesignSystem/Motion.swift`:
+
+- **Keys travel.** Pressed, the face goes down 1px and darkens in 60ms; released, a short spring brings it back. Changing icons (play/pause, repeat/repeat one) swap in place.
+- **LEDs glow and fade.** On in 80ms; off in 350ms, a short afterglow like a filament.
+- **Hover** backgrounds and resting colours fade in 120ms.
+- **State in place** (a new track on the display, a switch thrown, rows added, removed or reordered, the browser going into a folder) cross-fades in 200ms. Choosing an equalizer preset moves the faders there in 300ms, like motorised ones; dragging stays direct. No slides between screens, no bounces on content.
+- The time and the position bar never animate: they are the readout.
+- The spectrum meter (`components/Spectrum.md`) moves with the music and only with it: columns jump up and fall at a steady rate, the peak holds and falls. Paused, it goes dark.
+
 ## Icons
 
 SF Symbols, regular weight, never filled except `play.fill` and `pause.fill` inside the play key. Fixed symbols: `backward.end`, `forward.end`, `play.fill`, `pause.fill`, `repeat`, `shuffle`, `airplayaudio`, `slider.vertical.3`, `sidebar.left`, `folder`, `internaldrive`, `server.rack`.
 
 ## Windows
 
-Three sizes, same content:
+One device, always the same layout: display, keys, volume, and below them the queue or the folders.
 
-- **Compact** (360 × ~320, height from content): display, keys, volume and the queue header with the folders key and the queue legend. No queue rows.
-- **Player with queue** (360 × 480 or taller): display with position, keys in three groups, volume, queue. All on one plane.
-- **With browser** (720 × 480 or taller): folder browser on the left, player with queue on the right.
+- **Player with queue** (⌘1): the queue below the keys.
+- **Player with folders** (⌘2): the folder browser in the queue's place. ⌘B or the folders key swaps the two. Playing a folder or a track from it brings the queue back.
+- **Compact** (⌘3): display, keys, volume and the header. No rows; the height follows the content.
 
-In the player and browser the height is free (minimum 480) and the width fixed: only the lists grow. The app remembers the height between modes and launches. Double-clicking the title bar (zoom) stretches the window to the screen's height. Compact doesn't resize.
+The width is free from 360 to 480: keys keep their size and the space between the groups grows, while the display, the meter and the lists stretch. With the queue or the folders the height is free too (minimum 540). The app remembers both between modes and launches. Double-clicking the title bar (zoom) stretches the window to the screen's height.
 
 ## Shortcuts
 
-Space play/pause · ⌘→ next · ⌘← previous · ⌘↑ ⌘↓ volume · ⌘L go to the current track · Enter play selection · ⌘Enter add to queue · ⌘B show or hide folders · ⌘1 ⌘2 ⌘3 window size · ⌘O add folder · ⇧⌘O add Jellyfin.
+Space play/pause · ⌘→ next · ⌘← previous · ⌘↑ ⌘↓ volume · ⌘L go to the current track · Enter play selection · ⌘Enter add to queue · ⌘B swap queue and folders · ⌘1 ⌘2 ⌘3 queue, folders, compact · ⌘O add folder · ⇧⌘O add Jellyfin.
 
 ## Interface text
 

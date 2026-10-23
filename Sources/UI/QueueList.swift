@@ -45,6 +45,8 @@ struct QueueList: View {
         }
         .onKeyPress(.delete) { removeSelection(); return .handled }
         .onKeyPress(.deleteForward) { removeSelection(); return .handled }
+        // Coming back from the folders, the arrows move in the queue again.
+        .onAppear { if !isSnapshot { focused = true } }
     }
 
     private func rows(_ player: PlayerController) -> some View {
@@ -72,6 +74,8 @@ struct QueueList: View {
                 .modifier(Reorderable(item: item, index: index, player: player, enabled: !isSnapshot))
             }
         }
+        // Rows added, removed or moved slide to their places.
+        .motion(Motion.state, value: player.queue.map(\.id))
     }
 
     @ViewBuilder
@@ -152,9 +156,9 @@ struct QueueList: View {
     }
 }
 
-/// Queue header, as if printed on the chassis: on the left the "pastas" label (on the side
-/// the drawer opens from), on the right the "fila" label with the total. Stays in compact mode,
-/// so people new to the app can see how to get back.
+/// Header of what sits below the keys, as if printed on the chassis: on the left the folders key
+/// and the "pastas" label, on the right the "fila" label with the total. The LEDs say which one is
+/// showing. Stays in compact mode, so people new to the app can see how to get back.
 struct QueueHeader: View {
     @Environment(AppModel.self) private var model
 
@@ -162,27 +166,35 @@ struct QueueHeader: View {
         let player = model.player
         let isOpen = model.windowMode == .browser
         HStack(alignment: .bottom, spacing: Space.s2) {
-            // The same key that closes the drawer in the browser header; the LED shows whether it's open.
+            // Swaps the queue and the folders; the LED is on while the folders show.
             HStack(alignment: .bottom, spacing: Space.s2) {
                 Button { model.toggleBrowser() } label: { Image(systemName: "sidebar.left") }
                     .buttonStyle(.key(.mode))
                     .keyFocus()
-                    .help(isOpen ? String(localized: "Esconder pastas ⌘B") : String(localized: "Mostrar pastas ⌘B"))
+                    .help(isOpen ? String(localized: "Mostrar fila ⌘B") : String(localized: "Mostrar pastas ⌘B"))
                     .keyLED(isOpen)
-                // Centred on the key's face.
-                Text("pastas").legend()
-                    .padding(.bottom, Space.s3)
+                if !isOpen {
+                    // Centred on the key's face.
+                    Text("pastas").legend()
+                        .padding(.bottom, Space.s3)
+                }
             }
-            Spacer()
-            LegendToggle(
-                isOn: model.windowMode != .compact, label: "fila",
-                detail: player.queue.isEmpty ? nil : summary(player),
-                help: model.windowMode == .compact
-                    ? String(localized: "Mostrar fila ⌘1") : String(localized: "Esconder fila ⌘3")
-            ) { model.toggleQueue() }
-            .padding(.bottom, Space.s3)
+            if isOpen {
+                BrowserControls()
+            } else {
+                Spacer()
+                // Switches between the queue and compact mode.
+                LegendToggle(
+                    isOn: model.windowMode == .player, label: "fila",
+                    detail: player.queue.isEmpty ? nil : summary(player),
+                    help: model.windowMode == .player
+                        ? String(localized: "Esconder fila ⌘3") : String(localized: "Mostrar fila ⌘1")
+                ) { model.toggleQueue() }
+                .padding(.bottom, Space.s3)
+            }
         }
-        .padding(.trailing, Space.s2)
+        .padding(.trailing, isOpen ? 0 : Space.s2)
+        .motion(Motion.state, value: isOpen)
     }
 
     /// "11 faixas · 39:18"; no total while durations are missing.
@@ -220,6 +232,7 @@ private struct LegendToggle: View {
                 }
             }
             .foregroundStyle(hovering || isOn ? Color.ink : Color.inkMuted)
+            .motion(Motion.hover, value: hovering || isOn)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

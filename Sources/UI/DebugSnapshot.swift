@@ -25,6 +25,7 @@ enum DebugSnapshot {
         let views: [(String, AnyView, AppModel)] = [
             ("player", AnyView(ContentView()), model),
             ("navegador", AnyView(ContentView()), browserModel),
+            ("largo", AnyView(ContentView().frame(width: 560)), model),
             ("compacto", AnyView(ContentView()), compactModel),
             ("primeiro", AnyView(ContentView()), firstRunModel),
             ("fila-vazia", AnyView(ContentView()), emptyQueueModel),
@@ -40,7 +41,7 @@ enum DebugSnapshot {
         ]
         // Every view in Nuno; the main ones again with SF Pro + SF Mono ("-sf") and in each
         // Graphite skin (always dark, so one file per view).
-        let main: Set<String> = ["player", "navegador", "compacto", "barra", "equalizador", "capa-errada"]
+        let main: Set<String> = ["player", "navegador", "largo", "compacto", "barra", "equalizador", "capa-errada"]
         let bothThemes = [(ColorScheme.dark, "chumbo"), (.light, "aluminio")]
         let runs: [(Skin, FontSet, String, Set<String>?, [(ColorScheme, String)])] = [
             (.nuno, .inter, "", nil, bothThemes),

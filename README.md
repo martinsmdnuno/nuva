@@ -52,7 +52,7 @@ Send the music to a WiiM, a HomePod, an Apple TV or any AirPlay speaker from the
 
 <p align="center"><img src="docs/screenshots/themes.png" width="760" alt="NuVa in the dark Lead theme and the light Aluminium theme"></p>
 
-NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that say what they do by their colour, and small amber lights for what's on. An always-dark display shows the format, the bit depth and where the sound is going. It follows your Mac's appearance, in dark **Lead** or light **Aluminium**.
+NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that say what they do by their colour, and small amber lights for what's on. An always-dark display shows the format, the bit depth and where the sound is going, with a spectrum meter of amber segments that dances with the music, one column per equalizer band. It follows your Mac's appearance, in dark **Lead** or light **Aluminium**.
 
 ## Skins and fonts
 
@@ -72,9 +72,9 @@ Turn on **View › Show Artwork** (⌥⌘A) and NuVa shows the album cover in a 
 
 ## Browse folders, play a whole album
 
-<p align="center"><img src="docs/screenshots/browser.png" width="760" alt="Folder browser next to the player"></p>
+<p align="center"><img src="docs/screenshots/browser.png" width="760" alt="The folders in the queue's place, below the keys"></p>
 
-Open the folder drawer with the **folders** key or **⌘B**. Each folder shows how many tracks it holds; double-click one to play it from the top, or **⌘Enter** to add it to the queue. Drag the window taller to see the whole album at once, or double-click the title bar to fill the screen height.
+Press the **folders** key or **⌘B** and your folders take the queue's place, below the keys; press it again for the queue. Each folder shows how many tracks it holds; double-click one to play it from the top (the queue comes back with it), or **⌘Enter** to add it to the queue. Drag the window taller to see the whole album at once, or wider for long file names.
 
 ## Audio CDs, like a CD player
 
@@ -119,6 +119,7 @@ On first launch NuVa tells you what to do: add a folder, or sign in to Jellyfin.
 - Folders on your Mac, on an external disk or on a mounted network share (SMB), and audio CDs.
 - Queue: play a folder, add more, drag to reorder, delete to remove.
 - Repeat (all or one), shuffle, seek, volume with a scroll of the mouse.
+- A 10-band equalizer with presets, and a spectrum meter on the display that follows what you hear, also over AirPlay (**View › Show Spectrum**, ⌥⌘V).
 - Optional album artwork: the image in the folder, or found online from the folder names. Never from tags.
 - Media keys, Control Center, the lock screen and AirPods controls.
 - Keyboard first: every action has a shortcut.
@@ -151,10 +152,11 @@ xattr -dr com.apple.quarantine /Applications/NuVa.app
 | Space | Play / pause |
 | ⌘→ · ⌘← | Next · previous |
 | ⌘↑ · ⌘↓ | Volume up · down |
-| ⌘B | Show or hide folders |
-| ⌘1 · ⌘2 · ⌘3 | Player · with browser · compact |
+| ⌘B | Swap the queue and the folders |
+| ⌘1 · ⌘2 · ⌘3 | Queue · folders · compact |
 | ⌥⌘1 · ⌥⌘2 … | Skin (also in View ▸ Skin) |
 | ⌥⌘A | Show or hide folder artwork |
+| ⌥⌘V | Show or hide the spectrum meter |
 | ⌘L | Go to the current track |
 | Enter · ⌘Enter | Play the selection · add it to the queue |
 | ⌘O · ⇧⌘O | Add a folder · add Jellyfin |
@@ -196,12 +198,13 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 - **Soa como deve.** FLAC, ALAC, WAV e AIFF pelo AVFoundation, o mesmo motor do QuickTime.
 - **AirPlay 2.** WiiM, HomePod, Apple TV ou qualquer coluna AirPlay.
 - **Jellyfin sem confusão.** Navega pelas pastas reais do servidor e toca os ficheiros originais.
-- **Três tamanhos.** Player, com navegador e compacto. A janela estica na vertical para veres o álbum inteiro.
+- **Uma janela pequena.** As pastas aparecem no lugar da fila (⌘B troca as duas) e há um modo compacto. A janela estica na vertical para veres o álbum inteiro, e na horizontal para nomes compridos.
 - **Skins:** Nuno (claro ou escuro, como o sistema), Graphite Orange e Graphite Green (sempre escuras), em Visualização › Skin. Fonte Inter + IBM Plex Mono ou SF Pro + SF Mono, em Visualização › Fonte.
 - **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A). Usa a imagem da pasta (`cover`, `folder`, `front`, `album` ou `capa`); se não houver, procura no MusicBrainz pelo nome das pastas. Nunca das tags. Capa errada ou em falta: carrega na capa e corrige o artista ou o álbum, ou escolhe uma imagem. Desligado por defeito.
 - **CDs áudio, como um leitor de CDs.** Mete um disco no leitor e a NuVa toca-o logo. Os nomes do álbum e das faixas vêm do MusicBrainz, pelo índice do disco (um CD não traz nomes). Ejetar com ⌘E. Para abrir a NuVa sempre que entra um CD: Definições do Sistema › CDs e DVDs › Ao inserir um CD de música › Abrir outra aplicação… › NuVa.
 - **Avisa quando há versão nova** (verifica no GitHub uma vez por dia, sem descarregar nada). [Termos e privacidade](TERMS.md) em NuVa › Termos e privacidade.
-- **Equalizador de 10 bandas**, media keys, Centro de Controlo e mini player na barra de menus.
+- **Equalizador de 10 bandas** e **espectro no visor**: colunas de segmentos âmbar, uma por banda, que seguem o que estás a ouvir, também em AirPlay (Visualização › Mostrar espectro, ⌥⌘V).
+- Media keys, Centro de Controlo e mini player na barra de menus.
 - Em português e inglês, conforme a língua do sistema. macOS 14 ou posterior, Apple silicon e Intel.
 
 ### Instalar
@@ -213,4 +216,4 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 
 Só é preciso uma vez.
 
-Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume · ⌘B pastas · ⌘1 ⌘2 ⌘3 tamanho da janela · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin.
+Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume · ⌘B fila ou pastas · ⌘1 ⌘2 ⌘3 fila, pastas, compacto · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌥⌘V espectro · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin.

@@ -65,8 +65,11 @@ struct KeyButtonStyle: ButtonStyle {
                 .background {
                     shape.fill(tone.face)
                     // Pressed: the face darkens while the mouse is down.
-                    if configuration.isPressed { shape.fill(Color.black.opacity(0.15)) }
+                    shape.fill(Color.black.opacity(configuration.isPressed ? 0.15 : 0))
                 }
+                // ...and travels 1px, down fast, back up on a short spring.
+                .offset(y: configuration.isPressed ? 1 : 0)
+                .motion(configuration.isPressed ? Motion.press : Motion.release, value: configuration.isPressed)
                 .overlay {
                     if isFocused {
                         RoundedRectangle(cornerRadius: Radius.sm + 4, style: .continuous)
@@ -94,9 +97,12 @@ struct LED: View {
     var size: CGFloat = Size.led
 
     var body: some View {
+        // The lit LED sits over the dark one, so going out leaves a short afterglow.
         Circle()
-            .fill(isOn ? Color.led : Color.ledOff)
+            .fill(Color.ledOff)
+            .overlay { Circle().fill(Color.led).opacity(isOn ? 1 : 0) }
             .frame(width: size, height: size)
+            .motion(isOn ? Motion.ledOn : Motion.ledOff, value: isOn)
     }
 }
 

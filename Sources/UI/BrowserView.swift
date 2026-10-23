@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// Folder browser (720 × 480 window, on the left).
+/// Folder browser, below the keys in place of the queue (⌘B swaps them). Its keys (up, Play Folder,
+/// eject) sit in the header row above it (`BrowserControls`), so the rows get the room.
 /// Enter or double-click: opens the folder or plays from the track.
 /// ⌘Enter adds to the queue. ← or Delete goes up one level.
 struct BrowserView: View {
@@ -12,8 +13,6 @@ struct BrowserView: View {
     var body: some View {
         let browser = model.browser
         VStack(spacing: 0) {
-            header(browser)
-                .padding(.bottom, Space.s3)
             Group {
                 if let message = browser.errorMessage {
                     errorState(message)
@@ -48,7 +47,9 @@ struct BrowserView: View {
             }
             return .handled
         }
-        .onChange(of: browser.location) { selection = nil }
+        .onChange(of: browser.location) { old, new in selection = Self.cameFrom(old, to: new) }
+        // Keyboard first: swapping to the folders puts the arrows in them.
+        .onAppear { if !isSnapshot { focused = true } }
     }
 
     // MARK: Rows
@@ -103,6 +104,8 @@ struct BrowserView: View {
                 .padding(.vertical, Space.s3)
             }
         }
+        // Going into a folder or back up cross-fades the rows in place.
+        .motion(Motion.state, value: currentRows(browser).map(\.id))
     }
 
     @ViewBuilder
@@ -149,50 +152,7 @@ struct BrowserView: View {
         }
     }
 
-    // MARK: Header and states
-
-    private func header(_ browser: Browser) -> some View {
-        HStack(spacing: Space.s2) {
-            if browser.location != nil {
-                Button(action: goUp) { Image(systemName: "chevron.left") }
-                    .buttonStyle(.key(.mode))
-                    .keyFocus()
-                    .help("Subir ←")
-            }
-            if let source = browser.source {
-                Image(systemName: source.kind.symbol)
-                    .font(.system(size: 12))
-                    .foregroundStyle(Color.inkMuted)
-            }
-            Text(browser.title)
-                .font(.dsLabel)
-                .foregroundStyle(Color.ink)
-                .lineLimit(1)
-                .truncationMode(.tail)
-                .help(browser.location?.path ?? "")
-            Spacer(minLength: Space.s2)
-            if let location = browser.location {
-                Button("Tocar pasta") { Task { await model.playFolder(location) } }
-                    .buttonStyle(.keyText)
-                    .keyFocus()
-                    // With the eject key there's less room: the title truncates, not the key.
-                    .fixedSize()
-            }
-            if let disc = browser.source as? DiscSource {
-                Button { model.ejectDisc(disc) } label: { Image(systemName: "eject") }
-                    .buttonStyle(.key(.mode))
-                    .keyFocus()
-                    .help(String(localized: "Ejetar CD ⌘E"))
-            }
-            // Close the drawer: the same icon as the "pastas" label, next to the divider,
-            // on the side the drawer collapses towards.
-            Button { model.toggleBrowser() } label: { Image(systemName: "sidebar.left") }
-                .buttonStyle(.key(.mode))
-                .keyFocus()
-                .help(String(localized: "Esconder pastas ⌘B"))
-        }
-        .frame(height: Size.key)
-    }
+    // MARK: States
 
     private func errorState(_ message: String) -> some View {
         VStack(spacing: Space.s3) {
@@ -226,15 +186,15 @@ struct BrowserView: View {
         }
     }
 
-    private func goUp() {
-        let from = model.browser.location
-        model.browser.up()
-        // When going up, the folder you came from stays selected.
-        if let from, !from.path.isEmpty {
-            selection = "\(from.sourceID.uuidString)/\(from.path)"
-        } else if let from {
-            selection = "source/\(from.sourceID.uuidString)"
-        }
+    private func goUp() { model.browser.up() }
+
+    /// Going up (with ←, Delete or the header's key), the folder you came from stays selected.
+    private static func cameFrom(_ old: BrowserLocation?, to new: BrowserLocation?) -> String? {
+        guard let old else { return nil }
+        guard let new else { return "source/\(old.sourceID.uuidString)" }
+        let isParent = new.sourceID == old.sourceID && !old.path.isEmpty
+            && (old.path as NSString).deletingLastPathComponent == new.path
+        return isParent ? "\(old.sourceID.uuidString)/\(old.path)" : nil
     }
 
     private func moveSelection(_ delta: Int) {
@@ -242,5 +202,51 @@ struct BrowserView: View {
         guard !rows.isEmpty else { return }
         let current = rows.firstIndex { $0.id == selection } ?? (delta > 0 ? -1 : rows.count)
         selection = rows[min(max(current + delta, 0), rows.count - 1)].id
+    }
+}
+
+/// The browser's keys, in the header row above the folders: up, where you are, Play Folder and,
+/// for a CD, eject. They stand in for the "pastas" and "fila" labels while the folders show.
+struct BrowserControls: View {
+    @Environment(AppModel.self) private var model
+
+    var body: some View {
+        let browser = model.browser
+        HStack(spacing: Space.s2) {
+            if browser.location != nil {
+                Button { browser.up() } label: { Image(systemName: "chevron.left") }
+                    .buttonStyle(.key(.mode))
+                    .keyFocus()
+                    .help("Subir ←")
+            }
+            if let source = browser.source {
+                Image(systemName: source.kind.symbol)
+                    .font(.system(size: 12))
+                    .foregroundStyle(Color.inkMuted)
+            }
+            Text(browser.title)
+                .font(.dsLabel)
+                .foregroundStyle(Color.ink)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .help(browser.location?.path ?? "")
+                .contentTransition(.opacity)
+                .motion(Motion.state, value: browser.title)
+            Spacer(minLength: Space.s2)
+            if let location = browser.location {
+                Button("Tocar pasta") { Task { await model.playFolder(location) } }
+                    .buttonStyle(.keyText)
+                    .keyFocus()
+                    // With the eject key there's less room: the title truncates, not the key.
+                    .fixedSize()
+            }
+            if let disc = browser.source as? DiscSource {
+                Button { model.ejectDisc(disc) } label: { Image(systemName: "eject") }
+                    .buttonStyle(.key(.mode))
+                    .keyFocus()
+                    .help(String(localized: "Ejetar CD ⌘E"))
+            }
+        }
+        .frame(height: Size.key)
     }
 }

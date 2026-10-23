@@ -545,22 +545,6 @@
         }
       }
     },
-    "Com navegador": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "With Browser"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Com navegador"
-          }
-        }
-      }
-    },
     "Compacto": {
       "localizations": {
         "en": {
@@ -817,34 +801,18 @@
         }
       }
     },
-    "Esconder pastas": {
+    "Espectro ⌥⌘V": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hide Folders"
+            "value": "Spectrum ⌥⌘V"
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "Esconder pastas"
-          }
-        }
-      }
-    },
-    "Esconder pastas ⌘B": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hide folders ⌘B"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Esconder pastas ⌘B"
+            "value": "Espectro ⌥⌘V"
           }
         }
       }
@@ -1025,6 +993,54 @@
         }
       }
     },
+    "Mostrar duração": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show duration"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar duração"
+          }
+        }
+      }
+    },
+    "Mostrar espectro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show Spectrum"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar espectro"
+          }
+        }
+      }
+    },
+    "Mostrar fila": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show Queue"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar fila"
+          }
+        }
+      }
+    },
     "Mostrar fila ⌘1": {
       "localizations": {
         "en": {
@@ -1037,6 +1053,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mostrar fila ⌘1"
+          }
+        }
+      }
+    },
+    "Mostrar fila ⌘B": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show queue ⌘B"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar fila ⌘B"
           }
         }
       }
@@ -1069,22 +1101,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mostrar pastas ⌘B"
-          }
-        }
-      }
-    },
-    "Mostrar tempo decorrido": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Show elapsed time"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mostrar tempo decorrido"
           }
         }
       }
@@ -1325,6 +1341,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Plano"
+          }
+        }
+      }
+    },
+    "Player com pastas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Player with Folders"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Player com pastas"
           }
         }
       }

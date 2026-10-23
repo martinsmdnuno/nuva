@@ -48,6 +48,7 @@ struct EqualizerPanel: View {
                             Text(Equalizer.displayName(preset.name).lowercased())
                                 .font(.dsCaption)
                                 .foregroundStyle(active ? Color.ink : Color.inkMuted)
+                                .motion(Motion.hover, value: active)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .contentShape(Rectangle())
@@ -73,6 +74,9 @@ struct EqualizerPanel: View {
                 }
             }
             .opacity(eq.enabled ? 1 : 0.5)
+            .motion(Motion.state, value: eq.enabled)
+            // A preset moves the faders like motorised ones; dragging stays direct.
+            .motion(Motion.fader, value: eq.presetName)
         }
         .padding(Space.s4)
         .frame(width: 380)
@@ -102,6 +106,7 @@ private struct PowerSwitch: View {
                         .padding(2)
                 }
                 .frame(width: 26, height: 14)
+                .motion(Motion.state, value: isOn)
             }
             .contentShape(Rectangle())
         }

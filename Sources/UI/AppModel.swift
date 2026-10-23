@@ -14,17 +14,22 @@ final class AppModel {
     let artwork: ArtworkStore
     let artworkResolver: ArtworkResolver
 
+    /// What sits below the keys. The window is the same device in every mode: 360 to 480 wide.
     enum WindowMode: String {
-        /// Player with playlist, 360 × 480.
+        /// The queue, 480 or taller.
         case player
-        /// With browser, 720 × 480.
+        /// The folders, in place of the queue (the raw value is from when they were a drawer).
         case browser
-        /// Compact: display, keys and volume only (360 wide, height from content).
+        /// Compact: display, keys and volume only, height from content.
         case compact
     }
 
     /// "Add Jellyfin" sheet open.
     var showingJellyfinLogin = false
+
+    /// Main window open. NuVa's menu bar icon shows only while it is closed: with the window open,
+    /// macOS's own Now Playing item is already there.
+    var isMainWindowOpen = true
 
     var windowMode: WindowMode {
         didSet { defaults.set(windowMode.rawValue, forKey: "windowMode") }
@@ -33,6 +38,11 @@ final class AppModel {
     /// Folder artwork in the display, the mini player and Now Playing. Off by default.
     var showsArtwork: Bool {
         didSet { defaults.set(showsArtwork, forKey: "showsArtwork") }
+    }
+
+    /// Spectrum meter on the display (View ▸ Show Spectrum). On by default.
+    var showsSpectrum: Bool {
+        didSet { defaults.set(showsSpectrum, forKey: "showsSpectrum") }
     }
 
     /// Artwork of the current track's folder, when artwork is on.
@@ -75,6 +85,7 @@ final class AppModel {
         self.defaults = defaults
         self.windowMode = WindowMode(rawValue: defaults.string(forKey: "windowMode") ?? "") ?? .player
         self.showsArtwork = defaults.bool(forKey: "showsArtwork")
+        self.showsSpectrum = defaults.object(forKey: "showsSpectrum") as? Bool ?? true
         if systemIntegration { nowPlaying = NowPlaying(player: player, artwork: { [unowned self] in currentArtwork }) }
         if sources.sources.count == 1, let only = sources.sources.first {
             browser.open(BrowserLocation(sourceID: only.id, path: ""))
@@ -93,7 +104,7 @@ final class AppModel {
         return sources.source(entry.sourceID)?.kind.label ?? ""
     }
 
-    /// Opens or closes the folders drawer.
+    /// Swaps the queue and the folders below the keys.
     func toggleBrowser() {
         windowMode = windowMode == .browser ? .player : .browser
     }
@@ -130,6 +141,8 @@ final class AppModel {
         let tracks = await browser.tracks(in: folder)
         guard !tracks.isEmpty else { return }
         player.setQueue(tracks, startAt: track.flatMap { t in tracks.firstIndex { $0.id == t.id } } ?? 0)
+        // The folders give way to the queue, now holding what was chosen.
+        if windowMode == .browser { windowMode = .player }
     }
 
     /// Appends a track or a whole folder to the end of the queue.

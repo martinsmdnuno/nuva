@@ -26,7 +26,7 @@ struct NuVaApp: App {
         }
         .windowResizability(.contentMinSize)
 
-        MenuBarExtra {
+        MenuBarExtra(isInserted: Binding(get: { !model.isMainWindowOpen }, set: { _ in })) {
             MenuBarPlayer()
                 .environment(model)
         } label: {
@@ -69,16 +69,18 @@ struct NuVaCommands: Commands {
         CommandGroup(after: .sidebar) {
             Button("Player com playlist") { model.windowMode = .player }
                 .keyboardShortcut("1")
-            Button("Com navegador") { model.windowMode = .browser }
+            Button("Player com pastas") { model.windowMode = .browser }
                 .keyboardShortcut("2")
             Button("Compacto") { model.windowMode = .compact }
                 .keyboardShortcut("3")
-            Button(model.windowMode == .browser ? String(localized: "Esconder pastas") : String(localized: "Mostrar pastas")) { model.toggleBrowser() }
+            Button(model.windowMode == .browser ? String(localized: "Mostrar fila") : String(localized: "Mostrar pastas")) { model.toggleBrowser() }
                 .keyboardShortcut("b")
             Toggle("Mostrar capas", isOn: Binding(get: { model.showsArtwork }, set: { model.showsArtwork = $0 }))
                 .keyboardShortcut("a", modifiers: [.command, .option])
             Button("Capa errada ou em falta…") { model.fixingArtwork = model.player.current?.entry }
                 .disabled(!model.canFixArtwork)
+            Toggle("Mostrar espectro", isOn: Binding(get: { model.showsSpectrum }, set: { model.showsSpectrum = $0 }))
+                .keyboardShortcut("v", modifiers: [.command, .option])
             Divider()
             Menu("Skin") { SkinMenuItems() }
             Menu("Fonte") { FontMenuItems() }

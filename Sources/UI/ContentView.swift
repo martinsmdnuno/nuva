@@ -1,37 +1,32 @@
 import AppKit
 import SwiftUI
 
-/// The window picks its content by mode: player (360 wide), with browser (720)
-/// or compact (360, no queue, height from content).
-/// In player and browser modes the height is free (minimum 480), to see a whole album;
-/// the width is fixed. Title bar zoom stretches the window to the screen height.
-/// Everything on one plane; the browser is separated from the player by a vertical divider.
+/// One device in every mode: display, keys, volume, and below them the queue or the folders,
+/// or neither in compact mode (height from content). The width is free from 360 to 640: keys keep
+/// their size and the space between groups grows, while the display and the lists stretch.
+/// With the queue or the folders the height is free too (minimum 480), to see a whole album.
+/// Title bar zoom stretches the window to the screen height. Both sizes are remembered.
 struct ContentView: View {
     @Environment(AppModel.self) private var model
-    /// Last player or browser height, across modes and launches.
+    /// Last height with the queue or the folders, across modes and launches.
     @AppStorage("listHeight") private var listHeight = Double(Self.minHeight)
+    /// Last width, in every mode.
+    @AppStorage("windowWidth") private var windowWidth = Double(Self.minWidth)
     /// Height to restore when leaving compact mode (saved on entry, before the window shrinks).
     @State private var heightToRestore: Double?
     @State private var window: NSWindow?
 
-    static let minHeight: CGFloat = 480
+    static let minHeight: CGFloat = 540
+    static let minWidth: CGFloat = 360
+    static let maxWidth: CGFloat = 640
 
     var body: some View {
         @Bindable var model = model
         let compact = model.windowMode == .compact
-        HStack(spacing: 0) {
-            if model.windowMode == .browser {
-                BrowserView()
-                    .padding(Space.s4)
-                    .frame(width: 359)
-                Rectangle().fill(Color.line).frame(width: 1).padding(.vertical, Space.s4)
-            }
-            PlayerView()
-                .frame(width: 360)
-        }
+        PlayerView()
         // A new skin or font set rebuilds the content, so every colour and font is resolved again.
         .id(SkinStore.shared.renderID)
-        .frame(width: model.windowMode == .browser ? 720 : 360)
+        .frame(minWidth: Self.minWidth, idealWidth: Self.minWidth, maxWidth: Self.maxWidth)
         .frame(
             minHeight: compact ? nil : Self.minHeight,
             idealHeight: compact ? nil : Self.minHeight,
@@ -40,12 +35,13 @@ struct ContentView: View {
         // In compact mode the height follows the content, no resize.
         .fixedSize(horizontal: false, vertical: compact)
         .background(Color.surface0)
-        .onGeometryChange(for: CGFloat.self, of: { $0.size.height }) { height in
-            if model.windowMode != .compact, height >= Self.minHeight { listHeight = Double(height) }
+        .onGeometryChange(for: CGSize.self, of: \.size) { size in
+            if size.width >= Self.minWidth { windowWidth = Double(size.width) }
+            if model.windowMode != .compact, size.height >= Self.minHeight { listHeight = Double(size.height) }
         }
         .background(WindowReader { window = $0 })
         .onChange(of: window) { _, window in
-            if let window, !compact { setHeight(listHeight, of: window) }
+            if let window { setSize(width: windowWidth, height: compact ? nil : listHeight, of: window) }
         }
         .onChange(of: model.windowMode) { old, new in
             if new == .compact {
@@ -53,7 +49,7 @@ struct ContentView: View {
             } else if old == .compact, let window {
                 let target = heightToRestore ?? listHeight
                 // After the window adjusts to the new content.
-                DispatchQueue.main.async { setHeight(target, of: window) }
+                DispatchQueue.main.async { setSize(width: nil, height: target, of: window) }
             }
         }
         .sheet(isPresented: $model.showingJellyfinLogin) {
@@ -73,15 +69,17 @@ struct ContentView: View {
         }
     }
 
-    /// Changes the content height while keeping the window's top in place.
-    private func setHeight(_ height: Double, of window: NSWindow) {
-        let maxHeight = window.screen.map { window.contentRect(forFrameRect: $0.visibleFrame).height } ?? .infinity
-        let target = min(max(CGFloat(height), Self.minHeight), maxHeight)
+    /// Changes the content size (nil keeps that side) while keeping the window's top left in place.
+    private func setSize(width: Double?, height: Double?, of window: NSWindow) {
+        let visible = window.screen.map { window.contentRect(forFrameRect: $0.visibleFrame).size }
         var frame = window.frame
-        let delta = target - window.contentRect(forFrameRect: frame).height
-        guard abs(delta) > 0.5 else { return }
-        frame.origin.y -= delta
-        frame.size.height += delta
+        let content = window.contentRect(forFrameRect: frame).size
+        let dw = width.map { min(max(CGFloat($0), Self.minWidth), min(Self.maxWidth, visible?.width ?? .infinity)) - content.width } ?? 0
+        let dh = height.map { min(max(CGFloat($0), Self.minHeight), visible?.height ?? .infinity) - content.height } ?? 0
+        guard abs(dw) > 0.5 || abs(dh) > 0.5 else { return }
+        frame.origin.y -= dh
+        frame.size.width += dw
+        frame.size.height += dh
         window.setFrame(frame, display: true, animate: true)
     }
 }

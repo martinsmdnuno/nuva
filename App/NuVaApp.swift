@@ -69,11 +69,11 @@ struct NuVaCommands: Commands {
         CommandGroup(after: .sidebar) {
             Button("Player com playlist") { model.windowMode = .player }
                 .keyboardShortcut("1")
-            Button("Com navegador") { model.windowMode = .browser }
+            Button("Player com pastas") { model.windowMode = .browser }
                 .keyboardShortcut("2")
             Button("Compacto") { model.windowMode = .compact }
                 .keyboardShortcut("3")
-            Button(model.windowMode == .browser ? String(localized: "Esconder pastas") : String(localized: "Mostrar pastas")) { model.toggleBrowser() }
+            Button(model.windowMode == .browser ? String(localized: "Mostrar fila") : String(localized: "Mostrar pastas")) { model.toggleBrowser() }
                 .keyboardShortcut("b")
             Toggle("Mostrar capas", isOn: Binding(get: { model.showsArtwork }, set: { model.showsArtwork = $0 }))
                 .keyboardShortcut("a", modifiers: [.command, .option])

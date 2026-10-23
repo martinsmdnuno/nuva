@@ -14,12 +14,13 @@ final class AppModel {
     let artwork: ArtworkStore
     let artworkResolver: ArtworkResolver
 
+    /// What sits below the keys. The window is the same device in every mode: 360 to 640 wide.
     enum WindowMode: String {
-        /// Player with playlist, 360 × 480.
+        /// The queue, 480 or taller.
         case player
-        /// With browser, 720 × 480.
+        /// The folders, in place of the queue (the raw value is from when they were a drawer).
         case browser
-        /// Compact: display, keys and volume only (360 wide, height from content).
+        /// Compact: display, keys and volume only, height from content.
         case compact
     }
 
@@ -103,7 +104,7 @@ final class AppModel {
         return sources.source(entry.sourceID)?.kind.label ?? ""
     }
 
-    /// Opens or closes the folders drawer.
+    /// Swaps the queue and the folders below the keys.
     func toggleBrowser() {
         windowMode = windowMode == .browser ? .player : .browser
     }
@@ -140,6 +141,8 @@ final class AppModel {
         let tracks = await browser.tracks(in: folder)
         guard !tracks.isEmpty else { return }
         player.setQueue(tracks, startAt: track.flatMap { t in tracks.firstIndex { $0.id == t.id } } ?? 0)
+        // The folders give way to the queue, now holding what was chosen.
+        if windowMode == .browser { windowMode = .player }
     }
 
     /// Appends a track or a whole folder to the end of the queue.

@@ -74,17 +74,17 @@ SF Symbols, regular weight, never filled except `play.fill` and `pause.fill` ins
 
 ## Windows
 
-Three sizes, same content:
+One device, always the same layout: display, keys, volume, and below them the queue or the folders.
 
-- **Compact** (360 × ~320, height from content): display, keys, volume and the queue header with the folders key and the queue legend. No queue rows.
-- **Player with queue** (360 × 480 or taller): display with position, keys in three groups, volume, queue. All on one plane.
-- **With browser** (720 × 480 or taller): folder browser on the left, player with queue on the right.
+- **Player with queue** (⌘1): the queue below the keys.
+- **Player with folders** (⌘2): the folder browser in the queue's place. ⌘B or the folders key swaps the two. Playing a folder or a track from it brings the queue back.
+- **Compact** (⌘3): display, keys, volume and the header. No rows; the height follows the content.
 
-In the player and browser the height is free (minimum 480) and the width fixed: only the lists grow. The app remembers the height between modes and launches. Double-clicking the title bar (zoom) stretches the window to the screen's height. Compact doesn't resize.
+The width is free from 360 to 640: keys keep their size and the space between the groups grows, while the display, the meter and the lists stretch. With the queue or the folders the height is free too (minimum 540). The app remembers both between modes and launches. Double-clicking the title bar (zoom) stretches the window to the screen's height.
 
 ## Shortcuts
 
-Space play/pause · ⌘→ next · ⌘← previous · ⌘↑ ⌘↓ volume · ⌘L go to the current track · Enter play selection · ⌘Enter add to queue · ⌘B show or hide folders · ⌘1 ⌘2 ⌘3 window size · ⌘O add folder · ⇧⌘O add Jellyfin.
+Space play/pause · ⌘→ next · ⌘← previous · ⌘↑ ⌘↓ volume · ⌘L go to the current track · Enter play selection · ⌘Enter add to queue · ⌘B swap queue and folders · ⌘1 ⌘2 ⌘3 queue, folders, compact · ⌘O add folder · ⇧⌘O add Jellyfin.
 
 ## Interface text
 

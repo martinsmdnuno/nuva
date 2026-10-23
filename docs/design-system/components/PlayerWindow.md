@@ -4,13 +4,12 @@ How the pieces come together, 360 to 480 wide and 540 or taller. The reference f
 
 ## Structure
 Everything sits on the `surface-0` chassis, margin `space-4`. No cards.
-1. Display at the top, with the position bar inside.
-2. `space-4` · Keys in three groups with legends: playback on the left, mode in the middle, output on the right, spread across the full width.
-3. `space-3` · Volume: the "volume" legend and a bar with a 0–10 scale.
-4. `space-4` · Queue or folders: a header row, then the rows down to the bottom.
+1. Display at the top, with the position bar inside, and the output and equalizer readouts.
+2. `space-4` · Keys in three groups with legends: mode on the left, playback in the middle (play on the centre line), the volume knob on the right.
+3. `space-4` · Queue or folders: a header row, then the rows down to the bottom.
 
 ## Compact (⌘3)
-Steps 1 to 3 and the queue header, without rows. The window takes the height of its content. The header stays so someone new to the app can see the way back.
+Steps 1 and 2 and the queue header, without rows. The window takes the height of its content. The header stays so someone new to the app can see the way back.
 
 ## Header row
 The same row in every mode, so the way to the folders and back is always in the same place.

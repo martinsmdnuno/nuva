@@ -39,6 +39,11 @@ final class AppModel {
         didSet { defaults.set(showsArtwork, forKey: "showsArtwork") }
     }
 
+    /// Spectrum meter on the display (View ▸ Show Spectrum). On by default.
+    var showsSpectrum: Bool {
+        didSet { defaults.set(showsSpectrum, forKey: "showsSpectrum") }
+    }
+
     /// Artwork of the current track's folder, when artwork is on.
     var currentArtwork: NSImage? { currentLoadedArtwork?.image }
 
@@ -79,6 +84,7 @@ final class AppModel {
         self.defaults = defaults
         self.windowMode = WindowMode(rawValue: defaults.string(forKey: "windowMode") ?? "") ?? .player
         self.showsArtwork = defaults.bool(forKey: "showsArtwork")
+        self.showsSpectrum = defaults.object(forKey: "showsSpectrum") as? Bool ?? true
         if systemIntegration { nowPlaying = NowPlaying(player: player, artwork: { [unowned self] in currentArtwork }) }
         if sources.sources.count == 1, let only = sources.sources.first {
             browser.open(BrowserLocation(sourceID: only.id, path: ""))

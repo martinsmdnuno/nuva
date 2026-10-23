@@ -86,6 +86,11 @@ struct DisplayView: View {
             // A folder's artwork arriving or leaving moves the text aside in place.
             .motion(Motion.state, value: allowsArtwork && model.currentArtwork != nil)
 
+            if model.showsSpectrum {
+                SpectrumView()
+                    .padding(.top, Space.s2)
+            }
+
             ProgressBar()
         }
         .padding([.horizontal, .top], Space.s3)

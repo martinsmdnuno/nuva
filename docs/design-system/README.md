@@ -66,6 +66,7 @@ Movement only shows what the hardware would do. Nothing moves on its own, nothin
 - **Hover** backgrounds and resting colours fade in 120ms.
 - **State in place** (a new track on the display, a switch thrown, rows added, removed or reordered, the browser going into a folder) cross-fades in 200ms. Choosing an equalizer preset moves the faders there in 300ms, like motorised ones; dragging stays direct. No slides between screens, no bounces on content.
 - The time and the position bar never animate: they are the readout.
+- The spectrum meter (`components/Spectrum.md`) moves with the music and only with it: columns jump up and fall at a steady rate, the peak holds and falls. Paused, it goes dark.
 
 ## Icons
 

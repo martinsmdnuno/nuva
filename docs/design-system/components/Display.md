@@ -7,7 +7,8 @@ The device's screen: what's playing and where it's going. Always dark (`display`
 2. Track title in `title`, `display-ink`: the file name without extension or leading number.
 3. Folder name in `caption`, `display-muted` · audio output in `display-meta` on the right.
 4. Elapsed time in `display-time` on the left, duration in `display-meta` on the right.
-5. Position bar (see PositionBar.md), full width.
+5. Spectrum meter (see Spectrum.md), full width, when View ▸ Show Spectrum is on.
+6. Position bar (see PositionBar.md), full width.
 
 ## Rules
 - Padding `space-3`, corners `radius-sm`, shadow `shadow-display`. No outline.

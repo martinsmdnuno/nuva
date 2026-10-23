@@ -849,6 +849,22 @@
         }
       }
     },
+    "Espectro ⌥⌘V": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spectrum ⌥⌘V"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espectro ⌥⌘V"
+          }
+        }
+      }
+    },
     "Fila vazia": {
       "localizations": {
         "en": {
@@ -1021,6 +1037,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mostrar capas"
+          }
+        }
+      }
+    },
+    "Mostrar espectro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show Spectrum"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar espectro"
           }
         }
       }

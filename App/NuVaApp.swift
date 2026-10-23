@@ -79,6 +79,8 @@ struct NuVaCommands: Commands {
                 .keyboardShortcut("a", modifiers: [.command, .option])
             Button("Capa errada ou em falta…") { model.fixingArtwork = model.player.current?.entry }
                 .disabled(!model.canFixArtwork)
+            Toggle("Mostrar espectro", isOn: Binding(get: { model.showsSpectrum }, set: { model.showsSpectrum = $0 }))
+                .keyboardShortcut("v", modifiers: [.command, .option])
             Divider()
             Menu("Skin") { SkinMenuItems() }
             Menu("Fonte") { FontMenuItems() }

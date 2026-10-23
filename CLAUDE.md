@@ -46,6 +46,7 @@ In:
 - Update check: GitHub `releases/latest` at launch (at most daily) and NuVa ▸ Check for Updates…; an alert only, never downloads.
 - Terms and privacy: `TERMS.md` (EN + PT), bundled and shown in NuVa ▸ Terms and Privacy. Update it whenever the app gains a network call.
 - 10-band equalizer with presets, in an `MTAudioProcessingTap` on each `AVPlayerItem` (Accelerate biquads).
+- Spectrum meter on the display (View ▸ Show Spectrum, ⌥⌘V; on by default): the same tap measures the 10 EQ bands with an FFT after the filters, tagged with track time so it matches what is heard (also over AirPlay). LED segments in the Braun deck style. Spec in `docs/design-system/components/Spectrum.md`.
 
 Out (for now): generic server source, search, favourites, accounts.
 

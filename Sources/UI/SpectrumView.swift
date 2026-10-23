@@ -11,7 +11,7 @@ struct SpectrumView: View {
     @State private var settling = false
 
     static let segments = 8
-    static let segmentHeight: CGFloat = 2
+    static let segmentHeight: CGFloat = 3
     static let segmentGap: CGFloat = 1
     static let columnGap: CGFloat = 3
     static let height = CGFloat(segments) * (segmentHeight + segmentGap) - segmentGap

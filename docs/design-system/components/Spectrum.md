@@ -4,7 +4,7 @@ A level meter for the equalizer's 10 bands, inside the display, between the time
 
 ## Anatomy
 - 10 columns, one per equalizer band (32 Hz to 16 kHz), 3px apart, full display width.
-- 8 segments per column, 2px tall with 1px gaps (23px in all).
+- 8 segments per column, 3px tall with 1px gaps (31px in all), with `space-3` above and `space-1` below.
 - Lit segments in `led`, unlit in `display-track`, the peak segment in `display-ink`.
 
 ## Behaviour

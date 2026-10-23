@@ -87,8 +87,10 @@ struct DisplayView: View {
             .motion(Motion.state, value: allowsArtwork && model.currentArtwork != nil)
 
             if model.showsSpectrum {
+                // Room above and below, so the meter reads as its own zone of the display.
                 SpectrumView()
-                    .padding(.top, Space.s2)
+                    .padding(.top, Space.s3)
+                    .padding(.bottom, Space.s1)
             }
 
             ProgressBar()

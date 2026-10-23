@@ -131,7 +131,7 @@ func framed(_ items: [(NSImage, Chrome)], name: String, k: Double = 1, gap: Doub
     }
 }
 
-// Hero: icon, name and tagline on top; browser in Lead and player in Aluminium below.
+// Hero: icon, name and tagline on top; the folders in Lead and the queue in Aluminium below, side by side.
 let browser = snapshot("navegador-chumbo")
 let playerLight = snapshot("player-aluminio")
 let heroSize = CGSize(width: 2400, height: 1480)
@@ -149,13 +149,15 @@ canvas(heroSize, "hero.png", background: color("#1E2023")) {
     let k = 0.88
     let b = framedSize(browser, .window(dark: true), k: k)
     let p = framedSize(playerLight, .window(dark: false), k: k)
-    let overlap = 200.0
-    let left = (heroSize.width - (b.width + p.width - overlap)) / 2
+    let gap = 80.0
+    let left = (heroSize.width - (b.width + p.width + gap)) / 2
     drawFramed(browser, .window(dark: true), at: CGPoint(x: left, y: 400), k: k)
-    drawFramed(playerLight, .window(dark: false), at: CGPoint(x: left + b.width - overlap, y: 470), k: k)
+    drawFramed(playerLight, .window(dark: false), at: CGPoint(x: left + b.width + gap, y: 400), k: k)
 }
 
-framed([(snapshot("navegador-chumbo"), .window(dark: true))], name: "browser.png")
+// ⌘B swaps the queue and the folders below the keys.
+framed([(snapshot("player-chumbo"), .window(dark: true)), (snapshot("navegador-chumbo"), .window(dark: true))],
+       name: "browser.png")
 framed([(snapshot("player-chumbo"), .window(dark: true)), (snapshot("player-aluminio"), .window(dark: false))],
        name: "themes.png")
 framed([(snapshot("compacto-chumbo"), .window(dark: true))], name: "compact.png")

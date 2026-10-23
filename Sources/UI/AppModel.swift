@@ -62,6 +62,8 @@ final class AppModel {
 
     /// Folder whose artwork is being fixed (sheet open).
     var fixingArtwork: Entry?
+    /// The equalizer panel, open from the display or Controls ▸ Equalizer… (⌥⌘E).
+    var showsEqualizer = false
 
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private var nowPlaying: NowPlaying?

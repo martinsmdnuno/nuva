@@ -49,6 +49,9 @@ enum DebugSnapshot {
             (.graphiteOrange, .system, "", main, [(.dark, Skin.graphiteOrange.id)]),
             (.graphiteGreen, .system, "", main, [(.dark, Skin.graphiteGreen.id)]),
         ]
+        // Load the user's saved skin now, so it can't replace the one being drawn when a view
+        // first reads the store.
+        _ = SkinStore.shared
         for (skin, fontSet, suffix, only, themes) in runs {
             SkinStore.active.withLock { $0 = skin }
             SkinStore.activeFonts.withLock { $0 = fontSet }

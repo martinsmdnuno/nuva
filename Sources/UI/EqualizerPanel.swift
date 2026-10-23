@@ -1,22 +1,37 @@
 import SwiftUI
 
-/// Equalizer key, next to the volume. Opens the panel in a popover.
-struct EqualizerKey: View {
+/// The equalizer on the display, beside the time: LED and preset ("EQ · Rock").
+/// Clicking opens the panel, as does Controls ▸ Equalizer… (⌥⌘E) in the main window.
+struct EqualizerControl: View {
+    /// The main window's control answers the menu command; the mini player's keeps its own.
+    var followsMenu = false
     @Environment(AppModel.self) private var model
-    @State private var showing = false
+    @State private var localShowing = false
+    @State private var hover = false
 
     var body: some View {
+        @Bindable var model = model
         let eq = model.player.equalizer
-        Button { showing.toggle() } label: { Image(systemName: "slider.vertical.3") }
-            .buttonStyle(.key(.mode))
-            .keyFocus()
-            .help(eq.enabled
-                ? String(localized: "Equalizador: \(Equalizer.displayName(eq.presetName))")
-                : String(localized: "Equalizador desligado"))
-            .keyLED(eq.enabled)
-            .popover(isPresented: $showing, arrowEdge: .bottom) {
-                EqualizerPanel(eq: eq)
+        let showing = followsMenu ? $model.showsEqualizer : $localShowing
+        Button { showing.wrappedValue.toggle() } label: {
+            HStack(spacing: Space.s1 + 2) {
+                LED(isOn: eq.enabled)
+                Text(verbatim: eq.enabled ? "EQ · \(Equalizer.displayName(eq.presetName))" : "EQ")
             }
+            .font(.dsDisplayMeta)
+            .foregroundStyle(hover ? Color.displayInk : Color.displayMuted)
+            .motion(Motion.hover, value: hover)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .focusEffectDisabled()
+        .onHover { hover = $0 }
+        .help((eq.enabled
+            ? String(localized: "Equalizador: \(Equalizer.displayName(eq.presetName))")
+            : String(localized: "Equalizador desligado")) + " ⌥⌘E")
+        .popover(isPresented: showing, arrowEdge: .bottom) {
+            EqualizerPanel(eq: eq)
+        }
     }
 }
 

@@ -63,8 +63,14 @@ struct ContentView: View {
             ArtworkFixView(entry: entry, guess: model.artworkResolver.query(for: entry))
         }
         // With the window closed, NuVa leaves the Dock and stays only in the menu bar.
-        .onAppear { DockPresence.show(true) }
-        .onDisappear { DockPresence.show(false) }
+        .onAppear {
+            DockPresence.show(true)
+            model.isMainWindowOpen = true
+        }
+        .onDisappear {
+            DockPresence.show(false)
+            model.isMainWindowOpen = false
+        }
     }
 
     /// Changes the content height while keeping the window's top in place.

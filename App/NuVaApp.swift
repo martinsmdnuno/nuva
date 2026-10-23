@@ -26,7 +26,7 @@ struct NuVaApp: App {
         }
         .windowResizability(.contentMinSize)
 
-        MenuBarExtra {
+        MenuBarExtra(isInserted: Binding(get: { !model.isMainWindowOpen }, set: { _ in })) {
             MenuBarPlayer()
                 .environment(model)
         } label: {

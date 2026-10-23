@@ -26,6 +26,10 @@ final class AppModel {
     /// "Add Jellyfin" sheet open.
     var showingJellyfinLogin = false
 
+    /// Main window open. NuVa's menu bar icon shows only while it is closed: with the window open,
+    /// macOS's own Now Playing item is already there.
+    var isMainWindowOpen = true
+
     var windowMode: WindowMode {
         didSet { defaults.set(windowMode.rawValue, forKey: "windowMode") }
     }

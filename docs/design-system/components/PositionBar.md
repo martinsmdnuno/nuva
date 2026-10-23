@@ -1,6 +1,6 @@
 # Position bar
 
-Shows and controls the position in the track. Lives inside the display, under the time.
+Shows and controls the position in the track. Lives inside the display, at the bottom, between the elapsed time and the duration (or the time left, after a click on it).
 
 ## Rules
 - Track `display-track`, elapsed part `display-ink`, thickness `bar` (2px), square ends.

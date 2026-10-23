@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 /// One device in every mode: display, keys, volume, and below them the queue or the folders,
-/// or neither in compact mode (height from content). The width is free from 360 to 640: keys keep
+/// or neither in compact mode (height from content). The width is free from 360 to 480: keys keep
 /// their size and the space between groups grows, while the display and the lists stretch.
 /// With the queue or the folders the height is free too (minimum 480), to see a whole album.
 /// Title bar zoom stretches the window to the screen height. Both sizes are remembered.
@@ -11,14 +11,14 @@ struct ContentView: View {
     /// Last height with the queue or the folders, across modes and launches.
     @AppStorage("listHeight") private var listHeight = Double(Self.minHeight)
     /// Last width, in every mode.
-    @AppStorage("windowWidth") private var windowWidth = Double(Self.minWidth)
+    @AppStorage("playerWidth") private var windowWidth = Double(Self.minWidth)
     /// Height to restore when leaving compact mode (saved on entry, before the window shrinks).
     @State private var heightToRestore: Double?
     @State private var window: NSWindow?
 
     static let minHeight: CGFloat = 540
     static let minWidth: CGFloat = 360
-    static let maxWidth: CGFloat = 640
+    static let maxWidth: CGFloat = 480
 
     var body: some View {
         @Bindable var model = model

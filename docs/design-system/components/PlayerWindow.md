@@ -1,6 +1,6 @@
 # Player window
 
-How the pieces come together, 360 to 640 wide and 540 or taller. The reference for assembly.
+How the pieces come together, 360 to 480 wide and 540 or taller. The reference for assembly.
 
 ## Structure
 Everything sits on the `surface-0` chassis, margin `space-4`. No cards.

@@ -1,10 +1,10 @@
 # Spectrum
 
-A level meter for the equalizer's 10 bands, inside the display, between the time and the position bar. Reference: the LED level meters of a hi-fi deck. It shows what is heard: measured after the equalizer, at the moment the speakers play (also over AirPlay).
+A level meter for the equalizer's 10 bands, inside the display, between the time and the position row. Reference: the LED level meters of a hi-fi deck. It shows what is heard: measured after the equalizer, at the moment the speakers play (also over AirPlay).
 
 ## Anatomy
 - 10 columns, one per equalizer band (32 Hz to 16 kHz), 3px apart, full display width.
-- 8 segments per column, 3px tall with 1px gaps (31px in all), with `space-3` above and `space-1` below.
+- 12 segments per column, 3px tall with 1px gaps (47px in all), with `space-3` above and below.
 - Lit segments in `led`, unlit in `display-track`, the peak segment in `display-ink`.
 
 ## Behaviour

@@ -993,6 +993,22 @@
         }
       }
     },
+    "Mostrar duração": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show duration"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar duração"
+          }
+        }
+      }
+    },
     "Mostrar espectro": {
       "localizations": {
         "en": {
@@ -1085,22 +1101,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mostrar pastas ⌘B"
-          }
-        }
-      }
-    },
-    "Mostrar tempo decorrido": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Show elapsed time"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mostrar tempo decorrido"
           }
         }
       }

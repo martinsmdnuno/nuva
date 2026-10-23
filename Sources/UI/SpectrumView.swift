@@ -10,7 +10,7 @@ struct SpectrumView: View {
     /// Keeps the meter running a moment after pausing, so the columns fall instead of freezing.
     @State private var settling = false
 
-    static let segments = 8
+    static let segments = 12
     static let segmentHeight: CGFloat = 3
     static let segmentGap: CGFloat = 1
     static let columnGap: CGFloat = 3

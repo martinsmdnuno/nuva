@@ -80,7 +80,7 @@ One device, always the same layout: display, keys, volume, and below them the qu
 - **Player with folders** (⌘2): the folder browser in the queue's place. ⌘B or the folders key swaps the two. Playing a folder or a track from it brings the queue back.
 - **Compact** (⌘3): display, keys, volume and the header. No rows; the height follows the content.
 
-The width is free from 360 to 640: keys keep their size and the space between the groups grows, while the display, the meter and the lists stretch. With the queue or the folders the height is free too (minimum 540). The app remembers both between modes and launches. Double-clicking the title bar (zoom) stretches the window to the screen's height.
+The width is free from 360 to 480: keys keep their size and the space between the groups grows, while the display, the meter and the lists stretch. With the queue or the folders the height is free too (minimum 540). The app remembers both between modes and launches. Double-clicking the title bar (zoom) stretches the window to the screen's height.
 
 ## Shortcuts
 

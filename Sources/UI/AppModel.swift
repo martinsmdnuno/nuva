@@ -14,7 +14,7 @@ final class AppModel {
     let artwork: ArtworkStore
     let artworkResolver: ArtworkResolver
 
-    /// What sits below the keys. The window is the same device in every mode: 360 to 640 wide.
+    /// What sits below the keys. The window is the same device in every mode: 360 to 480 wide.
     enum WindowMode: String {
         /// The queue, 480 or taller.
         case player

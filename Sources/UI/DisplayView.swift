@@ -68,19 +68,10 @@ struct DisplayView: View {
                     }
                     .foregroundStyle(Color.displayMuted)
 
-                    HStack(alignment: .lastTextBaseline) {
-                        Text(timeText(player))
-                            .font(.dsDisplayTime)
-                            .foregroundStyle(Color.displayInk)
-                            .contentShape(Rectangle())
-                            .onTapGesture { showsRemaining.toggle() }
-                            .help(showsRemaining ? String(localized: "Mostrar tempo decorrido") : String(localized: "Mostrar tempo restante"))
-                        Spacer()
-                        Text(TimeFormat.display(player.duration))
-                            .font(.dsDisplayMeta)
-                            .foregroundStyle(Color.displayMuted)
-                    }
-                    .padding(.top, Space.s1)
+                    Text(TimeFormat.display(player.currentTime))
+                        .font(.dsDisplayTime)
+                        .foregroundStyle(Color.displayInk)
+                        .padding(.top, Space.s1)
                 }
             }
             // A folder's artwork arriving or leaving moves the text aside in place.
@@ -90,10 +81,23 @@ struct DisplayView: View {
                 // Room above and below, so the meter reads as its own zone of the display.
                 SpectrumView()
                     .padding(.top, Space.s3)
-                    .padding(.bottom, Space.s1)
+                    .padding(.bottom, Space.s3)
             }
 
-            ProgressBar()
+            // Position, between the elapsed time and the duration. Clicking the duration
+            // switches it to the time left, and back.
+            HStack(spacing: Space.s2) {
+                Text(TimeFormat.display(player.currentTime))
+                    .foregroundStyle(Color.displayMuted)
+                ProgressBar()
+                Text(endText(player))
+                    .foregroundStyle(Color.displayMuted)
+                    .contentShape(Rectangle())
+                    .onTapGesture { showsRemaining.toggle() }
+                    .help(showsRemaining ? String(localized: "Mostrar duração") : String(localized: "Mostrar tempo restante"))
+            }
+            .font(.dsDisplayMeta)
+            .monospacedDigit()
         }
         .padding([.horizontal, .top], Space.s3)
         .padding(.bottom, Space.s1)
@@ -107,8 +111,9 @@ struct DisplayView: View {
         }
     }
 
-    private func timeText(_ player: PlayerController) -> String {
-        guard showsRemaining, player.duration > 0 else { return TimeFormat.display(player.currentTime) }
+    /// Duration, or the time left ("-03:10") after a click.
+    private func endText(_ player: PlayerController) -> String {
+        guard showsRemaining, player.duration > 0 else { return TimeFormat.display(player.duration) }
         return "-" + TimeFormat.display(player.duration - player.currentTime)
     }
 }

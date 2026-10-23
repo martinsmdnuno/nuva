@@ -38,7 +38,7 @@ In:
 - Play/pause, previous, next, seek, volume, repeat, shuffle.
 - Media keys and macOS Now Playing.
 - AirPlay key (`AVRoutePickerView` wrapped in `NSViewRepresentable`).
-- One window, 360 to 640 wide (free width, remembered): "Player with queue" (⌘1), "Player with folders" (⌘2, the browser in the queue's place) and "Compact" (display, keys and volume only; ⌘3). Height is free in the first two (minimum 540).
+- One window, 360 to 480 wide (free width, remembered): "Player with queue" (⌘1), "Player with folders" (⌘2, the browser in the queue's place) and "Compact" (display, keys and volume only; ⌘3). Height is free in the first two (minimum 540).
 - Skins (View ▸ Skin, ⌥⌘1, ⌥⌘2…, and a key in the mini player): colours only, same layout and sizes. Default "Nuno" (the 1.0 look). Plan in `docs/plans/skins-and-artwork.md`.
 - ⌘B or the folders key in the header swaps queue and folders. With the folders, the header row holds the browser's keys (up, Play Folder, eject); playing from them brings the queue back.
 - Closing the window doesn't stop the music: the app leaves the Dock and stays in the menu bar with a mini player.

@@ -163,6 +163,10 @@ enum DebugSnapshot {
         let player = sampleModel().player
         model.player.debugSet(
             queue: player.queue.map(\.entry), current: 1, time: 67, duration: 257, format: "FLAC 24/48 · 1669 kbps")
+        // The same output and equalizer as the queue's snapshot, for the display.
+        model.output.debugSet("→ AirPlay WiiM")
+        model.player.equalizer.apply(Equalizer.presets.first { $0.name == "Rock" } ?? Equalizer.presets[0])
+        model.player.equalizer.enabled = true
         return model
     }
 }

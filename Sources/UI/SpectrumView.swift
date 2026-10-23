@@ -24,8 +24,10 @@ struct SpectrumView: View {
                 let levels: [Float]
                 let peaks: [Float]
                 if isSnapshot {
-                    levels = Self.sample
-                    peaks = Self.sample.map { min(1, $0 + 0.2) }
+                    // Snapshots show a still moment, dark when nothing is loaded.
+                    let still = player.current == nil ? Array(repeating: Float(0), count: Self.sample.count) : Self.sample
+                    levels = still
+                    peaks = still.map { $0 > 0 ? min(1, $0 + 0.2) : 0 }
                 } else {
                     let measured = player.isPlaying
                         ? spectrum.levels(at: player.avPlayer.currentTime().seconds) : nil

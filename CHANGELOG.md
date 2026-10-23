@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4 — a deck with a volume knob
+
+- The keys now read like a deck: shuffle and repeat on the left, play in the middle of the window, and the volume as a knob on the right. Drag it up or down, scroll over it, or use ⌘↑ ⌘↓. The volume bar is gone, so the window is a row shorter and Compact mode smaller.
+- AirPlay lives where the display says the sound is going: click "AirPlay WiiM" (or your speakers' name) to choose the output.
+- The equalizer shows its preset beside the time ("EQ · Rock", with a light when it's on). Click it, or press ⌥⌘E (Controls › Equalizer…), to open the bands.
+
 ## 1.3 — spectrum meter, one small window
 
 - A spectrum meter on the display: ten columns of amber segments, one per equalizer band, that move with what you hear. Measured after the equalizer and in step with the speakers, AirPlay included. View › Show Spectrum (⌥⌘V) hides it.

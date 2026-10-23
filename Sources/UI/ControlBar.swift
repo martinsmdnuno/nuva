@@ -50,11 +50,22 @@ struct ControlBar: View {
         _ symbol: String, _ tone: KeyButtonStyle.Tone, _ help: String,
         led: Bool? = nil, action: @escaping () -> Void
     ) -> some View {
-        Button(action: action) { Image(systemName: symbol) }
+        Button(action: action) { KeySymbol(name: symbol) }
             .buttonStyle(.key(tone))
             .keyFocus()
             .help(help)
             .keyLED(led)
+    }
+}
+
+/// Key icon that swaps in place when the state changes it (play/pause, repeat/repeat one).
+struct KeySymbol: View {
+    let name: String
+
+    var body: some View {
+        Image(systemName: name)
+            .contentTransition(.symbolEffect(.replace))
+            .motion(Motion.state, value: name)
     }
 }
 

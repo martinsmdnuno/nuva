@@ -1,6 +1,6 @@
 # Equalizer
 
-Popover of the equalizer key (output group). Ten bands from -12 to +12 dB, and presets.
+Popover of the equalizer readout on the display ("EQ · Rock", beside the time; Display.md), also opened with Controls ▸ Equalizer… (⌥⌘E). Ten bands from -12 to +12 dB, and presets.
 
 ## Anatomy
 1. Header: "equalizer" in `label` · on the right, a slide switch with an LED and the word "on" or "off" (`legend`). The word describes the state, not the action.

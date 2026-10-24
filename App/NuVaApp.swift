@@ -99,6 +99,8 @@ struct NuVaCommands: Commands {
                 .keyboardShortcut(.upArrow)
             Button("Baixar volume") { model.player.changeVolume(by: -0.05) }
                 .keyboardShortcut(.downArrow)
+            Button("Equalizador…") { model.showsEqualizer = true }
+                .keyboardShortcut("e", modifiers: [.command, .option])
             Divider()
             Button("Repetir") { model.player.repeatMode = model.player.repeatMode.next }
                 .keyboardShortcut("r")

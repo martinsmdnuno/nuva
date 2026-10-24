@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
 
-/// Thin position/volume bar: 2px track and filled part.
+/// Thin position bar: 2px track and filled part.
 /// 16px hit area; thumb (2 × 10px line) only on hover or while dragging.
 struct BarSlider: View {
     /// 0...1
@@ -100,60 +100,6 @@ struct ProgressBar: View {
             fillColor: .displayInk
         )
         .help("Posição")
-    }
-}
-
-/// App volume (or AirPlay destination volume), with a printed 0 to 10 scale. ⌘↑ ⌘↓ and scroll change 5%.
-struct VolumeControl: View {
-    @Environment(AppModel.self) private var model
-    @Environment(\.isSnapshot) private var isSnapshot
-
-    var body: some View {
-        let player = model.player
-        HStack(alignment: .top, spacing: Space.s3) {
-            Text("volume").legend()
-                .frame(height: 16)
-            VStack(spacing: 0) {
-                BarSlider(
-                    value: Double(player.volume),
-                    onChange: { player.volume = Float($0) },
-                    onStep: { player.changeVolume(by: Float($0) * 0.05) },
-                    hoverText: nil
-                )
-                VolumeScale()
-            }
-        }
-        .background {
-            if !isSnapshot {
-                ScrollWheelReader { delta in player.changeVolume(by: delta > 0 ? 0.05 : -0.05) }
-            }
-        }
-        .help("Volume \(Int((player.volume * 100).rounded()))% ⌘↑ ⌘↓")
-    }
-}
-
-/// Printed scale under the volume: 11 ticks, 0, 5 and 10 numbered.
-private struct VolumeScale: View {
-    var body: some View {
-        VStack(spacing: 2) {
-            HStack(alignment: .top, spacing: 0) {
-                ForEach(0...10, id: \.self) { i in
-                    Rectangle()
-                        .fill(i % 5 == 0 ? Color.inkMuted : Color.line)
-                        .frame(width: 1, height: i % 5 == 0 ? 5 : 3)
-                    if i < 10 { Spacer(minLength: 0) }
-                }
-            }
-            HStack {
-                Text("0")
-                Spacer()
-                Text("5")
-                Spacer()
-                Text("10")
-            }
-            .font(.dsScale)
-            .foregroundStyle(Color.inkMuted)
-        }
     }
 }
 

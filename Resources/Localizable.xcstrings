@@ -721,6 +721,22 @@
         }
       }
     },
+    "Equalizador…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Equalizer…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Equalizador…"
+          }
+        }
+      }
+    },
     "Escolher a imagem da capa": {
       "localizations": {
         "en": {
@@ -749,6 +765,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Escolher a pasta da música"
+          }
+        }
+      }
+    },
+    "Escolher a saída": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Output"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolher a saída"
           }
         }
       }

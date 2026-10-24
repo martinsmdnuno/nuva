@@ -1,13 +1,15 @@
 import SwiftUI
 
 /// The device's screen, recessed into the chassis. Always dark, in both themes.
-/// The position bar lives here, below the time. With artwork on, the folder's image sits
+/// The position bar lives here, below the time. Two readouts are also controls: the output
+/// (AirPlay picker) and the equalizer beside the time. With artwork on, the folder's image sits
 /// at the left, the height of the title, folder and time rows, so the display doesn't grow.
 struct DisplayView: View {
     /// Off in Compact mode; the mini player and the other modes show it.
     var allowsArtwork = true
-    /// Clicking online or user artwork opens "Wrong artwork…" (main window only).
-    var opensArtworkFix = false
+    /// The main window's display: clicking the artwork opens "Wrong artwork…" and the
+    /// equalizer answers the menu command. The mini player's does neither.
+    var isMainWindow = false
     @Environment(AppModel.self) private var model
     @AppStorage("showsRemaining") private var showsRemaining = false
 
@@ -33,9 +35,9 @@ struct DisplayView: View {
                     ArtworkTile(image: artwork)
                         .transition(.opacity)
                         .onTapGesture {
-                            if opensArtworkFix, model.canFixArtwork { model.fixingArtwork = entry }
+                            if isMainWindow, model.canFixArtwork { model.fixingArtwork = entry }
                         }
-                        .help(opensArtworkFix && model.canFixArtwork ? String(localized: "Capa errada?") : "")
+                        .help(isMainWindow && model.canFixArtwork ? String(localized: "Capa errada?") : "")
                 }
                 VStack(alignment: .leading, spacing: Space.s1) {
                     Text(entry?.title ?? (model.sources.sources.isEmpty ? String(localized: "Sem música") : String(localized: "Sem faixa")))
@@ -60,18 +62,18 @@ struct DisplayView: View {
                             .contentTransition(.opacity)
                             .motion(Motion.state, value: entry?.parentPath)
                         Spacer(minLength: 0)
-                        Text(model.output.label)
-                            .font(.dsDisplayMeta)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                            .help(model.output.detail)
+                        OutputControl()
                     }
                     .foregroundStyle(Color.displayMuted)
 
-                    Text(TimeFormat.display(player.currentTime))
-                        .font(.dsDisplayTime)
-                        .foregroundStyle(Color.displayInk)
-                        .padding(.top, Space.s1)
+                    HStack(alignment: .lastTextBaseline, spacing: Space.s2) {
+                        Text(TimeFormat.display(player.currentTime))
+                            .font(.dsDisplayTime)
+                            .foregroundStyle(Color.displayInk)
+                        Spacer(minLength: 0)
+                        EqualizerControl(followsMenu: isMainWindow)
+                    }
+                    .padding(.top, Space.s1)
                 }
             }
             // A folder's artwork arriving or leaving moves the text aside in place.

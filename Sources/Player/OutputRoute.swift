@@ -13,6 +13,9 @@ final class OutputRoute {
     /// Tooltip with the details.
     private(set) var detail = ""
 
+    /// The label without its arrow, where an icon or the context already says "output".
+    var name: String { label.replacingOccurrences(of: "→ ", with: "") }
+
     @ObservationIgnored private let player: AVPlayer?
     @ObservationIgnored private var timer: Timer?
     @ObservationIgnored private var playback: NSKeyValueObservation?

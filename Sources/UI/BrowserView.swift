@@ -9,6 +9,8 @@ struct BrowserView: View {
     @Environment(\.isSnapshot) private var isSnapshot
     @State private var selection: String?
     @FocusState private var focused: Bool
+    /// "Loading…" only after a moment, so a fast folder doesn't flash it.
+    @State private var showsLoading = false
 
     var body: some View {
         let browser = model.browser
@@ -16,6 +18,12 @@ struct BrowserView: View {
             Group {
                 if let message = browser.errorMessage {
                     errorState(message)
+                } else if browser.location != nil, browser.entries.isEmpty {
+                    if browser.isLoading {
+                        note(showsLoading ? String(localized: "A carregar…") : "")
+                    } else {
+                        note(String(localized: "Sem música nesta pasta"))
+                    }
                 } else if isSnapshot {
                     Color.clear.overlay(alignment: .top) { rows(browser) }.clipped()
                 } else {
@@ -26,6 +34,12 @@ struct BrowserView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        }
+        .task(id: browser.isLoading) {
+            showsLoading = false
+            guard browser.isLoading else { return }
+            try? await Task.sleep(for: .milliseconds(300))
+            showsLoading = !Task.isCancelled
         }
         .focusable()
         .focused($focused)
@@ -90,6 +104,7 @@ struct BrowserView: View {
                         focused = true
                     })
                     .contextMenu { menu(row) }
+                    .accessibilityAction { activate(row) }
             }
             if browser.location == nil {
                 HStack(spacing: Space.s2) {
@@ -154,9 +169,18 @@ struct BrowserView: View {
 
     // MARK: States
 
+    private func note(_ text: String) -> some View {
+        Text(text)
+            .font(.dsCaption)
+            .foregroundStyle(Color.inkMuted)
+            .padding(.horizontal, Space.s2)
+            .padding(.top, Space.s4)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
     private func errorState(_ message: String) -> some View {
         VStack(spacing: Space.s3) {
-            Label(message, systemImage: "folder")
+            Label(message, systemImage: model.browser.source?.kind.symbol ?? "folder")
                 .font(.dsCaption)
                 .foregroundStyle(Color.danger)
             Button("Tentar de novo") { model.browser.reload() }

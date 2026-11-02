@@ -13,7 +13,7 @@ struct OutputControl: View {
         HStack(spacing: Space.s1) {
             Image(systemName: "airplayaudio")
                 .font(.system(size: 9))
-            Text(output.label.isEmpty ? "AirPlay" : output.label.replacingOccurrences(of: "→ ", with: ""))
+            Text(output.label.isEmpty ? "AirPlay" : output.name)
                 .lineLimit(1)
                 .truncationMode(.tail)
         }

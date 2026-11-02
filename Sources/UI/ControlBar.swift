@@ -61,7 +61,18 @@ struct ControlBar: View {
             .buttonStyle(.key(tone))
             .keyFocus()
             .help(help)
+            // VoiceOver: the name without the shortcut, and the LED's state.
+            .accessibilityLabel(Self.spoken(help))
+            .accessibilityValue(led.map { $0 ? String(localized: "ligado") : String(localized: "desligado") } ?? "")
             .keyLED(led)
+    }
+
+    /// A tooltip without its shortcut: "Anterior ⌘←" → "Anterior".
+    nonisolated static func spoken(_ help: String) -> String {
+        let symbols = CharacterSet(charactersIn: "⌘⌥⇧⌃")
+        return help.split(separator: " ")
+            .filter { $0.unicodeScalars.allSatisfy { !symbols.contains($0) } }
+            .joined(separator: " ")
     }
 }
 

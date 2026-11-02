@@ -22,6 +22,18 @@ struct AmbientTests {
         #expect(ambient.protectsOLED)
     }
 
+    @Test func facesChosenByHandAreCounted() {
+        let defaults = UserDefaults(suiteName: "ambient-tests-hand")!
+        defaults.removePersistentDomain(forName: "ambient-tests-hand")
+        let ambient = Ambient(defaults: defaults)
+        ambient.face = .display
+        ambient.changeFace(by: 1)
+        #expect(ambient.face == .clock && ambient.changesByHand == 1)
+        // The 20-minute change isn't by hand: no name pops up for it.
+        ambient.tick(at: .now.addingTimeInterval(Ambient.changeFaceAfter + 1))
+        #expect(ambient.changesByHand == 1)
+    }
+
     @Test func oledProtectionChangesFaceAndRests() {
         let defaults = UserDefaults(suiteName: "ambient-tests-oled")!
         defaults.removePersistentDomain(forName: "ambient-tests-oled")

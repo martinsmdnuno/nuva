@@ -174,4 +174,16 @@ struct PlayerTests {
         #expect(player.errorMessage?.contains("Falta") == true)
         #expect(player.errorDetail != nil)
     }
+
+    @Test func clearEmptiesQueueAndMessage() async throws {
+        let (dir, entries) = try makeFlacs(2, seconds: 1)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let player = makePlayer(dir)
+        player.setQueue(entries)
+        try await wait { player.isPlaying }
+        player.clear()
+        #expect(player.queue.isEmpty)
+        #expect(player.current == nil)
+        try await wait { !player.isPlaying }
+    }
 }

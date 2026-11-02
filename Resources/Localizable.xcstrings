@@ -1,6 +1,22 @@
 {
   "sourceLanguage": "pt-PT",
   "strings": {
+    "%@ de %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ of %@"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ de %@"
+          }
+        }
+      }
+    },
     "%lld faixas": {
       "localizations": {
         "en": {
@@ -493,6 +509,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aumentar volume"
+          }
+        }
+      }
+    },
+    "Avançar 10 s": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forward 10 s"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avançar 10 s"
           }
         }
       }
@@ -1089,6 +1121,22 @@
         }
       }
     },
+    "Limpar fila": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear Queue"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limpar fila"
+          }
+        }
+      }
+    },
     "Local": {
       "localizations": {
         "en": {
@@ -1297,6 +1345,38 @@
         }
       }
     },
+    "Mover para baixo ⌥⌘↓": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move Down ⌥⌘↓"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mover para baixo ⌥⌘↓"
+          }
+        }
+      }
+    },
+    "Mover para cima ⌥⌘↑": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move Up ⌥⌘↑"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mover para cima ⌥⌘↑"
+          }
+        }
+      }
+    },
     "Mudar de mostrador": {
       "localizations": {
         "en": {
@@ -1425,18 +1505,18 @@
         }
       }
     },
-    "O servidor respondeu %lld. Tentar de novo": {
+    "O servidor respondeu %lld": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The server responded %lld. Try again"
+            "value": "The server responded %lld"
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "O servidor respondeu %lld. Tentar de novo"
+            "value": "O servidor respondeu %lld"
           }
         }
       }
@@ -1569,6 +1649,22 @@
         }
       }
     },
+    "Player com fila": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Player with Queue"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Player com fila"
+          }
+        }
+      }
+    },
     "Player com pastas": {
       "localizations": {
         "en": {
@@ -1581,22 +1677,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Player com pastas"
-          }
-        }
-      }
-    },
-    "Player com playlist": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Player with Queue"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Player com playlist"
           }
         }
       }
@@ -1709,6 +1789,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Proteção OLED"
+          }
+        }
+      }
+    },
+    "Recuar 10 s": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back 10 s"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recuar 10 s"
           }
         }
       }
@@ -2049,6 +2145,22 @@
         }
       }
     },
+    "Sem música nesta pasta": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No music in this folder"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sem música nesta pasta"
+          }
+        }
+      }
+    },
     "Servidor": {
       "localizations": {
         "en": {
@@ -2081,18 +2193,18 @@
         }
       }
     },
-    "Servidor offline. Tentar de novo": {
+    "Servidor offline": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Server offline. Try again"
+            "value": "Server offline"
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "Servidor offline. Tentar de novo"
+            "value": "Servidor offline"
           }
         }
       }
@@ -2301,6 +2413,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Válvulas"
+          }
+        }
+      }
+    },
+    "a tocar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "playing"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "a tocar"
           }
         }
       }

@@ -13,6 +13,9 @@ struct BarSlider: View {
     var hoverText: ((Double) -> String)?
     var trackColor = Color.track
     var fillColor = Color.fill
+    /// VoiceOver: what the bar is and its value ("Posição", "1:07 de 4:17").
+    var accessibilityName = ""
+    var accessibilityText = ""
 
     @State private var hover: Double?
     @State private var dragging = false
@@ -74,6 +77,10 @@ struct BarSlider: View {
         .focusEffectDisabled()
         .onKeyPress(.leftArrow) { onStep(-1); return .handled }
         .onKeyPress(.rightArrow) { onStep(1); return .handled }
+        .accessibilityElement()
+        .accessibilityLabel(accessibilityName)
+        .accessibilityValue(accessibilityText)
+        .accessibilityAdjustableAction { onStep($0 == .increment ? 1 : -1) }
         .overlay {
             if focused {
                 RoundedRectangle(cornerRadius: Radius.sm + 2)
@@ -97,7 +104,9 @@ struct ProgressBar: View {
             onStep: { player.skip(by: Double($0) * 5) },
             hoverText: d > 0 ? { TimeFormat.display($0 * d) } : nil,
             trackColor: .displayTrack,
-            fillColor: .displayInk
+            fillColor: .displayInk,
+            accessibilityName: String(localized: "Posição"),
+            accessibilityText: String(localized: "\(TimeFormat.short(player.currentTime)) de \(TimeFormat.short(d))")
         )
         .help("Posição")
     }

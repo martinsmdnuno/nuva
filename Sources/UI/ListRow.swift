@@ -71,5 +71,9 @@ struct ListRow: View {
         .contentShape(Rectangle())
         .onHover { hovering = $0 }
         .help(help ?? name)
+        // VoiceOver: one element per row, with its selection and whether it plays.
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityValue(isPlaying ? String(localized: "a tocar") : "")
     }
 }

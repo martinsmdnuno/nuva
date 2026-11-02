@@ -1,7 +1,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// The queue. Double-click or Enter plays; Delete removes; drag reorders.
+/// The queue. Double-click or Enter plays; Delete removes; drag or ⌥⌘↑ ⌥⌘↓ reorders.
 struct QueueList: View {
     @Environment(AppModel.self) private var model
     @Environment(\.isSnapshot) private var isSnapshot
@@ -37,8 +37,15 @@ struct QueueList: View {
         .focusable()
         .focused($focused)
         .focusEffectDisabled()
-        .onKeyPress(.upArrow) { moveSelection(-1); return .handled }
-        .onKeyPress(.downArrow) { moveSelection(1); return .handled }
+        // ↑ ↓ select; with ⌥⌘ they move the selected track (keyboard first: dragging isn't the only way).
+        .onKeyPress(keys: [.upArrow], phases: .down) { press in
+            if press.modifiers.isSuperset(of: [.option, .command]) { moveSelected(by: -1) } else { moveSelection(-1) }
+            return .handled
+        }
+        .onKeyPress(keys: [.downArrow], phases: .down) { press in
+            if press.modifiers.isSuperset(of: [.option, .command]) { moveSelected(by: 1) } else { moveSelection(1) }
+            return .handled
+        }
         .onKeyPress(.return) {
             if let selection { player.play(selection) }
             return .handled
@@ -69,8 +76,15 @@ struct QueueList: View {
                 })
                 .contextMenu {
                     Button("Tocar") { player.play(item.id) }
+                    Button("Mover para cima ⌥⌘↑") { move(item.id, by: -1) }
+                        .disabled(index == 0)
+                    Button("Mover para baixo ⌥⌘↓") { move(item.id, by: 1) }
+                        .disabled(index == player.queue.count - 1)
+                    Divider()
                     Button("Remover da fila") { remove(item.id) }
                 }
+                .accessibilityAction { player.play(item.id) }
+                .accessibilityAction(named: Text("Remover da fila")) { remove(item.id) }
                 .modifier(Reorderable(item: item, index: index, player: player, enabled: !isSnapshot))
             }
         }
@@ -148,6 +162,19 @@ struct QueueList: View {
             self.selection = queue.indices.contains(i + 1) ? queue[i + 1].id : (i > 0 ? queue[i - 1].id : nil)
         }
         remove(selection)
+    }
+
+    private func moveSelected(by step: Int) {
+        guard let selection else { return }
+        move(selection, by: step)
+    }
+
+    /// Moves a track one place up or down, keeping it selected.
+    private func move(_ id: QueueItem.ID, by step: Int) {
+        let queue = model.player.queue
+        guard let i = queue.firstIndex(where: { $0.id == id }), queue.indices.contains(i + step) else { return }
+        model.player.move(fromOffsets: [i], toOffset: step < 0 ? i - 1 : i + 2)
+        selection = id
     }
 
     private func remove(_ id: QueueItem.ID) {

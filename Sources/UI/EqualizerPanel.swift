@@ -85,11 +85,9 @@ struct EqualizerPanel: View {
                 ForEach(Equalizer.labels.indices, id: \.self) { band in
                     BandSlider(
                         value: eq.gains[band], label: Equalizer.labels[band], marks: Self.marks, y: Self.y,
-                        onChange: { eq.setGain(band, $0) })
+                        isOn: eq.enabled, onChange: { eq.setGain(band, $0) })
                 }
             }
-            .opacity(eq.enabled ? 1 : 0.5)
-            .motion(Motion.state, value: eq.enabled)
             // A preset moves the faders like motorised ones; dragging stays direct.
             .motion(Motion.fader, value: eq.presetName)
         }
@@ -136,6 +134,8 @@ private struct BandSlider: View {
     let label: String
     let marks: [Float]
     let y: (Float) -> CGFloat
+    /// Off: the fader fades; the labels keep their contrast (text passes 4.5:1 in every state).
+    var isOn = true
     let onChange: (Float) -> Void
     @State private var active = false
 
@@ -162,6 +162,8 @@ private struct BandSlider: View {
                         .offset(y: y(value) - 4)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .opacity(isOn ? 1 : 0.5)
+                .motion(Motion.state, value: isOn)
                 .contentShape(Rectangle())
                 .gesture(
                     DragGesture(minimumDistance: 0)
@@ -182,5 +184,10 @@ private struct BandSlider: View {
         }
         .frame(maxWidth: .infinity)
         .help("\(label) Hz \(value > 0 ? "+" : "")\(value.formatted(.number.precision(.fractionLength(0...1)))) dB")
+        // VoiceOver: the band's frequency and gain, ± 1 dB per swipe.
+        .accessibilityElement()
+        .accessibilityLabel("\(label) Hz")
+        .accessibilityValue("\(value > 0 ? "+" : "")\(value.formatted(.number.precision(.fractionLength(0...1)))) dB")
+        .accessibilityAdjustableAction { onChange(value + ($0 == .increment ? 1 : -1)) }
     }
 }

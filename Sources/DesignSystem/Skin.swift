@@ -123,7 +123,7 @@ struct Skin: Identifiable, Sendable, Equatable {
     }
 
     static func with(id: String?) -> Skin {
-        // "nuno" is Rams's id before 1.3.
+        // "nuno" is Rams's id before 1.5.
         let id = id == "nuno" ? Skin.rams.id : id
         return all.first { $0.id == id } ?? .rams
     }

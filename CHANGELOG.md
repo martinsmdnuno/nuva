@@ -6,6 +6,21 @@
 - **Ambient mode** (View › Ambient, ⌘4): the whole screen becomes NuVa's display, in the current skin, to leave the music playing as part of the room. Two faces, ← → to switch: **Display** (track, folder and time, large) and **Clock**. It can open on another screen or a TV (View › Ambient Options), keeps the screen awake while music plays and dims after 10 minutes paused. Esc or ⌘4 leaves.
 - The default skin is now called **Rams** (it was Nuno). Nothing else changes, and your choice is kept.
 
+## 1.4 — a deck with a volume knob
+
+- The keys now read like a deck: shuffle and repeat on the left, play in the middle of the window, and the volume as a knob on the right. Drag it up or down, scroll over it, or use ⌘↑ ⌘↓. The volume bar is gone, so the window is a row shorter and Compact mode smaller.
+- AirPlay lives where the display says the sound is going: click "AirPlay WiiM" (or your speakers' name) to choose the output.
+- The equalizer shows its preset beside the time ("EQ · Rock", with a light when it's on). Click it, or press ⌥⌘E (Controls › Equalizer…), to open the bands.
+
+## 1.3 — spectrum meter, one small window
+
+- A spectrum meter on the display: ten columns of amber segments, one per equalizer band, that move with what you hear. Measured after the equalizer and in step with the speakers, AirPlay included. View › Show Spectrum (⌥⌘V) hides it.
+- The folders now take the queue's place below the keys instead of opening a drawer on the left. ⌘B or the folders key swaps the two; playing a folder brings the queue back. ⌘1 queue, ⌘2 folders, ⌘3 compact.
+- The window can be widened from 360 to 480, for long file names. Width and height are remembered.
+- The position bar shows the elapsed time and the duration at its ends; click the duration to see the time left.
+- Keys travel when pressed, lights fade like filaments, and the display and lists change in place. Everything snaps with Reduce Motion.
+- With the window open, the menu bar shows only macOS's Now Playing item; NuVa's mini player appears there when you close the window.
+
 ## 1.2 — audio CDs
 
 - Plays audio CDs. Put a disc in the drive and NuVa plays it from the first track, like a CD player, whether NuVa is already open or opens with the disc in. The CD shows up as a source while it's in the drive.

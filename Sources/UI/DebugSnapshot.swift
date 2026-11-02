@@ -25,6 +25,7 @@ enum DebugSnapshot {
         let views: [(String, AnyView, AppModel)] = [
             ("player", AnyView(ContentView()), model),
             ("navegador", AnyView(ContentView()), browserModel),
+            ("largo", AnyView(ContentView().frame(width: 560)), model),
             ("compacto", AnyView(ContentView()), compactModel),
             ("primeiro", AnyView(ContentView()), firstRunModel),
             ("fila-vazia", AnyView(ContentView()), emptyQueueModel),
@@ -42,7 +43,7 @@ enum DebugSnapshot {
         ]
         // Every view in Rams; the main ones again with SF Pro + SF Mono ("-sf") and in each
         // always-dark skin (Graphite, Phosphor: one file per view).
-        let main: Set<String> = ["player", "navegador", "compacto", "barra", "equalizador", "capa-errada", "ambiente-ecra", "ambiente-relogio"]
+        let main: Set<String> = ["player", "navegador", "largo", "compacto", "barra", "equalizador", "capa-errada", "ambiente-ecra", "ambiente-relogio"]
         let bothThemes = [(ColorScheme.dark, "chumbo"), (.light, "aluminio")]
         let runs: [(Skin, FontSet, String, Set<String>?, [(ColorScheme, String)])] = [
             (.rams, .inter, "", nil, bothThemes),
@@ -51,6 +52,9 @@ enum DebugSnapshot {
             (.graphiteGreen, .system, "", main, [(.dark, Skin.graphiteGreen.id)]),
             (.phosphor, .inter, "", main, [(.dark, Skin.phosphor.id)]),
         ]
+        // Load the user's saved skin now, so it can't replace the one being drawn when a view
+        // first reads the store.
+        _ = SkinStore.shared
         for (skin, fontSet, suffix, only, themes) in runs {
             SkinStore.active.withLock { $0 = skin }
             SkinStore.activeFonts.withLock { $0 = fontSet }
@@ -162,6 +166,10 @@ enum DebugSnapshot {
         let player = sampleModel().player
         model.player.debugSet(
             queue: player.queue.map(\.entry), current: 1, time: 67, duration: 257, format: "FLAC 24/48 · 1669 kbps")
+        // The same output and equalizer as the queue's snapshot, for the display.
+        model.output.debugSet("→ AirPlay WiiM")
+        model.player.equalizer.apply(Equalizer.presets.first { $0.name == "Rock" } ?? Equalizer.presets[0])
+        model.player.equalizer.enabled = true
         return model
     }
 }

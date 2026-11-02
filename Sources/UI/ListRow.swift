@@ -36,7 +36,9 @@ struct ListRow: View {
                         .font(.system(size: 11))
                         .foregroundStyle(isError ? Color.danger : Color.inkMuted)
                 case .track:
-                    LED(isOn: true).opacity(isPlaying ? 1 : 0)
+                    LED(isOn: true)
+                        .opacity(isPlaying ? 1 : 0)
+                        .motion(isPlaying ? Motion.ledOn : Motion.ledOff, value: isPlaying)
                 }
             }
             .frame(width: 12)
@@ -44,6 +46,7 @@ struct ListRow: View {
             Text(name)
                 .font(.dsBody)
                 .foregroundStyle(isError ? Color.danger : isPlaying ? Color.signal : Color.ink)
+                .motion(Motion.state, value: isPlaying)
                 .lineLimit(1)
                 .truncationMode(.tail)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -57,10 +60,12 @@ struct ListRow: View {
         .padding(.horizontal, Space.s2)
         .frame(height: Size.row)
         .background {
+            // Selection snaps (it follows the keyboard); hover fades.
+            RoundedRectangle(cornerRadius: Radius.sm).fill(Color.surface1)
+                .opacity(hovering && !isSelected ? 1 : 0)
+                .motion(Motion.hover, value: hovering)
             if isSelected {
                 RoundedRectangle(cornerRadius: Radius.sm).fill(Color.surface2)
-            } else if hovering {
-                RoundedRectangle(cornerRadius: Radius.sm).fill(Color.surface1)
             }
         }
         .contentShape(Rectangle())

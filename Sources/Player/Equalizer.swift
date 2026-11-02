@@ -46,6 +46,8 @@ final class Equalizer {
 
     /// Gains shared with the audio thread.
     nonisolated let shared: EQShared
+    /// Band levels measured by the same tap, for the spectrum meter.
+    nonisolated let spectrum = SpectrumShared()
     @ObservationIgnored private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {
@@ -81,7 +83,7 @@ final class Equalizer {
     /// Attaches the equalizer to the item's audio track, before playing.
     func attach(to item: AVPlayerItem) async {
         guard let track = try? await item.asset.loadTracks(withMediaType: .audio).first,
-              let tap = EQTap.make(shared) else { return }
+              let tap = EQTap.make(shared, spectrum: spectrum) else { return }
         let parameters = AVMutableAudioMixInputParameters(track: track)
         parameters.audioTapProcessor = tap
         let mix = AVMutableAudioMix()
@@ -112,20 +114,24 @@ final class EQShared: Sendable {
 }
 
 /// The tap: 10 cascaded peaking (RBJ) filters per channel, with negative pre-gain to avoid clipping.
+/// After the filters it measures the bands for the spectrum meter, while one is on screen.
 final class EQTap: @unchecked Sendable {
     private let shared: EQShared
+    private let spectrum: SpectrumShared
+    private var analyzer: SpectrumAnalyzer?
     private var sampleRate: Double = 44_100
     private var supported = false
     private var filters: [vDSP.Biquad<Float>] = []
     private var preGain: Float = 1
     private var appliedVersion = -1
 
-    private init(shared: EQShared) {
+    private init(shared: EQShared, spectrum: SpectrumShared) {
         self.shared = shared
+        self.spectrum = spectrum
     }
 
-    static func make(_ shared: EQShared) -> MTAudioProcessingTap? {
-        let context = Unmanaged.passRetained(EQTap(shared: shared)).toOpaque()
+    static func make(_ shared: EQShared, spectrum: SpectrumShared) -> MTAudioProcessingTap? {
+        let context = Unmanaged.passRetained(EQTap(shared: shared, spectrum: spectrum)).toOpaque()
         var callbacks = MTAudioProcessingTapCallbacks(
             version: kMTAudioProcessingTapCallbacksVersion_0,
             clientInfo: context,
@@ -138,9 +144,10 @@ final class EQTap: @unchecked Sendable {
             },
             unprepare: nil,
             process: { tap, frames, _, buffers, framesOut, flagsOut in
-                guard MTAudioProcessingTapGetSourceAudio(tap, frames, buffers, flagsOut, nil, framesOut) == noErr
+                var range = CMTimeRange.invalid
+                guard MTAudioProcessingTapGetSourceAudio(tap, frames, buffers, flagsOut, &range, framesOut) == noErr
                 else { return }
-                EQTap.from(tap).process(buffers)
+                EQTap.from(tap).process(buffers, frames: Int(framesOut.pointee), range: range)
             }
         )
         var tap: MTAudioProcessingTap?
@@ -164,13 +171,21 @@ final class EQTap: @unchecked Sendable {
             && format.mFormatFlags & kAudioFormatFlagIsNonInterleaved != 0
             && format.mBitsPerChannel == 32
         appliedVersion = -1
+        analyzer = supported ? SpectrumAnalyzer(sampleRate: sampleRate) : nil
     }
 
-    private func process(_ list: UnsafeMutablePointer<AudioBufferList>) {
+    private func process(_ list: UnsafeMutablePointer<AudioBufferList>, frames: Int, range: CMTimeRange) {
         guard supported else { return }
+        let buffers = UnsafeMutableAudioBufferListPointer(list)
+        filter(buffers)
+        if let analyzer, range.isValid, spectrum.isWatched {
+            analyzer.process(buffers, frames: frames, end: range.end.seconds, into: spectrum)
+        }
+    }
+
+    private func filter(_ buffers: UnsafeMutableAudioBufferListPointer) {
         let state = shared.read()
         guard state.enabled else { return }
-        let buffers = UnsafeMutableAudioBufferListPointer(list)
         if state.version != appliedVersion || filters.count != buffers.count {
             rebuild(state.gains, channels: buffers.count)
             appliedVersion = state.version

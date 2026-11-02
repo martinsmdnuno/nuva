@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.8 — reliability
+
+- When a track can't be played (a damaged file, a server that's offline or whose sign-in expired), NuVa tries it once more, then moves on to the next track and says on the display which one it couldn't play. Before, the music just stopped with no explanation. "Loading…" shows while a track opens from a slow server.
+- Jellyfin signs in again by itself when a stream is refused, also while playing a queue without browsing.
+- Removing a source also takes its tracks out of the queue. A CD that macOS refuses to eject stays in NuVa instead of disappearing.
+- A folder on a disk or NAS that wasn't connected at launch comes back when the disk is mounted, or when you open it.
+- Space and ⌘ with the arrows type in the text fields of the Jellyfin and artwork sheets instead of controlling playback. Keys that can't be used yet look faded.
+- In ambient mode, ⌘← ⌘→ ⌘↑ ⌘↓ and ⌘. work with the main window closed.
+- Uses less energy: ambient mode no longer redraws the screen continuously, the audio output is checked every 10 s instead of every second while paused, and the equalizer and spectrum do less work on every block of sound.
+
 ## 1.7 — needles, valves and a 28-band spectrum
 
 - Two new ambient faces after classic hi-fi: **Needles**, two backlit VU meters with needles and a peak light (amber in Rams, pale green in Phosphor), and **Valves**, two valves in their cage whose filaments glow with each channel's level.

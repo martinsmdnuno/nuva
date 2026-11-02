@@ -13,10 +13,10 @@ struct SkinTests {
         return byte(c.redComponent) << 16 | byte(c.greenComponent) << 8 | byte(c.blueComponent)
     }
 
-    @Test func nunoReadsTheAssetCatalog() {
+    @Test func ramsReadsTheAssetCatalog() {
         // ink: #1E2023 in Aluminium, #E8E6E1 in Lead (tokens.json).
-        #expect(hex(Skin.nuno.color(.ink, for: light)) == 0x1E2023)
-        #expect(hex(Skin.nuno.color(.ink, for: dark)) == 0xE8E6E1)
+        #expect(hex(Skin.rams.color(.ink, for: light)) == 0x1E2023)
+        #expect(hex(Skin.rams.color(.ink, for: dark)) == 0xE8E6E1)
     }
 
     @Test func everyTokenHasAnAssetColour() {
@@ -36,16 +36,20 @@ struct SkinTests {
         #expect(hex(skin.color(.ink, for: light)) == 0xEEEEEE)
     }
 
-    @Test func unknownSkinFallsBackToNuno() {
-        #expect(Skin.with(id: "gone") == .nuno)
-        #expect(Skin.with(id: nil) == .nuno)
+    @Test func unknownSkinFallsBackToRams() {
+        #expect(Skin.with(id: "gone") == .rams)
+        #expect(Skin.with(id: nil) == .rams)
+    }
+
+    @Test func oldNunoIdOpensRams() {
+        #expect(Skin.with(id: "nuno") == .rams)
     }
 
     @Test func storeIgnoresUnknownSavedSkin() {
         let defaults = UserDefaults(suiteName: "skin-tests")!
         defaults.removePersistentDomain(forName: "skin-tests")
         defaults.set("gone", forKey: "skin")
-        #expect(SkinStore(defaults: defaults).current == .nuno)
+        #expect(SkinStore(defaults: defaults).current == .rams)
     }
 
     @Test func fontSetFollowsSkinUntilChosen() {
@@ -53,7 +57,7 @@ struct SkinTests {
         defaults.removePersistentDomain(forName: "skin-tests-fonts")
         let store = SkinStore(defaults: defaults)
         #expect(store.fontChoice == nil)
-        #expect(store.fontSet == Skin.nuno.fontSet)
+        #expect(store.fontSet == Skin.rams.fontSet)
 
         store.fontChoice = .system
         #expect(store.fontSet == .system)
@@ -63,7 +67,7 @@ struct SkinTests {
         store.fontChoice = nil
         #expect(defaults.string(forKey: "fontSet") == "skin")
         #expect(SkinStore(defaults: defaults).fontChoice == nil)
-        #expect(SkinStore.activeFonts.withLock { $0 } == Skin.nuno.fontSet)
+        #expect(SkinStore.activeFonts.withLock { $0 } == Skin.rams.fontSet)
     }
 
     // MARK: Contrast (design system: every text pair 4.5:1; icons, LEDs and focus 3:1)
@@ -114,9 +118,9 @@ struct SkinTests {
             #expect(ratio(skin, .surface2, .surface0, dark) >= 1.4)
             #expect(ratio(skin, .keyMode, .surface0, dark) >= 3)
         }
-        // Mode keys read as keys, with no outline, in Nuno too.
+        // Mode keys read as keys, with no outline, in Rams too.
         for appearance in [light, dark] {
-            #expect(ratio(.nuno, .keyMode, .surface0, appearance) >= 3)
+            #expect(ratio(.rams, .keyMode, .surface0, appearance) >= 3)
         }
     }
 

@@ -32,7 +32,7 @@ enum ColorToken: String, CaseIterable, Sendable {
 /// A skin: colours, appearance policy and default font set. Same views, layout and sizes in every skin.
 struct Skin: Identifiable, Sendable, Equatable {
     enum Appearance: Sendable {
-        /// Light and dark variants, following the system (Nuno: Aluminium and Lead).
+        /// Light and dark variants, following the system (Rams: Aluminium and Lead).
         case followsSystem
         /// Always dark, whatever the system appearance.
         case alwaysDark
@@ -52,14 +52,14 @@ struct Skin: Identifiable, Sendable, Equatable {
     /// `nil`: the colour sets in Assets.xcassets, named like the tokens.
     let palette: [ColorToken: Pair]?
 
-    static let nuno = Skin(id: "nuno", name: "Nuno", appearance: .followsSystem, fontSet: .inter, palette: nil)
+    static let rams = Skin(id: "rams", name: "Rams", appearance: .followsSystem, fontSet: .inter, palette: nil)
 
     /// Graphite, from NuVa_Design_Spec_v1 (docs/design-system/skins/graphite.md): the spec's colours,
     /// adjusted so every text pair passes 4.5:1 and the layers can be told apart. Only the accent differs.
     static let graphiteOrange = graphite(id: "graphite-orange", name: "Graphite Orange", accent: 0xFF6A00, selected: 0x382E22)
     static let graphiteGreen = graphite(id: "graphite-green", name: "Graphite Green", accent: 0x20D66B, selected: 0x1D3628)
 
-    static let all: [Skin] = [.nuno, .graphiteOrange, .graphiteGreen]
+    static let all: [Skin] = [.rams, .graphiteOrange, .graphiteGreen]
 
     private static func graphite(id: String, name: String, accent: UInt32, selected: UInt32) -> Skin {
         let dark: [ColorToken: UInt32] = [
@@ -93,7 +93,9 @@ struct Skin: Identifiable, Sendable, Equatable {
     }
 
     static func with(id: String?) -> Skin {
-        all.first { $0.id == id } ?? .nuno
+        // "nuno" is Rams's id before 1.3.
+        let id = id == "nuno" ? Skin.rams.id : id
+        return all.first { $0.id == id } ?? .rams
     }
 
     /// The token's colour, resolved for `drawing` (light or dark).
@@ -149,7 +151,7 @@ final class SkinStore {
     var renderID: String { "\(current.id)-\(fontSet.rawValue)" }
 
     /// Read by the dynamic colours, which AppKit may resolve off the main thread.
-    nonisolated static let active = OSAllocatedUnfairLock(initialState: Skin.nuno)
+    nonisolated static let active = OSAllocatedUnfairLock(initialState: Skin.rams)
     /// Read by Typography, from any view.
     nonisolated static let activeFonts = OSAllocatedUnfairLock(initialState: FontSet.inter)
 

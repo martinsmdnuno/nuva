@@ -39,7 +39,7 @@ In:
 - Media keys and macOS Now Playing.
 - AirPlay key (`AVRoutePickerView` wrapped in `NSViewRepresentable`).
 - Windows: "Player with queue" (360 × 480 or taller), "With browser" (720 × 480 or taller) and "Compact" (display, keys and volume only; ⌘3). Height is free in the first two.
-- Skins (View ▸ Skin, ⌥⌘1, ⌥⌘2…, and a key in the mini player): colours only, same layout and sizes. Default "Nuno" (the 1.0 look). Plan in `docs/plans/skins-and-artwork.md`.
+- Skins (View ▸ Skin, ⌥⌘1, ⌥⌘2…, and a key in the mini player): colours only, same layout and sizes. Default "Rams" (the 1.0 look, called "Nuno" up to 1.2). Plan in `docs/plans/skins-and-artwork.md`.
 - The folder drawer opens and closes with the folders key in the queue header, the key in the drawer header, or ⌘B.
 - Closing the window doesn't stop the music: the app leaves the Dock and stays in the menu bar with a mini player.
 - Album artwork (View ▸ Show Artwork, ⌥⌘A; off by default), never from tags. Order: an image file in the folder (`cover`, `folder`, `front`, `album`, `capa` · jpg/jpeg/png; a disc folder also looks in its album folder), then the user's choice for that folder, then online: artist and album inferred from the folder names (`AlbumGuess`), MusicBrainz + Cover Art Archive, confident matches only. The one fallback is "Wrong or Missing Artwork…" (search again with corrected names, choose an image, or no artwork). Covers live in Application Support, never in the user's folders. Small, inside the display and the mini player, not in Compact; also in Now Playing. Online lookup is one of the two agreed exceptions to "no online lookups"; the other is an audio CD's names.

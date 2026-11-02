@@ -897,6 +897,22 @@
         }
       }
     },
+    "Fósforo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phosphor"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fósforo"
+          }
+        }
+      }
+    },
     "Graves": {
       "localizations": {
         "en": {

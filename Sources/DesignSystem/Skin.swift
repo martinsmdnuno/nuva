@@ -59,7 +59,37 @@ struct Skin: Identifiable, Sendable, Equatable {
     static let graphiteOrange = graphite(id: "graphite-orange", name: "Graphite Orange", accent: 0xFF6A00, selected: 0x382E22)
     static let graphiteGreen = graphite(id: "graphite-green", name: "Graphite Green", accent: 0x20D66B, selected: 0x1D3628)
 
-    static let all: [Skin] = [.rams, .graphiteOrange, .graphiteGreen]
+    /// Phosphor (docs/design-system/skins/phosphor.md): after the classic shareware players. A black display
+    /// with phosphor-green ink, a blue-grey chassis, silver keys and a blue selected row.
+    static let phosphor = Skin(
+        id: "phosphor", name: String(localized: "Fósforo"), appearance: .alwaysDark, fontSet: .inter,
+        palette: [
+            .surface0: 0x1C1C2B,
+            .surface1: 0x2C2C44,
+            .surface2: 0x1B2A8F,
+            .display: 0x000000,
+            // The display's own tint, like an amplifier's VFD: a green that isn't the accent.
+            .displayInk: 0x00E838,
+            .displayMuted: 0x1FA83C,
+            .displayTrack: 0x0E3A18,
+            .ink: 0xD8DCE6,
+            .inkMuted: 0xA4A8BE,
+            .line: 0x34344C,
+            .keyFace: 0xB6BACB,
+            .keyMode: 0x66668E,
+            .keyPlay: 0x00D02A,
+            .keyInk: 0x10101C,
+            .keyModeInk: 0xF6F7FB,
+            .track: 0x3E3E58,
+            .fill: 0xB6BACB,
+            .led: 0x00D02A,
+            .ledOff: 0x34344C,
+            .signal: 0x00D02A,
+            .danger: 0xFF6B6B,
+            .focus: 0xF2C744,
+        ].mapValues { Pair(light: $0, dark: $0) })
+
+    static let all: [Skin] = [.rams, .graphiteOrange, .graphiteGreen, .phosphor]
 
     private static func graphite(id: String, name: String, accent: UInt32, selected: UInt32) -> Skin {
         let dark: [ColorToken: UInt32] = [

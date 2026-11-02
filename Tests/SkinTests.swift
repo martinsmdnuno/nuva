@@ -112,8 +112,8 @@ struct SkinTests {
         }
     }
 
-    @Test func graphiteLayersAreDistinct() {
-        for skin in [Skin.graphiteOrange, .graphiteGreen] {
+    @Test func darkSkinLayersAreDistinct() {
+        for skin in [Skin.graphiteOrange, .graphiteGreen, .phosphor] {
             #expect(ratio(skin, .surface1, .surface0, dark) >= 1.2)
             #expect(ratio(skin, .surface2, .surface0, dark) >= 1.4)
             #expect(ratio(skin, .keyMode, .surface0, dark) >= 3)
@@ -131,8 +131,8 @@ struct SkinTests {
         }
     }
 
-    @Test func graphiteIsAlwaysDarkWithOneAccent() {
-        for skin in [Skin.graphiteOrange, .graphiteGreen] {
+    @Test func darkSkinsHaveOneAccent() {
+        for skin in [Skin.graphiteOrange, .graphiteGreen, .phosphor] {
             #expect(skin.appearance == .alwaysDark)
             let accent = skin.palette![.keyPlay]!
             #expect(skin.palette![.led] == accent && skin.palette![.signal] == accent)
@@ -140,6 +140,11 @@ struct SkinTests {
             let others = skin.palette!.filter { ![.keyPlay, .led, .signal].contains($0.key) }
             #expect(!others.values.contains(accent))
         }
+    }
+
+    @Test func phosphorKeepsItsIdAndShortcutSlot() {
+        #expect(Skin.with(id: "phosphor") == .phosphor)
+        #expect(Skin.all.firstIndex(of: .phosphor) == 3)  // ⌥⌘4
     }
 }
 

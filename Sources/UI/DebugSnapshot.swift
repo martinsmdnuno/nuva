@@ -39,7 +39,7 @@ enum DebugSnapshot {
             ("termos", AnyView(TermsView().frame(width: 520, height: 620)), model),
         ]
         // Every view in Rams; the main ones again with SF Pro + SF Mono ("-sf") and in each
-        // Graphite skin (always dark, so one file per view).
+        // always-dark skin (Graphite, Phosphor: one file per view).
         let main: Set<String> = ["player", "navegador", "compacto", "barra", "equalizador", "capa-errada"]
         let bothThemes = [(ColorScheme.dark, "chumbo"), (.light, "aluminio")]
         let runs: [(Skin, FontSet, String, Set<String>?, [(ColorScheme, String)])] = [
@@ -47,6 +47,7 @@ enum DebugSnapshot {
             (.rams, .system, "-sf", main, bothThemes),
             (.graphiteOrange, .system, "", main, [(.dark, Skin.graphiteOrange.id)]),
             (.graphiteGreen, .system, "", main, [(.dark, Skin.graphiteGreen.id)]),
+            (.phosphor, .inter, "", main, [(.dark, Skin.phosphor.id)]),
         ]
         for (skin, fontSet, suffix, only, themes) in runs {
             SkinStore.active.withLock { $0 = skin }

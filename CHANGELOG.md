@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- New skin: **Phosphor** (Fósforo in Portuguese), after the shareware players of the late nineties. A black display with green text, a blue-grey chassis, silver keys and a blue selected row. View › Skin, ⌥⌘4.
+- The default skin is now called **Rams** (it was Nuno). Nothing else changes, and your choice is kept.
+
 ## 1.2 — audio CDs
 
 - Plays audio CDs. Put a disc in the drive and NuVa plays it from the first track, like a CD player, whether NuVa is already open or opens with the disc in. The CD shows up as a source while it's in the drive.

@@ -26,13 +26,14 @@ Lead grey with a single accent.
 - **Text:** `ink` for primary text, `ink-muted` for durations, metadata, legends and resting icons.
 - **Keys:** three tones, as on a Braun calculator. `key-play` (amber) only on the play/pause key. `key-face` (light grey) on transport. `key-mode` (mid grey) on mode, output and text buttons.
 - **Accent:** amber, only one, in three linked roles: the key that plays (`key-play`), the LEDs (`led`) and the name of the track that's playing (`signal`). Never on backgrounds, hovers or any text other than the current track.
+- **Display tint:** a skin may give the display its own ink colour (`display-ink`, `display-muted`), like the amber or green of an amplifier's VFD. It must not be the accent's exact value, and the accent rule above still holds on the chassis. Only Phosphor uses it.
 - **LED:** a 4px dot, `led` on, `led-off` off. It shows state: playback on the display, repeat/shuffle/equalizer on above their key, the playing track in the list.
 - **Error:** `danger` only on text and icons, never as a background.
 - **Focus:** `focus` as a 2px ring around the control with keyboard focus.
 
 Themes: **Lead** (`chumbo`) is the main one. **Aluminium** (`aluminio`) is the light theme and follows the system appearance. Together they are the **Rams** skin (called Nuno up to 1.2). Every text pair passes 4.5:1 in both themes, and keys, LEDs and focus 3:1 (checked in `Tests/SkinTests.swift`).
 
-Other skins change token values only, never roles or layout: **Graphite Orange** and **Graphite Green**, always dark (`skins/graphite.md`). View ▸ Skin, ⌥⌘1, ⌥⌘2, ⌥⌘3.
+Other skins change token values only, never roles or layout: **Graphite Orange** and **Graphite Green** (`skins/graphite.md`) and **Phosphor** (`skins/phosphor.md`), all always dark. View ▸ Skin, ⌥⌘1 to ⌥⌘4.
 
 ## Type
 

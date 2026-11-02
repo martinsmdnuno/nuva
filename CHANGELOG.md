@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.7 — needles, valves and a 28-band spectrum
 
 - Two new ambient faces after classic hi-fi: **Needles**, two backlit VU meters with needles and a peak light (amber in Rams, pale green in Phosphor), and **Valves**, two valves in their cage whose filaments glow with each channel's level.
 - The **Spectrum** face now has 28 bands from 20 Hz to 20 kHz, as solid bars with a peak line over each, and the position bar below.

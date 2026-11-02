@@ -121,7 +121,8 @@ struct AmbientView: View {
 }
 
 extension EnvironmentValues {
-    /// Parts that hardly change (format, folder, date, position bar) at this opacity: lower with OLED protection.
+    /// Lit areas that hardly change and aren't text (position bar, VU lamp) at this opacity: lower with
+    /// OLED protection. Text keeps its full contrast (the display's muted ink is dim already).
     @Entry var ambientStaticOpacity: Double = 1
     /// The clock's colon blinks each second (OLED protection), like a bedside radio.
     @Entry var ambientBlinks = false
@@ -149,7 +150,6 @@ private struct AmbientRest: View {
 private struct AmbientDisplayFace: View {
     let unit: CGFloat
     @Environment(AppModel.self) private var model
-    @Environment(\.ambientStaticOpacity) private var staticOpacity
 
     var body: some View {
         let player = model.player
@@ -164,7 +164,6 @@ private struct AmbientDisplayFace: View {
             .font(.dsAmbientMeta(unit * 1.7))
             .foregroundStyle(Color.displayMuted)
             .lineLimit(1)
-            .opacity(staticOpacity)
 
             Spacer(minLength: unit * 2)
 
@@ -184,7 +183,6 @@ private struct AmbientDisplayFace: View {
                     Text(entry?.folderName ?? String(localized: "Escolher uma pasta para tocar"))
                         .font(.dsAmbientCaption(unit * 2.3))
                         .foregroundStyle(Color.displayMuted)
-                        .opacity(staticOpacity)
                 }
                 .lineLimit(1)
                 .truncationMode(.tail)
@@ -212,7 +210,6 @@ private struct AmbientClockFace: View {
     let unit: CGFloat
     let now: Date
     @Environment(AppModel.self) private var model
-    @Environment(\.ambientStaticOpacity) private var staticOpacity
     @Environment(\.ambientBlinks) private var blinks
 
     var body: some View {
@@ -230,7 +227,6 @@ private struct AmbientClockFace: View {
             Text(now.formatted(.dateTime.weekday(.wide).day().month(.wide)).lowercased())
                 .font(.dsAmbientMeta(unit * 1.9))
                 .foregroundStyle(Color.displayMuted)
-                .opacity(staticOpacity)
             Spacer()
             if let entry = player.current?.entry {
                 HStack(spacing: unit * 1.4) {
@@ -309,7 +305,6 @@ private struct AmbientStrip: View {
 private struct AmbientTrackFoot: View {
     let unit: CGFloat
     @Environment(AppModel.self) private var model
-    @Environment(\.ambientStaticOpacity) private var staticOpacity
 
     var body: some View {
         let player = model.player
@@ -322,7 +317,6 @@ private struct AmbientTrackFoot: View {
                 Text(entry?.folderName ?? "")
                     .font(.dsAmbientCaption(unit * 1.9))
                     .foregroundStyle(Color.displayMuted)
-                    .opacity(staticOpacity)
             }
             .lineLimit(1)
             .truncationMode(.tail)
@@ -379,7 +373,6 @@ private struct AmbientSpectrumFace: View {
     /// Narrower bands carry less energy than the equalizer's octaves, so the range sits lower.
     @State private var meter = SpectrumMeter(count: SpectrumShared.fineBands, floor: -62, ceiling: -12)
     @Environment(AppModel.self) private var model
-    @Environment(\.ambientStaticOpacity) private var staticOpacity
 
     /// For snapshots: a plausible moment, falling from the bass to the treble.
     static let still: [Float] = (0..<SpectrumShared.fineBands).map { i in
@@ -399,7 +392,6 @@ private struct AmbientSpectrumFace: View {
             .font(.dsAmbientMeta(unit * 1.7))
             .foregroundStyle(Color.displayMuted)
             .lineLimit(1)
-            .opacity(staticOpacity)
             .padding(.bottom, unit * 3)
 
             AmbientMeterTimeline(meter: meter, measure: { $0.equalizer.spectrum.fineLevels(at: $1) }, still: Self.still) { levels, peaks in
@@ -437,7 +429,6 @@ private struct AmbientMetersFace: View {
     let unit: CGFloat
     @State private var meter = SpectrumMeter(count: 2, floor: -48, ceiling: 0)
     @Environment(AppModel.self) private var model
-    @Environment(\.ambientStaticOpacity) private var staticOpacity
 
     static let segments = 40
     static let marks: [Float] = [-48, -36, -24, -18, -12, -6, -3, 0]
@@ -454,7 +445,6 @@ private struct AmbientMetersFace: View {
             .font(.dsAmbientMeta(unit * 1.7))
             .foregroundStyle(Color.displayMuted)
             .lineLimit(1)
-            .opacity(staticOpacity)
 
             Spacer(minLength: unit * 2)
 
@@ -512,7 +502,6 @@ private struct AmbientMetersFace: View {
         }
         .font(.dsAmbientMeta(unit * 1.5))
         .foregroundStyle(Color.displayMuted)
-        .opacity(staticOpacity)
     }
 }
 
@@ -620,7 +609,6 @@ private struct AmbientNeedlesFace: View {
             .font(.dsAmbientMeta(unit * 1.7))
             .foregroundStyle(Color.displayMuted)
             .lineLimit(1)
-            .opacity(staticOpacity)
 
             Spacer(minLength: unit * 2)
 
@@ -722,7 +710,6 @@ private struct AmbientValvesFace: View {
     let unit: CGFloat
     @State private var meter = SlowMeter(floor: -40, ceiling: -8, rise: 4, fall: 1.5)
     @Environment(AppModel.self) private var model
-    @Environment(\.ambientStaticOpacity) private var staticOpacity
 
     var body: some View {
         let player = model.player
@@ -736,7 +723,6 @@ private struct AmbientValvesFace: View {
             .font(.dsAmbientMeta(unit * 1.7))
             .foregroundStyle(Color.displayMuted)
             .lineLimit(1)
-            .opacity(staticOpacity)
 
             Spacer(minLength: unit * 2)
 

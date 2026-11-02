@@ -9,6 +9,6 @@ Popover of the equalizer readout on the display ("EQ · Rock", beside the time; 
 
 ## Rules
 - Background `surface-1`, padding `space-4`, width 380px.
-- Off: bands at 50% opacity.
+- Off: the faders at 50% opacity. The frequency labels and the dB scale keep their contrast: text passes 4.5:1 in every state.
 - Double-clicking a band resets it to 0 dB.
 - Preset names are stored in Portuguese (the localization key) and shown in the app's language.

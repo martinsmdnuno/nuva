@@ -1,6 +1,22 @@
 {
   "sourceLanguage": "pt-PT",
   "strings": {
+    "%@ de %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ of %@"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ de %@"
+          }
+        }
+      }
+    },
     "%lld faixas": {
       "localizations": {
         "en": {
@@ -2301,6 +2317,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Válvulas"
+          }
+        }
+      }
+    },
+    "a tocar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "playing"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "a tocar"
           }
         }
       }

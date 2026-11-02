@@ -182,5 +182,10 @@ private struct BandSlider: View {
         }
         .frame(maxWidth: .infinity)
         .help("\(label) Hz \(value > 0 ? "+" : "")\(value.formatted(.number.precision(.fractionLength(0...1)))) dB")
+        // VoiceOver: the band's frequency and gain, ± 1 dB per swipe.
+        .accessibilityElement()
+        .accessibilityLabel("\(label) Hz")
+        .accessibilityValue("\(value > 0 ? "+" : "")\(value.formatted(.number.precision(.fractionLength(0...1)))) dB")
+        .accessibilityAdjustableAction { onChange(value + ($0 == .increment ? 1 : -1)) }
     }
 }

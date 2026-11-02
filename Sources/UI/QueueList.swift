@@ -71,6 +71,8 @@ struct QueueList: View {
                     Button("Tocar") { player.play(item.id) }
                     Button("Remover da fila") { remove(item.id) }
                 }
+                .accessibilityAction { player.play(item.id) }
+                .accessibilityAction(named: Text("Remover da fila")) { remove(item.id) }
                 .modifier(Reorderable(item: item, index: index, player: player, enabled: !isSnapshot))
             }
         }

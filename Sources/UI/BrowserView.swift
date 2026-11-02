@@ -90,6 +90,7 @@ struct BrowserView: View {
                         focused = true
                     })
                     .contextMenu { menu(row) }
+                    .accessibilityAction { activate(row) }
             }
             if browser.location == nil {
                 HStack(spacing: Space.s2) {

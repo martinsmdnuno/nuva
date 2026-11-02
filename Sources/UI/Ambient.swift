@@ -217,6 +217,17 @@ final class Ambient {
             face = face.moved(by: 1)
         case (49, []):  // Space
             player.togglePlayPause()
+        // The Controls menu's shortcuts, for when the main window is closed (no menu bar).
+        case (124, let m) where m.subtracting([.numericPad, .function]) == .command:  // ⌘→
+            player.next()
+        case (123, let m) where m.subtracting([.numericPad, .function]) == .command:  // ⌘←
+            player.previous()
+        case (126, let m) where m.subtracting([.numericPad, .function]) == .command:  // ⌘↑
+            player.changeVolume(by: 0.05)
+        case (125, let m) where m.subtracting([.numericPad, .function]) == .command:  // ⌘↓
+            player.changeVolume(by: -0.05)
+        case (47, .command):  // ⌘.
+            player.stop()
         default:
             return false
         }

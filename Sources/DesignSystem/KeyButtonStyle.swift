@@ -53,13 +53,15 @@ struct KeyButtonStyle: ButtonStyle {
         /// The button's own focus (the `isFocused` environment also lights up when
         /// the surrounding list has focus, which lit every key inside it).
         @FocusState private var isFocused: Bool
+        @Environment(\.isEnabled) private var isEnabled
 
         var body: some View {
             let shape = RoundedRectangle(cornerRadius: Radius.sm, style: .continuous)
 
             configuration.label
                 .font(isText ? .dsLabel : .system(size: tone.iconSize, weight: .regular))
-                .foregroundStyle(tone.ink)
+                // Unavailable (a sheet's key before its fields are filled): the legend fades, the face stays.
+                .foregroundStyle(tone.ink.opacity(isEnabled ? 1 : 0.4))
                 .padding(.horizontal, isText ? Space.s3 : 0)
                 .frame(width: isText ? nil : tone.width, height: isText ? Size.keyText : Size.key)
                 .background {

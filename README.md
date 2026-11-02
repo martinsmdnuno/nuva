@@ -60,6 +60,8 @@ NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that
 
 The look above is the **Rams** skin. **Graphite Orange** and **Graphite Green** are always dark, with a single bright accent on the play key, the lights and the playing track. **Phosphor** is a nod to the shareware players of the late nineties: a black screen with green text and a blue-grey chassis. Switch in **View › Skin** (⌥⌘1 to ⌥⌘4) or from the mini player. Skins change colours only: the keys, the layout and the shortcuts stay where your hands expect them. **View › Font** picks Inter + IBM Plex Mono or Apple's SF Pro + SF Mono.
 
+**View › Ambient** (⌘4) turns the whole screen into NuVa's display, in the current skin, to leave the music playing as part of the room: the track and the time large, or a clock. ← → switch faces, Esc leaves. It can go on another screen or a TV, and keeps the screen awake while music plays.
+
 ## Album artwork, if you want it
 
 <p align="center"><img src="docs/screenshots/artwork.png" width="760" alt="Folder artwork on the display and in the menu bar mini player"></p>
@@ -153,6 +155,7 @@ xattr -dr com.apple.quarantine /Applications/NuVa.app
 | ⌘↑ · ⌘↓ | Volume up · down |
 | ⌘B | Show or hide folders |
 | ⌘1 · ⌘2 · ⌘3 | Player · with browser · compact |
+| ⌘4 | Ambient (full screen; ← → faces, Esc leaves) |
 | ⌥⌘1 · ⌥⌘2 … | Skin (also in View ▸ Skin) |
 | ⌥⌘A | Show or hide folder artwork |
 | ⌘L | Go to the current track |
@@ -213,4 +216,4 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 
 Só é preciso uma vez.
 
-Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume · ⌘B pastas · ⌘1 ⌘2 ⌘3 tamanho da janela · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin.
+Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume · ⌘B pastas · ⌘1 ⌘2 ⌘3 tamanho da janela · ⌘4 ambiente · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin.

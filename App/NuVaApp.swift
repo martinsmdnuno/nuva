@@ -73,6 +73,11 @@ struct NuVaCommands: Commands {
                 .keyboardShortcut("2")
             Button("Compacto") { model.windowMode = .compact }
                 .keyboardShortcut("3")
+            Button(Ambient.shared.isOpen ? String(localized: "Sair do Ambiente") : String(localized: "Ambiente")) {
+                Ambient.shared.toggle(model)
+            }
+            .keyboardShortcut("4")
+            Menu("Opções do Ambiente") { AmbientMenuItems(model: model) }
             Button(model.windowMode == .browser ? String(localized: "Esconder pastas") : String(localized: "Mostrar pastas")) { model.toggleBrowser() }
                 .keyboardShortcut("b")
             Toggle("Mostrar capas", isOn: Binding(get: { model.showsArtwork }, set: { model.showsArtwork = $0 }))

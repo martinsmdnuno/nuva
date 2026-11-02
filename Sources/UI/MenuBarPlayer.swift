@@ -16,12 +16,18 @@ struct MenuBarPlayer: View {
                 }
                 key("forward.end", .transport, String(localized: "Seguinte")) { player.next() }
                 Spacer(minLength: Space.s2)
-                Menu { SkinMenuItems() } label: { Image(systemName: "circle.lefthalf.filled") }
+                Menu {
+                    Button(Ambient.shared.isOpen ? String(localized: "Sair do Ambiente") : String(localized: "Ambiente")) {
+                        Ambient.shared.toggle(model)
+                    }
+                    Divider()
+                    SkinMenuItems()
+                } label: { Image(systemName: "circle.lefthalf.filled") }
                     .menuStyle(.button)
                     .menuIndicator(.hidden)
                     .buttonStyle(.key(.mode))
                     .fixedSize()
-                    .help("Skin")
+                    .help("Ambiente e skin")
                 Button("Abrir NuVa") { openMain() }
                     .buttonStyle(.keyText)
                 Button("Sair") { NSApp.terminate(nil) }

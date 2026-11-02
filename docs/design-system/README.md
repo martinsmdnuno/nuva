@@ -60,7 +60,7 @@ Flat keys, as on a Braun calculator or tape recorder:
 
 ## Icons
 
-SF Symbols, regular weight, never filled except `play.fill` and `pause.fill` inside the play key. Fixed symbols: `backward.end`, `forward.end`, `play.fill`, `pause.fill`, `repeat`, `shuffle`, `airplayaudio`, `slider.vertical.3`, `sidebar.left`, `folder`, `internaldrive`, `server.rack`.
+SF Symbols, regular weight, never filled except `play.fill` and `pause.fill` inside the play key. Fixed symbols: `backward.end`, `forward.end`, `play.fill`, `pause.fill`, `repeat`, `shuffle`, `airplayaudio`, `slider.vertical.3`, `sidebar.left`, `folder`, `internaldrive`, `server.rack`, `arrow.down.right.and.arrow.up.left` (leave ambient).
 
 ## Windows
 
@@ -70,11 +70,13 @@ Three sizes, same content:
 - **Player with queue** (360 × 480 or taller): display with position, keys in three groups, volume, queue. All on one plane.
 - **With browser** (720 × 480 or taller): folder browser on the left, player with queue on the right.
 
+**Ambient** (View ▸ Ambient, ⌘4) is not a fourth size: a full-screen window in its own Space that is all display (`display` background, the display's tokens and the `ambient-*` type styles, sized from the screen's width). Nothing to operate, no lists. Two faces, ← → to switch: *Display* (the window's display at the scale of the room) and *Clock* (the time of day, the playing track on one line). Moving the mouse shows the playback keys for 3 s. The content shifts a few points each minute so nothing marks the panel; the display stays awake while music plays, and dims after 10 minutes paused. Esc or ⌘4 leaves.
+
 In the player and browser the height is free (minimum 480) and the width fixed: only the lists grow. The app remembers the height between modes and launches. Double-clicking the title bar (zoom) stretches the window to the screen's height. Compact doesn't resize.
 
 ## Shortcuts
 
-Space play/pause · ⌘→ next · ⌘← previous · ⌘↑ ⌘↓ volume · ⌘L go to the current track · Enter play selection · ⌘Enter add to queue · ⌘B show or hide folders · ⌘1 ⌘2 ⌘3 window size · ⌘O add folder · ⇧⌘O add Jellyfin.
+Space play/pause · ⌘→ next · ⌘← previous · ⌘↑ ⌘↓ volume · ⌘L go to the current track · Enter play selection · ⌘Enter add to queue · ⌘B show or hide folders · ⌘1 ⌘2 ⌘3 window size · ⌘4 ambient · ⌘O add folder · ⇧⌘O add Jellyfin.
 
 ## Interface text
 

@@ -55,4 +55,10 @@ extension Font {
     static var dsScale: Font { Typography.mono(9, .regular) }
     /// Shortcuts and details beside a label.
     static var dsHint: Font { Typography.mono(10, .regular) }
+
+    // Ambient mode: the display's styles at the scale of the screen (sizes from 1% of its width).
+    static func dsAmbientTime(_ size: CGFloat) -> Font { Typography.mono(size, .light) }
+    static func dsAmbientMeta(_ size: CGFloat) -> Font { Typography.mono(size, .regular) }
+    static func dsAmbientTitle(_ size: CGFloat) -> Font { Typography.sans(size, .medium) }
+    static func dsAmbientCaption(_ size: CGFloat) -> Font { Typography.sans(size, .regular) }
 }

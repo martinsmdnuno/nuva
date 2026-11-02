@@ -31,3 +31,26 @@ struct FontMenuItems: View {
         }
     }
 }
+
+/// View ▸ Ambient options: the face, dimming, and which screen.
+struct AmbientMenuItems: View {
+    let model: AppModel
+
+    var body: some View {
+        let ambient = Ambient.shared
+        ForEach(AmbientFace.allCases, id: \.self) { face in
+            Toggle(face.name, isOn: Binding(
+                get: { ambient.face == face },
+                set: { if $0 { ambient.face = face } }
+            ))
+        }
+        Divider()
+        Toggle("Escurecer", isOn: Binding(get: { ambient.dims }, set: { ambient.dims = $0 }))
+        if ambient.screenNames.count > 1 {
+            Divider()
+            ForEach(Array(ambient.screenNames.enumerated()), id: \.offset) { index, name in
+                Button(String(localized: "Abrir em \(name)")) { ambient.open(model, screenIndex: index) }
+            }
+        }
+    }
+}

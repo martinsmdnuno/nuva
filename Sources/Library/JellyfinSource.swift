@@ -47,6 +47,8 @@ actor JellyfinSource: MusicSource {
     }
 
     private var session: Session?
+    /// A sign-in in progress, shared by everyone who needs a session meanwhile.
+    private var signingIn: Task<Session, Error>?
     private var legacyRoutes = false
     private var rootLoaded = false
     /// With more than one music library, the root shows the libraries.
@@ -229,11 +231,22 @@ actor JellyfinSource: MusicSource {
 
     private func currentSession() async throws -> Session {
         if let session { return session }
+        if let signingIn { return try await signingIn.value }
         guard let password = password() else { throw SourceError.loginFailed }
-        let fresh = try await Self.login(
-            server: server, username: username, password: password, deviceID: deviceID, urlSession: urlSession)
+        let (server, username, deviceID, urlSession) = (server, username, deviceID, urlSession)
+        let task = Task {
+            try await Self.login(server: server, username: username, password: password, deviceID: deviceID, urlSession: urlSession)
+        }
+        signingIn = task
+        defer { signingIn = nil }
+        let fresh = try await task.value
         session = fresh
         return fresh
+    }
+
+    /// The stream URL carries the token, so a revoked token only shows up as a failed stream.
+    func streamFailed() {
+        session = nil
     }
 
     static func login(

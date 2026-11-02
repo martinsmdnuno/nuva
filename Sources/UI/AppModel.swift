@@ -78,6 +78,7 @@ final class AppModel {
         let resolve: PlayerController.Resolver = { entry in try await sources.resolve(entry) }
         self.sources = sources
         self.player = PlayerController(resolve: resolve, equalizer: Equalizer(defaults: defaults))
+        self.player.onStreamFailure = { entry in await sources.streamFailed(for: entry) }
         self.durations = TrackDurations(resolve: resolve)
         self.browser = Browser(sources: sources)
         self.output = OutputRoute(player: systemIntegration ? self.player.avPlayer : nil)

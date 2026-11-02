@@ -147,6 +147,11 @@ final class SourceStore {
 
 extension SourceStore {
     /// Playable URL of a track, via the source it belongs to.
+    /// A track from this source failed to play: let the source recover (sign in again) before the retry.
+    func streamFailed(for entry: Entry) async {
+        await source(entry.sourceID)?.streamFailed()
+    }
+
     func resolve(_ entry: Entry) async throws -> URL {
         guard let source = source(entry.sourceID) else {
             throw SourceError.missingFolder(entry.folderName)

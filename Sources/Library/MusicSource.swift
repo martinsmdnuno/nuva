@@ -72,11 +72,14 @@ protocol MusicSource: Sendable {
     func artwork(inFolder path: String) async -> URL?
     /// Name of the source's own folder, when it is a real folder (the artist, if the user added one artist).
     var rootFolderName: String? { get }
+    /// A track's URL failed to play. A server can drop its session, so the next `url(for:)` signs in again.
+    func streamFailed() async
 }
 
 extension MusicSource {
     func artwork(inFolder path: String) async -> URL? { nil }
     var rootFolderName: String? { nil }
+    func streamFailed() async {}
 }
 
 enum Artwork {

@@ -142,4 +142,36 @@ struct PlayerTests {
         #expect(player.formatLabel == "FLAC 24/48 · 1669 kbps")
         player.pause()
     }
+
+    @Test func unplayableTrackIsSkippedWithAMessage() async throws {
+        let (dir, entries) = try makeFlacs(2, seconds: 3)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        // A file that isn't audio: the item fails after it resolves.
+        let broken = Entry(sourceID: entries[0].sourceID, path: "Álbum/00 - Estragado.flac", name: "00 - Estragado.flac", kind: .track)
+        try Data("not audio".utf8).write(to: dir.appendingPathComponent(broken.name))
+        let player = makePlayer(dir)
+        var recoveries = 0
+        player.onStreamFailure = { _ in await MainActor.run { recoveries += 1 } }
+
+        player.setQueue([broken] + entries)
+        try await wait { player.current?.entry == entries[0] && player.currentTime > 0.3 }
+        // Tried twice (one recovery in between), then skipped; the message clears once music plays.
+        #expect(recoveries == 1)
+        #expect(player.errorMessage == nil)
+    }
+
+    @Test func nothingPlayableStopsOnTheFailedTrack() async throws {
+        let source = UUID()
+        let missing = (1...2).map { Entry(sourceID: source, path: "Álbum/0\($0) - Falta.flac", name: "0\($0) - Falta.flac", kind: .track) }
+        // The resolver itself fails, as for an offline server.
+        let player = PlayerController { _ in throw URLError(.notConnectedToInternet) }
+        player.volume = 0
+
+        player.setQueue(missing)
+        try await wait { player.errorMessage != nil && !player.isLoading }
+        #expect(player.current?.entry == missing[1])
+        #expect(!player.isPlaying)
+        #expect(player.errorMessage?.contains("Falta") == true)
+        #expect(player.errorDetail != nil)
+    }
 }

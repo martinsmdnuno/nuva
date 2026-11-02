@@ -1649,6 +1649,22 @@
         }
       }
     },
+    "Player com fila": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Player with Queue"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Player com fila"
+          }
+        }
+      }
+    },
     "Player com pastas": {
       "localizations": {
         "en": {
@@ -1661,22 +1677,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Player com pastas"
-          }
-        }
-      }
-    },
-    "Player com playlist": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Player with Queue"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Player com playlist"
           }
         }
       }

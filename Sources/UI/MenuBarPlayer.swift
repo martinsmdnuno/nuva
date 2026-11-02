@@ -26,12 +26,15 @@ struct MenuBarPlayer: View {
                     .menuStyle(.button)
                     .menuIndicator(.hidden)
                     .buttonStyle(.key(.mode))
+                    .keyFocus()
                     .fixedSize()
                     .help("Ambiente e skin")
                 Button("Abrir NuVa") { openMain() }
                     .buttonStyle(.keyText)
+                    .keyFocus()
                 Button("Sair") { NSApp.terminate(nil) }
                     .buttonStyle(.keyText)
+                    .keyFocus()
             }
         }
         .padding(Space.s3)
@@ -51,6 +54,7 @@ struct MenuBarPlayer: View {
     ) -> some View {
         Button(action: action) { KeySymbol(name: symbol) }
             .buttonStyle(.key(tone))
+            .keyFocus()
             .help(help)
     }
 }

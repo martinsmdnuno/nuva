@@ -41,8 +41,10 @@ struct ArtworkFixView: View {
             HStack(spacing: Space.s2) {
                 Button("Escolher imagem…") { chooseImage() }
                     .buttonStyle(.keyText)
+                    .keyFocus()
                 Button("Sem capa") { save(nil) }
                     .buttonStyle(.keyText)
+                    .keyFocus()
                 Spacer()
             }
             .disabled(busy)
@@ -51,9 +53,11 @@ struct ArtworkFixView: View {
                 Spacer()
                 Button("Cancelar") { dismiss() }
                     .buttonStyle(.keyText)
+                    .keyFocus()
                     .keyboardShortcut(.cancelAction)
                 Button(busy ? String(localized: "A procurar…") : String(localized: "Procurar")) { search() }
                     .buttonStyle(.keyText)
+                    .keyFocus()
                     .keyboardShortcut(.defaultAction)
                     .disabled(busy || query == nil)
             }

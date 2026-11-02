@@ -67,7 +67,7 @@ struct NuVaCommands: Commands {
                 .disabled(model.ejectableDisc == nil)
         }
         CommandGroup(after: .sidebar) {
-            Button("Player com playlist") { model.windowMode = .player }
+            Button("Player com fila") { model.windowMode = .player }
                 .keyboardShortcut("1")
             Button("Player com pastas") { model.windowMode = .browser }
                 .keyboardShortcut("2")

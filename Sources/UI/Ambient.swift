@@ -9,7 +9,7 @@ enum AmbientFace: String, CaseIterable, Sendable {
     case display
     /// The time of day, with the playing track on one line.
     case clock
-    /// The equalizer's 10 bands as tall columns of segments.
+    /// 28 bands from 20 Hz to 20 kHz as solid bars with their peaks.
     case spectrum
     /// Left and right levels, as two ladders of segments.
     case meters
@@ -55,6 +55,9 @@ final class Ambient {
     var protectsOLED: Bool {
         didSet { defaults.set(protectsOLED, forKey: "ambientProtectsOLED") }
     }
+
+    /// Counts faces chosen with ← → or the strip (not the 20-minute change), to show the face's name.
+    private(set) var changesByHand = 0
 
     /// The last key or mouse movement: an hour after it, with OLED protection, the screen rests.
     private(set) var lastInteraction = Date.now
@@ -171,6 +174,12 @@ final class Ambient {
         }
     }
 
+    /// The next or previous face, chosen by hand.
+    func changeFace(by step: Int) {
+        face = face.moved(by: step)
+        changesByHand += 1
+    }
+
     /// Resting: OLED protection on and an hour without a key or the mouse.
     func isResting(at date: Date) -> Bool {
         protectsOLED && date.timeIntervalSince(lastInteraction) > Self.restAfter
@@ -212,9 +221,9 @@ final class Ambient {
         case (53, []), (21, .command):  // Esc, ⌘4
             close()
         case (123, let m) where m.subtracting([.numericPad, .function]).isEmpty:  // ←
-            face = face.moved(by: -1)
+            changeFace(by: -1)
         case (124, let m) where m.subtracting([.numericPad, .function]).isEmpty:  // →
-            face = face.moved(by: 1)
+            changeFace(by: 1)
         case (49, []):  // Space
             player.togglePlayPause()
         // The Controls menu's shortcuts, for when the main window is closed (no menu bar).

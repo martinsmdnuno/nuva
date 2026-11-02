@@ -92,7 +92,7 @@ The width is free from 360 to 480: keys keep their size and the space between th
 
 ## Shortcuts
 
-Space play/pause · ⌘→ next · ⌘← previous · ⌘↑ ⌘↓ volume · ⌥⌘E equalizer · ⌘L go to the current track · Enter play selection · ⌘Enter add to queue · ⌘B swap queue and folders · ⌘1 ⌘2 ⌘3 queue, folders, compact · ⌘4 ambient · ⌘O add folder · ⇧⌘O add Jellyfin.
+Space play/pause · ⌘→ next · ⌘← previous · ⇧⌘→ ⇧⌘← 10 s forward/back · ⌘. stop · ⌘↑ ⌘↓ volume · ⌥⌘E equalizer · ⌘L go to the current track · Enter play selection · ⌘Enter add to queue · ⌥⌘↑ ⌥⌘↓ move in the queue · ⌥⌘⌫ clear the queue · ⌘B swap queue and folders · ⌘1 ⌘2 ⌘3 queue, folders, compact · ⌘4 ambient · ⌘O add folder · ⇧⌘O add Jellyfin.
 
 ## Interface text
 

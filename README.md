@@ -153,7 +153,10 @@ xattr -dr com.apple.quarantine /Applications/NuVa.app
 |---|---|
 | Space | Play / pause |
 | ⌘→ · ⌘← | Next · previous |
+| ⇧⌘→ · ⇧⌘← | Forward · back 10 seconds |
+| ⌘. | Stop |
 | ⌘↑ · ⌘↓ | Volume up · down |
+| ⌘R · ⌥⌘S | Repeat · shuffle |
 | ⌥⌘E | Equalizer |
 | ⌘B | Swap the queue and the folders |
 | ⌘1 · ⌘2 · ⌘3 | Queue · folders · compact |
@@ -162,6 +165,8 @@ xattr -dr com.apple.quarantine /Applications/NuVa.app
 | ⌥⌘A | Show or hide folder artwork |
 | ⌥⌘V | Show or hide the spectrum meter |
 | ⌘L | Go to the current track |
+| ⌥⌘↑ · ⌥⌘↓ | Move the selected track up · down in the queue |
+| Delete · ⌥⌘⌫ | Remove the selected track · clear the queue |
 | Enter · ⌘Enter | Play the selection · add it to the queue |
 | ⌘O · ⇧⌘O | Add a folder · add Jellyfin |
 | ⌘E | Eject the CD |
@@ -222,4 +227,4 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 
 Só é preciso uma vez.
 
-Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume · ⌥⌘E equalizador · ⌘B fila ou pastas · ⌘1 ⌘2 ⌘3 fila, pastas, compacto · ⌘4 ambiente · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌥⌘V espectro · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin.
+Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⇧⌘→ ⇧⌘← avançar/recuar 10 s · ⌘. parar · ⌘↑ ⌘↓ volume · ⌘R ⌥⌘S repetir, aleatório · ⌥⌘↑ ⌥⌘↓ mover na fila · ⌥⌘⌫ limpar fila · ⌥⌘E equalizador · ⌘B fila ou pastas · ⌘1 ⌘2 ⌘3 fila, pastas, compacto · ⌘4 ambiente · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌥⌘V espectro · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin · ⌘E ejetar CD.

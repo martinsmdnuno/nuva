@@ -37,9 +37,11 @@ struct JellyfinLoginView: View {
                 Spacer()
                 Button("Cancelar") { dismiss() }
                     .buttonStyle(.keyText)
+                    .keyFocus()
                     .keyboardShortcut(.cancelAction)
                 Button(busy ? String(localized: "A entrar…") : String(localized: "Entrar")) { submit() }
                     .buttonStyle(.keyText)
+                    .keyFocus()
                     .keyboardShortcut(.defaultAction)
                     .disabled(busy || serverURL == nil || username.isEmpty)
             }

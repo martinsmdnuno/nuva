@@ -12,6 +12,8 @@ struct AmbientView: View {
     /// When the mouse last moved: the key strip shows for 3 s after.
     @State private var lastMove: Date?
     @State private var hideStrip: Task<Void, Never>?
+    /// The pointer is on the strip: it stays.
+    @State private var stripHovered = false
     /// Paused for 10 minutes, the content dims.
     @State private var pausedSince: Date?
 
@@ -54,6 +56,7 @@ struct AmbientView: View {
 
                     if let lastMove, now.timeIntervalSince(lastMove) < 3 {
                         AmbientStrip()
+                            .onHover { stripHovered = $0 }
                             .frame(maxHeight: .infinity, alignment: .bottom)
                             .padding(.bottom, unit * 1.5)
                             .transition(.opacity)
@@ -64,7 +67,12 @@ struct AmbientView: View {
         }
         .background(Color.display)
         .foregroundStyle(Color.displayInk)
-        .animation(.easeOut(duration: 0.3), value: lastMove == nil)
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: lastMove == nil)
+        // ← → show the strip, with the new face's name, for a moment.
+        .onChange(of: ambient.changesByHand) {
+            lastMove = .now
+            hideStripLater()
+        }
         .onContinuousHover { phase in
             guard case .active = phase else { return }
             // Mouse events come many times a second; four updates a second are plenty.
@@ -91,6 +99,12 @@ struct AmbientView: View {
         hideStrip = Task {
             try? await Task.sleep(for: .seconds(3))
             guard !Task.isCancelled else { return }
+            if stripHovered {
+                // Still pointing at the keys: keep them a little longer.
+                lastMove = .now
+                hideStripLater()
+                return
+            }
             lastMove = nil
             NSCursor.setHiddenUntilMouseMoves(true)
         }
@@ -159,7 +173,7 @@ private struct AmbientDisplayFace: View {
                 LED(isOn: player.isPlaying, size: unit)
                 Text(player.formatLabel)
                 Spacer(minLength: unit * 2)
-                Text(model.output.label)
+                Text(model.output.name)
             }
             .font(.dsAmbientMeta(unit * 1.7))
             .foregroundStyle(Color.displayMuted)
@@ -277,14 +291,17 @@ private struct AmbientStrip: View {
         HStack(spacing: Space.s1) {
             Button { player.previous() } label: { Image(systemName: "backward.end") }
                 .buttonStyle(.key(.transport))
+                .keyFocus()
                 .help("Anterior")
             Button { player.togglePlayPause() } label: { Image(systemName: player.isPlaying ? "pause.fill" : "play.fill") }
                 .buttonStyle(.key(.play))
+                .keyFocus()
                 .help(player.isPlaying ? String(localized: "Pausa") : String(localized: "Tocar"))
             Button { player.next() } label: { Image(systemName: "forward.end") }
                 .buttonStyle(.key(.transport))
+                .keyFocus()
                 .help("Seguinte")
-            Button { ambient.face = ambient.face.moved(by: 1) } label: {
+            Button { ambient.changeFace(by: 1) } label: {
                 Text(verbatim: "← \(ambient.face.name.lowercased()) →")
                     .font(.dsHint)
                     .foregroundStyle(Color.inkMuted)
@@ -294,6 +311,7 @@ private struct AmbientStrip: View {
             .help("Mudar de mostrador")
             Button { ambient.close() } label: { Image(systemName: "arrow.down.right.and.arrow.up.left") }
                 .buttonStyle(.key(.mode))
+                .keyFocus()
                 .help("Sair do Ambiente")
         }
         .padding(Space.s2)
@@ -440,7 +458,7 @@ private struct AmbientMetersFace: View {
                 LED(isOn: player.isPlaying, size: unit)
                 Text(player.formatLabel)
                 Spacer()
-                Text(model.output.label)
+                Text(model.output.name)
             }
             .font(.dsAmbientMeta(unit * 1.7))
             .foregroundStyle(Color.displayMuted)
@@ -604,7 +622,7 @@ private struct AmbientNeedlesFace: View {
                 LED(isOn: player.isPlaying, size: unit)
                 Text(player.formatLabel)
                 Spacer()
-                Text(model.output.label)
+                Text(model.output.name)
             }
             .font(.dsAmbientMeta(unit * 1.7))
             .foregroundStyle(Color.displayMuted)
@@ -718,7 +736,7 @@ private struct AmbientValvesFace: View {
                 LED(isOn: player.isPlaying, size: unit)
                 Text(player.formatLabel)
                 Spacer()
-                Text(model.output.label)
+                Text(model.output.name)
             }
             .font(.dsAmbientMeta(unit * 1.7))
             .foregroundStyle(Color.displayMuted)

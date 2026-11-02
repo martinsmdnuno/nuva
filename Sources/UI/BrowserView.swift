@@ -139,7 +139,7 @@ struct BrowserView: View {
             if let disc = model.sources.source(id) as? DiscSource {
                 Button("Ejetar CD") { model.ejectDisc(disc) }
             } else {
-                Button("Remover fonte") { model.sources.remove(id) }
+                Button("Remover fonte") { model.removeSource(id) }
             }
         case .entry(let e) where e.kind == .folder:
             Button("Tocar pasta") {
@@ -175,7 +175,8 @@ struct BrowserView: View {
     private func activate(_ row: Row) {
         switch row {
         case .source(let id, _, _, let error):
-            guard error == nil else { return }
+            // A missing folder: try it again (the disk may be back) before giving up.
+            guard error == nil || model.sources.retryFailed(id) else { NSSound.beep(); return }
             model.browser.open(BrowserLocation(sourceID: id, path: ""))
         case .entry(let e) where e.kind == .folder:
             model.browser.enter(e)

@@ -28,4 +28,27 @@ struct BrowserTests {
         // The source is remembered by another instance with the same defaults.
         #expect(SourceStore(defaults: defaults).sources.map(\.id) == [source.id])
     }
+
+    @Test func removingASourceTakesItsTracksOutOfTheQueue() async throws {
+        let fm = FileManager.default
+        let root = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? fm.removeItem(at: root) }
+        try fm.createDirectory(at: root.appendingPathComponent("Álbum"), withIntermediateDirectories: true)
+        for n in ["1 A.flac", "2 B.flac"] {
+            fm.createFile(atPath: root.appendingPathComponent("Álbum/\(n)").path, contents: nil)
+        }
+        let suite = "browser-tests-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let model = AppModel(defaults: defaults)
+        let source = try #require(model.sources.addLocal(root))
+        let tracks = await model.browser.tracks(in: BrowserLocation(sourceID: source.id, path: "Álbum"))
+        model.player.append(tracks)
+        model.browser.open(BrowserLocation(sourceID: source.id, path: "Álbum"))
+
+        model.removeSource(source.id)
+        #expect(model.player.queue.isEmpty)
+        #expect(model.browser.location == nil)
+        #expect(model.sources.source(source.id) == nil)
+    }
 }

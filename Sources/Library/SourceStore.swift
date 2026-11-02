@@ -23,9 +23,34 @@ final class SourceStore {
     private let defaults: UserDefaults
     private static let key = "sources"
 
+    @ObservationIgnored private var mountObserver: NSObjectProtocol?
+
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         load()
+        // A disk or NAS mounted after launch: its missing folders may be back.
+        mountObserver = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didMountNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { self?.retryFailed() }
+        }
+    }
+
+    /// Opens again the saved Local sources that failed (deleted folder, disconnected disk).
+    /// Returns whether `id`, if given, opened.
+    @discardableResult
+    func retryFailed(_ id: UUID? = nil) -> Bool {
+        var changed = false
+        for i in records.indices where failed[records[i].id] != nil && (id == nil || records[i].id == id) {
+            guard records[i].kind == .local, let bookmark = records[i].bookmark,
+                  let source = try? LocalSource(id: records[i].id, name: records[i].name, bookmark: bookmark) else { continue }
+            if let fresh = source.refreshedBookmark { records[i].bookmark = fresh }
+            failed[records[i].id] = nil
+            sources.append(source)
+            changed = true
+        }
+        if changed { save() }
+        return id.map { failed[$0] == nil && source($0) != nil } ?? changed
     }
 
     func source(_ id: UUID) -> (any MusicSource)? {

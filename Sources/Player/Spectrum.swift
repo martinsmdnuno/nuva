@@ -13,6 +13,8 @@ final class SpectrumShared: Sendable {
     private struct State {
         var times: [Double]
         var levels: [Float]
+        /// Per measurement: RMS left, RMS right, peak left, peak right, in dBFS.
+        var stereo: [SIMD4<Float>]
         var next = 0
         /// Meters on screen. With none, the tap doesn't measure.
         var watchers = 0
@@ -23,7 +25,8 @@ final class SpectrumShared: Sendable {
     init() {
         state = OSAllocatedUnfairLock(initialState: State(
             times: Array(repeating: -1, count: Self.capacity),
-            levels: Array(repeating: 0, count: Self.capacity * Self.bands)))
+            levels: Array(repeating: 0, count: Self.capacity * Self.bands),
+            stereo: Array(repeating: SIMD4(repeating: -120), count: Self.capacity)))
     }
 
     var isWatched: Bool { state.withLock { $0.watchers > 0 } }
@@ -33,12 +36,14 @@ final class SpectrumShared: Sendable {
     }
 
     /// Audio thread: band levels in dBFS measured around `time` (seconds in the track).
-    func write(time: Double, levels: UnsafeBufferPointer<Float>) {
+    /// `stereo`: RMS left, RMS right, peak left, peak right, in dBFS (a mono source repeats its channel).
+    func write(time: Double, levels: UnsafeBufferPointer<Float>, stereo: SIMD4<Float> = SIMD4(repeating: -120)) {
         // Unchecked: the pointer is only read inside the lock, on the calling thread.
         state.withLockUnchecked { s in
             let i = s.next
             s.times[i] = time
             for b in 0..<Self.bands { s.levels[i * Self.bands + b] = levels[b] }
+            s.stereo[i] = stereo
             s.next = (i + 1) % Self.capacity
         }
     }
@@ -46,14 +51,25 @@ final class SpectrumShared: Sendable {
     /// Levels measured nearest to `time`, or nil when none is within `tolerance` (paused, seeking).
     func levels(at time: Double, tolerance: Double = 0.15) -> [Float]? {
         state.withLock { s in
-            var best: Int?
-            var distance = tolerance
-            for (i, t) in s.times.enumerated() where t >= 0 && abs(t - time) <= distance {
-                best = i
-                distance = abs(t - time)
-            }
-            return best.map { Array(s.levels[$0 * Self.bands ..< ($0 + 1) * Self.bands]) }
+            Self.nearest(in: s, to: time, tolerance: tolerance).map { Array(s.levels[$0 * Self.bands ..< ($0 + 1) * Self.bands]) }
         }
+    }
+
+    /// Left and right levels (RMS, RMS, peak, peak in dBFS) measured nearest to `time`.
+    func stereo(at time: Double, tolerance: Double = 0.15) -> SIMD4<Float>? {
+        state.withLock { s in
+            Self.nearest(in: s, to: time, tolerance: tolerance).map { s.stereo[$0] }
+        }
+    }
+
+    private static func nearest(in s: State, to time: Double, tolerance: Double) -> Int? {
+        var best: Int?
+        var distance = tolerance
+        for (i, t) in s.times.enumerated() where t >= 0 && abs(t - time) <= distance {
+            best = i
+            distance = abs(t - time)
+        }
+        return best
     }
 }
 
@@ -76,6 +92,10 @@ final class SpectrumAnalyzer {
     private var imag: [Float]
     private var power: [Float]
     private var levels: [Float]
+    /// Left and right since the last measurement: sum of squares and highest absolute sample.
+    private var squares = SIMD2<Float>(repeating: 0)
+    private var highs = SIMD2<Float>(repeating: 0)
+    private var counted = 0
 
     init?(sampleRate: Double) {
         // About 46 ms of sound, so the 32 Hz band gets at least one bin at any rate.
@@ -107,17 +127,33 @@ final class SpectrumAnalyzer {
         let channels = buffers.compactMap { $0.mData?.assumingMemoryBound(to: Float.self) }
         guard !channels.isEmpty, frames > 0 else { return }
         let scale = 1 / Float(channels.count)
+        let left = channels[0]
+        let right = channels.count > 1 ? channels[1] : channels[0]
         for j in 0..<frames {
             var sum: Float = 0
             for channel in channels { sum += channel[j] }
             history[head] = sum * scale
             head = (head + 1) % size
+            let pair = SIMD2(left[j], right[j])
+            squares += pair * pair
+            highs = pointwiseMax(highs, abs(pair))
         }
+        counted += frames
         pending += frames
         guard pending >= Int(sampleRate / 60) else { return }
         pending = 0
         measure()
-        levels.withUnsafeBufferPointer { shared.write(time: end - Double(size / 2) / sampleRate, levels: $0) }
+        let rms = (squares / Float(max(counted, 1))).squareRoot()
+        let stereo = SIMD4(Self.decibels(rms[0]), Self.decibels(rms[1]), Self.decibels(highs[0]), Self.decibels(highs[1]))
+        squares = .zero
+        highs = .zero
+        counted = 0
+        // The bands are centred half a window back; the levels cover the last 1/60 s.
+        levels.withUnsafeBufferPointer { shared.write(time: end - Double(size / 2) / sampleRate, levels: $0, stereo: stereo) }
+    }
+
+    private static func decibels(_ amplitude: Float) -> Float {
+        20 * log10(max(amplitude, 1e-6))
     }
 
     private func measure() {

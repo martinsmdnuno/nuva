@@ -105,6 +105,12 @@ struct NuVaCommands: Commands {
             Button("Anterior") { model.player.previous() }
                 .keyboardShortcut(.leftArrow)
                 .disabled(typing)
+            Button("Avançar 10 s") { model.player.skip(by: 10) }
+                .keyboardShortcut(.rightArrow, modifiers: [.command, .shift])
+                .disabled(typing || model.player.current == nil)
+            Button("Recuar 10 s") { model.player.skip(by: -10) }
+                .keyboardShortcut(.leftArrow, modifiers: [.command, .shift])
+                .disabled(typing || model.player.current == nil)
             Divider()
             Button("Aumentar volume") { model.player.changeVolume(by: 0.05) }
                 .keyboardShortcut(.upArrow)
@@ -124,6 +130,9 @@ struct NuVaCommands: Commands {
                 NotificationCenter.default.post(name: .revealCurrentTrack, object: nil)
             }
             .keyboardShortcut("l")
+            Button("Limpar fila") { model.player.clear() }
+                .keyboardShortcut(.delete, modifiers: [.command, .option])
+                .disabled(model.player.queue.isEmpty)
         }
     }
 }

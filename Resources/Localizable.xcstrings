@@ -513,6 +513,22 @@
         }
       }
     },
+    "Avançar 10 s": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forward 10 s"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avançar 10 s"
+          }
+        }
+      }
+    },
     "Baixar volume": {
       "localizations": {
         "en": {
@@ -1105,6 +1121,22 @@
         }
       }
     },
+    "Limpar fila": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear Queue"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limpar fila"
+          }
+        }
+      }
+    },
     "Local": {
       "localizations": {
         "en": {
@@ -1309,6 +1341,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mostrar tempo restante"
+          }
+        }
+      }
+    },
+    "Mover para baixo ⌥⌘↓": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move Down ⌥⌘↓"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mover para baixo ⌥⌘↓"
+          }
+        }
+      }
+    },
+    "Mover para cima ⌥⌘↑": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move Up ⌥⌘↑"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mover para cima ⌥⌘↑"
           }
         }
       }
@@ -1725,6 +1789,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Proteção OLED"
+          }
+        }
+      }
+    },
+    "Recuar 10 s": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back 10 s"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recuar 10 s"
           }
         }
       }

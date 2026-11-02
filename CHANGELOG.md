@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.9 — keyboard and VoiceOver
+
+- New shortcuts: ⇧⌘→ and ⇧⌘← jump 10 seconds forward or back, ⌥⌘↑ and ⌥⌘↓ move the selected track in the queue (also Move Up and Move Down in its menu), and ⌥⌘⌫ clears the queue (Controls › Clear Queue).
+- VoiceOver reads the keys by name with their light on or off, the position bar and the equalizer bands with their values (adjustable with VoiceOver), and each list row with its state, as one item.
+- The folder browser says "Loading…" while a slow folder lists and "No music in this folder" when it's empty. Its error no longer repeats "Try again".
+- Text keeps its contrast: with the equalizer off only the faders fade, and in ambient mode's OLED protection only lit areas that aren't text are dimmed.
+- In ambient mode, ← → show the new face's name for a moment, and the keys stay while the pointer is on them.
+- The README lists every shortcut.
+
 ## 1.8 — reliability
 
 - When a track can't be played (a damaged file, a server that's offline or whose sign-in expired), NuVa tries it once more, then moves on to the next track and says on the display which one it couldn't play. Before, the music just stopped with no explanation. "Loading…" shows while a track opens from a slow server.

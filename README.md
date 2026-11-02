@@ -60,7 +60,7 @@ NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that
 
 The look above is the **Rams** skin. **Graphite Orange** and **Graphite Green** are always dark, with a single bright accent on the play key, the lights and the playing track. **Phosphor** is a nod to the shareware players of the late nineties: a black screen with green text and a blue-grey chassis. Switch in **View › Skin** (⌥⌘1 to ⌥⌘4) or from the mini player. Skins change colours only: the keys, the layout and the shortcuts stay where your hands expect them. **View › Font** picks Inter + IBM Plex Mono or Apple's SF Pro + SF Mono.
 
-**View › Ambient** (⌘4) turns the whole screen into NuVa's display, in the current skin, to leave the music playing as part of the room: the track and the time large, or a clock. ← → switch faces, Esc leaves. It can go on another screen or a TV, and keeps the screen awake while music plays.
+**View › Ambient** (⌘4) turns the whole screen into NuVa's display, in the current skin, to leave the music playing as part of the room: the track and the time large, a clock, a full-screen spectrum, or left and right meters. ← → switch faces, Esc leaves. It can go on another screen or a TV, keeps the screen awake while music plays, and protects OLED screens: the picture drifts, static parts are dimmer, and after an hour untouched only a small light is left.
 
 ## Album artwork, if you want it
 
@@ -204,7 +204,7 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 - **Jellyfin sem confusão.** Navega pelas pastas reais do servidor e toca os ficheiros originais.
 - **Uma janela pequena.** As pastas aparecem no lugar da fila (⌘B troca as duas) e há um modo compacto. A janela estica na vertical para veres o álbum inteiro, e na horizontal para nomes compridos.
 - **Skins:** Rams (claro ou escuro, como o sistema), Graphite Orange, Graphite Green e Fósforo (sempre escuras), em Visualização › Skin. Fonte Inter + IBM Plex Mono ou SF Pro + SF Mono, em Visualização › Fonte.
-- **Modo Ambiente** (⌘4): o ecrã inteiro passa a ser o mostrador da NuVa, com a faixa e o tempo em grande, ou um relógio. ← → trocam, Esc sai.
+- **Modo Ambiente** (⌘4): o ecrã inteiro passa a ser o mostrador da NuVa: a faixa e o tempo em grande, um relógio, o espectro ou os medidores esquerdo e direito. ← → trocam, Esc sai. Protege ecrãs OLED: a imagem desloca-se devagar, o que é fixo fica mais escuro e, ao fim de uma hora sem mexer, só fica uma pequena luz.
 - **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A). Usa a imagem da pasta (`cover`, `folder`, `front`, `album` ou `capa`); se não houver, procura no MusicBrainz pelo nome das pastas. Nunca das tags. Capa errada ou em falta: carrega na capa e corrige o artista ou o álbum, ou escolhe uma imagem. Desligado por defeito.
 - **CDs áudio, como um leitor de CDs.** Mete um disco no leitor e a NuVa toca-o logo. Os nomes do álbum e das faixas vêm do MusicBrainz, pelo índice do disco (um CD não traz nomes). Ejetar com ⌘E. Para abrir a NuVa sempre que entra um CD: Definições do Sistema › CDs e DVDs › Ao inserir um CD de música › Abrir outra aplicação… › NuVa.
 - **Avisa quando há versão nova** (verifica no GitHub uma vez por dia, sem descarregar nada). [Termos e privacidade](TERMS.md) em NuVa › Termos e privacidade.

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6 — ambient mode for OLED screens, spectrum and meters
+
+- **OLED Protection** in ambient mode, on by default (View › Ambient Options): the picture drifts slowly across the screen, the parts that hardly change are dimmer, the clock's colon blinks, the face changes every 20 minutes, and after an hour without touching a key or the mouse only a small light is left, wandering on black. Any key or the mouse brings it back.
+- Two new ambient faces that move with the music: **Spectrum** (the ten equalizer bands, full screen) and **Meters** (left and right levels). Both follow the speakers, AirPlay included. ← → to switch.
+
 ## 1.5 — Phosphor and ambient mode
 
 - New skin: **Phosphor** (Fósforo in Portuguese), after the shareware players of the late nineties. A black display with green text (the spectrum meter too), a blue-grey chassis, silver keys and a blue selected row. View › Skin, ⌥⌘4.

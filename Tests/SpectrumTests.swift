@@ -53,4 +53,13 @@ struct SpectrumTests {
         #expect(shared.levels(at: 11.95) == b)
         #expect(shared.levels(at: 11) == nil)
     }
+
+    @Test func stereoLevelsAreStoredWithTheBands() {
+        let shared = SpectrumShared()
+        let bands: [Float] = Array(repeating: -20, count: SpectrumShared.bands)
+        let stereo = SIMD4<Float>(-18, -24, -6, -9)
+        bands.withUnsafeBufferPointer { shared.write(time: 5, levels: $0, stereo: stereo) }
+        #expect(shared.stereo(at: 5.05) == stereo)
+        #expect(shared.stereo(at: 7) == nil)
+    }
 }

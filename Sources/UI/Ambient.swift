@@ -9,11 +9,17 @@ enum AmbientFace: String, CaseIterable, Sendable {
     case display
     /// The time of day, with the playing track on one line.
     case clock
+    /// The equalizer's 10 bands as tall columns of segments.
+    case spectrum
+    /// Left and right levels, as two ladders of segments.
+    case meters
 
     var name: String {
         switch self {
         case .display: String(localized: "Ecrã")
         case .clock: String(localized: "Relógio")
+        case .spectrum: String(localized: "Espectro")
+        case .meters: String(localized: "Medidores")
         }
     }
 
@@ -32,8 +38,23 @@ final class Ambient {
     static let shared = Ambient()
 
     var face: AmbientFace {
-        didSet { defaults.set(face.rawValue, forKey: "ambientFace") }
+        didSet {
+            defaults.set(face.rawValue, forKey: "ambientFace")
+            faceShownAt = .now
+        }
     }
+
+    /// View ▸ Ambient Options ▸ OLED Protection, on by default: a wide slow drift, dimmer static
+    /// parts, a blinking colon, a new face every 20 minutes, and rest after an hour untouched.
+    var protectsOLED: Bool {
+        didSet { defaults.set(protectsOLED, forKey: "ambientProtectsOLED") }
+    }
+
+    /// The last key or mouse movement: an hour after it, with OLED protection, the screen rests.
+    private(set) var lastInteraction = Date.now
+
+    static let restAfter: TimeInterval = 3600
+    static let changeFaceAfter: TimeInterval = 1200
 
     /// View ▸ Ambient ▸ Dim: the content at 40% for the night.
     var dims: Bool {
@@ -49,11 +70,14 @@ final class Ambient {
     @ObservationIgnored private var window: AmbientWindow?
     @ObservationIgnored private var keyMonitor: Any?
     @ObservationIgnored private var assertion: IOPMAssertionID?
+    @ObservationIgnored private var faceShownAt = Date.now
+    @ObservationIgnored private var timer: Timer?
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         face = AmbientFace(rawValue: defaults.string(forKey: "ambientFace") ?? "") ?? .display
         dims = defaults.bool(forKey: "ambientDims")
+        protectsOLED = defaults.object(forKey: "ambientProtectsOLED") as? Bool ?? true
         updateScreens()
         NotificationCenter.default.addObserver(
             forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main
@@ -106,6 +130,12 @@ final class Ambient {
             return handled ? nil : event
         }
 
+        lastInteraction = .now
+        faceShownAt = .now
+        timer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated { self?.tick() }
+        }
+
         NSApp.activate()
         window.makeKeyAndOrderFront(nil)
         window.toggleFullScreen(nil)
@@ -135,7 +165,25 @@ final class Ambient {
         }
     }
 
+    /// Resting: OLED protection on and an hour without a key or the mouse.
+    func isResting(at date: Date) -> Bool {
+        protectsOLED && date.timeIntervalSince(lastInteraction) > Self.restAfter
+    }
+
+    /// A key or the mouse. Mouse moves arrive many times a second; one a second is enough.
+    func noteInteraction() {
+        if Date.now.timeIntervalSince(lastInteraction) > 1 { lastInteraction = .now }
+    }
+
+    /// With OLED protection, a new face every 20 minutes while nobody is looking at the controls.
+    func tick(at date: Date = .now) {
+        guard protectsOLED, !isResting(at: date), date.timeIntervalSince(faceShownAt) > Self.changeFaceAfter else { return }
+        face = face.moved(by: 1)
+    }
+
     private func finish() {
+        timer?.invalidate()
+        timer = nil
         if let keyMonitor { NSEvent.removeMonitor(keyMonitor) }
         keyMonitor = nil
         keepAwake(false)
@@ -150,6 +198,10 @@ final class Ambient {
     /// Runs before the menus, so it also works with the main window closed (no menu bar).
     private func handle(_ keyCode: UInt16, _ flags: NSEvent.ModifierFlags, player: PlayerController) -> Bool {
         let modifiers = flags.intersection(.deviceIndependentFlagsMask)
+        let wasResting = isResting(at: .now)
+        lastInteraction = .now
+        // Resting, the first key only wakes the screen (Esc and ⌘4 still leave).
+        if wasResting, !(keyCode == 53 && modifiers.isEmpty), !(keyCode == 21 && modifiers == .command) { return true }
         switch (keyCode, modifiers) {
         case (53, []), (21, .command):  // Esc, ⌘4
             close()

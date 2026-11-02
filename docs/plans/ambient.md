@@ -1,6 +1,6 @@
 # Plan: ambient mode
 
-Status: phase 1 done (Display and Clock faces). Phases 2 and 3 not started.
+Status: done in 1.5 (phase 1) and 1.6 (OLED protection, phases 2 and 3).
 
 A full-screen view to leave the music playing with the Mac as part of the room. The whole screen becomes the device's display: the `display` background and the display's tokens, so every skin gets its own ambient look with no extra work.
 
@@ -20,14 +20,20 @@ A full-screen view to leave the music playing with the Mac as part of the room. 
 - `IOPMAssertion` PreventUserIdleDisplaySleep only while ambient is open and music plays.
 - Snapshots: `snapshot-ambiente-ecra-*` and `snapshot-ambiente-relogio-*` at 1280 × 800.
 
-## Phase 2: Meters
+## OLED protection (1.6)
 
-Two LED ladders (L, R) with a dB scale and a peak mark in `led`. Peak and RMS per channel computed in the equalizer's `MTAudioProcessingTap`, published at 30 Hz, drawn with `TimelineView` + `Canvas`.
+1.5 only shifted the content a few points each minute and never rested while music played: hours a night on an OLED TV would wear the same pixels. View ▸ Ambient Options ▸ OLED Protection, on by default:
 
-Check first:
-- **AirPlay latency.** With the WiiM, AirPlay 2 buffers about 2 s, so levels from the tap would run ahead of the sound. Delay them by the route's output latency if AVFoundation reports it reliably; otherwise label the meters "at the source" on AirPlay.
-- The tap has to run on every item, even with the equalizer off (bypass).
+- The content takes 84% of the screen and wanders over the rest, 8% each way, from two sine waves per axis with periods that don't divide each other (53 and 21 minutes across, 71 and 26 down).
+- Parts that hardly change (format, folder, date, position bar) at 55%.
+- The clock's colon blinks each second.
+- A new face every 20 minutes (`Ambient.tick`, every 30 s).
+- After an hour without a key or the mouse, rest: black with only the LED wandering. The first key or mouse move wakes it (Esc and ⌘4 still leave).
 
-## Phase 3: Spectrum
+## Phase 2: Meters (1.6)
 
-28 log bands from a 1024-point vDSP FFT in the same tap, with peak caps in `led`. One colour by rule; a green-yellow-red option could exist for Phosphor only.
+Two ladders of 40 segments, L and R, -48 to 0 dBFS: RMS lit in `led`, the held peak in `display-ink`. The tap's `SpectrumAnalyzer` now also keeps each channel's sum of squares and highest sample between measurements and stores them with the bands (`SpectrumShared.stereo(at:)`), so the meters are in step with the speakers, AirPlay included, like the spectrum. Ballistics from `SpectrumMeter` (two columns, wider range).
+
+## Phase 3: Spectrum (1.6)
+
+The window's 10-band spectrum (1.3) at the scale of the screen, 24 segments per band, band frequencies printed below. Same measurement and ballistics. One colour by rule, as on the display.

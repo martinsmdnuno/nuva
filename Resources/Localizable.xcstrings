@@ -897,22 +897,6 @@
         }
       }
     },
-    "Espectro ⌥⌘V": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Spectrum ⌥⌘V"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Espectro ⌥⌘V"
-          }
-        }
-      }
-    },
     "Escurecer": {
       "localizations": {
         "en": {
@@ -925,6 +909,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Escurecer"
+          }
+        }
+      }
+    },
+    "Espectro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spectrum"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espectro"
+          }
+        }
+      }
+    },
+    "Espectro ⌥⌘V": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spectrum ⌥⌘V"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espectro ⌥⌘V"
           }
         }
       }
@@ -1101,6 +1117,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mais tarde"
+          }
+        }
+      }
+    },
+    "Medidores": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meters"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Medidores"
           }
         }
       }
@@ -1613,6 +1645,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Procurar atualizações…"
+          }
+        }
+      }
+    },
+    "Proteção OLED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OLED Protection"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Proteção OLED"
           }
         }
       }

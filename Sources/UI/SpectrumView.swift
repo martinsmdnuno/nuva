@@ -80,24 +80,33 @@ struct SpectrumView: View {
 /// rate; the peak segment holds for a moment, then falls too. Lives across frames, not observed.
 final class SpectrumMeter {
     /// dBFS shown as an empty and as a full column. Music sits between -50 and -10 in most bands.
-    static let floor: Float = -54
-    static let ceiling: Float = -6
+    let floor: Float
+    let ceiling: Float
     /// Full scale per second.
     static let fall: Float = 1.6
     static let peakFall: Float = 0.6
     static let peakHold: TimeInterval = 0.8
 
-    private(set) var levels = Array(repeating: Float(0), count: SpectrumShared.bands)
-    private(set) var peaks = Array(repeating: Float(0), count: SpectrumShared.bands)
-    private var peakTimes = Array(repeating: Date.distantPast, count: SpectrumShared.bands)
+    private(set) var levels: [Float]
+    private(set) var peaks: [Float]
+    private var peakTimes: [Date]
     private var last: Date?
+
+    /// One column per band by default; the ambient L/R meters use two, over a wider range.
+    init(count: Int = SpectrumShared.bands, floor: Float = -54, ceiling: Float = -6) {
+        self.floor = floor
+        self.ceiling = ceiling
+        levels = Array(repeating: 0, count: count)
+        peaks = Array(repeating: 0, count: count)
+        peakTimes = Array(repeating: .distantPast, count: count)
+    }
 
     /// `measured` in dBFS per band, or nil when nothing is playing (the columns fall).
     func update(at date: Date, measured: [Float]?) {
         let dt = Float(min(max(date.timeIntervalSince(last ?? date), 0), 0.1))
         last = date
         for b in levels.indices {
-            let target = measured.map { min(max(($0[b] - Self.floor) / (Self.ceiling - Self.floor), 0), 1) } ?? 0
+            let target = measured.map { min(max(($0[b] - floor) / (ceiling - floor), 0), 1) } ?? 0
             levels[b] = max(target, levels[b] - Self.fall * dt)
             if levels[b] >= peaks[b] {
                 peaks[b] = levels[b]

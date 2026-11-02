@@ -46,6 +46,7 @@ struct AmbientMenuItems: View {
         }
         Divider()
         Toggle("Escurecer", isOn: Binding(get: { ambient.dims }, set: { ambient.dims = $0 }))
+        Toggle("Proteção OLED", isOn: Binding(get: { ambient.protectsOLED }, set: { ambient.protectsOLED = $0 }))
         if ambient.screenNames.count > 1 {
             Divider()
             ForEach(Array(ambient.screenNames.enumerated()), id: \.offset) { index, name in

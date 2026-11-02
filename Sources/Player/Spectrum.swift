@@ -7,12 +7,18 @@ import os
 /// of the speakers (seconds ahead over AirPlay), and the display asks for the moment being played.
 final class SpectrumShared: Sendable {
     nonisolated static let bands = Equalizer.frequencies.count
+    /// The ambient Spectrum face's finer bands: 28, evenly spaced in log frequency from 20 Hz to 20 kHz.
+    nonisolated static let fineBands = 28
+    nonisolated static let fineCentres: [Double] = (0..<fineBands).map { i in
+        20 * pow(1000, (Double(i) + 0.5) / Double(fineBands))
+    }
     /// About 4 s of measurements at 60 a second, more than AirPlay's buffer.
     nonisolated static let capacity = 256
 
     private struct State {
         var times: [Double]
         var levels: [Float]
+        var fine: [Float]
         /// Per measurement: RMS left, RMS right, peak left, peak right, in dBFS.
         var stereo: [SIMD4<Float>]
         var next = 0
@@ -26,6 +32,7 @@ final class SpectrumShared: Sendable {
         state = OSAllocatedUnfairLock(initialState: State(
             times: Array(repeating: -1, count: Self.capacity),
             levels: Array(repeating: 0, count: Self.capacity * Self.bands),
+            fine: Array(repeating: -120, count: Self.capacity * Self.fineBands),
             stereo: Array(repeating: SIMD4(repeating: -120), count: Self.capacity)))
     }
 
@@ -37,13 +44,17 @@ final class SpectrumShared: Sendable {
 
     /// Audio thread: band levels in dBFS measured around `time` (seconds in the track).
     /// `stereo`: RMS left, RMS right, peak left, peak right, in dBFS (a mono source repeats its channel).
-    func write(time: Double, levels: UnsafeBufferPointer<Float>, stereo: SIMD4<Float> = SIMD4(repeating: -120)) {
+    func write(
+        time: Double, levels: UnsafeBufferPointer<Float>, stereo: SIMD4<Float> = SIMD4(repeating: -120),
+        fine: UnsafeBufferPointer<Float>? = nil
+    ) {
         // Unchecked: the pointer is only read inside the lock, on the calling thread.
         state.withLockUnchecked { s in
             let i = s.next
             s.times[i] = time
             for b in 0..<Self.bands { s.levels[i * Self.bands + b] = levels[b] }
             s.stereo[i] = stereo
+            for b in 0..<Self.fineBands { s.fine[i * Self.fineBands + b] = fine?[b] ?? -120 }
             s.next = (i + 1) % Self.capacity
         }
     }
@@ -52,6 +63,15 @@ final class SpectrumShared: Sendable {
     func levels(at time: Double, tolerance: Double = 0.15) -> [Float]? {
         state.withLock { s in
             Self.nearest(in: s, to: time, tolerance: tolerance).map { Array(s.levels[$0 * Self.bands ..< ($0 + 1) * Self.bands]) }
+        }
+    }
+
+    /// The 28 fine bands in dBFS measured nearest to `time`.
+    func fineLevels(at time: Double, tolerance: Double = 0.15) -> [Float]? {
+        state.withLock { s in
+            Self.nearest(in: s, to: time, tolerance: tolerance).map {
+                Array(s.fine[$0 * Self.fineBands ..< ($0 + 1) * Self.fineBands])
+            }
         }
     }
 
@@ -81,6 +101,7 @@ final class SpectrumAnalyzer {
     private let fft: vDSP.FFT<DSPSplitComplex>
     private let window: [Float]
     private let bandBins: [Range<Int>]
+    private let fineBins: [Range<Int>]
     /// Power of a full-scale sine summed over its bins, with this window and vDSP's scaling.
     private let fullScale: Float
 
@@ -92,6 +113,7 @@ final class SpectrumAnalyzer {
     private var imag: [Float]
     private var power: [Float]
     private var levels: [Float]
+    private var fine: [Float]
     /// Left and right since the last measurement: sum of squares and highest absolute sample.
     private var squares = SIMD2<Float>(repeating: 0)
     private var highs = SIMD2<Float>(repeating: 0)
@@ -112,6 +134,15 @@ final class SpectrumAnalyzer {
             let hi = min(size / 2, max(lo + 1, Int((f * 2.squareRoot() / binWidth).rounded())))
             return lo ..< max(lo, hi)
         }
+        // Fine bands: edges halfway (in log frequency) between centres. The lowest share bins,
+        // since a bin is 23 Hz wide at 48 kHz; at least one bin each.
+        let ratio = pow(1000, 0.5 / Double(SpectrumShared.fineBands))
+        fineBins = SpectrumShared.fineCentres.map { f in
+            let lo = max(1, Int((f / ratio / binWidth).rounded(.down)))
+            let hi = min(size / 2, max(lo + 1, Int((f * ratio / binWidth).rounded(.up))))
+            return lo ..< max(lo, hi)
+        }
+        fine = Array(repeating: -120, count: SpectrumShared.fineBands)
         fullScale = 0.375 * Float(size) * Float(size)
         history = Array(repeating: 0, count: size)
         frame = Array(repeating: 0, count: size)
@@ -149,7 +180,11 @@ final class SpectrumAnalyzer {
         highs = .zero
         counted = 0
         // The bands are centred half a window back; the levels cover the last 1/60 s.
-        levels.withUnsafeBufferPointer { shared.write(time: end - Double(size / 2) / sampleRate, levels: $0, stereo: stereo) }
+        levels.withUnsafeBufferPointer { bands in
+            fine.withUnsafeBufferPointer {
+                shared.write(time: end - Double(size / 2) / sampleRate, levels: bands, stereo: stereo, fine: $0)
+            }
+        }
     }
 
     private static func decibels(_ amplitude: Float) -> Float {
@@ -186,6 +221,10 @@ final class SpectrumAnalyzer {
         for (b, bins) in bandBins.enumerated() {
             let sum = bins.isEmpty ? 0 : vDSP.sum(power[bins])
             levels[b] = 10 * log10(max(sum / fullScale, 1e-12))
+        }
+        for (b, bins) in fineBins.enumerated() {
+            let sum = bins.isEmpty ? 0 : vDSP.sum(power[bins])
+            fine[b] = 10 * log10(max(sum / fullScale, 1e-12))
         }
     }
 }

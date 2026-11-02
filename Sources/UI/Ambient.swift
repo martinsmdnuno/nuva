@@ -13,6 +13,10 @@ enum AmbientFace: String, CaseIterable, Sendable {
     case spectrum
     /// Left and right levels, as two ladders of segments.
     case meters
+    /// Left and right as two backlit VU meters with needles, after a hi-fi amplifier's.
+    case needles
+    /// Two valves in their cage, the filaments glowing with each channel's level.
+    case valves
 
     var name: String {
         switch self {
@@ -20,6 +24,8 @@ enum AmbientFace: String, CaseIterable, Sendable {
         case .clock: String(localized: "Relógio")
         case .spectrum: String(localized: "Espectro")
         case .meters: String(localized: "Medidores")
+        case .needles: String(localized: "Ponteiros")
+        case .valves: String(localized: "Válvulas")
         }
     }
 

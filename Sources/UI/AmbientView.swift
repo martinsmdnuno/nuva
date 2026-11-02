@@ -34,6 +34,8 @@ struct AmbientView: View {
                             case .clock: AmbientClockFace(unit: unit, now: now)
                             case .spectrum: AmbientSpectrumFace(unit: unit)
                             case .meters: AmbientMetersFace(unit: unit)
+                            case .needles: AmbientNeedlesFace(unit: unit)
+                            case .valves: AmbientValvesFace(unit: unit)
                             }
                         }
                         .environment(\.ambientStaticOpacity, protects ? 0.55 : 1)
@@ -364,59 +366,60 @@ private struct AmbientMeterTimeline<Content: View>: View {
     }
 }
 
-/// The equalizer's 10 bands, as on the window's display but filling the screen: lit segments in
-/// `led`, the held peak in `display-ink`, unlit in `display-track`. Band frequencies printed below.
+/// 28 bands from 20 Hz to 20 kHz as solid bars in `display-ink`, each with its held peak as a thin
+/// cap in `led`, the position bar below and the track at the foot. Finer than the window's 10-band
+/// meter, which follows the equalizer's bands.
 private struct AmbientSpectrumFace: View {
     let unit: CGFloat
-    @State private var meter = SpectrumMeter()
+    /// Narrower bands carry less energy than the equalizer's octaves, so the range sits lower.
+    @State private var meter = SpectrumMeter(count: SpectrumShared.fineBands, floor: -62, ceiling: -12)
     @Environment(AppModel.self) private var model
     @Environment(\.ambientStaticOpacity) private var staticOpacity
 
-    static let segments = 24
-    static let still: [Float] = [0.55, 0.8, 0.7, 0.6, 0.65, 0.5, 0.45, 0.35, 0.25, 0.1]
+    /// For snapshots: a plausible moment, falling from the bass to the treble.
+    static let still: [Float] = (0..<SpectrumShared.fineBands).map { i in
+        let x = Float(i) / Float(SpectrumShared.fineBands - 1)
+        return max(0.08, 0.82 - 0.5 * x + 0.12 * sin(Float(i) * 1.7))
+    }
 
     var body: some View {
         let player = model.player
-        VStack(spacing: unit * 1.2) {
+        VStack(spacing: 0) {
             HStack(spacing: unit * 1.4) {
                 LED(isOn: player.isPlaying, size: unit)
                 Text(player.formatLabel)
                 Spacer()
-                Text(verbatim: "dBFS")
+                Text(verbatim: "20 Hz – 20 kHz")
             }
             .font(.dsAmbientMeta(unit * 1.7))
             .foregroundStyle(Color.displayMuted)
+            .lineLimit(1)
             .opacity(staticOpacity)
+            .padding(.bottom, unit * 3)
 
-            AmbientMeterTimeline(meter: meter, measure: { $0.equalizer.spectrum.levels(at: $1) }, still: Self.still) { levels, peaks in
+            AmbientMeterTimeline(meter: meter, measure: { $0.equalizer.spectrum.fineLevels(at: $1) }, still: Self.still) { levels, peaks in
                 Canvas { gc, size in
                     let columns = levels.count
-                    let gap = unit * 0.8
+                    let gap = unit * 0.75
                     let width = (size.width - gap * CGFloat(columns - 1)) / CGFloat(columns)
-                    let step = size.height / CGFloat(Self.segments)
+                    let cap = max(2, unit * 0.35)
                     for c in 0..<columns {
-                        let lit = Int((levels[c] * Float(Self.segments)).rounded())
-                        let peak = Int((peaks[c] * Float(Self.segments)).rounded()) - 1
-                        for s in 0..<Self.segments {
-                            let rect = CGRect(x: CGFloat(c) * (width + gap), y: size.height - CGFloat(s + 1) * step,
-                                              width: width, height: step * 0.72)
-                            let color: Color = s < lit ? .led : (s == peak && peak >= lit ? .displayInk : .displayTrack)
-                            gc.fill(Path(rect), with: .color(color))
+                        let x = CGFloat(c) * (width + gap)
+                        let bar = CGFloat(levels[c]) * (size.height - cap * 2)
+                        if bar > 0 {
+                            gc.fill(Path(CGRect(x: x, y: size.height - bar, width: width, height: bar)), with: .color(.displayInk))
+                        }
+                        let peak = CGFloat(peaks[c]) * (size.height - cap * 2)
+                        if peaks[c] > 0 {
+                            gc.fill(Path(CGRect(x: x, y: size.height - peak - cap * 1.6, width: width, height: cap)), with: .color(.led))
                         }
                     }
                 }
             }
 
-            HStack(spacing: unit * 0.8) {
-                ForEach(Equalizer.frequencies, id: \.self) { f in
-                    Text(verbatim: f >= 1000 ? "\(Int(f / 1000))k" : "\(Int(f))")
-                        .frame(maxWidth: .infinity)
-                }
-            }
-            .font(.dsAmbientMeta(unit * 1.4))
-            .foregroundStyle(Color.displayMuted)
-            .opacity(staticOpacity)
-            .padding(.bottom, unit * 1.6)
+            AmbientPosition(unit: unit)
+                .padding(.top, unit * 1.6)
+                .padding(.bottom, unit * 3)
 
             AmbientTrackFoot(unit: unit)
         }
@@ -506,4 +509,313 @@ private struct AmbientMetersFace: View {
         .foregroundStyle(Color.displayMuted)
         .opacity(staticOpacity)
     }
+}
+
+/// Slow ballistics for needles and filaments: they rise and fall over a fraction of a second,
+/// like a VU meter's (about 300 ms) or a heater's, instead of jumping like the LED segments.
+final class SlowMeter {
+    let floor: Float
+    let ceiling: Float
+    let rise: Float
+    let fall: Float
+    private(set) var levels: [Float]
+    /// The highest peak of each channel, in dBFS, over the last half second (for the clip light).
+    private(set) var peaks: [Float]
+    private var peakTimes: [Date]
+    private var last: Date?
+
+    init(count: Int = 2, floor: Float, ceiling: Float, rise: Float, fall: Float) {
+        self.floor = floor
+        self.ceiling = ceiling
+        self.rise = rise
+        self.fall = fall
+        levels = Array(repeating: 0, count: count)
+        peaks = Array(repeating: -120, count: count)
+        peakTimes = Array(repeating: .distantPast, count: count)
+    }
+
+    /// `measured`: per channel, a level in dBFS and a peak in dBFS; nil when nothing plays.
+    func update(at date: Date, measured: [(level: Float, peak: Float)]?) {
+        let dt = Float(min(max(date.timeIntervalSince(last ?? date), 0), 0.1))
+        last = date
+        for c in levels.indices {
+            let target = measured.map { min(max(($0[c].level - floor) / (ceiling - floor), 0), 1) } ?? 0
+            let rate = target > levels[c] ? rise : fall
+            levels[c] += (target - levels[c]) * min(1, rate * dt)
+            if let peak = measured?[c].peak, peak >= peaks[c] {
+                peaks[c] = peak
+                peakTimes[c] = date
+            } else if date.timeIntervalSince(peakTimes[c]) > 0.5 {
+                peaks[c] = measured?[c].peak ?? -120
+            }
+        }
+    }
+}
+
+/// Runs a SlowMeter on the tap's left and right levels at 30 frames a second while music plays,
+/// and for 2 s after a pause so needles and filaments settle. Snapshots get a still moment.
+private struct AmbientStereoTimeline<Content: View>: View {
+    let meter: SlowMeter
+    let still: [Float]
+    @ViewBuilder let content: (_ levels: [Float], _ peaks: [Float]) -> Content
+    @Environment(AppModel.self) private var model
+    @Environment(\.isSnapshot) private var isSnapshot
+    @State private var settling = false
+
+    var body: some View {
+        let player = model.player
+        let spectrum = player.equalizer.spectrum
+        TimelineView(.animation(minimumInterval: 1 / 30, paused: isSnapshot || !(player.isPlaying || settling))) { context in
+            if isSnapshot {
+                content(player.current == nil ? still.map { _ in 0 } : still, still.map { _ in -12 })
+            } else {
+                let measured = player.isPlaying
+                    ? spectrum.stereo(at: player.avPlayer.currentTime().seconds).map { [($0[0], $0[2]), ($0[1], $0[3])] }
+                    : nil
+                let _ = meter.update(at: context.date, measured: measured)
+                content(meter.levels, meter.peaks)
+            }
+        }
+        .onAppear { if !isSnapshot { spectrum.watch(true) } }
+        .onDisappear { if !isSnapshot { spectrum.watch(false) } }
+        .onChange(of: player.isPlaying) { _, playing in
+            guard !playing else { return }
+            settling = true
+            Task {
+                try? await Task.sleep(for: .seconds(2))
+                settling = false
+            }
+        }
+    }
+}
+
+/// Two backlit VU meters, as on a hi-fi amplifier's front: a lit panel, a printed arc from -20 to +3 VU
+/// with the +0 to +3 zone in a heavier band, a needle on a pivot below the scale, and a peak light that
+/// shows when a channel comes within 1 dB of full scale. 0 VU is -14 dBFS RMS.
+/// The lamp is the skin's ink warmed by its accent: amber in Rams, pale green in Phosphor.
+private struct AmbientNeedlesFace: View {
+    let unit: CGFloat
+    @State private var meter = SlowMeter(floor: -34, ceiling: -11, rise: 9, fall: 5)
+    @Environment(AppModel.self) private var model
+    @Environment(\.ambientStaticOpacity) private var staticOpacity
+
+    /// VU marks printed on the arc.
+    static let marks: [Float] = [-20, -10, -7, -5, -3, -1, 0, 1, 2, 3]
+    static let labelled: Set<Float> = [-20, -10, -7, -5, -3, 0, 3]
+
+    var body: some View {
+        let player = model.player
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: unit * 1.4) {
+                LED(isOn: player.isPlaying, size: unit)
+                Text(player.formatLabel)
+                Spacer()
+                Text(model.output.label)
+            }
+            .font(.dsAmbientMeta(unit * 1.7))
+            .foregroundStyle(Color.displayMuted)
+            .lineLimit(1)
+            .opacity(staticOpacity)
+
+            Spacer(minLength: unit * 2)
+
+            AmbientStereoTimeline(meter: meter, still: [0.62, 0.55]) { levels, peaks in
+                HStack(spacing: unit * 4) {
+                    ForEach(0..<2, id: \.self) { channel in
+                        panel(level: levels[channel], clipping: peaks[channel] > -1, channel: channel)
+                            .aspectRatio(1.9, contentMode: .fit)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            }
+
+            Spacer(minLength: unit * 2)
+
+            AmbientTrackFoot(unit: unit)
+        }
+    }
+
+    /// Position on the arc, 0 to 1, of a VU value: a VU meter moves with voltage, not decibels.
+    static func position(vu: Float) -> CGFloat {
+        let v = { (x: Float) in pow(10, x / 20) }
+        return CGFloat((v(vu) - v(-20)) / (v(3) - v(-20)))
+    }
+
+    private func panel(level: Float, clipping: Bool, channel: Int) -> some View {
+        // The meter's 0…1 covers -34…-11 dBFS, that is -20…+3 VU.
+        let vu = -20 + level * 23
+        return Canvas { gc, size in
+            let w = size.width, h = size.height
+            let shape = Path(roundedRect: CGRect(origin: .zero, size: size), cornerRadius: unit * 0.4)
+            // The lamp: the display's ink with the accent's warmth, dimmer with OLED protection.
+            // The skin's paper-white ink under the accent: warm amber in Rams, pale green in Phosphor.
+            gc.fill(shape, with: .color(.ink))
+            gc.fill(shape, with: .color(Color.led.opacity(0.5)))
+            // Lit from behind: brighter in the middle, darker towards the corners.
+            gc.fill(shape, with: .radialGradient(
+                Gradient(colors: [Color.display.opacity(0), Color.display.opacity(0.45)]),
+                center: CGPoint(x: w / 2, y: h * 0.55), startRadius: h * 0.2, endRadius: w * 0.62))
+            // OLED protection: a dimmer lamp (staticOpacity 0.55 leaves it at about 75%).
+            gc.fill(shape, with: .color(Color.display.opacity((1 - staticOpacity) * 0.55)))
+
+            let ink = GraphicsContext.Shading.color(Color.display.opacity(0.85))
+            let pivot = CGPoint(x: w / 2, y: h * 1.18)
+            let radius = h * 0.95
+            let sweep = 0.78  // radians each side of vertical
+            func point(_ p: CGFloat, _ r: CGFloat) -> CGPoint {
+                let a = -Double.pi / 2 - sweep + 2 * sweep * Double(p)
+                return CGPoint(x: pivot.x + CGFloat(cos(a)) * r, y: pivot.y + CGFloat(sin(a)) * r)
+            }
+
+            // The arc, with a heavier band over 0 to +3.
+            var arc = Path()
+            arc.addArc(center: pivot, radius: radius, startAngle: .radians(-.pi / 2 - sweep),
+                       endAngle: .radians(-.pi / 2 + sweep), clockwise: false)
+            gc.stroke(arc, with: ink, lineWidth: max(1, unit * 0.12))
+            var over = Path()
+            let zero = Self.position(vu: 0)
+            over.addArc(center: pivot, radius: radius + unit * 0.35,
+                        startAngle: .radians(-.pi / 2 - sweep + 2 * sweep * Double(zero)),
+                        endAngle: .radians(-.pi / 2 + sweep), clockwise: false)
+            gc.stroke(over, with: ink, lineWidth: unit * 0.6)
+
+            for mark in Self.marks {
+                let p = Self.position(vu: mark)
+                var tick = Path()
+                tick.move(to: point(p, radius))
+                tick.addLine(to: point(p, radius + unit * (Self.labelled.contains(mark) ? 1.1 : 0.7)))
+                gc.stroke(tick, with: ink, lineWidth: max(1, unit * 0.14))
+                if Self.labelled.contains(mark) {
+                    let text = Text(verbatim: mark > 0 ? "+\(Int(mark))" : "\(Int(mark))")
+                        .font(.dsAmbientMeta(unit * 1.25))
+                        .foregroundStyle(Color.display.opacity(0.85))
+                    gc.draw(text, at: point(p, radius + unit * 2.2))
+                }
+            }
+            gc.draw(Text(verbatim: "VU").font(.dsAmbientMeta(unit * 1.6)).foregroundStyle(Color.display.opacity(0.85)),
+                    at: CGPoint(x: w / 2, y: h * 0.62))
+            gc.draw(Text(verbatim: channel == 0 ? "L" : "R").font(.dsAmbientMeta(unit * 1.3)).foregroundStyle(Color.display.opacity(0.6)),
+                    at: CGPoint(x: unit * 1.6, y: h - unit * 1.4))
+
+            // The needle, from below the panel's edge (its pivot is hidden, as on the real thing).
+            var needle = Path()
+            needle.move(to: point(Self.position(vu: vu), radius * 0.19))
+            needle.addLine(to: point(Self.position(vu: vu), radius + unit * 1.2))
+            gc.stroke(needle, with: .color(Color.display), lineWidth: max(1.5, unit * 0.18))
+
+            // Peak light, top right: on within 1 dB of full scale.
+            let light = CGRect(x: w - unit * 2, y: unit * 1, width: unit * 0.9, height: unit * 0.9)
+            gc.fill(Path(ellipseIn: light), with: .color(clipping ? .led : Color.display.opacity(0.35)))
+        }
+    }
+}
+
+/// Two valves in a cage, after a valve phono stage: a glass envelope with its dome, the plate and the
+/// filament inside, three rings and two posts around it. Each filament glows with its channel's level
+/// (in `led`), and keeps a faint warm glow while paused, as a valve stays heated.
+private struct AmbientValvesFace: View {
+    let unit: CGFloat
+    @State private var meter = SlowMeter(floor: -40, ceiling: -8, rise: 4, fall: 1.5)
+    @Environment(AppModel.self) private var model
+    @Environment(\.ambientStaticOpacity) private var staticOpacity
+
+    var body: some View {
+        let player = model.player
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: unit * 1.4) {
+                LED(isOn: player.isPlaying, size: unit)
+                Text(player.formatLabel)
+                Spacer()
+                Text(model.output.label)
+            }
+            .font(.dsAmbientMeta(unit * 1.7))
+            .foregroundStyle(Color.displayMuted)
+            .lineLimit(1)
+            .opacity(staticOpacity)
+
+            Spacer(minLength: unit * 2)
+
+            AmbientStereoTimeline(meter: meter, still: [0.7, 0.62]) { levels, _ in
+                HStack(spacing: unit * 10) {
+                    ForEach(0..<2, id: \.self) { channel in
+                        valve(glow: levels[channel], heated: player.current != nil, channel: channel)
+                            .aspectRatio(0.62, contentMode: .fit)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            }
+
+            Spacer(minLength: unit * 2)
+
+            AmbientTrackFoot(unit: unit)
+        }
+    }
+
+    private func valve(glow: Float, heated: Bool, channel: Int) -> some View {
+        Canvas { gc, size in
+            let w = size.width, h = size.height
+            let line = max(1, unit * 0.14)
+            let metal = GraphicsContext.Shading.color(Color.displayTrack)
+            let glass = GraphicsContext.Shading.color(Color.displayMuted.opacity(0.8))
+            let level = CGFloat(heated ? 0.12 + 0.88 * glow : 0)
+
+            // Glass envelope: straight sides and a dome, on a base.
+            let left = w * 0.24, right = w * 0.76, top = h * 0.16, shoulder = h * 0.3, bottom = h * 0.86
+            var envelope = Path()
+            envelope.move(to: CGPoint(x: left, y: bottom))
+            envelope.addLine(to: CGPoint(x: left, y: shoulder))
+            envelope.addQuadCurve(to: CGPoint(x: right, y: shoulder), control: CGPoint(x: w / 2, y: top - h * 0.1))
+            envelope.addLine(to: CGPoint(x: right, y: bottom))
+
+            // The glow lights the inside of the glass only, strongest around the filament.
+            if level > 0 {
+                var inside = envelope
+                inside.closeSubpath()
+                let centre = CGPoint(x: w / 2, y: h * 0.57)
+                gc.drawLayer { layer in
+                    layer.clip(to: inside)
+                    layer.fill(inside, with: .radialGradient(
+                        Gradient(colors: [Color.led.opacity(Double(0.9 * level)), Color.led.opacity(Double(0.15 * level))]),
+                        center: centre, startRadius: 0, endRadius: h * (0.12 + 0.3 * level)))
+                }
+            }
+            gc.stroke(envelope, with: glass, lineWidth: line)
+            // The getter's silvering in the dome.
+            var getter = Path()
+            getter.addEllipse(in: CGRect(x: w * 0.38, y: h * 0.2, width: w * 0.24, height: h * 0.07))
+            gc.fill(getter, with: .color(Color.displayTrack))
+
+            // Plate and filament.
+            // The plate is opaque metal: the filament shows through its open middle.
+            let plate = CGRect(x: w * 0.36, y: h * 0.42, width: w * 0.28, height: h * 0.3)
+            gc.stroke(Path(roundedRect: plate, cornerRadius: unit * 0.3), with: metal, lineWidth: w * 0.035)
+            var filament = Path()
+            filament.move(to: CGPoint(x: w / 2, y: h * 0.44))
+            filament.addLine(to: CGPoint(x: w / 2, y: h * 0.7))
+            gc.stroke(filament, with: .color(level > 0 ? Color.led.opacity(Double(0.4 + 0.6 * level)) : Color.displayTrack),
+                      lineWidth: line * 1.4)
+
+            // Base and pins.
+            gc.fill(Path(roundedRect: CGRect(x: w * 0.2, y: bottom, width: w * 0.6, height: h * 0.08), cornerRadius: unit * 0.2),
+                    with: metal)
+
+            // The cage: two posts and three rings, in front of the glass.
+            for x in [w * 0.13, w * 0.87] {
+                gc.fill(Path(roundedRect: CGRect(x: x - w * 0.025, y: h * 0.08, width: w * 0.05, height: h * 0.8),
+                             cornerRadius: unit * 0.3), with: metal)
+            }
+            for y in [h * 0.09, h * 0.36, h * 0.66] {
+                gc.fill(Path(roundedRect: CGRect(x: w * 0.08, y: y, width: w * 0.84, height: h * 0.028),
+                             cornerRadius: unit * 0.3), with: metal)
+            }
+
+            gc.draw(Text(verbatim: channel == 0 ? "L" : "R").font(.dsAmbientMeta(unit * 1.5)).foregroundStyle(Color.displayMuted),
+                    at: CGPoint(x: w / 2, y: h * 0.98))
+        }
+    }
+}
+
+/// The VU scale's shape, for the tests (the face itself is private).
+enum AmbientNeedlesFaceTestHook {
+    static func position(_ vu: Float) -> CGFloat { AmbientNeedlesFace.position(vu: vu) }
 }

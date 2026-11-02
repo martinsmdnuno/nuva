@@ -1569,6 +1569,22 @@
         }
       }
     },
+    "Ponteiros": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Needles"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ponteiros"
+          }
+        }
+      }
+    },
     "Posição": {
       "localizations": {
         "en": {
@@ -2237,6 +2253,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Voz"
+          }
+        }
+      }
+    },
+    "Válvulas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valves"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Válvulas"
           }
         }
       }

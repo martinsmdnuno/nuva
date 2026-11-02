@@ -42,10 +42,12 @@ enum DebugSnapshot {
             ("ambiente-relogio", AnyView(AmbientView(face: .clock).frame(width: 1280, height: 800)), model),
             ("ambiente-espectro", AnyView(AmbientView(face: .spectrum).frame(width: 1280, height: 800)), model),
             ("ambiente-medidores", AnyView(AmbientView(face: .meters).frame(width: 1280, height: 800)), model),
+            ("ambiente-ponteiros", AnyView(AmbientView(face: .needles).frame(width: 1280, height: 800)), model),
+            ("ambiente-valvulas", AnyView(AmbientView(face: .valves).frame(width: 1280, height: 800)), model),
         ]
         // Every view in Rams; the main ones again with SF Pro + SF Mono ("-sf") and in each
         // always-dark skin (Graphite, Phosphor: one file per view).
-        let main: Set<String> = ["player", "navegador", "largo", "compacto", "barra", "equalizador", "capa-errada", "ambiente-ecra", "ambiente-relogio", "ambiente-espectro", "ambiente-medidores"]
+        let main: Set<String> = ["player", "navegador", "largo", "compacto", "barra", "equalizador", "capa-errada", "ambiente-ecra", "ambiente-relogio", "ambiente-espectro", "ambiente-medidores", "ambiente-ponteiros", "ambiente-valvulas"]
         let bothThemes = [(ColorScheme.dark, "chumbo"), (.light, "aluminio")]
         let runs: [(Skin, FontSet, String, Set<String>?, [(ColorScheme, String)])] = [
             (.rams, .inter, "", nil, bothThemes),

@@ -7,8 +7,9 @@ struct AmbientTests {
     @Test func facesCycleBothWays() {
         #expect(AmbientFace.display.moved(by: 1) == .clock)
         #expect(AmbientFace.clock.moved(by: 1) == .spectrum)
-        #expect(AmbientFace.meters.moved(by: 1) == .display)
-        #expect(AmbientFace.display.moved(by: -1) == .meters)
+        #expect(AmbientFace.meters.moved(by: 1) == .needles)
+        #expect(AmbientFace.valves.moved(by: 1) == .display)
+        #expect(AmbientFace.display.moved(by: -1) == .valves)
     }
 
     @Test func startsOnTheDisplayFace() {
@@ -36,6 +37,25 @@ struct AmbientTests {
         #expect(!ambient.isResting(at: .now.addingTimeInterval(Ambient.restAfter + 1)))
         ambient.tick(at: .now.addingTimeInterval(Ambient.changeFaceAfter * 3))
         #expect(ambient.face == .clock)
+    }
+
+    @Test func vuScaleFollowsVoltage() {
+        #expect(AmbientNeedlesFaceTestHook.position(-20) == 0)
+        #expect(abs(AmbientNeedlesFaceTestHook.position(3) - 1) < 0.0001)
+        // 0 VU sits at about 70% of the arc, as on a real meter, not at 87% (23 dB linear).
+        let zero = AmbientNeedlesFaceTestHook.position(0)
+        #expect(zero > 0.65 && zero < 0.75)
+    }
+
+    @Test func slowMeterRisesGradually() {
+        let meter = SlowMeter(floor: -40, ceiling: 0, rise: 9, fall: 5)
+        let start = Date()
+        meter.update(at: start, measured: [(0, 0), (0, 0)])
+        meter.update(at: start.addingTimeInterval(1 / 30), measured: [(0, 0), (0, 0)])
+        #expect(meter.levels[0] > 0.2 && meter.levels[0] < 0.4)
+        for i in 2...60 { meter.update(at: start.addingTimeInterval(Double(i) / 30), measured: [(0, 0), (0, 0)]) }
+        #expect(meter.levels[0] > 0.99)
+        #expect(meter.peaks[0] == 0)
     }
 
     @Test func oledDriftStaysWithinEightPercent() {

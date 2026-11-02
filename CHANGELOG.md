@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Two new ambient faces after classic hi-fi: **Needles**, two backlit VU meters with needles and a peak light (amber in Rams, pale green in Phosphor), and **Valves**, two valves in their cage whose filaments glow with each channel's level.
+- The **Spectrum** face now has 28 bands from 20 Hz to 20 kHz, as solid bars with a peak line over each, and the position bar below.
+
 ## 1.6 — ambient mode for OLED screens, spectrum and meters
 
 - **OLED Protection** in ambient mode, on by default (View › Ambient Options): the picture drifts slowly across the screen, the parts that hardly change are dimmer, the clock's colon blinks, the face changes every 20 minutes, and after an hour without touching a key or the mouse only a small light is left, wandering on black. Any key or the mouse brings it back.

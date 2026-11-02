@@ -68,7 +68,7 @@ struct ControlBar: View {
     }
 
     /// A tooltip without its shortcut: "Anterior ⌘←" → "Anterior".
-    static func spoken(_ help: String) -> String {
+    nonisolated static func spoken(_ help: String) -> String {
         let symbols = CharacterSet(charactersIn: "⌘⌥⇧⌃")
         return help.split(separator: " ")
             .filter { $0.unicodeScalars.allSatisfy { !symbols.contains($0) } }

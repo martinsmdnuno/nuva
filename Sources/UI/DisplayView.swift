@@ -20,9 +20,9 @@ struct DisplayView: View {
         VStack(alignment: .leading, spacing: Space.s1) {
             HStack(spacing: Space.s2) {
                 LED(isOn: player.isPlaying, size: 6)
-                Text(player.formatLabel)
+                Text(player.isLoading ? String(localized: "A carregar…") : player.formatLabel)
                     .contentTransition(.opacity)
-                    .motion(Motion.state, value: player.formatLabel)
+                    .motion(Motion.state, value: player.isLoading ? "" : player.formatLabel)
                 Spacer(minLength: Space.s2)
                 Text(model.currentSourceLabel)
             }
@@ -51,16 +51,30 @@ struct DisplayView: View {
                         .motion(Motion.state, value: entry?.id)
 
                     HStack(spacing: Space.s2) {
-                        Text(entry?.folderName ?? (model.sources.sources.isEmpty
-                            ? String(localized: "Adicionar uma pasta ou um servidor Jellyfin")
-                            : String(localized: "Escolher uma pasta para tocar")))
-                            .font(.dsCaption)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                            .help(entry?.parentPath ?? "")
-                            .layoutPriority(1)
-                            .contentTransition(.opacity)
-                            .motion(Motion.state, value: entry?.parentPath)
+                        // A failed track takes the folder's line, in danger, until something plays.
+                        if let error = player.errorMessage {
+                            Text(error)
+                                .font(.dsCaption)
+                                .foregroundStyle(Color.danger)
+                                // The display is dark in both themes: the dark theme's red reads on it.
+                                .environment(\.colorScheme, .dark)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .help(player.errorDetail ?? error)
+                                .layoutPriority(1)
+                                .transition(.opacity)
+                        } else {
+                            Text(entry?.folderName ?? (model.sources.sources.isEmpty
+                                ? String(localized: "Adicionar uma pasta ou um servidor Jellyfin")
+                                : String(localized: "Escolher uma pasta para tocar")))
+                                .font(.dsCaption)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .help(entry?.parentPath ?? "")
+                                .layoutPriority(1)
+                                .contentTransition(.opacity)
+                                .motion(Motion.state, value: entry?.parentPath)
+                        }
                         Spacer(minLength: 0)
                         OutputControl()
                     }

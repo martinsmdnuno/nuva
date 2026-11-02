@@ -78,6 +78,7 @@ final class AppModel {
         let resolve: PlayerController.Resolver = { entry in try await sources.resolve(entry) }
         self.sources = sources
         self.player = PlayerController(resolve: resolve, equalizer: Equalizer(defaults: defaults))
+        self.player.onStreamFailure = { entry in await sources.streamFailed(for: entry) }
         self.durations = TrackDurations(resolve: resolve)
         self.browser = Browser(sources: sources)
         self.output = OutputRoute(player: systemIntegration ? self.player.avPlayer : nil)
@@ -169,7 +170,7 @@ final class AppModel {
     }
 
     /// A CD went in: look up its names, add it as a source and play it, like a CD player.
-    func insertDisc(_ volume: URL) async {
+    func insertDisc(_ volume: URL, plays: Bool = true) async {
         guard !sources.discs.contains(where: { $0.volume == volume }), inserting.insert(volume).inserted else { return }
         defer { inserting.remove(volume) }
         let toc = DiscTOC(volume: volume)
@@ -178,7 +179,7 @@ final class AppModel {
         guard DiscSource.isAudioCD(volume) else { return }
         let disc = DiscSource(volume: volume, toc: toc, info: info, lookup: discLookup)
         sources.addDisc(disc)
-        await playFolder(BrowserLocation(sourceID: disc.id, path: disc.folder))
+        if plays { await playFolder(BrowserLocation(sourceID: disc.id, path: disc.folder)) }
     }
 
     /// Ejects the CD after letting go of its files.
@@ -192,7 +193,13 @@ final class AppModel {
             } catch {
                 // AVFoundation can take a moment to close the file: one more try.
                 try? await Task.sleep(for: .seconds(1))
-                try? await drive.eject(volume)
+                do {
+                    try await drive.eject(volume)
+                } catch {
+                    // macOS kept the disc: bring it back as a source, so it can be played or ejected again.
+                    NSSound.beep()
+                    await insertDisc(volume, plays: false)
+                }
             }
         }
     }
@@ -200,9 +207,15 @@ final class AppModel {
     /// The CD is going away: its tracks leave the queue and it leaves the sources.
     func releaseDisc(_ volume: URL) {
         for disc in sources.discs where disc.volume == volume {
-            player.removeAll { $0.sourceID == disc.id }
-            if browser.location?.sourceID == disc.id { browser.open(nil) }
-            sources.remove(disc.id)
+            removeSource(disc.id)
         }
+    }
+
+    /// A source goes: its tracks leave the queue (playback moves on or stops), the browser
+    /// leaves it, and then it is forgotten. Every removal goes through here.
+    func removeSource(_ id: UUID) {
+        player.removeAll { $0.sourceID == id }
+        if browser.location?.sourceID == id { browser.open(nil) }
+        sources.remove(id)
     }
 }

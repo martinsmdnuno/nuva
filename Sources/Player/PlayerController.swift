@@ -23,6 +23,8 @@ enum RepeatMode: Sendable {
 private final class QueuePlayerItem: AVPlayerItem {
     let queueID: QueueItem.ID
     let url: URL
+    /// Reports a failure to load (undecodable file, server refused the stream).
+    var statusObservation: NSKeyValueObservation?
 
     init(url: URL, queueID: QueueItem.ID) {
         self.queueID = queueID
@@ -44,7 +46,12 @@ final class PlayerController {
     private(set) var currentTime: Double = 0
     private(set) var duration: Double = 0
     private(set) var formatLabel = ""
+    /// "Couldn't play <title>", shown on the display until a track plays.
     private(set) var errorMessage: String?
+    /// The system's reason, for the tooltip.
+    private(set) var errorDetail: String?
+    /// A track is being resolved or opened (a slow server).
+    private(set) var isLoading = false
 
     var volume: Float = 1 {
         didSet { player.volume = volume.clamped }
@@ -67,6 +74,9 @@ final class PlayerController {
     /// Called after a seek (for Now Playing).
     @ObservationIgnored var onSeek: (() -> Void)?
 
+    /// Called once when a track fails, before trying it again: a server source can sign in afresh.
+    @ObservationIgnored var onStreamFailure: (@Sendable (Entry) async -> Void)?
+
     /// Equalizer applied to every track.
     let equalizer: Equalizer
 
@@ -80,7 +90,10 @@ final class PlayerController {
     @ObservationIgnored private var currentAVItem: QueuePlayerItem?
     /// Whether the loading track should start playing (pause while loading).
     @ObservationIgnored private var autoplay = true
-    @ObservationIgnored private var isLoading = false
+    /// Tracks that failed twice: skipped until played by hand or the queue is replaced.
+    @ObservationIgnored private var failedIDs: Set<QueueItem.ID> = []
+    /// Tracks that failed once and are being tried again.
+    @ObservationIgnored private var retriedIDs: Set<QueueItem.ID> = []
     @ObservationIgnored private var playToken = 0
     @ObservationIgnored private var upcomingToken = 0
     @ObservationIgnored private var observations: [NSKeyValueObservation] = []
@@ -96,6 +109,16 @@ final class PlayerController {
         observations.append(player.observe(\.timeControlStatus) { [weak self] _, _ in
             Task { @MainActor in self?.statusChanged() }
         })
+        NotificationCenter.default.addObserver(
+            forName: AVPlayerItem.failedToPlayToEndTimeNotification, object: nil, queue: .main
+        ) { [weak self] note in
+            // A stream that breaks mid-track (network gone).
+            let id = (note.object as? QueuePlayerItem)?.queueID
+            let detail = (note.userInfo?[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? Error)?.localizedDescription
+            MainActor.assumeIsolated {
+                if let id { self?.failed(id, detail: detail) }
+            }
+        }
         timeObserver = player.addPeriodicTimeObserver(
             forInterval: CMTime(seconds: 0.25, preferredTimescale: 600), queue: .main
         ) { [weak self] time in
@@ -108,6 +131,8 @@ final class PlayerController {
     /// Replaces the queue (play folder) and starts at `startAt`.
     func setQueue(_ entries: [Entry], startAt: Int = 0) {
         queue = entries.map { QueueItem(entry: $0) }
+        failedIDs = []
+        retriedIDs = []
         guard queue.indices.contains(startAt) else {
             stopAll()
             return
@@ -175,12 +200,22 @@ final class PlayerController {
     func clear() {
         queue = []
         order = []
+        failedIDs = []
+        retriedIDs = []
+        errorMessage = nil
+        errorDetail = nil
         stopAll()
     }
 
     // MARK: Transport
 
+    /// Plays a queue entry. One the user picks is tried again even if it failed before.
     func play(_ id: QueueItem.ID) {
+        failedIDs.remove(id)
+        start(id)
+    }
+
+    private func start(_ id: QueueItem.ID) {
         guard let item = queue.first(where: { $0.id == id }) else { return }
         playToken += 1
         let token = playToken
@@ -190,15 +225,20 @@ final class PlayerController {
         currentTime = 0
         duration = 0
         formatLabel = item.entry.format
-        errorMessage = nil
         autoplay = true
         isLoading = true
         player.removeAllItems()
         Task {
-            let avItem = await makeItem(item)
+            let made = await makeItem(item)
             guard token == playToken else { return }
             isLoading = false
-            guard let avItem else { return }
+            let avItem: QueuePlayerItem
+            switch made {
+            case .success(let made): avItem = made
+            case .failure(let error):
+                failed(id, detail: error.localizedDescription)
+                return
+            }
             currentAVItem = avItem
             player.insert(avItem, after: nil)
             if autoplay { player.play() }
@@ -215,7 +255,7 @@ final class PlayerController {
             player.play()
         } else if let currentID {
             play(currentID)
-        } else if let first = order.first {
+        } else if let first = order.first(where: { !failedIDs.contains($0) }) ?? order.first {
             play(first)
         }
     }
@@ -291,11 +331,62 @@ final class PlayerController {
         return order[(j + order.count) % order.count]
     }
 
-    /// What plays after the current track, without intervention.
+    /// What plays after the current track, without intervention. Skips tracks that failed.
     private var upcomingID: QueueItem.ID? {
         guard let currentID else { return nil }
-        if repeatMode == .one { return currentID }
-        return step(from: currentID, by: 1, wrap: repeatMode == .all)
+        if repeatMode == .one { return failedIDs.contains(currentID) ? nil : currentID }
+        return playable(after: currentID, wrap: repeatMode == .all)
+    }
+
+    /// The next track that hasn't failed, in playing order, or nil.
+    private func playable(after id: QueueItem.ID, wrap: Bool) -> QueueItem.ID? {
+        var candidate = id
+        for _ in 0..<order.count {
+            guard let next = step(from: candidate, by: 1, wrap: wrap), next != id else { return nil }
+            if !failedIDs.contains(next) { return next }
+            candidate = next
+        }
+        return nil
+    }
+
+    /// A track failed to resolve, open or keep playing. The first time it is tried again (after
+    /// the source had its chance to sign in afresh); the second time it is skipped, with a message
+    /// on the display. If nothing in the queue plays, playback stops on the failed track.
+    private func failed(_ id: QueueItem.ID, detail: String?) {
+        guard let item = queue.first(where: { $0.id == id }), !failedIDs.contains(id) else { return }
+        let isCurrent = id == currentID
+        if !retriedIDs.contains(id) {
+            retriedIDs.insert(id)
+            let token = playToken
+            Task {
+                await onStreamFailure?(item.entry)
+                if isCurrent {
+                    guard token == playToken, currentID == id else { return }
+                    start(id)
+                } else {
+                    refreshUpcoming()
+                }
+            }
+            return
+        }
+        failedIDs.insert(id)
+        guard isCurrent else {
+            refreshUpcoming()
+            return
+        }
+        errorMessage = String(localized: "Não foi possível tocar \(item.entry.title)")
+        errorDetail = detail
+        if autoplay, let next = playable(after: id, wrap: repeatMode != .off) {
+            start(next)
+        } else {
+            // Nothing else to try: stay on this track, stopped.
+            playToken += 1
+            upcomingToken += 1
+            isLoading = false
+            player.removeAllItems()
+            currentAVItem = nil
+            currentTime = 0
+        }
     }
 
     /// Ensures the AVQueuePlayer has the right next track after the current one.
@@ -306,21 +397,29 @@ final class PlayerController {
         for item in player.items().dropFirst() { player.remove(item) }
         guard let id = upcomingID, let item = queue.first(where: { $0.id == id }) else { return }
         Task {
-            guard let avItem = await makeItem(item), token == upcomingToken,
-                  player.currentItem === currentAVItem else { return }
-            player.insert(avItem, after: currentAVItem)
+            let made = await makeItem(item)
+            guard token == upcomingToken, player.currentItem === currentAVItem else { return }
+            switch made {
+            case .success(let avItem): player.insert(avItem, after: currentAVItem)
+            case .failure(let error): failed(id, detail: error.localizedDescription)
+            }
         }
     }
 
-    private func makeItem(_ item: QueueItem) async -> QueuePlayerItem? {
+    private func makeItem(_ item: QueueItem) async -> Result<QueuePlayerItem, Error> {
         do {
             let url = try await resolve(item.entry)
             let avItem = QueuePlayerItem(url: url, queueID: item.id)
+            let id = item.id
+            avItem.statusObservation = avItem.observe(\.status) { [weak self] observed, _ in
+                guard observed.status == .failed else { return }
+                let detail = observed.error?.localizedDescription
+                Task { @MainActor in self?.failed(id, detail: detail) }
+            }
             await equalizer.attach(to: avItem)
-            return avItem
+            return .success(avItem)
         } catch {
-            errorMessage = error.localizedDescription
-            return nil
+            return .failure(error)
         }
     }
 
@@ -361,6 +460,14 @@ final class PlayerController {
     private func tick(_ time: CMTime) {
         guard player.currentItem != nil else { return }
         currentTime = time.seconds.isFinite ? time.seconds : 0
+        // Music is really coming out (a broken file also "waits to play" for a moment): the
+        // message about an earlier failure has done its job, and this track counts as good again.
+        if currentTime > 0, player.timeControlStatus == .playing, let currentID,
+           errorMessage != nil || retriedIDs.contains(currentID) {
+            errorMessage = nil
+            errorDetail = nil
+            retriedIDs.remove(currentID)
+        }
         if let d = player.currentItem?.duration.seconds, d.isFinite, d > 0 {
             duration = d
         }

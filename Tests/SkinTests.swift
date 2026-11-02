@@ -124,6 +124,12 @@ struct SkinTests {
         }
     }
 
+    /// The display is dark in every theme, so a playback error on it uses the dark theme's red.
+    @Test(arguments: Skin.all) func errorReadsOnTheDisplay(skin: Skin) {
+        let r = ratio(skin, .danger, .display, dark)
+        #expect(r >= 4.5, "\(skin.id): danger on display is \(r)")
+    }
+
     @Test func palettesCoverEveryToken() {
         for skin in Skin.all {
             guard let palette = skin.palette else { continue }

@@ -113,6 +113,22 @@
         }
       }
     },
+    "A carregar…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A carregar…"
+          }
+        }
+      }
+    },
     "A entrar…": {
       "localizations": {
         "en": {
@@ -1389,6 +1405,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Não foi possível procurar atualizações"
+          }
+        }
+      }
+    },
+    "Não foi possível tocar %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't play %@"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível tocar %@"
           }
         }
       }

@@ -91,19 +91,27 @@ struct NuVaCommands: Commands {
             Menu("Fonte") { FontMenuItems() }
         }
         CommandMenu("Controlos") {
+            // While a sheet with text fields is open, Space and ⌘← ⌘→ ⌘↑ ⌘↓ belong to the field:
+            // a menu key equivalent would otherwise take them before the field sees them.
+            let typing = model.showingJellyfinLogin || model.fixingArtwork != nil
             Button(model.player.isPlaying ? String(localized: "Pausa") : String(localized: "Tocar")) { model.playOrBrowse() }
                 .keyboardShortcut(.space, modifiers: [])
+                .disabled(typing)
             Button("Parar") { model.player.stop() }
                 .keyboardShortcut(".")
             Button("Seguinte") { model.player.next() }
                 .keyboardShortcut(.rightArrow)
+                .disabled(typing)
             Button("Anterior") { model.player.previous() }
                 .keyboardShortcut(.leftArrow)
+                .disabled(typing)
             Divider()
             Button("Aumentar volume") { model.player.changeVolume(by: 0.05) }
                 .keyboardShortcut(.upArrow)
+                .disabled(typing)
             Button("Baixar volume") { model.player.changeVolume(by: -0.05) }
                 .keyboardShortcut(.downArrow)
+                .disabled(typing)
             Button("Equalizador…") { model.showsEqualizer = true }
                 .keyboardShortcut("e", modifiers: [.command, .option])
             Divider()

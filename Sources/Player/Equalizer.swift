@@ -49,6 +49,7 @@ final class Equalizer {
     /// Band levels measured by the same tap, for the spectrum meter.
     nonisolated let spectrum = SpectrumShared()
     @ObservationIgnored private let defaults: UserDefaults
+    @ObservationIgnored private var saving: Task<Void, Never>?
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -68,13 +69,26 @@ final class Equalizer {
     }
 
     func setGain(_ band: Int, _ db: Float) {
-        gains[band] = min(max((db * 2).rounded() / 2, Self.range.lowerBound), Self.range.upperBound)
+        let value = min(max((db * 2).rounded() / 2, Self.range.lowerBound), Self.range.upperBound)
+        // A drag sends many events per 0.5 dB step: only a new step rebuilds the filters.
+        guard value != gains[band] || !enabled else { return }
+        gains[band] = value
         presetName = Self.presets.first { $0.gains == gains }?.name ?? Self.custom
         if !enabled { enabled = true } else { push() }
     }
 
     private func push() {
         shared.set(gains: gains, enabled: enabled)
+        // Saved once the change settles, not on every step of a drag.
+        saving?.cancel()
+        saving = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(500))
+            guard !Task.isCancelled else { return }
+            self?.save()
+        }
+    }
+
+    private func save() {
         defaults.set(gains, forKey: "eq.gains")
         defaults.set(enabled, forKey: "eq.enabled")
         defaults.set(presetName, forKey: "eq.preset")
@@ -107,6 +121,11 @@ final class EQShared: Sendable {
     }
 
     func read() -> State { state.withLock { $0 } }
+
+    /// For the audio thread on every buffer: the gains are only copied when they changed since `version`.
+    func read(since version: Int) -> (enabled: Bool, version: Int, gains: [Float]?) {
+        state.withLock { ($0.enabled, $0.version, $0.version == version ? nil : $0.gains) }
+    }
 
     func set(gains: [Float], enabled: Bool) {
         state.withLock { $0 = State(gains: gains, enabled: enabled, version: $0.version + 1) }
@@ -184,10 +203,11 @@ final class EQTap: @unchecked Sendable {
     }
 
     private func filter(_ buffers: UnsafeMutableAudioBufferListPointer) {
-        let state = shared.read()
+        let state = shared.read(since: filters.count == buffers.count ? appliedVersion : -1)
         guard state.enabled else { return }
-        if state.version != appliedVersion || filters.count != buffers.count {
-            rebuild(state.gains, channels: buffers.count)
+        if let gains = state.gains {
+            // Only when the gains changed (a preset, a fader step): rare, so the allocation is tolerable.
+            rebuild(gains, channels: buffers.count)
             appliedVersion = state.version
         }
         for (i, buffer) in buffers.enumerated() where i < filters.count {

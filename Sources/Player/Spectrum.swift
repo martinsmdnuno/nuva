@@ -155,19 +155,34 @@ final class SpectrumAnalyzer {
     /// Adds the buffer (non-interleaved Float32) and, if it's time, measures and writes to `shared`.
     /// `end` is the track time at the end of the buffer.
     func process(_ buffers: UnsafeMutableAudioBufferListPointer, frames: Int, end: Double, into shared: SpectrumShared) {
-        let channels = buffers.compactMap { $0.mData?.assumingMemoryBound(to: Float.self) }
-        guard !channels.isEmpty, frames > 0 else { return }
-        let scale = 1 / Float(channels.count)
-        let left = channels[0]
-        let right = channels.count > 1 ? channels[1] : channels[0]
-        for j in 0..<frames {
-            var sum: Float = 0
-            for channel in channels { sum += channel[j] }
-            history[head] = sum * scale
-            head = (head + 1) % size
-            let pair = SIMD2(left[j], right[j])
-            squares += pair * pair
-            highs = pointwiseMax(highs, abs(pair))
+        // Runs on the audio thread: no allocation, vectorised. Left and right are the first two
+        // channels (a mono file repeats its only one); the mono mix for the bands is their average.
+        guard buffers.count > 0, frames > 0, let left = buffers[0].mData?.assumingMemoryBound(to: Float.self) else { return }
+        let right = buffers.count > 1 ? buffers[1].mData?.assumingMemoryBound(to: Float.self) ?? left : left
+        let n = vDSP_Length(frames)
+        var sumL: Float = 0, sumR: Float = 0, highL: Float = 0, highR: Float = 0
+        vDSP_svesq(left, 1, &sumL, n)
+        vDSP_svesq(right, 1, &sumR, n)
+        vDSP_maxmgv(left, 1, &highL, n)
+        vDSP_maxmgv(right, 1, &highR, n)
+        squares += SIMD2(sumL, sumR)
+        highs = pointwiseMax(highs, SIMD2(highL, highR))
+
+        // Into the ring buffer in at most two runs (up to its end, then from its start).
+        var half: Float = 0.5
+        var written = 0
+        history.withUnsafeMutableBufferPointer { h in
+            while written < frames {
+                let run = min(frames - written, size - head)
+                let destination = h.baseAddress! + head
+                if left == right {
+                    destination.update(from: left + written, count: run)
+                } else {
+                    vDSP_vasm(left + written, 1, right + written, 1, &half, destination, 1, vDSP_Length(run))
+                }
+                head = (head + run) % size
+                written += run
+            }
         }
         counted += frames
         pending += frames
@@ -192,15 +207,16 @@ final class SpectrumAnalyzer {
     }
 
     private func measure() {
-        // Oldest sample first, windowed.
+        // Oldest sample first, windowed as it is copied (multiplying `frame` into itself would copy it).
         let tail = size - head
         frame.withUnsafeMutableBufferPointer { f in
             history.withUnsafeBufferPointer { h in
-                f.baseAddress!.update(from: h.baseAddress! + head, count: tail)
-                (f.baseAddress! + tail).update(from: h.baseAddress!, count: head)
+                window.withUnsafeBufferPointer { w in
+                    vDSP_vmul(h.baseAddress! + head, 1, w.baseAddress!, 1, f.baseAddress!, 1, vDSP_Length(tail))
+                    vDSP_vmul(h.baseAddress!, 1, w.baseAddress! + tail, 1, f.baseAddress! + tail, 1, vDSP_Length(head))
+                }
             }
         }
-        vDSP.multiply(frame, window, result: &frame)
 
         real.withUnsafeMutableBufferPointer { r in
             imag.withUnsafeMutableBufferPointer { i in

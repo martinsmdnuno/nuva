@@ -15,16 +15,34 @@ final class OutputRoute {
 
     @ObservationIgnored private let player: AVPlayer?
     @ObservationIgnored private var timer: Timer?
+    @ObservationIgnored private var playback: NSKeyValueObservation?
+    @ObservationIgnored private var pollsFast = false
     @ObservationIgnored private let log = Logger(subsystem: "pt.nunomartins.nuva", category: "output")
 
     init(player: AVPlayer?) {
         self.player = player
         guard player != nil else { return }
         refresh()
-        // Cheap (a few CoreAudio reads); also catches changes from the AirPlay picker.
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+        schedule(fast: false)
+        playback = player?.observe(\.timeControlStatus) { [weak self] player, _ in
+            let playing = player.timeControlStatus != .paused
+            Task { @MainActor in self?.schedule(fast: playing) }
+        }
+    }
+
+    /// Polls the route (a few CoreAudio reads; also catches the AirPlay picker): every second while
+    /// music plays, every 10 s otherwise, with a tolerance so macOS can group the wake-ups.
+    private func schedule(fast: Bool) {
+        guard timer == nil || fast != pollsFast else { return }
+        pollsFast = fast
+        timer?.invalidate()
+        refresh()
+        let timer = Timer(timeInterval: fast ? 1 : 10, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.refresh() }
         }
+        timer.tolerance = fast ? 0.25 : 2
+        RunLoop.main.add(timer, forMode: .common)
+        self.timer = timer
     }
 
     private func refresh() {

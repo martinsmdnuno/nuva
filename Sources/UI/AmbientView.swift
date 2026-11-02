@@ -11,6 +11,7 @@ struct AmbientView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// When the mouse last moved: the key strip shows for 3 s after.
     @State private var lastMove: Date?
+    @State private var hideStrip: Task<Void, Never>?
     /// Paused for 10 minutes, the content dims.
     @State private var pausedSince: Date?
 
@@ -44,8 +45,10 @@ struct AmbientView: View {
                         .padding(.vertical, unit * 6)
                         .frame(width: geometry.size.width * area, height: geometry.size.height * area)
                         .offset(isSnapshot ? .zero : Self.drift(at: now, in: geometry.size, protects: protects))
-                        .animation(reduceMotion ? nil : protects ? .linear(duration: 1) : .easeInOut(duration: 2),
-                                   value: protects ? Int(now.timeIntervalSinceReferenceDate) : Self.minute(of: now))
+                        // The OLED drift moves about half a point a second: stepping once a second is
+                        // invisible, and an animation there would redraw the screen at its refresh rate
+                        // all the time. Only the small shift once a minute is animated.
+                        .animation(reduceMotion || protects ? nil : .easeInOut(duration: 2), value: Self.minute(of: now))
                         .opacity(opacity(now: now))
                     }
 
@@ -64,6 +67,8 @@ struct AmbientView: View {
         .animation(.easeOut(duration: 0.3), value: lastMove == nil)
         .onContinuousHover { phase in
             guard case .active = phase else { return }
+            // Mouse events come many times a second; four updates a second are plenty.
+            if let lastMove, Date.now.timeIntervalSince(lastMove) < 0.25 { return }
             ambient.noteInteraction()
             lastMove = .now
             hideStripLater()
@@ -82,10 +87,10 @@ struct AmbientView: View {
     }
 
     private func hideStripLater() {
-        let moved = lastMove
-        Task {
+        hideStrip?.cancel()
+        hideStrip = Task {
             try? await Task.sleep(for: .seconds(3))
-            guard lastMove == moved else { return }
+            guard !Task.isCancelled else { return }
             lastMove = nil
             NSCursor.setHiddenUntilMouseMoves(true)
         }
@@ -131,11 +136,11 @@ private struct AmbientRest: View {
     @Environment(AppModel.self) private var model
 
     var body: some View {
+        // Slow enough (a couple of points a second) to step once a second without animating.
         let t = now.timeIntervalSinceReferenceDate
         LED(isOn: model.player.isPlaying, size: unit)
             .opacity(0.6)
-            .offset(x: sin(t / 97) * size.width * 0.4, y: sin(t / 131 + 1) * size.height * 0.4)
-            .animation(.linear(duration: 1), value: Int(t))
+            .offset(x: sin(t / 571) * size.width * 0.4, y: sin(t / 787 + 1) * size.height * 0.4)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

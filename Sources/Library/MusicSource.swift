@@ -112,7 +112,7 @@ enum SourceError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .missingFolder(let name): String(localized: "Pasta em falta: \(name)")
-        case .serverUnavailable: String(localized: "Servidor offline. Tentar de novo")
+        case .serverUnavailable: String(localized: "Servidor offline")
         case .loginFailed: String(localized: "Utilizador ou palavra-passe errados")
         case .noMusicLibrary: String(localized: "Sem biblioteca de música neste utilizador")
         case .unexpectedResponse: String(localized: "Resposta inesperada. Confirmar o endereço do servidor")

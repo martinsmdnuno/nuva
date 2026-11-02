@@ -14,6 +14,8 @@ final class Browser {
     private(set) var location: BrowserLocation?
     private(set) var entries: [Entry] = []
     private(set) var errorMessage: String?
+    /// Listing the folder (a slow server or network disk).
+    private(set) var isLoading = false
     /// Summary per folder: "12 faixas", "2 pastas".
     private(set) var summaries: [Entry.ID: String] = [:]
 
@@ -37,9 +39,13 @@ final class Browser {
         self.location = location
         entries = []
         errorMessage = nil
-        guard let location, let source = sources.source(location.sourceID) else { return }
         loadToken += 1
+        guard let location, let source = sources.source(location.sourceID) else {
+            isLoading = false
+            return
+        }
         let token = loadToken
+        isLoading = true
         Task {
             do {
                 let items = try await source.list(location.path)
@@ -49,6 +55,7 @@ final class Browser {
                 guard token == loadToken else { return }
                 errorMessage = error.localizedDescription
             }
+            isLoading = false
         }
     }
 

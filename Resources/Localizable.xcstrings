@@ -1505,18 +1505,18 @@
         }
       }
     },
-    "O servidor respondeu %lld. Tentar de novo": {
+    "O servidor respondeu %lld": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The server responded %lld. Try again"
+            "value": "The server responded %lld"
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "O servidor respondeu %lld. Tentar de novo"
+            "value": "O servidor respondeu %lld"
           }
         }
       }
@@ -2145,6 +2145,22 @@
         }
       }
     },
+    "Sem música nesta pasta": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No music in this folder"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sem música nesta pasta"
+          }
+        }
+      }
+    },
     "Servidor": {
       "localizations": {
         "en": {
@@ -2177,18 +2193,18 @@
         }
       }
     },
-    "Servidor offline. Tentar de novo": {
+    "Servidor offline": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Server offline. Try again"
+            "value": "Server offline"
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "Servidor offline. Tentar de novo"
+            "value": "Servidor offline"
           }
         }
       }

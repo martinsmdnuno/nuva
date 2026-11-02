@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- New skin: **Phosphor** (Fósforo in Portuguese), after the shareware players of the late nineties. A black display with green text, a blue-grey chassis, silver keys and a blue selected row. View › Skin, ⌥⌘4.
+- **Ambient mode** (View › Ambient, ⌘4): the whole screen becomes NuVa's display, in the current skin, to leave the music playing as part of the room. Two faces, ← → to switch: **Display** (track, folder and time, large) and **Clock**. It can open on another screen or a TV (View › Ambient Options), keeps the screen awake while music plays and dims after 10 minutes paused. Esc or ⌘4 leaves.
+- The default skin is now called **Rams** (it was Nuno). Nothing else changes, and your choice is kept.
+
 ## 1.4 — a deck with a volume knob
 
 - The keys now read like a deck: shuffle and repeat on the left, play in the middle of the window, and the volume as a knob on the right. Drag it up or down, scroll over it, or use ⌘↑ ⌘↓. The volume bar is gone, so the window is a row shorter and Compact mode smaller.

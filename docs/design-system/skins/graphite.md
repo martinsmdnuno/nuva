@@ -1,6 +1,6 @@
 # Skin: Graphite (Orange, Green)
 
-From `NuVa_Design_Spec_v1` (a third-party concept), applied under NuVa's principles. Only colours change: same layout, keys, sizes and rules as Nuno. Values in `tokens.json` (`graphite-orange`, `graphite-green`); code in `Sources/DesignSystem/Skin.swift`.
+From `NuVa_Design_Spec_v1` (a third-party concept), applied under NuVa's principles. Only colours change: same layout, keys, sizes and rules as Rams. Values in `tokens.json` (`graphite-orange`, `graphite-green`); code in `Sources/DesignSystem/Skin.swift`.
 
 - **Always dark**, whatever the system appearance (the spec asks for it). No light variant.
 - **Default font set:** SF Pro + SF Mono (the spec's first choice). Inter + IBM Plex Mono stays selectable in View ▸ Font.
@@ -20,7 +20,7 @@ From `NuVa_Design_Spec_v1` (a third-party concept), applied under NuVa's princip
 | track | #363E41 | — | Bar tracks need to read as a control. |
 | key-play, led, signal | accent | Accent | — |
 | key-ink | #0B0F10 | — | White on the accent fails (2.87:1 orange, 1.93:1 green); dark passes (6.7:1, 10:1). |
-| key-face, fill | #C9CED0 | — | Neutral, as in Nuno: transport keys and the volume fill are not accent. |
+| key-face, fill | #C9CED0 | — | Neutral, as in Rams: transport keys and the volume fill are not accent. |
 | key-mode | #5B656C | — | 3.2:1 against the chassis, so the key face reads as a key with no outline. |
 | key-mode-ink | #F2F4F5 | — | 5.4:1 on key-mode. |
 | display (+ ink, muted, track) | #050708, #F2F4F5, #9AA3A7, #252C2F | — | The display stays darker than the chassis, as in every skin. |

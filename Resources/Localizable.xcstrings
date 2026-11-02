@@ -177,6 +177,22 @@
         }
       }
     },
+    "Abrir em %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open on %@"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir em %@"
+          }
+        }
+      }
+    },
     "Adicionar Jellyfin": {
       "localizations": {
         "en": {
@@ -365,6 +381,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aleatório ⌥⌘S"
+          }
+        }
+      }
+    },
+    "Ambiente": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ambient"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ambiente"
+          }
+        }
+      }
+    },
+    "Ambiente e skin": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ambient and Skin"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ambiente e skin"
           }
         }
       }
@@ -625,6 +673,22 @@
         }
       }
     },
+    "Ecrã": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Display"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ecrã"
+          }
+        }
+      }
+    },
     "Ejetar CD": {
       "localizations": {
         "en": {
@@ -849,6 +913,22 @@
         }
       }
     },
+    "Escurecer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dim"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escurecer"
+          }
+        }
+      }
+    },
     "Fila vazia": {
       "localizations": {
         "en": {
@@ -893,6 +973,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Fontes"
+          }
+        }
+      }
+    },
+    "Fósforo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phosphor"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fósforo"
           }
         }
       }
@@ -1153,6 +1249,22 @@
         }
       }
     },
+    "Mudar de mostrador": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next Face"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mudar de mostrador"
+          }
+        }
+      }
+    },
     "Música no Mac ou num disco de rede": {
       "localizations": {
         "en": {
@@ -1261,6 +1373,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "O servidor respondeu %lld. Tentar de novo"
+          }
+        }
+      }
+    },
+    "Opções do Ambiente": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ambient Options"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opções do Ambiente"
           }
         }
       }
@@ -1489,6 +1617,22 @@
         }
       }
     },
+    "Relógio": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clock"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Relógio"
+          }
+        }
+      }
+    },
     "Remover da fila": {
       "localizations": {
         "en": {
@@ -1613,6 +1757,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sair"
+          }
+        }
+      }
+    },
+    "Sair do Ambiente": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exit Ambient"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sair do Ambiente"
           }
         }
       }

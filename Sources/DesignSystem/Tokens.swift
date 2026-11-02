@@ -1,7 +1,7 @@
 import SwiftUI
 
 // Tokens from docs/design-system/tokens.json. Colours come from the current skin
-// (Skin.swift); the Nuno skin reads Assets.xcassets (Any = Aluminium, Dark = Lead).
+// (Skin.swift); the Rams skin reads Assets.xcassets (Any = Aluminium, Dark = Lead).
 
 extension Color {
     init(_ token: ColorToken) {

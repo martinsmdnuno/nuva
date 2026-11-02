@@ -26,13 +26,14 @@ Lead grey with a single accent.
 - **Text:** `ink` for primary text, `ink-muted` for durations, metadata, legends and resting icons.
 - **Keys:** three tones, as on a Braun calculator. `key-play` (amber) only on the play/pause key. `key-face` (light grey) on transport. `key-mode` (mid grey) on mode keys, the volume knob and text buttons.
 - **Accent:** amber, only one, in three linked roles: the key that plays (`key-play`), the LEDs (`led`) and the name of the track that's playing (`signal`). Never on backgrounds, hovers or any text other than the current track.
+- **Display tint:** a skin may give the display its own ink colour (`display-ink`, `display-muted`), like the amber or green of an amplifier's VFD. It must not be the accent's exact value, and the accent rule above still holds on the chassis. Only Phosphor uses it.
 - **LED:** a 4px dot, `led` on, `led-off` off. It shows state: playback and the equalizer on the display, shuffle/repeat/folders above their key, the playing track in the list.
 - **Error:** `danger` only on text and icons, never as a background.
 - **Focus:** `focus` as a 2px ring around the control with keyboard focus.
 
-Themes: **Lead** (`chumbo`) is the main one. **Aluminium** (`aluminio`) is the light theme and follows the system appearance. Together they are the **Nuno** skin. Every text pair passes 4.5:1 in both themes, and keys, LEDs and focus 3:1 (checked in `Tests/SkinTests.swift`).
+Themes: **Lead** (`chumbo`) is the main one. **Aluminium** (`aluminio`) is the light theme and follows the system appearance. Together they are the **Rams** skin (called Nuno up to 1.4). Every text pair passes 4.5:1 in both themes, and keys, LEDs and focus 3:1 (checked in `Tests/SkinTests.swift`).
 
-Other skins change token values only, never roles or layout: **Graphite Orange** and **Graphite Green**, always dark (`skins/graphite.md`). View ▸ Skin, ⌥⌘1, ⌥⌘2, ⌥⌘3.
+Other skins change token values only, never roles or layout: **Graphite Orange** and **Graphite Green** (`skins/graphite.md`) and **Phosphor** (`skins/phosphor.md`), all always dark. View ▸ Skin, ⌥⌘1 to ⌥⌘4.
 
 ## Type
 
@@ -71,7 +72,7 @@ Movement only shows what the hardware would do. Nothing moves on its own, nothin
 
 ## Icons
 
-SF Symbols, regular weight, never filled except `play.fill` and `pause.fill` inside the play key. Fixed symbols: `backward.end`, `forward.end`, `play.fill`, `pause.fill`, `repeat`, `shuffle`, `airplayaudio` (on the display, beside the output), `sidebar.left`, `folder`, `internaldrive`, `server.rack`.
+SF Symbols, regular weight, never filled except `play.fill` and `pause.fill` inside the play key. Fixed symbols: `backward.end`, `forward.end`, `play.fill`, `pause.fill`, `repeat`, `shuffle`, `airplayaudio` (on the display, beside the output), `sidebar.left`, `folder`, `internaldrive`, `server.rack`, `arrow.down.right.and.arrow.up.left` (leave ambient).
 
 ## Windows
 
@@ -81,11 +82,13 @@ One device, always the same layout: display, keys with the volume knob, and belo
 - **Player with folders** (⌘2): the folder browser in the queue's place. ⌘B or the folders key swaps the two. Playing a folder or a track from it brings the queue back.
 - **Compact** (⌘3): display, keys and the header. No rows; the height follows the content.
 
+**Ambient** (View ▸ Ambient, ⌘4) is not a fourth size: a full-screen window in its own Space that is all display (`display` background, the display's tokens and the `ambient-*` type styles, sized from the screen's width). Nothing to operate, no lists. Two faces, ← → to switch: *Display* (the window's display at the scale of the room) and *Clock* (the time of day, the playing track on one line). Moving the mouse shows the playback keys for 3 s. The content shifts a few points each minute so nothing marks the panel; the display stays awake while music plays, and dims after 10 minutes paused. Esc or ⌘4 leaves.
+
 The width is free from 360 to 480: keys keep their size and the space between the groups grows, while the display, the meter and the lists stretch. With the queue or the folders the height is free too (minimum 540). The app remembers both between modes and launches. Double-clicking the title bar (zoom) stretches the window to the screen's height.
 
 ## Shortcuts
 
-Space play/pause · ⌘→ next · ⌘← previous · ⌘↑ ⌘↓ volume · ⌥⌘E equalizer · ⌘L go to the current track · Enter play selection · ⌘Enter add to queue · ⌘B swap queue and folders · ⌘1 ⌘2 ⌘3 queue, folders, compact · ⌘O add folder · ⇧⌘O add Jellyfin.
+Space play/pause · ⌘→ next · ⌘← previous · ⌘↑ ⌘↓ volume · ⌥⌘E equalizer · ⌘L go to the current track · Enter play selection · ⌘Enter add to queue · ⌘B swap queue and folders · ⌘1 ⌘2 ⌘3 queue, folders, compact · ⌘4 ambient · ⌘O add folder · ⇧⌘O add Jellyfin.
 
 ## Interface text
 

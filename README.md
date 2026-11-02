@@ -58,7 +58,9 @@ NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that
 
 <p align="center"><img src="docs/screenshots/skins.png" width="760" alt="NuVa in the Graphite Orange and Graphite Green skins"></p>
 
-The look above is the **Nuno** skin. **Graphite Orange** and **Graphite Green** are always dark, with a single bright accent on the play key, the lights and the playing track. Switch in **View › Skin** (⌥⌘1, ⌥⌘2, ⌥⌘3) or from the mini player. Skins change colours only: the keys, the layout and the shortcuts stay where your hands expect them. **View › Font** picks Inter + IBM Plex Mono or Apple's SF Pro + SF Mono.
+The look above is the **Rams** skin. **Graphite Orange** and **Graphite Green** are always dark, with a single bright accent on the play key, the lights and the playing track. **Phosphor** is a nod to the shareware players of the late nineties: a black screen with green text and a blue-grey chassis. Switch in **View › Skin** (⌥⌘1 to ⌥⌘4) or from the mini player. Skins change colours only: the keys, the layout and the shortcuts stay where your hands expect them. **View › Font** picks Inter + IBM Plex Mono or Apple's SF Pro + SF Mono.
+
+**View › Ambient** (⌘4) turns the whole screen into NuVa's display, in the current skin, to leave the music playing as part of the room: the track and the time large, or a clock. ← → switch faces, Esc leaves. It can go on another screen or a TV, and keeps the screen awake while music plays.
 
 ## Album artwork, if you want it
 
@@ -155,6 +157,7 @@ xattr -dr com.apple.quarantine /Applications/NuVa.app
 | ⌥⌘E | Equalizer |
 | ⌘B | Swap the queue and the folders |
 | ⌘1 · ⌘2 · ⌘3 | Queue · folders · compact |
+| ⌘4 | Ambient (full screen; ← → faces, Esc leaves) |
 | ⌥⌘1 · ⌥⌘2 … | Skin (also in View ▸ Skin) |
 | ⌥⌘A | Show or hide folder artwork |
 | ⌥⌘V | Show or hide the spectrum meter |
@@ -200,7 +203,8 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 - **AirPlay 2.** WiiM, HomePod, Apple TV ou qualquer coluna AirPlay: carrega na saída que aparece no visor.
 - **Jellyfin sem confusão.** Navega pelas pastas reais do servidor e toca os ficheiros originais.
 - **Uma janela pequena.** As pastas aparecem no lugar da fila (⌘B troca as duas) e há um modo compacto. A janela estica na vertical para veres o álbum inteiro, e na horizontal para nomes compridos.
-- **Skins:** Nuno (claro ou escuro, como o sistema), Graphite Orange e Graphite Green (sempre escuras), em Visualização › Skin. Fonte Inter + IBM Plex Mono ou SF Pro + SF Mono, em Visualização › Fonte.
+- **Skins:** Rams (claro ou escuro, como o sistema), Graphite Orange, Graphite Green e Fósforo (sempre escuras), em Visualização › Skin. Fonte Inter + IBM Plex Mono ou SF Pro + SF Mono, em Visualização › Fonte.
+- **Modo Ambiente** (⌘4): o ecrã inteiro passa a ser o mostrador da NuVa, com a faixa e o tempo em grande, ou um relógio. ← → trocam, Esc sai.
 - **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A). Usa a imagem da pasta (`cover`, `folder`, `front`, `album` ou `capa`); se não houver, procura no MusicBrainz pelo nome das pastas. Nunca das tags. Capa errada ou em falta: carrega na capa e corrige o artista ou o álbum, ou escolhe uma imagem. Desligado por defeito.
 - **CDs áudio, como um leitor de CDs.** Mete um disco no leitor e a NuVa toca-o logo. Os nomes do álbum e das faixas vêm do MusicBrainz, pelo índice do disco (um CD não traz nomes). Ejetar com ⌘E. Para abrir a NuVa sempre que entra um CD: Definições do Sistema › CDs e DVDs › Ao inserir um CD de música › Abrir outra aplicação… › NuVa.
 - **Avisa quando há versão nova** (verifica no GitHub uma vez por dia, sem descarregar nada). [Termos e privacidade](TERMS.md) em NuVa › Termos e privacidade.
@@ -218,4 +222,4 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 
 Só é preciso uma vez.
 
-Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume · ⌥⌘E equalizador · ⌘B fila ou pastas · ⌘1 ⌘2 ⌘3 fila, pastas, compacto · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌥⌘V espectro · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin.
+Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⌘↑ ⌘↓ volume · ⌥⌘E equalizador · ⌘B fila ou pastas · ⌘1 ⌘2 ⌘3 fila, pastas, compacto · ⌘4 ambiente · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌥⌘V espectro · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin.

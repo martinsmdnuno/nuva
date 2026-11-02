@@ -32,7 +32,7 @@ enum ColorToken: String, CaseIterable, Sendable {
 /// A skin: colours, appearance policy and default font set. Same views, layout and sizes in every skin.
 struct Skin: Identifiable, Sendable, Equatable {
     enum Appearance: Sendable {
-        /// Light and dark variants, following the system (Nuno: Aluminium and Lead).
+        /// Light and dark variants, following the system (Rams: Aluminium and Lead).
         case followsSystem
         /// Always dark, whatever the system appearance.
         case alwaysDark
@@ -52,14 +52,44 @@ struct Skin: Identifiable, Sendable, Equatable {
     /// `nil`: the colour sets in Assets.xcassets, named like the tokens.
     let palette: [ColorToken: Pair]?
 
-    static let nuno = Skin(id: "nuno", name: "Nuno", appearance: .followsSystem, fontSet: .inter, palette: nil)
+    static let rams = Skin(id: "rams", name: "Rams", appearance: .followsSystem, fontSet: .inter, palette: nil)
 
     /// Graphite, from NuVa_Design_Spec_v1 (docs/design-system/skins/graphite.md): the spec's colours,
     /// adjusted so every text pair passes 4.5:1 and the layers can be told apart. Only the accent differs.
     static let graphiteOrange = graphite(id: "graphite-orange", name: "Graphite Orange", accent: 0xFF6A00, selected: 0x382E22)
     static let graphiteGreen = graphite(id: "graphite-green", name: "Graphite Green", accent: 0x20D66B, selected: 0x1D3628)
 
-    static let all: [Skin] = [.nuno, .graphiteOrange, .graphiteGreen]
+    /// Phosphor (docs/design-system/skins/phosphor.md): after the classic shareware players. A black display
+    /// with phosphor-green ink, a blue-grey chassis, silver keys and a blue selected row.
+    static let phosphor = Skin(
+        id: "phosphor", name: String(localized: "Fósforo"), appearance: .alwaysDark, fontSet: .inter,
+        palette: [
+            .surface0: 0x1C1C2B,
+            .surface1: 0x2C2C44,
+            .surface2: 0x1B2A8F,
+            .display: 0x000000,
+            // The display's own tint, like an amplifier's VFD: a green that isn't the accent.
+            .displayInk: 0x00E838,
+            .displayMuted: 0x1FA83C,
+            .displayTrack: 0x0E3A18,
+            .ink: 0xD8DCE6,
+            .inkMuted: 0xA4A8BE,
+            .line: 0x34344C,
+            .keyFace: 0xB6BACB,
+            .keyMode: 0x66668E,
+            .keyPlay: 0x00D02A,
+            .keyInk: 0x10101C,
+            .keyModeInk: 0xF6F7FB,
+            .track: 0x3E3E58,
+            .fill: 0xB6BACB,
+            .led: 0x00D02A,
+            .ledOff: 0x34344C,
+            .signal: 0x00D02A,
+            .danger: 0xFF6B6B,
+            .focus: 0xF2C744,
+        ].mapValues { Pair(light: $0, dark: $0) })
+
+    static let all: [Skin] = [.rams, .graphiteOrange, .graphiteGreen, .phosphor]
 
     private static func graphite(id: String, name: String, accent: UInt32, selected: UInt32) -> Skin {
         let dark: [ColorToken: UInt32] = [
@@ -93,7 +123,9 @@ struct Skin: Identifiable, Sendable, Equatable {
     }
 
     static func with(id: String?) -> Skin {
-        all.first { $0.id == id } ?? .nuno
+        // "nuno" is Rams's id before 1.5.
+        let id = id == "nuno" ? Skin.rams.id : id
+        return all.first { $0.id == id } ?? .rams
     }
 
     /// The token's colour, resolved for `drawing` (light or dark).
@@ -149,7 +181,7 @@ final class SkinStore {
     var renderID: String { "\(current.id)-\(fontSet.rawValue)" }
 
     /// Read by the dynamic colours, which AppKit may resolve off the main thread.
-    nonisolated static let active = OSAllocatedUnfairLock(initialState: Skin.nuno)
+    nonisolated static let active = OSAllocatedUnfairLock(initialState: Skin.rams)
     /// Read by Typography, from any view.
     nonisolated static let activeFonts = OSAllocatedUnfairLock(initialState: FontSet.inter)
 

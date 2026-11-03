@@ -141,6 +141,17 @@ h1 {
 .legend { font-size: 12px; color: var(--ink-muted); text-transform: lowercase; margin-left: 2px; }
 .meta { font: 400 13px/1.5 var(--mono); color: var(--ink-muted); margin-top: var(--space-6); }
 
+/* Platform switcher: mode keys, the LED says which one is on */
+.platforms { display: flex; justify-content: center; gap: var(--space-3); margin: 0 auto 28px; }
+.platforms[hidden] { display: none; }
+.platforms .key { height: 36px; padding: 0 16px; font-size: 15px; }
+.platforms .key[aria-pressed="true"] { background: var(--key-face); color: var(--key-ink); }
+.platforms .group:has(.key[aria-pressed="true"]) .led { background: var(--led); }
+
+/* Content for one platform only. Without JavaScript the page stays on the Mac. */
+html[data-platform="mac"] [data-for]:not([data-for~="mac"]),
+html[data-platform="tv"] [data-for]:not([data-for~="tv"]) { display: none !important; }
+
 .shot { margin: 40px auto 0; }
 .shot img { display: block; width: 100%; height: auto; }
 

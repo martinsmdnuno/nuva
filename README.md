@@ -134,7 +134,34 @@ On first launch NuVa tells you what to do: add a folder, or sign in to Jellyfin.
 
 ## NuVa for Android TV
 
-<p align="center"><img src="docs/screenshots/tv.png" alt="NuVa on Android TV: the display with the spectrum, the keys and an album's folder"></p>
+<p align="center"><img src="docs/screenshots/tv.png" alt="NuVa on Android TV: the display with the spectrum, the keys and the queue"></p>
+
+<table>
+<tr>
+<td width="50%" valign="top" align="center">
+<img src="docs/screenshots/tv-folders.png" alt="Browsing a Jellyfin server by its folders on Android TV"><br>
+<b>Your server's folders</b><br>
+Hold OK to add to the queue.
+</td>
+<td width="50%" valign="top" align="center">
+<img src="docs/screenshots/tv-equalizer.png" alt="The 10-band equalizer on Android TV with the Rock preset"><br>
+<b>10-band equalizer</b><br>
+Eight presets, from EQ on the display.
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top" align="center">
+<img src="docs/screenshots/tv-ambient.png" alt="Ambient faces on Android TV: VU meters, valves, the track and time, and the spectrum"><br>
+<b>Ambient mode</b><br>
+Six faces, ← → to change.
+</td>
+<td width="50%" valign="top" align="center">
+<img src="docs/screenshots/tv-skins.png" alt="NuVa on Android TV in the Graphite Orange and Phosphor skins"><br>
+<b>The Mac's skins</b><br>
+Graphite Orange and Phosphor.
+</td>
+</tr>
+</table>
 
 The same player for the living room, on an Android TV box or a TV with Android TV (8.1 or later). It plays your **Jellyfin** server by its real folders and streams the original files: FLAC, 24-bit included, through Android's own player and decoders. It has what the Mac app has where a TV allows: the display with the spectrum, the 10-band equalizer, the queue, repeat and shuffle, all six ambient faces with OLED protection, album artwork with the cover's glow, the skins and font sets. The remote does everything: hold OK to add to the queue, or to move and remove; Back asks before leaving. It reopens where you were.
 
@@ -207,7 +234,7 @@ xcodegen generate
 open NuVa.xcodeproj
 ```
 
-`scripts/make-dmg.sh` builds a universal release and the DMG in `dist/`. The Android TV app is in [`android/`](android) (Kotlin, Jetpack Compose for TV and Media3; see [its plan](docs/plans/android-tv.md)); `scripts/make-apk.sh` builds the signed APK. `scripts/make-readme-images.swift` builds the images on this page from the app's own snapshots. The design system lives in [`docs/design-system`](docs/design-system).
+`scripts/make-dmg.sh` builds a universal release and the DMG in `dist/`. The Android TV app is in [`android/`](android) (Kotlin, Jetpack Compose for TV and Media3; see [its plan](docs/plans/android-tv.md)); `scripts/make-apk.sh` builds the signed APK. `scripts/make-readme-images.swift` builds the Mac images on this page from the app's own snapshots, and `scripts/make-tv-images.swift` the Android TV ones from screenshots of the TV app. The design system lives in [`docs/design-system`](docs/design-system).
 
 ## Credits
 

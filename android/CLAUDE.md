@@ -12,14 +12,14 @@ The root `CLAUDE.md` holds for this app too: its principles, the parity matrix a
 ## Code
 - Kotlin, Jetpack Compose for TV (`androidx.tv:tv-material`), Media3; package `pt.nunomartins.nuva`.
 - `audio/`: `TapSink` sits in front of the audio output and runs `Equalizer` and `Spectrum` (ports of the Mac's `Equalizer.swift` and `Spectrum.swift`: same bands, presets and FFTs). Media3 audio processors are skipped for 24-bit float sources, which is why the tap is in the sink.
-- `library/`: `JellyfinSource`, `Entry`, `Account`. `artwork/`: `AlbumGuess` rules as on the Mac, folder names only. `player/`: `PlayerModel`, `PlaybackService`. `ui/`: one file per area; `Theme.kt` holds a skin's value for every token of `docs/design-system/tokens.json`.
+- `library/`: `JellyfinSource`, `Entry`, `Account`. `artwork/`: `AlbumGuess` rules as on the Mac, folder names only. `player/`: `PlayerModel`, `PlaybackService`. `ui/`: one file per area. `Palettes.kt` (every theme's value for every token) is written by `scripts/tokens.swift` from `docs/design-system/tokens.json`; `Theme.kt` picks a palette per skin.
 - A Mac change to shared logic (EQ, spectrum, artwork rules, Jellyfin parsing) is ported here in the same spirit, with the matching unit test.
 
 ## Design
 - Same design system as the Mac (`docs/design-system/`): read it before UI work. Lead only; the skins change colours only.
 - Sizes for 10-foot viewing: twice the Mac's points, in dp, on a 960×540 dp canvas. Focus is the `focus` ring.
 - Fonts bundled (OFL); SF becomes Roboto in the font sets.
-- Text in English (`res/values/strings.xml`, the default) and European Portuguese (`res/values-pt/strings.xml`). Every new string goes in both.
+- Text in English (`res/values/strings.xml`, the default) and European Portuguese (`res/values-pt/strings.xml`). Every new string goes in both (`scripts/strings.swift` checks it); text that isn't translated, like the app's name, is `translatable="false"`.
 
 ## Build and test
 - JDK 17 (`/opt/homebrew/opt/openjdk@17`) and the Android SDK (`~/Library/Android/sdk`).

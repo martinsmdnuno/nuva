@@ -23,7 +23,9 @@ Each platform has its own `CLAUDE.md` next to its code, with how the principles 
 ## Parity and content
 - `docs/features.json` is the one list of what NuVa does on each platform: `yes`, `planned`, or `n/a` with a `why`. The Mac is the reference; a new feature lands as `yes` on the Mac and `planned` elsewhere, so a gap is always written down. An `n/a` says how a principle applies on that platform, never changes the principle.
 - The README, the site and `llms.txt` carry generated blocks between `<!-- nuva:NAME -->` and `<!-- /nuva:NAME -->` (downloads, requirements, the "which app does what" table, the site's version line and JSON-LD `operatingSystem`/`softwareVersion`). Edit `docs/features.json`, then `swift scripts/content.swift`; never edit inside a block by hand. The prose around the blocks stays hand-written.
-- `scripts/check-content.sh` fails on a stale block, a bad matrix entry, a changelog whose newest entry is older than the current version (or has none for it), a download link no release carries, a build script or `gh release create` line that misses an asset, or terms that don't name a released platform in both languages.
+- `scripts/check-content.sh` (all of the checks here; CI runs it on every pull request) fails on a stale block, a bad matrix entry, a changelog whose newest entry is older than the current version (or has none for it), a download link no release carries, a build script or `gh release create` line that misses an asset, or terms that don't name a released platform in both languages.
+- Colours: `docs/design-system/tokens.json` is the only place a colour is set. `swift scripts/tokens.swift` writes the Mac's colour sets and `Sources/DesignSystem/TokenPalettes.swift` (`ColorToken`, the always-dark skins) and Android's `ui/Palettes.kt`; never edit those by hand.
+- Text: `scripts/strings.swift` checks that every string of every app is in Portuguese and English with the same placeholders, and warns when the Mac and Windows translate the same Portuguese differently.
 - A feature is done when: the matrix is updated, the README and site prose say it (both languages), the screenshots are regenerated, the `CHANGELOG.md` has it, and `scripts/check-content.sh` passes.
 
 ## Architecture
@@ -64,7 +66,7 @@ Out (for now): generic server source, search, favourites, accounts.
 
 ## Design system
 In `docs/design-system/`. Read `README.md` and `tokens.json` before any UI work, and the component's file in `components/` before building it.
-- Colours: one `Color` per token in `Assets.xcassets` (Any variant = Aluminium, Dark = Lead), named like the tokens.
+- Colours: one `Color` per token in `Assets.xcassets` (Any variant = Aluminium, Dark = Lead), named like the tokens, written by `scripts/tokens.swift`.
 - Type: Inter, IBM Plex (Sans, Mono), DM Sans + DM Mono and Share Tech + Share Tech Mono embedded in the app (OFL, Google Fonts files); falls back to SF Pro/SF Mono if missing. Font sets (View ▸ Font, `FontSet`): Inter + Plex Mono (default), SF Pro + SF Mono, IBM Plex Sans + Plex Mono, DM Sans + DM Mono, Share Tech + Share Tech Mono; text styles are computed `Font.ds…` properties that read the current set, so never use `Typography.sans/mono` directly in views.
 - Dieter Rams language in Lead: one plane, no cards or outlines, hierarchy from key colour, state shown by LEDs.
 - Keys: a single `ButtonStyle` (`KeyButtonStyle`) with three tones: play, transport, mode.

@@ -18,6 +18,12 @@ Native macOS app in SwiftUI that plays music from folders. Winamp-like simplicit
 ## Other platforms
 - **Android TV** (`android/`, plan in `docs/plans/android-tv.md`): the same principles and design system, its own Kotlin code. There, "native audio" means the platform's own engine: AndroidX Media3 (ExoPlayer) with Android's system decoders (FLAC from API 27). No VLC, no ffmpeg, no extension decoders. This extends principle 2 to Android; it doesn't change it for the Mac.
 
+## Parity and content
+- `docs/features.json` is the one list of what NuVa does on each platform: `yes`, `planned`, or `n/a` with a `why`. The Mac is the reference; a new feature lands as `yes` on the Mac and `planned` elsewhere, so a gap is always written down. An `n/a` says how a principle applies on that platform, never changes the principle.
+- The README, the site and `llms.txt` carry generated blocks between `<!-- nuva:NAME -->` and `<!-- /nuva:NAME -->` (downloads, requirements, the "which app does what" table, the site's version line and JSON-LD `operatingSystem`/`softwareVersion`). Edit `docs/features.json`, then `swift scripts/content.swift`; never edit inside a block by hand. The prose around the blocks stays hand-written.
+- `scripts/check-content.sh` fails on a stale block, a bad matrix entry, a changelog that isn't at the current version, a download link no release carries, a build script or `gh release create` line that misses an asset, or terms that don't name a released platform in both languages.
+- A feature is done when: the matrix is updated, the README and site prose say it (both languages), the screenshots are regenerated, the `CHANGELOG.md` has it, and `scripts/check-content.sh` passes.
+
 ## Architecture
 ```swift
 protocol MusicSource {
@@ -72,7 +78,7 @@ In `docs/design-system/`. Read `README.md` and `tokens.json` before any UI work,
 ## Releases
 - Bump `MARKETING_VERSION` in `project.yml` (the Android TV app takes its version from it too), commit "Version X", run `scripts/make-dmg.sh` (writes `dist/NuVa-X.dmg` and `dist/NuVa.dmg`) and `scripts/make-apk.sh` (writes `dist/NuVa-AndroidTV-X.apk` and `dist/NuVa-AndroidTV.apk`, signed with the release key: `~/.android/nuva-release.jks`, password in the Keychain item `nuva-android-release`, never in the repository).
 - Tag `vX`, push, `gh release create vX dist/NuVa.dmg dist/NuVa-X.dmg dist/NuVa-AndroidTV.apk dist/NuVa-AndroidTV-X.apk`, and add the version to `CHANGELOG.md`. Every release carries both apps; the Android app's update notice looks for `NuVa-AndroidTV-<version>.apk` in `releases/latest`.
-- Run `scripts/update-site.sh` (version and dates on the site) and bring `site/` up to date with any new feature, in both languages, like the README.
+- Run `scripts/update-site.sh` (version and dates on the site) and `swift scripts/content.swift`, bring the site's prose up to date with any new feature, in both languages, like the README, and run `scripts/check-content.sh` before tagging.
 - `releases/latest/download/NuVa.dmg` and `releases/latest/download/NuVa-AndroidTV.apk` are the fixed download links in the README; `nuva.martinsnuno.com/tv` redirects to the APK (for the Downloader app on a TV).
 - README images: `NuVa --snapshot -AppleLanguages '(en)'` from a Debug build, then `swift scripts/make-readme-images.swift <snapshot folder> docs/screenshots`.
 

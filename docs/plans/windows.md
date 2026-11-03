@@ -65,7 +65,7 @@ Media Foundation Source Reader (float PCM, per track)
 | Terms and Privacy | `TERMS.md` bundled and shown in its own window. |
 | `Localizable.xcstrings`, system language | The same rule: the Portuguese text is the key, with its English translation, in `windows/NuVa.Core/Strings.json`; the Windows display language picks PT or EN (English fallback). |
 | Reduce Motion | Windows' "Animation effects" setting (`SystemParameters.ClientAreaAnimation`). |
-| `--snapshot` for README images | Same flag, rendering each window to PNG. |
+| `--snapshot` for README images | Not yet: README images for Windows come with the first tested build. |
 
 ## Shortcuts
 

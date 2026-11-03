@@ -1,0 +1,20 @@
+# NuVa
+
+> NuVa is a free, open-source music player for macOS (14 Sonoma or later, Apple silicon and Intel) that plays music folders as they are: a folder is an album, a file is a track, and it never reads tags to organise the library. Current version: 1.10.1 MIT license.
+
+- Formats: FLAC (including 24-bit hi-res), ALAC, WAV, AIFF, MP3 and AAC/M4A, played through Apple's AVFoundation (the engine behind QuickTime). No VLC, no ffmpeg, no bundled codecs.
+- Sources: folders on the Mac, external disks, NAS shares mounted over SMB, audio CDs (named from MusicBrainz), and Jellyfin servers browsed by their real folders, streaming the original file. Plex and UPnP/DLNA are not supported yet.
+- Output: AirPlay 2 (WiiM streamers, HomePod, Apple TV, AirPlay speakers) from the output readout on the display.
+- Features: queue, repeat, shuffle, 10-band equalizer with presets, spectrum meter, media keys, Control Center and Now Playing, keyboard shortcuts for everything, a menu bar mini player, optional album artwork (folder image first, then MusicBrainz and the Cover Art Archive), skins (Rams, Graphite Orange, Phosphor), five font pairs, English and Portuguese.
+- Ambient mode (⌘4): a full-screen display with VU meters, valves, a 28-band spectrum, level meters, a clock, or the track on a glow from the album cover, drawn at up to 120 Hz, with OLED protection.
+- Privacy: no account, no analytics, no ads.
+- Install: download NuVa.dmg, drag NuVa to Applications; it isn't signed with a paid Apple certificate, so the first launch needs System Settings › Privacy & Security › Open Anyway.
+
+## Links
+
+- [Download NuVa.dmg](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg)
+- [Source code and issues on GitHub](https://github.com/martinsmdnuno/nuva)
+- [Changelog](https://github.com/martinsmdnuno/nuva/blob/main/CHANGELOG.md)
+- [Site in English](https://nuva.martinsnuno.com/)
+- [Site em português](https://nuva.martinsnuno.com/pt/)
+- [Privacy notice](https://nuva.martinsnuno.com/privacy/)

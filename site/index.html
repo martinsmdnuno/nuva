@@ -40,8 +40,8 @@
       "url": "https://nuva.martinsnuno.com/",
       "applicationCategory": "MultimediaApplication",
       "applicationSubCategory": "Music player",
-      "operatingSystem": "macOS 14 or later (Apple silicon and Intel)",
-      "softwareVersion": "1.10.1",
+      "operatingSystem": "macOS 14 or later (Apple silicon and Intel); Android TV 8.1 or later",
+      "softwareVersion": "1.11",
       "downloadUrl": "https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg",
       "installUrl": "https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg",
       "license": "https://opensource.org/licenses/MIT",
@@ -49,7 +49,7 @@
       "inLanguage": ["en", "pt-PT"],
       "image": "https://nuva.martinsnuno.com/icon-512.png",
       "screenshot": ["https://nuva.martinsnuno.com/img/themes.webp", "https://nuva.martinsnuno.com/img/ambient.webp", "https://nuva.martinsnuno.com/img/skins.webp"],
-      "featureList": ["Plays music folders as they are; never reorganises by tags", "FLAC, ALAC, WAV, AIFF, MP3 and AAC through AVFoundation", "AirPlay 2 output (WiiM, HomePod, Apple TV)", "Jellyfin client that browses by folder and streams the original file", "Local folders, external disks, NAS over SMB and audio CDs", "10-band equalizer and spectrum meter", "Full-screen ambient mode with VU meters, valves and spectrum", "Media keys, Control Center and keyboard shortcuts", "English and Portuguese"],
+      "featureList": ["Plays music folders as they are; never reorganises by tags", "FLAC, ALAC, WAV, AIFF, MP3 and AAC through AVFoundation", "AirPlay 2 output (WiiM, HomePod, Apple TV)", "Jellyfin client that browses by folder and streams the original file", "Local folders, external disks, NAS over SMB and audio CDs", "10-band equalizer and spectrum meter", "Full-screen ambient mode with VU meters, valves and spectrum", "Android TV app with the same player, equalizer and ambient faces, for Jellyfin", "Media keys, Control Center and keyboard shortcuts", "English and Portuguese"],
       "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
       "author": {"@type": "Person", "name": "Nuno Martins", "url": "https://github.com/martinsmdnuno"},
       "sameAs": ["https://github.com/martinsmdnuno/nuva"]
@@ -65,6 +65,7 @@
         {"@type": "Question", "name": "Can I play music from a NAS?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Connect to the share in Finder (SMB) and add the folder in NuVa; it comes back by itself when the share is mounted again. You can also use a Jellyfin server on the NAS. Plex and UPnP/DLNA servers aren't supported yet."}},
         {"@type": "Question", "name": "Is NuVa free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. NuVa is free and open source under the MIT license, with no account, no ads and no analytics."}},
         {"@type": "Question", "name": "Why does macOS say it can't check NuVa?", "acceptedAnswer": {"@type": "Answer", "text": "NuVa isn't signed with a paid Apple developer certificate. After dragging it to Applications and opening it once, go to System Settings, Privacy & Security, and click Open Anyway next to the NuVa message. You only do this once."}},
+        {"@type": "Question", "name": "Is there NuVa for Android TV?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. NuVa for Android TV runs on an Android TV box or a TV with Android TV 8.1 or later and plays a Jellyfin server by its folders, FLAC included, with the equalizer, the spectrum and the ambient faces. Install it with the Downloader app: type nuva.martinsnuno.com/tv."}},
         {"@type": "Question", "name": "Which Macs does NuVa run on?", "acceptedAnswer": {"@type": "Answer", "text": "Any Mac with macOS 14 Sonoma or later, with Apple silicon or Intel."}}
       ]
     }
@@ -101,6 +102,14 @@
       </div>
       <div class="group">
         <span class="led" aria-hidden="true"></span>
+        <a class="key mode" href="#tv">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="1.5"/><path d="M8 21h8"/></svg>
+          Android TV
+        </a>
+        <span class="legend">tv</span>
+      </div>
+      <div class="group">
+        <span class="led" aria-hidden="true"></span>
         <a class="key mode" href="https://github.com/martinsmdnuno/nuva">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 7-5 5 5 5m8-10 5 5-5 5"/></svg>
           Source on GitHub
@@ -108,7 +117,7 @@
         <span class="legend">source</span>
       </div>
     </div>
-    <p class="meta">Version <span class="version">1.10.1</span> · macOS 14 or later · Apple silicon and Intel · free, MIT</p>
+    <p class="meta">Version <span class="version">1.11</span> · macOS 14 or later · Apple silicon and Intel · Android TV 8.1 or later · free, MIT</p>
     <figure class="shot">
       <img src="/img/themes.webp" width="1600" height="1259" alt="NuVa's window in the dark Lead and light Aluminium themes: a display showing FLAC 24/48 playing over AirPlay to a WiiM, the keys, and the queue">
     </figure>
@@ -166,6 +175,24 @@
     </div>
   </section>
 
+  <section id="tv">
+    <div class="wrap split">
+      <img src="/img/tv.webp" width="1600" height="900" loading="lazy" alt="NuVa on Android TV: the display with FLAC playing and the spectrum, the keys, and the queue">
+      <div>
+        <p class="label">android tv</p>
+        <h2>On the TV, too</h2>
+        <p class="muted">NuVa for Android TV is the same player for the living room, on an Android TV box or a TV with Android TV 8.1 or later. It plays your Jellyfin server by its real folders, FLAC and 24-bit included, through Android's own player.</p>
+        <ul>
+          <li>The display, the spectrum and the 10-band equalizer</li>
+          <li>All six ambient faces, with OLED protection</li>
+          <li>The remote does everything; Back asks before leaving</li>
+          <li>Reopens where you were</li>
+        </ul>
+        <p class="muted">Open the Downloader app on the TV and type <code>nuva.martinsnuno.com/tv</code>, or <a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk">download the APK</a>.</p>
+      </div>
+    </div>
+  </section>
+
   <section id="design">
     <div class="wrap split">
       <img src="/img/skins.webp" width="1600" height="1259" loading="lazy" alt="NuVa in the Graphite Orange skin, with an orange play key, and in Phosphor, with green text on a black display">
@@ -213,6 +240,10 @@
       <details>
         <summary>Why does macOS say it can't check NuVa?</summary>
         <p>NuVa isn't signed with a paid Apple developer certificate. After dragging it to Applications and opening it once, go to System Settings › Privacy &amp; Security and click Open Anyway next to the NuVa message. You only do this once.</p>
+      </details>
+      <details>
+        <summary>Is there NuVa for Android TV?</summary>
+        <p>Yes. NuVa for Android TV runs on an Android TV box or a TV with Android TV 8.1 or later and plays a Jellyfin server by its folders, FLAC included, with the equalizer, the spectrum and the ambient faces. Install it with the Downloader app: type <code>nuva.martinsnuno.com/tv</code>.</p>
       </details>
       <details>
         <summary>Which Macs does NuVa run on?</summary>

@@ -56,4 +56,13 @@ Later: the equalizer and the meters (a Media3 `AudioProcessor` measuring after t
 - Tested on the Android TV emulator (API 33) against a stand-in Jellyfin with a 24/96 and a 16/44.1 FLAC: sign-in, folders by Path, remote focus, gapless playback through `c2.android.flac.decoder`, the remote's play/pause, ambient in and out.
 - Install on the box over the network: on the box, Settings › Device Preferences › About › Build (press OK seven times), then Developer options › Network debugging; then `adb connect <box IP>:5555` and `adb install -r app-debug.apk`.
 - Or copy the APK to the box with a USB stick or the Downloader app.
-- Releases: a signed APK attached to the GitHub release. The signing key stays on the author's Mac, never in the repository.
+- Releases: from 1.11 the Android TV app shares the Mac's version number (`MARKETING_VERSION` in `project.yml`; versionCode 1.11 → 11100) and its GitHub release. `scripts/make-apk.sh` builds the release APK (R8-minified) signed with the release key, which stays on the author's Mac (`~/.android/nuva-release.jks`, password in the Keychain, a backup kept apart), never in the repository. A build signed with another key (the debug builds before 1.11) has to be uninstalled once before the signed one installs.
+- On the box: the Downloader app, `nuva.martinsnuno.com/tv` (a redirect to `releases/latest/download/NuVa-AndroidTV.apk`).
+
+## Google Play (later)
+
+- A Play developer account (one-time fee, identity check). A new personal account has to run a closed test with at least 12 testers for 14 days before it can publish.
+- An Android App Bundle (`bundleRelease`) with the target SDK Google requires that year, the TV banner, screenshots at 1920×1080, the privacy policy URL, the Data safety form and the content rating.
+- Play App Signing can take this same release key ("use an existing key"), so the GitHub APK and the Play version stay interchangeable.
+- Google reviews TV apps separately (D-pad everywhere, no touch, a Leanback launcher entry), and needs a way in: a demo Jellyfin server and account for the reviewers.
+- Apps on Play may only update through Play, so a Play build drops the GitHub update notice.

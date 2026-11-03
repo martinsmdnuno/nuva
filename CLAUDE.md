@@ -70,10 +70,10 @@ In `docs/design-system/`. Read `README.md` and `tokens.json` before any UI work,
 - Small commits, one per step. Code comments, docs and commit messages in English (the repository is public).
 
 ## Releases
-- Bump `MARKETING_VERSION` in `project.yml`, commit "Version X", run `scripts/make-dmg.sh` (writes `dist/NuVa-X.dmg` and `dist/NuVa.dmg`).
-- Tag `vX`, push, `gh release create vX dist/NuVa.dmg dist/NuVa-X.dmg`, and add the version to `CHANGELOG.md`.
+- Bump `MARKETING_VERSION` in `project.yml` (the Android TV app takes its version from it too), commit "Version X", run `scripts/make-dmg.sh` (writes `dist/NuVa-X.dmg` and `dist/NuVa.dmg`) and `scripts/make-apk.sh` (writes `dist/NuVa-AndroidTV-X.apk` and `dist/NuVa-AndroidTV.apk`, signed with the release key: `~/.android/nuva-release.jks`, password in the Keychain item `nuva-android-release`, never in the repository).
+- Tag `vX`, push, `gh release create vX dist/NuVa.dmg dist/NuVa-X.dmg dist/NuVa-AndroidTV.apk dist/NuVa-AndroidTV-X.apk`, and add the version to `CHANGELOG.md`. Every release carries both apps; the Android app's update notice looks for `NuVa-AndroidTV-<version>.apk` in `releases/latest`.
 - Run `scripts/update-site.sh` (version and dates on the site) and bring `site/` up to date with any new feature, in both languages, like the README.
-- `releases/latest/download/NuVa.dmg` is the fixed download link in the README.
+- `releases/latest/download/NuVa.dmg` and `releases/latest/download/NuVa-AndroidTV.apk` are the fixed download links in the README; `nuva.martinsnuno.com/tv` redirects to the APK (for the Downloader app on a TV).
 - README images: `NuVa --snapshot -AppleLanguages '(en)'` from a Debug build, then `swift scripts/make-readme-images.swift <snapshot folder> docs/screenshots`.
 
 ## Site

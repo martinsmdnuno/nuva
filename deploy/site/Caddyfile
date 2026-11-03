@@ -21,6 +21,10 @@
 		-Server
 	}
 
+	# The Android TV app, for the Downloader app on a TV box: a short address to type with the remote.
+	redir /tv https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk 302
+	redir /tv.apk https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk 302
+
 	handle /api/feedback {
 		reverse_proxy feedback:8080
 	}

@@ -4,12 +4,14 @@
 
 <p align="center">
   <a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg"><img src="https://img.shields.io/badge/Download_for_Mac-NuVa.dmg-E0A93E?style=for-the-badge&logo=apple&logoColor=white" alt="Download NuVa for Mac"></a>
+  <a href="#nuva-for-android-tv"><img src="https://img.shields.io/badge/Android_TV-NuVa--AndroidTV.apk-6B6E73?style=for-the-badge&logo=androidtv&logoColor=white" alt="NuVa for Android TV"></a>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/github/v/release/martinsmdnuno/nuva?style=flat-square&label=version&color=2B2D30" alt="Latest version">
   <img src="https://img.shields.io/badge/macOS-14%2B-2B2D30?style=flat-square" alt="macOS 14 or later">
   <img src="https://img.shields.io/badge/Apple_silicon_%2B_Intel-2B2D30?style=flat-square" alt="Apple silicon and Intel">
+  <img src="https://img.shields.io/badge/Android_TV-8.1%2B-2B2D30?style=flat-square" alt="Android TV 8.1 or later">
   <img src="https://img.shields.io/github/license/martinsmdnuno/nuva?style=flat-square&color=2B2D30" alt="MIT license">
   <br>
   <b>English</b> · <a href="#português">Português</a>
@@ -130,6 +132,14 @@ On first launch NuVa tells you what to do: add a folder, or sign in to Jellyfin.
 </tr>
 </table>
 
+## NuVa for Android TV
+
+<p align="center"><img src="docs/screenshots/tv.png" alt="NuVa on Android TV: the display with the spectrum, the keys and an album's folder"></p>
+
+The same player for the living room, on an Android TV box or a TV with Android TV (8.1 or later). It plays your **Jellyfin** server by its real folders and streams the original files: FLAC, 24-bit included, through Android's own player and decoders. It has what the Mac app has where a TV allows: the display with the spectrum, the 10-band equalizer, the queue, repeat and shuffle, all six ambient faces with OLED protection, album artwork with the cover's glow, the skins and font sets. The remote does everything: hold OK to add to the queue, or to move and remove; Back asks before leaving. It reopens where you were.
+
+To install it, open the **Downloader** app on the TV (free, in the Play Store) and type `nuva.martinsnuno.com/tv`. Or download [NuVa-AndroidTV.apk](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk) and copy it with a USB stick. Android asks once to allow apps from Downloader (or from the file manager).
+
 ## Everything else
 
 - Plays FLAC, ALAC, MP3, AAC/M4A, WAV and AIFF.
@@ -197,7 +207,7 @@ xcodegen generate
 open NuVa.xcodeproj
 ```
 
-`scripts/make-dmg.sh` builds a universal release and the DMG in `dist/`. `scripts/make-readme-images.swift` builds the images on this page from the app's own snapshots. The design system lives in [`docs/design-system`](docs/design-system).
+`scripts/make-dmg.sh` builds a universal release and the DMG in `dist/`. The Android TV app is in [`android/`](android) (Kotlin, Jetpack Compose for TV and Media3; see [its plan](docs/plans/android-tv.md)); `scripts/make-apk.sh` builds the signed APK. `scripts/make-readme-images.swift` builds the images on this page from the app's own snapshots. The design system lives in [`docs/design-system`](docs/design-system).
 
 ## Credits
 
@@ -217,6 +227,7 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 
 <p align="center">
   <a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg"><img src="https://img.shields.io/badge/Descarregar_para_Mac-NuVa.dmg-E0A93E?style=for-the-badge&logo=apple&logoColor=white" alt="Descarregar a NuVa para Mac"></a>
+  <a href="#na-tv-nuva-para-android-tv"><img src="https://img.shields.io/badge/Android_TV-NuVa--AndroidTV.apk-6B6E73?style=for-the-badge&logo=androidtv&logoColor=white" alt="NuVa para Android TV"></a>
 </p>
 
 - **As tuas pastas, intocadas.** Sem importar, sem tags. Ordem natural: a faixa 2 vem antes da 10.
@@ -234,6 +245,12 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 - Media keys, Centro de Controlo e mini player na barra de menus. Tudo tem atalho de teclado, e o VoiceOver lê as teclas, os controlos e cada linha.
 - **Não pára por qualquer coisa:** um ficheiro danificado ou um servidor que foi abaixo é tentado mais uma vez e depois saltado, e o visor diz que faixa não tocou. Um disco ou NAS que não estava ligado volta quando é montado.
 - Em português e inglês, conforme a língua do sistema. macOS 14 ou posterior, Apple silicon e Intel.
+
+### Na TV: NuVa para Android TV
+
+O mesmo leitor para a sala, numa box Android TV ou numa TV com Android TV (8.1 ou posterior). Toca o teu servidor **Jellyfin** pelas pastas reais e os ficheiros originais: FLAC, 24 bits incluídos, pelo leitor e pelos descodificadores do próprio Android. Tem o que a app do Mac tem onde uma TV deixa: o visor com o espectro, o equalizador de 10 bandas, a fila, repetir e aleatório, as seis faces do modo Ambiente com proteção OLED, as capas com o brilho do álbum, as skins e as fontes. O comando faz tudo: manter OK carregado junta à fila, ou move e tira; Voltar pergunta antes de sair. Volta a abrir onde estavas.
+
+Para instalar, abre a app **Downloader** na TV (gratuita, na Play Store) e escreve `nuva.martinsnuno.com/tv`. Ou descarrega o [NuVa-AndroidTV.apk](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk) e copia-o com uma pen USB. O Android pede uma vez para permitir apps vindas do Downloader (ou do gestor de ficheiros).
 
 ### Instalar
 

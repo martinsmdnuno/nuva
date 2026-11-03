@@ -92,13 +92,13 @@ public static class AppMenu
     public static MenuItem SkinMenu(App app)
     {
         var menu = new MenuItem { Header = "Skin" };
-        for (var i = 0; i < Skin.All.Length; i++)
-        {
-            var skin = Skin.All[i];
-            menu.Items.Add(Item($"{skin.Name}\tCtrl+Shift+{i + 1}", () => app.SetSkin(skin), check: Theme.Skin == skin));
-        }
+        foreach (var item in SkinItems(app)) menu.Items.Add(item);
         return menu;
     }
+
+    public static MenuItem[] SkinItems(App app) => Skin.All
+        .Select((skin, i) => Item($"{skin.Name}\tCtrl+Shift+{i + 1}", () => app.SetSkin(skin), check: Theme.Skin == skin))
+        .ToArray();
 
     public static MenuItem FontMenu(App app)
     {

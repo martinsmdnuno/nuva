@@ -29,6 +29,7 @@
   <ItemGroup>
     <Resource Include="Fonts/*.ttf" />
     <Resource Include="Assets/*.png" />
+    <Resource Include="Assets/NuVa.ico" />
     <EmbeddedResource Include="../../TERMS.md" LogicalName="NuVa.TERMS.md" />
   </ItemGroup>
 </Project>

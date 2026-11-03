@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- 10.0.19041: Windows 10 2004 and later, with the WinRT projection (AudioGraph, SMTC, devices). -->
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <UseWPF>true</UseWPF>
+    <!-- Only for the notification area icon (NotifyIcon), part of the desktop runtime. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>NuVa</RootNamespace>
+    <AssemblyName>NuVa</AssemblyName>
+    <ApplicationIcon>Assets/NuVa.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
+    <!-- One NuVa.exe, nothing to install. -->
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>embedded</DebugType>
+    <!-- WPF takes DPI awareness from the manifest; the warning is for WinForms apps. -->
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../NuVa.Core/NuVa.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Fonts/*.ttf" />
+    <Resource Include="Assets/*.png" />
+    <Resource Include="Assets/NuVa.ico" />
+    <EmbeddedResource Include="../../TERMS.md" LogicalName="NuVa.TERMS.md" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="NuVa.Core.Tests/NuVa.Core.Tests.csproj" />
+  <Project Path="NuVa.Core/NuVa.Core.csproj" />
+  <Project Path="NuVa/NuVa.csproj" />
+</Solution>

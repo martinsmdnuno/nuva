@@ -33,6 +33,7 @@ public sealed partial class App
     private void AfterLaunch()
     {
         AddTaskbarButtons();
+        ScanDrives();
         foreach (var then in launched) then();
     }
 

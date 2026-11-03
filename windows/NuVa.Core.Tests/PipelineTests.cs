@@ -50,7 +50,13 @@ public sealed class FakeOutput : IAudioOutput
     public double Latency => 0;
     public readonly List<float> Heard = new();
 
-    public void Configure(AudioFormat format) { Format = format; Configured.Add(format); }
+    public int? RefuseRate;
+    public void Configure(AudioFormat format)
+    {
+        if (format.SampleRate == RefuseRate) throw new InvalidOperationException("refused");
+        Format = format;
+        Configured.Add(format);
+    }
     public void Start() => Running = true;
     public void Stop() => Running = false;
 
@@ -198,6 +204,28 @@ public static class PipelineTests
         output.Pull(4);
         Assert.Sequence([new AudioFormat(1000, 1), new AudioFormat(2000, 1)], output.Configured);
         Assert.True(output.Heard.Contains(2000f) && output.Heard.Contains(2399f), "track 2 heard after the switch: " + string.Join(",", output.Heard.Where((x, i) => i % 50 == 0)));
+        pipeline.Dispose();
+    }
+
+    [Test]
+    public static void RefusedFormatFailsThatTrackOnly()
+    {
+        var (pipeline, output, factory, started) = Make(200, 200, 200);
+        factory.Rates[2] = 3000;
+        output.RefuseRate = 3000;
+        var failed = new ConcurrentQueue<long>();
+        pipeline.Failed += (token, _) => failed.Enqueue(token);
+        // As the controller does: a failed upcoming track is skipped and the next one asked for.
+        pipeline.Next = token => token == 1 ? (failed.Contains(2) ? Track(3) : Track(2)) : null;
+        pipeline.Failed += (_, _) => pipeline.RefreshUpcoming();
+        pipeline.Play(Track(1));
+        Settle();
+        output.Pull(3);
+        Settle();
+        output.Pull(4);
+        Assert.Sequence([2L], failed.Distinct());
+        Assert.True(output.Heard.Contains(3000f) && output.Heard.Contains(3199f), "track 3 plays after the refused one");
+        Assert.Sequence([new AudioFormat(1000, 1)], output.Configured.Distinct());
         pipeline.Dispose();
     }
 }

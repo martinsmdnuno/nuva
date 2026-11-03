@@ -30,7 +30,10 @@ internal sealed class HttpByteStream : IStream
         request.Headers.Range = new RangeHeaderValue(0, 0);
         using var response = http.Send(request, HttpCompletionOption.ResponseHeadersRead);
         response.EnsureSuccessStatusCode();
-        length = response.Content.Headers.ContentRange?.Length ?? response.Content.Headers.ContentLength ?? throw new InvalidOperationException("The server doesn't say how long the file is");
+        // 206: the length is in Content-Range ("bytes 0-0/12345"); 200: the server ignores ranges and sends it all.
+        length = response.StatusCode == System.Net.HttpStatusCode.PartialContent
+            ? response.Content.Headers.ContentRange?.Length ?? throw new InvalidOperationException("The server doesn't say how long the file is")
+            : response.Content.Headers.ContentLength ?? throw new InvalidOperationException("The server doesn't say how long the file is");
         ContentType = response.Content.Headers.ContentType?.MediaType;
     }
 
@@ -42,18 +45,17 @@ internal sealed class HttpByteStream : IStream
         using var response = http.Send(request);
         response.EnsureSuccessStatusCode();
         var data = response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
-        if (response.StatusCode == System.Net.HttpStatusCode.OK && at > 0)
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            // No range support: the whole file came back; keep the part asked for.
-            var take = (int)Math.Max(0, Math.Min(Piece, data.Length - at));
-            buffer = new byte[take];
-            Array.Copy(data, at, buffer, 0, take);
+            // No range support: the whole file came back. Keep all of it, so it comes only once.
+            buffer = data;
+            bufferStart = 0;
         }
         else
         {
             buffer = data;
+            bufferStart = at;
         }
-        bufferStart = at;
     }
 
     public void Read(byte[] pv, int cb, IntPtr pcbRead)

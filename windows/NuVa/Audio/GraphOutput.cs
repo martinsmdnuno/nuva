@@ -32,6 +32,8 @@ public sealed class GraphOutput : IAudioOutput
     private AudioGraph? graph;
     private AudioDeviceOutputNode? device;
     private AudioFrameInputNode? input;
+    /// <summary>The format of the node that is <see cref="input"/>; a quantum of an older node is ignored.</summary>
+    private AudioFormat inputFormat = new(44100, 2);
     private AudioFormat format = new(44100, 2);
     private bool configured;
     private bool running;
@@ -225,6 +227,7 @@ public sealed class GraphOutput : IAudioOutput
             Build(format.SampleRate);
             input = graph!.CreateFrameInputNode(props);
         }
+        inputFormat = format;
         input.AddOutgoingConnection(device);
         input.QuantumStarted += OnQuantum;
         if (running) graph!.Start();
@@ -251,8 +254,9 @@ public sealed class GraphOutput : IAudioOutput
     private unsafe void OnQuantum(AudioFrameInputNode sender, FrameInputNodeQuantumStartedEventArgs args)
     {
         var frames = args.RequiredSamples;
-        if (frames <= 0) return;
-        var current = format;
+        // A node being replaced may still run one quantum: it mustn't pull the next track's blocks.
+        if (frames <= 0 || !ReferenceEquals(sender, input)) return;
+        var current = inputFormat;
         var count = frames * current.Channels;
         if (logged < 3)
         {

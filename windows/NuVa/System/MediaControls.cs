@@ -115,6 +115,8 @@ public sealed class MediaControls
                     if (artwork != null)
                     {
                         var file = await StorageFile.GetFileFromPathAsync(artwork);
+                        // Another track came while the file opened: its own update shows it.
+                        if (key != shownKey) return;
                         updater.Thumbnail = RandomAccessStreamReference.CreateFromFile(file);
                     }
                 }

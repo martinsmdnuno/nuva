@@ -99,6 +99,7 @@ public sealed class Pipeline : IDisposable
     private AudioFormat? configured;
     private int runs;
     private readonly float[] scratch = new float[BlockFrames * 8];
+    /// <summary>Replaced (and the old one cancelled) by Play and Stop on the caller's thread, so a stalled server can't hold them up.</summary>
     private CancellationTokenSource resolving = new();
 
     // Output thread (under gate).
@@ -155,7 +156,13 @@ public sealed class Pipeline : IDisposable
     // MARK: Commands (any thread; run in order on the decoder thread)
 
     /// <summary>Starts a new chain at <paramref name="request"/>, dropping whatever was queued.</summary>
-    public void Play(TrackRequest request, double startAt = 0, bool paused = false) => Post(() =>
+    public void Play(TrackRequest request, double startAt = 0, bool paused = false)
+    {
+        Interlocked.Exchange(ref resolving, new CancellationTokenSource()).Cancel();
+        Post(() => PlayNow(request, startAt, paused));
+    }
+
+    private void PlayNow(TrackRequest request, double startAt, bool paused)
     {
         Flush();
         CloseDecoder();
@@ -170,7 +177,7 @@ public sealed class Pipeline : IDisposable
         if (!Open(request, startAt, configure: true)) return;
         if (paused) output.Stop();
         else output.Start();
-    });
+    }
 
     public void Pause() => Post(() =>
     {
@@ -189,7 +196,13 @@ public sealed class Pipeline : IDisposable
     });
 
     /// <summary>Stops and forgets everything.</summary>
-    public void Stop() => Post(() =>
+    public void Stop()
+    {
+        Interlocked.Exchange(ref resolving, new CancellationTokenSource()).Cancel();
+        Post(StopNow);
+    }
+
+    private void StopNow()
     {
         lock (gate)
         {
@@ -201,7 +214,7 @@ public sealed class Pipeline : IDisposable
         output.Stop();
         Flush();
         CloseDecoder();
-    });
+    }
 
     /// <summary>Moves within the audible track.</summary>
     public void Seek(double seconds)
@@ -218,7 +231,6 @@ public sealed class Pipeline : IDisposable
                 // Still decoding the audible track: seek in place.
                 decoder.Seek(seconds);
                 decodePosition = seconds;
-                tap?.Reset();
                 lock (gate) audibleTime = seconds;
             }
             else
@@ -351,11 +363,11 @@ public sealed class Pipeline : IDisposable
     /// <summary>Opens a track and makes it the one being decoded. False (and reported) when it fails.</summary>
     private bool Open(TrackRequest request, double startAt, bool keepRun = false, bool configure = false)
     {
-        resolving.Cancel();
-        resolving = new CancellationTokenSource();
+        var cancel = resolving.Token;
         try
         {
-            var location = request.Resolve(resolving.Token).GetAwaiter().GetResult();
+            var location = request.Resolve(cancel).WaitAsync(cancel).GetAwaiter().GetResult();
+            cancel.ThrowIfCancellationRequested();
             var opened = factory.Open(location);
             if (startAt > 0) opened.Seek(startAt);
             decoder = opened;
@@ -371,9 +383,19 @@ public sealed class Pipeline : IDisposable
                 flushedTap = true;
             }
             // A track that follows gaplessly is configured when its first block reaches the output.
-            if (configure && configured != opened.Format) Configure(opened.Format);
+            if (configure && configured != opened.Format && Configure(opened.Format) is { } refused)
+            {
+                CloseDecoder();
+                Failed?.Invoke(request.Token, refused);
+                return false;
+            }
             Log.Write($"pipeline: opened {request.Name}: {opened.Format}, {opened.Duration:F1} s, {opened.SourceBits} bits");
             return true;
+        }
+        catch (OperationCanceledException)
+        {
+            // Play or Stop came first: the request was dropped, not failed.
+            return false;
         }
         catch (Exception e)
         {
@@ -383,18 +405,46 @@ public sealed class Pipeline : IDisposable
         }
     }
 
-    private void Configure(AudioFormat format)
+    /// <summary>Sets the output to a format; returns the error when it refuses.</summary>
+    private Exception? Configure(AudioFormat format)
     {
         try
         {
             output.Configure(format);
             configured = format;
+            return null;
         }
         catch (Exception e)
         {
             Log.Write($"pipeline: output can't take {format}: {e.Message}");
+            return e;
         }
-        lock (gate) reconfiguring = false;
+        finally
+        {
+            lock (gate) reconfiguring = false;
+        }
+    }
+
+    /// <summary>A track reached the output in a format it refuses: its blocks go and the track fails, so playback moves on.</summary>
+    private void ConfigureFor(AudioFormat format, TrackInfo track)
+    {
+        if (Configure(format) is not { } refused) return;
+        lock (gate)
+        {
+            var node = blocks.First;
+            while (node != null)
+            {
+                var following = node.Next;
+                if (node.Value.Info == track)
+                {
+                    bufferedSeconds -= Remaining(node.Value);
+                    blocks.Remove(node);
+                }
+                node = following;
+            }
+        }
+        if (decodingInfo == track) CloseDecoder();
+        Failed?.Invoke(track.Token, refused);
     }
 
     private void CloseDecoder()
@@ -457,7 +507,8 @@ public sealed class Pipeline : IDisposable
                     {
                         reconfiguring = true;
                         var wanted = block.Format;
-                        Post(() => Configure(wanted));
+                        var track = block.Info;
+                        Post(() => ConfigureFor(wanted, track));
                     }
                     break;
                 }

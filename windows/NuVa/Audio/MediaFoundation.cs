@@ -29,6 +29,7 @@ internal static unsafe class MF
     public static readonly Guid Channels = new("37e48bf5-645e-4c5b-89de-ada9e29b696a");
     public static readonly Guid SamplesPerSecond = new("5faeeae7-0290-4c31-9e8a-c534f68d9dba");
     public static readonly Guid BitsPerSample = new("f2deb57f-40fa-4764-aa33-ed4f2d1ff669");
+    public static readonly Guid BlockAlignment = new("322de230-9eeb-43bd-ab7a-ff412251541d");
     public static readonly Guid PdDuration = new("6c990d33-bb8e-477a-8598-0d5d96fcd88a");
 
     [DllImport("mfplat.dll", ExactSpelling = true)]
@@ -260,7 +261,7 @@ internal sealed unsafe class MediaFoundationDecoder : IDecoder
             if (!Request(MF.Float, 32))
             {
                 // Some decoders only give integer PCM: take it at the source's depth and convert here.
-                if (!Request(MF.Pcm, SourceBits is 24 or 32 ? SourceBits : 16) && !Request(MF.Pcm, 16))
+                if (!Request(MF.Pcm, SourceBits is 24 or 32 ? SourceBits : 16) && !Request(MF.Pcm, 16) && !Request(MF.Pcm, 0))
                     throw new COMException("No PCM output for this file");
             }
             ReadFormat();
@@ -296,7 +297,8 @@ internal sealed unsafe class MediaFoundationDecoder : IDecoder
         {
             MF.SetGuid(type, MF.MajorType, MF.Audio);
             MF.SetGuid(type, MF.Subtype, subtype);
-            if (subtype == MF.Pcm) MF.SetUInt32(type, MF.BitsPerSample, (uint)bitsPerSample);
+            // 0 leaves the depth to the decoder.
+            if (subtype == MF.Pcm && bitsPerSample > 0) MF.SetUInt32(type, MF.BitsPerSample, (uint)bitsPerSample);
             return MF.SetCurrentMediaType(reader, MF.FirstAudioStream, type) >= 0;
         }
         finally
@@ -315,8 +317,10 @@ internal sealed unsafe class MediaFoundationDecoder : IDecoder
             MF.GetUInt32(type, MF.SamplesPerSecond, out var rate);
             MF.GetUInt32(type, MF.BitsPerSample, out var b);
             isFloat = subtype == MF.Float;
-            bits = isFloat ? 32 : (int)b;
             channels = Math.Max(1, (int)ch);
+            // Bytes per sample from the block alignment (20-bit PCM travels in 24 bits).
+            bits = MF.GetUInt32(type, MF.BlockAlignment, out var align) >= 0 && align > 0 ? (int)(align / channels) * 8 : isFloat ? 32 : (int)b;
+            if (bits is not (8 or 16 or 24 or 32)) throw new COMException($"Unsupported sample size {bits}");
             if (rate == 0) throw new COMException("No sample rate");
             Format = new AudioFormat((int)rate, channels);
         }

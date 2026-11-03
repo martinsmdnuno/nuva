@@ -67,6 +67,9 @@ struct AmbientView: View {
         }
         .background(Color.display)
         .foregroundStyle(Color.displayInk)
+        // All display, and the display is always dark: the skin's dark colours whatever the Mac's
+        // appearance (in Aluminium the amber is darker and `ink` is near black, for a light chassis).
+        .environment(\.colorScheme, .dark)
         .animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: lastMove == nil)
         // ← → show the strip, with the new face's name, for a moment.
         .onChange(of: ambient.changesByHand) {
@@ -345,7 +348,7 @@ private struct AmbientTrackFoot: View {
     }
 }
 
-/// Feeds a meter from the tap at 30 frames a second while music plays, and a moment after a
+/// Feeds a meter from the tap at 60 frames a second while music plays, and a moment after a
 /// pause so the segments fall instead of freezing. Snapshots get a still moment instead.
 private struct AmbientMeterTimeline<Content: View>: View {
     let meter: SpectrumMeter
@@ -359,7 +362,7 @@ private struct AmbientMeterTimeline<Content: View>: View {
     var body: some View {
         let player = model.player
         let spectrum = player.equalizer.spectrum
-        TimelineView(.animation(minimumInterval: 1 / 30, paused: isSnapshot || !(player.isPlaying || settling))) { context in
+        TimelineView(.animation(minimumInterval: 1 / 60, paused: isSnapshot || !(player.isPlaying || settling))) { context in
             if isSnapshot {
                 let levels = player.current == nil ? still.map { _ in Float(0) } : still
                 content(levels, levels.map { $0 > 0 ? min(1, $0 + 0.12) : 0 })
@@ -389,7 +392,8 @@ private struct AmbientMeterTimeline<Content: View>: View {
 private struct AmbientSpectrumFace: View {
     let unit: CGFloat
     /// Narrower bands carry less energy than the equalizer's octaves, so the range sits lower.
-    @State private var meter = SpectrumMeter(count: SpectrumShared.fineBands, floor: -62, ceiling: -12)
+    /// Bars glide up over a few frames and settle back slowly, so the face reads as motion, not flicker.
+    @State private var meter = SpectrumMeter(count: SpectrumShared.fineBands, floor: -62, ceiling: -12, fall: 1.1, attack: 0.05)
     @Environment(AppModel.self) private var model
 
     /// For snapshots: a plausible moment, falling from the bass to the treble.
@@ -445,7 +449,7 @@ private struct AmbientSpectrumFace: View {
 /// the held peak in `display-ink`, a dBFS scale below.
 private struct AmbientMetersFace: View {
     let unit: CGFloat
-    @State private var meter = SpectrumMeter(count: 2, floor: -48, ceiling: 0)
+    @State private var meter = SpectrumMeter(count: 2, floor: -48, ceiling: 0, fall: 1.3, attack: 0.03)
     @Environment(AppModel.self) private var model
 
     static let segments = 40
@@ -494,12 +498,17 @@ private struct AmbientMetersFace: View {
         Canvas { gc, size in
             let gap = unit * 0.45
             let width = (size.width - gap * CGFloat(Self.segments - 1)) / CGFloat(Self.segments)
-            let lit = Int((level * Float(Self.segments)).rounded())
+            // The segment at the level's edge lights in part, so the bar glides instead of stepping.
+            let exact = level * Float(Self.segments)
+            let lit = Int(exact)
             let held = Int((peak * Float(Self.segments)).rounded()) - 1
             for s in 0..<Self.segments {
                 let rect = CGRect(x: CGFloat(s) * (width + gap), y: 0, width: width, height: size.height)
-                let color: Color = s < lit ? .led : (s == held && held >= lit ? .displayInk : .displayTrack)
-                gc.fill(Path(roundedRect: rect, cornerRadius: unit * 0.15), with: .color(color))
+                let segment = Path(roundedRect: rect, cornerRadius: unit * 0.15)
+                gc.fill(segment, with: .color(s < lit ? .led : (s == held && held >= lit ? .displayInk : .displayTrack)))
+                if s == lit, s != held, exact > Float(lit) {
+                    gc.fill(segment, with: .color(Color.led.opacity(Double(exact - Float(lit)))))
+                }
             }
         }
     }
@@ -564,7 +573,7 @@ final class SlowMeter {
     }
 }
 
-/// Runs a SlowMeter on the tap's left and right levels at 30 frames a second while music plays,
+/// Runs a SlowMeter on the tap's left and right levels at 60 frames a second while music plays,
 /// and for 2 s after a pause so needles and filaments settle. Snapshots get a still moment.
 private struct AmbientStereoTimeline<Content: View>: View {
     let meter: SlowMeter
@@ -577,7 +586,7 @@ private struct AmbientStereoTimeline<Content: View>: View {
     var body: some View {
         let player = model.player
         let spectrum = player.equalizer.spectrum
-        TimelineView(.animation(minimumInterval: 1 / 30, paused: isSnapshot || !(player.isPlaying || settling))) { context in
+        TimelineView(.animation(minimumInterval: 1 / 60, paused: isSnapshot || !(player.isPlaying || settling))) { context in
             if isSnapshot {
                 content(player.current == nil ? still.map { _ in 0 } : still, still.map { _ in -12 })
             } else {
@@ -664,7 +673,7 @@ private struct AmbientNeedlesFace: View {
             gc.fill(shape, with: .color(Color.led.opacity(0.5)))
             // Lit from behind: brighter in the middle, darker towards the corners.
             gc.fill(shape, with: .radialGradient(
-                Gradient(colors: [Color.display.opacity(0), Color.display.opacity(0.45)]),
+                Gradient(colors: [Color.display.opacity(0), Color.display.opacity(0.35)]),
                 center: CGPoint(x: w / 2, y: h * 0.55), startRadius: h * 0.2, endRadius: w * 0.62))
             // OLED protection: a dimmer lamp (staticOpacity 0.55 leaves it at about 75%).
             gc.fill(shape, with: .color(Color.display.opacity((1 - staticOpacity) * 0.55)))
@@ -766,7 +775,7 @@ private struct AmbientValvesFace: View {
             let line = max(1, unit * 0.14)
             let metal = GraphicsContext.Shading.color(Color.displayTrack)
             let glass = GraphicsContext.Shading.color(Color.displayMuted.opacity(0.8))
-            let level = CGFloat(heated ? 0.12 + 0.88 * glow : 0)
+            let level = CGFloat(heated ? 0.2 + 0.8 * glow : 0)
 
             // Glass envelope: straight sides and a dome, on a base.
             let left = w * 0.24, right = w * 0.76, top = h * 0.16, shoulder = h * 0.3, bottom = h * 0.86
@@ -776,16 +785,19 @@ private struct AmbientValvesFace: View {
             envelope.addQuadCurve(to: CGPoint(x: right, y: shoulder), control: CGPoint(x: w / 2, y: top - h * 0.1))
             envelope.addLine(to: CGPoint(x: right, y: bottom))
 
-            // The glow lights the inside of the glass only, strongest around the filament.
+            // The glow spills past the glass as a soft halo, and fills the inside, strongest around the filament.
+            let centre = CGPoint(x: w / 2, y: h * 0.57)
             if level > 0 {
+                gc.fill(Path(CGRect(origin: .zero, size: size)), with: .radialGradient(
+                    Gradient(colors: [Color.led.opacity(Double(0.35 * level)), Color.led.opacity(0)]),
+                    center: centre, startRadius: 0, endRadius: w * (0.35 + 0.25 * level)))
                 var inside = envelope
                 inside.closeSubpath()
-                let centre = CGPoint(x: w / 2, y: h * 0.57)
                 gc.drawLayer { layer in
                     layer.clip(to: inside)
                     layer.fill(inside, with: .radialGradient(
-                        Gradient(colors: [Color.led.opacity(Double(0.9 * level)), Color.led.opacity(Double(0.15 * level))]),
-                        center: centre, startRadius: 0, endRadius: h * (0.12 + 0.3 * level)))
+                        Gradient(colors: [Color.led.opacity(Double(level)), Color.led.opacity(Double(0.3 * level))]),
+                        center: centre, startRadius: 0, endRadius: h * (0.18 + 0.35 * level)))
                 }
             }
             gc.stroke(envelope, with: glass, lineWidth: line)
@@ -801,8 +813,12 @@ private struct AmbientValvesFace: View {
             var filament = Path()
             filament.move(to: CGPoint(x: w / 2, y: h * 0.44))
             filament.addLine(to: CGPoint(x: w / 2, y: h * 0.7))
-            gc.stroke(filament, with: .color(level > 0 ? Color.led.opacity(Double(0.4 + 0.6 * level)) : Color.displayTrack),
+            gc.stroke(filament, with: .color(level > 0 ? Color.led.opacity(Double(0.5 + 0.5 * level)) : Color.displayTrack),
                       lineWidth: line * 1.4)
+            // White-hot at its core when the channel is loud.
+            if level > 0.4 {
+                gc.stroke(filament, with: .color(Color.displayInk.opacity(Double(level - 0.4) * 1.4)), lineWidth: line * 0.6)
+            }
 
             // Base and pins.
             gc.fill(Path(roundedRect: CGRect(x: w * 0.2, y: bottom, width: w * 0.6, height: h * 0.08), cornerRadius: unit * 0.2),

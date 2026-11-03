@@ -83,7 +83,9 @@ final class SpectrumMeter {
     let floor: Float
     let ceiling: Float
     /// Full scale per second.
-    static let fall: Float = 1.6
+    let fall: Float
+    /// Seconds a column takes to rise to a new level; 0 jumps at once, like the display's LED meter.
+    let attack: Float
     static let peakFall: Float = 0.6
     static let peakHold: TimeInterval = 0.8
 
@@ -93,9 +95,11 @@ final class SpectrumMeter {
     private var last: Date?
 
     /// One column per band by default; the ambient L/R meters use two, over a wider range.
-    init(count: Int = SpectrumShared.bands, floor: Float = -54, ceiling: Float = -6) {
+    init(count: Int = SpectrumShared.bands, floor: Float = -54, ceiling: Float = -6, fall: Float = 1.6, attack: Float = 0) {
         self.floor = floor
         self.ceiling = ceiling
+        self.fall = fall
+        self.attack = attack
         levels = Array(repeating: 0, count: count)
         peaks = Array(repeating: 0, count: count)
         peakTimes = Array(repeating: .distantPast, count: count)
@@ -107,7 +111,11 @@ final class SpectrumMeter {
         last = date
         for b in levels.indices {
             let target = measured.map { min(max(($0[b] - floor) / (ceiling - floor), 0), 1) } ?? 0
-            levels[b] = max(target, levels[b] - Self.fall * dt)
+            if target > levels[b] {
+                levels[b] = attack > 0 ? levels[b] + (target - levels[b]) * min(1, dt / attack) : target
+            } else {
+                levels[b] = max(target, levels[b] - fall * dt)
+            }
             if levels[b] >= peaks[b] {
                 peaks[b] = levels[b]
                 peakTimes[b] = date

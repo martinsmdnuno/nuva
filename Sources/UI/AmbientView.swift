@@ -401,8 +401,10 @@ private struct AmbientMeterTimeline<Content: View>: View {
 private struct AmbientSpectrumFace: View {
     let unit: CGFloat
     /// Narrower bands carry less energy than the equalizer's octaves, so the range sits lower.
-    /// Bars glide up over a few frames and settle back slowly, so the face reads as motion, not flicker.
-    @State private var meter = SpectrumMeter(count: SpectrumShared.fineBands, floor: -62, ceiling: -12, fall: 1.1, attack: 0.05)
+    /// Like a hi-fi analyser: bars rise in a couple of frames and fall at about 45 dB a second; the
+    /// peak caps hold, then drop faster and faster.
+    @State private var meter = SpectrumMeter(
+        count: SpectrumShared.fineBands, floor: -62, ceiling: -12, fall: 0.9, attack: 0.025, gravity: 2.4)
     @Environment(AppModel.self) private var model
 
     /// For snapshots: a plausible moment, falling from the bass to the treble.
@@ -458,7 +460,7 @@ private struct AmbientSpectrumFace: View {
 /// the held peak in `display-ink`, a dBFS scale below.
 private struct AmbientMetersFace: View {
     let unit: CGFloat
-    @State private var meter = SpectrumMeter(count: 2, floor: -48, ceiling: 0, fall: 1.3, attack: 0.03)
+    @State private var meter = SpectrumMeter(count: 2, floor: -48, ceiling: 0, fall: 1.3, attack: 0.02, gravity: 1.8)
     @Environment(AppModel.self) private var model
 
     static let segments = 40

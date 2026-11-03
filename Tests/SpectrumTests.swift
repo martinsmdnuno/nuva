@@ -110,6 +110,21 @@ struct SpectrumTests {
         #expect(fine[0] < fine[loudest] - 10)
     }
 
+    @Test func peakCapsFallFasterAndFaster() {
+        let meter = SpectrumMeter(count: 1, floor: -60, ceiling: 0, fall: 10, gravity: 2)
+        let start = Date()
+        meter.update(at: start, measured: [0])
+        // Silence: the bar drops at once; the cap holds for 0.8 s, then accelerates.
+        var drops: [Float] = []
+        var previous = meter.peaks[0]
+        for frame in 1...240 {
+            meter.update(at: start.addingTimeInterval(Double(frame) / 120), measured: [-60])
+            if frame % 24 == 0 { drops.append(previous - meter.peaks[0]); previous = meter.peaks[0] }
+        }
+        #expect(drops[0] == 0)  // 0.2 s: still held
+        #expect(drops[8] > drops[7] && drops[7] > 0)
+    }
+
     @Test func stereoLevelsAreStoredWithTheBands() {
         let shared = SpectrumShared()
         let bands: [Float] = Array(repeating: -20, count: SpectrumShared.bands)

@@ -52,11 +52,37 @@ struct AmbientTests {
     }
 
     @Test func vuScaleFollowsVoltage() {
-        #expect(AmbientNeedlesFaceTestHook.position(-20) == 0)
+        // Proportional to voltage from the rest pin: -20 VU is just right of it, at 7%.
+        #expect(abs(AmbientNeedlesFaceTestHook.position(-20) - 0.0708) < 0.001)
         #expect(abs(AmbientNeedlesFaceTestHook.position(3) - 1) < 0.0001)
         // 0 VU sits at about 70% of the arc, as on a real meter, not at 87% (23 dB linear).
         let zero = AmbientNeedlesFaceTestHook.position(0)
         #expect(zero > 0.65 && zero < 0.75)
+    }
+
+    @Test func needleMeetsTheVUStandard() {
+        // A steady tone at 0 VU: 99% of the reading in about 300 ms, overshooting by 1 to 1.5%.
+        var needle = VUNeedle()
+        let target = VUNeedle.deflection(vu: 0)
+        var reached: Double?
+        var highest = 0.0
+        for frame in 1...240 {
+            needle.step(towards: target, dt: 1 / 120)
+            if reached == nil, needle.position >= target * 0.99 { reached = Double(frame) / 120 }
+            highest = max(highest, needle.position)
+        }
+        #expect(reached.map { $0 > 0.27 && $0 < 0.33 } == true)
+        let overshoot = highest / target - 1
+        #expect(overshoot > 0.008 && overshoot < 0.016)
+        #expect(abs(needle.position - target) < 0.001)
+    }
+
+    @Test func needleRestsOnItsPinAndStaysWithinTheStops() {
+        var needle = VUNeedle()
+        needle.step(towards: 3, dt: 0.25)  // far past +3: it stops on the end pin
+        #expect(needle.position <= VUNeedle.endStop)
+        for _ in 0..<240 { needle.step(towards: 0, dt: 1 / 120) }
+        #expect(needle.position >= 0 && needle.position < 0.001)
     }
 
     @Test func slowMeterRisesGradually() {

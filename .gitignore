@@ -8,3 +8,6 @@ dist/
 
 # Server secrets
 deploy/site/.env
+
+# Local release settings (the site deploy command)
+scripts/release.local

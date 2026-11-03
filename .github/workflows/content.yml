@@ -1,0 +1,17 @@
+# Fails a pull request whose README, site or llms.txt disagree with docs/features.json,
+# the version or the release (see "Parity and content" in CLAUDE.md).
+name: Content
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: macos-15
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check content against docs/features.json
+        run: scripts/check-content.sh

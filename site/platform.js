@@ -1,5 +1,5 @@
-// Platform switcher: shows the screens and text for the Mac or Android TV.
-// No storage: the choice lives in the address (#mac, #android-tv) and nowhere else.
+// Platform switcher: shows the screens and text for the Mac or Android TV (and Windows, once it has a key).
+// No storage: the choice lives in the address (#mac, #android-tv, #windows) and nowhere else.
 // Without JavaScript the page shows the Mac, and the switcher stays hidden.
 (() => {
   const root = document.documentElement;
@@ -7,7 +7,7 @@
   if (!switcher) return;
   const keys = [...switcher.querySelectorAll("button[data-platform]")];
   const known = keys.map((k) => k.dataset.platform);
-  const hashes = { mac: "#mac", tv: "#android-tv" };
+  const hashes = { mac: "#mac", tv: "#android-tv", windows: "#windows" };
 
   const set = (platform, remember) => {
     if (!known.includes(platform)) platform = "mac";
@@ -19,8 +19,8 @@
   const fromAddress = () => {
     const hash = location.hash.toLowerCase();
     if (hash === "#android-tv" || hash === "#tv") return "tv";
-    if (hash === "#mac") return "mac";
-    return null;
+    const platform = Object.keys(hashes).find((p) => hashes[p] === hash);
+    return platform && known.includes(platform) ? platform : null;
   };
   const fromDevice = () => /Android/i.test(navigator.userAgent) && /\bTV\b|AFT|BRAVIA|SHIELD|Chromecast/i.test(navigator.userAgent) ? "tv" : null;
 

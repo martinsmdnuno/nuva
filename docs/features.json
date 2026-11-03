@@ -1,0 +1,122 @@
+{
+  "about": "The one list of what NuVa does on each platform. scripts/content.swift writes the README and site blocks from it; scripts/check-content.sh checks that every touchpoint agrees with it. Status per platform: yes, planned, or n/a (with a why). A platform with public: false is tracked here but not shown yet.",
+  "platforms": [
+    {
+      "id": "mac",
+      "name": { "en": "Mac", "pt": "Mac" },
+      "status": "released",
+      "public": true,
+      "asset": "NuVa.dmg",
+      "buildScript": "scripts/make-dmg.sh",
+      "requires": { "en": ["macOS 14 or later", "Apple silicon and Intel"], "pt": ["macOS 14 ou posterior", "Apple silicon e Intel"] },
+      "schemaOS": { "en": "macOS 14 or later (Apple silicon and Intel)", "pt": "macOS 14 ou posterior (Apple silicon e Intel)" },
+      "badge": {
+        "en": { "label": "Download_for_Mac", "alt": "Download NuVa for Mac", "link": "https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg" },
+        "pt": { "label": "Descarregar_para_Mac", "alt": "Descarregar a NuVa para Mac", "link": "https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg" },
+        "color": "E0A93E",
+        "logo": "apple"
+      },
+      "requirementBadges": [
+        { "label": "macOS-14%2B", "alt": "macOS 14 or later" },
+        { "label": "Apple_silicon_%2B_Intel", "alt": "Apple silicon and Intel" }
+      ]
+    },
+    {
+      "id": "tv",
+      "name": { "en": "Android TV", "pt": "Android TV" },
+      "status": "released",
+      "public": true,
+      "asset": "NuVa-AndroidTV.apk",
+      "buildScript": "scripts/make-apk.sh",
+      "termsMention": "Android TV",
+      "releaseNote": "On the TV, open the Downloader app and type `nuva.martinsnuno.com/tv`.",
+      "requires": { "en": ["Android TV 8.1 or later"], "pt": ["Android TV 8.1 ou posterior"] },
+      "schemaOS": { "en": "Android TV 8.1 or later", "pt": "Android TV 8.1 ou posterior" },
+      "badge": {
+        "en": { "label": "Android_TV", "alt": "NuVa for Android TV", "link": "#nuva-for-android-tv" },
+        "pt": { "label": "Android_TV", "alt": "NuVa para Android TV", "link": "#na-tv-nuva-para-android-tv" },
+        "color": "6B6E73",
+        "logo": "androidtv"
+      },
+      "requirementBadges": [
+        { "label": "Android_TV-8.1%2B", "alt": "Android TV 8.1 or later" }
+      ]
+    },
+    {
+      "id": "windows",
+      "name": { "en": "Windows", "pt": "Windows" },
+      "status": "planned",
+      "public": false,
+      "asset": "NuVa-Windows.zip",
+      "buildScript": "scripts/make-windows-zip.sh",
+      "termsMention": "Windows",
+      "requires": { "en": ["Windows 10 (2004) or 11"], "pt": ["Windows 10 (2004) ou 11"] },
+      "schemaOS": { "en": "Windows 10 (2004) or 11", "pt": "Windows 10 (2004) ou 11" },
+      "badge": {
+        "en": { "label": "Download_for_Windows", "alt": "Download NuVa for Windows", "link": "https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-Windows.zip" },
+        "pt": { "label": "Descarregar_para_Windows", "alt": "Descarregar a NuVa para Windows", "link": "https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-Windows.zip" },
+        "color": "6B6E73",
+        "logo": "windows"
+      },
+      "requirementBadges": [
+        { "label": "Windows-10_%7C_11", "alt": "Windows 10 or 11" }
+      ]
+    }
+  ],
+  "features": [
+    { "id": "folders", "en": "Folders as they are: a folder is an album, natural sort, never tags", "pt": "Pastas como estão: uma pasta é um álbum, ordem natural, nunca tags",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
+    { "id": "local", "en": "Folders on the computer, external disks and network shares", "pt": "Pastas no computador, discos externos e partilhas de rede",
+      "mac": "yes", "tv": "n/a", "windows": "planned",
+      "why": { "tv": "A TV box keeps no music; it plays from a server." } },
+    { "id": "jellyfin", "en": "Jellyfin by its real folders, streaming the original file", "pt": "Jellyfin pelas pastas reais, com o ficheiro original",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
+    { "id": "cd", "en": "Audio CDs, named from MusicBrainz", "pt": "CDs áudio, com os nomes do MusicBrainz",
+      "mac": "yes", "tv": "n/a", "windows": "planned",
+      "why": { "tv": "No CD drive on a TV." } },
+    { "id": "flac", "en": "FLAC, 24-bit included, through the system's own audio engine", "pt": "FLAC, 24 bits incluídos, pelo motor de áudio do próprio sistema",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
+    { "id": "airplay", "en": "AirPlay 2 to a WiiM, HomePod or Apple TV", "pt": "AirPlay 2 para um WiiM, HomePod ou Apple TV",
+      "mac": "yes", "tv": "n/a", "windows": "n/a",
+      "why": { "tv": "No AirPlay sender on Android TV; the TV's own output.", "windows": "No AirPlay on Windows; the display opens the list of output devices instead." } },
+    { "id": "queue", "en": "Queue: play a folder, add, reorder, remove", "pt": "Fila: tocar uma pasta, juntar, reordenar, tirar",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
+    { "id": "transport", "en": "Repeat, shuffle, seek and 10-second skips", "pt": "Repetir, aleatório, posição e saltos de 10 segundos",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
+    { "id": "equalizer", "en": "10-band equalizer with presets", "pt": "Equalizador de 10 bandas com presets",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
+    { "id": "spectrum", "en": "Spectrum on the display, in time with what you hear", "pt": "Espectro no visor, a par com o que ouves",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
+    { "id": "ambient", "en": "Ambient mode: six full-screen faces, with OLED protection", "pt": "Modo Ambiente: seis faces em ecrã inteiro, com proteção OLED",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
+    { "id": "artwork", "en": "Album artwork: the folder's image, then MusicBrainz by folder names", "pt": "Capas: a imagem da pasta, depois o MusicBrainz pelos nomes das pastas",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
+    { "id": "artwork-fix", "en": "Correct a wrong or missing cover", "pt": "Corrigir uma capa errada ou em falta",
+      "mac": "yes", "tv": "planned", "windows": "planned" },
+    { "id": "skins", "en": "Skins (Rams, Graphite Orange, Phosphor) and five font pairs", "pt": "Skins (Rams, Graphite Orange, Phosphor) e cinco pares de fontes",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
+    { "id": "compact", "en": "Compact mode, and a mini player when the window is closed", "pt": "Modo compacto, e um mini player com a janela fechada",
+      "mac": "yes", "tv": "n/a", "windows": "planned",
+      "why": { "tv": "A TV app is one full screen." } },
+    { "id": "keyboard", "en": "A keyboard shortcut for everything", "pt": "Um atalho de teclado para tudo",
+      "mac": "yes", "tv": "n/a", "windows": "planned",
+      "why": { "tv": "The remote does everything (see remote)." } },
+    { "id": "remote", "en": "Everything from a TV remote", "pt": "Tudo com o comando da TV",
+      "mac": "n/a", "tv": "yes", "windows": "n/a",
+      "why": { "mac": "Not a TV app.", "windows": "Not a TV app." } },
+    { "id": "now-playing", "en": "Media keys and the system's Now Playing controls", "pt": "Teclas multimédia e os controlos de reprodução do sistema",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
+    { "id": "resume", "en": "Reopens where you left off", "pt": "Volta a abrir onde ficaste",
+      "mac": "planned", "tv": "yes", "windows": "planned" },
+    { "id": "keeps-going", "en": "A track that fails is tried again, then skipped, and the display says so", "pt": "Uma faixa que falha é tentada outra vez e saltada, e o visor diz qual",
+      "mac": "yes", "tv": "planned", "windows": "planned" },
+    { "id": "screen-reader", "en": "Screen reader: every key, control and row is read", "pt": "Leitor de ecrã: lê cada tecla, controlo e linha",
+      "mac": "yes", "tv": "planned", "windows": "planned" },
+    { "id": "languages", "en": "English and Portuguese, following the system", "pt": "Português e inglês, conforme o sistema",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
+    { "id": "updates", "en": "Says when there's a new version; never downloads by itself", "pt": "Avisa quando há versão nova; nunca descarrega sozinha",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
+    { "id": "privacy", "en": "No account, no analytics", "pt": "Sem conta, sem analytics",
+      "mac": "yes", "tv": "yes", "windows": "planned" }
+  ]
+}

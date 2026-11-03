@@ -24,7 +24,7 @@ public sealed record OutputDevice(string? Id, string Name);
 /// converts to the device's rate) into the device output node, whose gain is the volume. Follows the
 /// default device unless the user picks one, and rebuilds itself when the device changes or goes away.
 /// </summary>
-internal sealed class GraphOutput : IAudioOutput
+public sealed class GraphOutput : IAudioOutput
 {
     private static readonly Guid byteAccess = new("5B0D3235-4DBA-4D44-865E-8F1D0E4FD04D");
 

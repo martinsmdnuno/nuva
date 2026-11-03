@@ -16,7 +16,7 @@ public static class PlayerTests
         for (var k = 1; k <= tracks; k++) factory.Frames[k] = 200;
         var output = new FakeOutput();
         var pipeline = new Pipeline(factory, output, null);
-        var player = new PlayerController(pipeline, (entry, _) => Task.FromResult(new Uri($"test://track/{entry.Name}")), null);
+        var player = new PlayerController(pipeline, (entry, _) => Task.FromResult($"test://track/{entry.Name}"), null);
         var id = Guid.NewGuid();
         player.SetQueue(Enumerable.Range(1, tracks).Select(k => new Entry(id, $"a/{k}", $"{k}", EntryKind.Track)));
         return (player, pipeline, output);

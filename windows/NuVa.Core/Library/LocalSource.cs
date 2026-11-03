@@ -49,25 +49,25 @@ public sealed class LocalSource(Guid id, string name, string root) : IMusicSourc
         return entries.NaturallySorted();
     });
 
-    public Task<Uri?> Artwork(string folderPath) => Task.Run(() =>
+    public Task<string?> Artwork(string folderPath) => Task.Run(() =>
     {
         try
         {
             var dir = Full(folderPath);
             var file = ArtworkFiles.Pick(Directory.EnumerateFiles(dir).Select(f => System.IO.Path.GetFileName(f)));
-            return file == null ? null : new Uri(System.IO.Path.Combine(dir, file));
+            return file == null ? null : System.IO.Path.Combine(dir, file);
         }
         catch (Exception)
         {
-            return (Uri?)null;
+            return (string?)null;
         }
     });
 
-    public Task<Uri> Url(Entry track)
+    public Task<string> Url(Entry track)
     {
         var file = Full(track.Path);
         if (!File.Exists(file)) throw SourceException.MissingFolder(track.FolderName);
-        return Task.FromResult(new Uri(file));
+        return Task.FromResult(file);
     }
 
     /// <summary>The folder can be read now (a network share may be offline).</summary>

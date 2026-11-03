@@ -396,18 +396,17 @@ internal sealed unsafe class MediaFoundationDecoder : IDecoder
 }
 
 /// <summary>Picks the decoder for a location: AIFF and CDs NuVa reads itself; everything else goes to Media Foundation.</summary>
-internal sealed class DecoderFactory : IDecoderFactory
+public sealed class DecoderFactory : IDecoderFactory
 {
-    public IDecoder Open(Uri location)
+    public IDecoder Open(string location)
     {
-        if (location.Scheme == "cdda") return CdDecoderFactory.Open(location);
-        if (location.IsFile)
+        if (location.StartsWith("cdda://", StringComparison.Ordinal)) return CdDecoderFactory.Open(location);
+        if (Core.Library.Locations.IsFile(location))
         {
-            var path = location.LocalPath;
-            var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
-            if (ext is ".aiff" or ".aif") return new AiffDecoder(path);
-            return new MediaFoundationDecoder(path);
+            var ext = System.IO.Path.GetExtension(location).ToLowerInvariant();
+            if (ext is ".aiff" or ".aif") return new AiffDecoder(location);
+            return new MediaFoundationDecoder(location);
         }
-        return new MediaFoundationDecoder(location.AbsoluteUri);
+        return new MediaFoundationDecoder(location);
     }
 }

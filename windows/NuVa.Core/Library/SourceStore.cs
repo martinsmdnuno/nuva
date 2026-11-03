@@ -150,7 +150,7 @@ public sealed class SourceStore
     }
 
     /// <summary>Playable location of a track, through the source it belongs to.</summary>
-    public async Task<Uri> Resolve(Entry entry)
+    public async Task<string> Resolve(Entry entry)
     {
         var source = Source(entry.SourceId) ?? throw SourceException.MissingFolder(entry.FolderName);
         return await source.Url(entry);
@@ -159,7 +159,7 @@ public sealed class SourceStore
     public Task StreamFailed(Entry entry) => Source(entry.SourceId)?.StreamFailed() ?? Task.CompletedTask;
 
     /// <summary>The image file in the folder holding <paramref name="entry"/>; a disc folder ("CD 1") also looks in the album folder above.</summary>
-    public async Task<Uri?> Artwork(Entry entry)
+    public async Task<string?> Artwork(Entry entry)
     {
         if (Source(entry.SourceId) is not { } source) return null;
         var folder = entry.ParentPath;

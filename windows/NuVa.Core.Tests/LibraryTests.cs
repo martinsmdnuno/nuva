@@ -81,13 +81,13 @@ public static class LibraryTests
             var entries = source.List("Album").Result;
             Assert.Sequence(["CD 2", "CD 10", "2 a.FLAC", "10 b.flac"], entries.Select(e => e.Name));
             Assert.Equal("Album/CD 2", entries[0].Path);
-            Assert.Equal("cover.jpg", Path.GetFileName(source.Artwork("Album").Result!.LocalPath));
+            Assert.Equal("cover.jpg", Path.GetFileName(source.Artwork("Album").Result!));
 
             var store = new SourceStore(new Settings(null), new MemoryCredentials());
             var added = store.AddLocal(root);
             Assert.Equal(added, store.AddLocal(root + Path.DirectorySeparatorChar));
             var art = store.Artwork(new Entry(added.Id, "Album/CD 2/01.flac", "01.flac", EntryKind.Track)).Result;
-            Assert.Equal("cover.jpg", Path.GetFileName(art!.LocalPath));
+            Assert.Equal("cover.jpg", Path.GetFileName(art!));
         }
         finally
         {
@@ -119,4 +119,28 @@ public sealed class MemoryCredentials : ICredentialStore
     public string? Password(string account) => passwords.GetValueOrDefault(account);
     public void SetPassword(string password, string account) => passwords[account] = password;
     public void DeletePassword(string account) => passwords.Remove(account);
+}
+
+public static class LocationTests
+{
+    [Test]
+    public static void FilePathsStayAsTheyAre()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "nuva-loc-" + Guid.NewGuid());
+        Directory.CreateDirectory(root);
+        var name = "a#b 100% c%20d.flac";
+        File.WriteAllText(Path.Combine(root, name), "");
+        try
+        {
+            var source = new LocalSource(Guid.NewGuid(), "x", root);
+            var location = source.Url(new Entry(source.Id, name, name, EntryKind.Track)).Result;
+            Assert.Equal(Path.Combine(root, name), location);
+            Assert.True(Locations.IsFile(location));
+            Assert.True(!Locations.IsFile("https://jellyfin/Audio/1/stream.flac"));
+        }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
+    }
 }

@@ -32,9 +32,9 @@ public sealed class RampFactory : IDecoderFactory
 {
     public readonly Dictionary<int, int> Frames = new();
     public readonly Dictionary<int, int> Rates = new();
-    public IDecoder Open(Uri location)
+    public IDecoder Open(string location)
     {
-        var track = int.Parse(location.Segments.Last());
+        var track = int.Parse(location.Split('/').Last());
         if (!Frames.TryGetValue(track, out var frames)) throw new Exception("missing");
         return new RampDecoder(track, frames, Rates.GetValueOrDefault(track, 1000));
     }
@@ -71,7 +71,7 @@ public sealed class FakeOutput : IAudioOutput
 
 public static class PipelineTests
 {
-    private static TrackRequest Track(int k) => new(k, _ => Task.FromResult(new Uri($"test://track/{k}")), $"track {k}");
+    private static TrackRequest Track(int k) => new(k, _ => Task.FromResult($"test://track/{k}"), $"track {k}");
 
     private static (Pipeline, FakeOutput, RampFactory, ConcurrentQueue<long>) Make(params int[] frames)
     {

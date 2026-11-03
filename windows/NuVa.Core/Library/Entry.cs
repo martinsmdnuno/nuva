@@ -80,10 +80,10 @@ public interface IMusicSource
     SourceKind Kind { get; }
     /// <summary>Folders and tracks in <paramref name="path"/> ("" is the root), folders first, natural order.</summary>
     Task<IReadOnlyList<Entry>> List(string path);
-    /// <summary>Playable location of the track: file:// or https://, or cdda:// for a disc.</summary>
-    Task<Uri> Url(Entry track);
+    /// <summary>Where the track plays from: a file path, an http(s) URL, or cdda://D/3 for a disc (see <see cref="Locations"/>).</summary>
+    Task<string> Url(Entry track);
     /// <summary>An image file the user put in the folder (cover.jpg…), or null. Never from tags.</summary>
-    Task<Uri?> Artwork(string folderPath) => Task.FromResult<Uri?>(null);
+    Task<string?> Artwork(string folderPath) => Task.FromResult<string?>(null);
     /// <summary>Name of the source's own folder when it is a real folder (the artist, if the user added one artist).</summary>
     string? RootFolderName => null;
     /// <summary>A track's URL failed to play: a server may have dropped its session.</summary>
@@ -97,6 +97,15 @@ public sealed class SourceException(string message) : Exception(message)
     public static SourceException LoginFailed() => new(L.T("Utilizador ou palavra-passe errados"));
     public static SourceException NoMusicLibrary() => new(L.T("Sem biblioteca de música neste utilizador"));
     public static SourceException UnexpectedResponse() => new(L.T("Resposta inesperada. Confirmar o endereço do servidor"));
+}
+
+/// <summary>
+/// Track locations are plain strings, not Uri: a file path stays exactly as it is (Uri would turn a
+/// file named "a%20b" into "a b"), and a URL is a URL.
+/// </summary>
+public static class Locations
+{
+    public static bool IsFile(string location) => !location.Contains("://", StringComparison.Ordinal);
 }
 
 public static class Playable

@@ -27,7 +27,7 @@ public interface IDecoder : IDisposable
 public interface IDecoderFactory
 {
     /// <summary>Opens a track (blocking; the pipeline calls it on its own thread). Throws when it can't.</summary>
-    IDecoder Open(Uri location);
+    IDecoder Open(string location);
 }
 
 /// <summary>Where the sound goes: the platform's output (AudioGraph), or a fake in tests.</summary>
@@ -53,7 +53,7 @@ public interface IAudioTap
 }
 
 /// <summary>A track to play: its token (the queue item) and how to get its location.</summary>
-public sealed record TrackRequest(long Token, Func<CancellationToken, Task<Uri>> Resolve, string Name);
+public sealed record TrackRequest(long Token, Func<CancellationToken, Task<string>> Resolve, string Name);
 
 /// <summary>What the display needs about the track that is heard now.</summary>
 public sealed record TrackInfo(long Token, int Run, double Duration, AudioFormat Format, int SourceBits, string Location);
@@ -364,7 +364,7 @@ public sealed class Pipeline : IDisposable
             var run = keepRun && AudibleInfo() is { } heard && heard.Token == request.Token ? heard.Run : ++runs;
             decodingInfo = keepRun && AudibleInfo() is { } same && same.Token == request.Token
                 ? same
-                : new TrackInfo(request.Token, run, opened.Duration, opened.Format, opened.SourceBits, location.IsFile ? location.LocalPath : location.GetLeftPart(UriPartial.Path));
+                : new TrackInfo(request.Token, run, opened.Duration, opened.Format, opened.SourceBits, Library.Locations.IsFile(location) ? location : location.Split('?')[0]);
             lock (gate)
             {
                 requests[request.Token] = request;

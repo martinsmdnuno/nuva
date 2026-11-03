@@ -24,7 +24,7 @@ public sealed class PlayerController
     private static long nextId;
 
     private readonly Pipeline pipeline;
-    private readonly Func<Entry, CancellationToken, Task<Uri>> resolve;
+    private readonly Func<Entry, CancellationToken, Task<string>> resolve;
     private readonly SynchronizationContext? ui;
     private readonly object gate = new();
     private List<QueueItem> queue = [];
@@ -61,7 +61,7 @@ public sealed class PlayerController
     /// <summary>Volume changes go to the output.</summary>
     public Action<float>? ApplyVolume { get; set; }
 
-    public PlayerController(Pipeline pipeline, Func<Entry, CancellationToken, Task<Uri>> resolve, SynchronizationContext? ui)
+    public PlayerController(Pipeline pipeline, Func<Entry, CancellationToken, Task<string>> resolve, SynchronizationContext? ui)
     {
         this.pipeline = pipeline;
         this.resolve = resolve;

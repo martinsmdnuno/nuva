@@ -5,7 +5,7 @@
 // Mac: Resources/Assets.xcassets/<token>.colorset (Aluminium light, Lead dark: the Rams skin) and
 //      Sources/DesignSystem/TokenPalettes.swift (ColorToken and the always-dark skins).
 // Android TV: android/app/src/main/java/pt/nunomartins/nuva/ui/Palettes.kt (Palette and every theme).
-// Windows gets its own output here when windows/ reaches main.
+// Windows: windows/NuVa.Core/TokenPalettes.cs (Token, Rams as light/dark pairs, the always-dark skins).
 import Foundation
 
 struct Tokens: Decodable {
@@ -128,11 +128,47 @@ object Palettes {
 
 """
 
+// MARK: - Windows
+
+/// "display-ink" → "DisplayInk", as C# names the tokens.
+func pascal(_ s: String) -> String { let c = camel(s); return c.prefix(1).uppercased() + c.dropFirst() }
+let csharp = """
+// \(generated)
+using System.Collections.Generic;
+
+namespace NuVa.Core;
+
+/// <summary>The design system's colour tokens. A skin gives each one a value; it never adds a role or moves the accent to another one.</summary>
+public enum Token
+{
+\(tokens.tokens.map { "    \(pascal($0.name))," }.joined(separator: "\n"))
+}
+
+/// <summary>Every skin's value for every token, as 0xRRGGBB.</summary>
+public static class TokenPalettes
+{
+    /// <summary>Rams: Aluminium (light) and Lead (dark), following Windows' app mode.</summary>
+    public static readonly IReadOnlyDictionary<Token, (uint Light, uint Dark)> Rams = new Dictionary<Token, (uint, uint)>
+    {
+\(tokens.tokens.map { "        [Token.\(pascal($0.name))] = (0x\(hex($0, aluminium)), 0x\(hex($0, lead)))," }.joined(separator: "\n"))
+    };
+\(darkSkins.map { theme in
+    "\n    public static readonly IReadOnlyDictionary<Token, uint> \(pascal(theme.name)) = new Dictionary<Token, uint>\n    {\n"
+        + tokens.tokens.map { "        [Token.\(pascal($0.name))] = 0x\(hex($0, theme.id))," }.joined(separator: "\n")
+        + "\n    };"
+}.joined(separator: "\n"))
+}
+
+"""
+
 // MARK: - Write or check
 
 var outputs = tokens.tokens.map { ("Resources/Assets.xcassets/\($0.name).colorset/Contents.json", colorset($0)) }
 outputs.append(("Sources/DesignSystem/TokenPalettes.swift", swift))
 outputs.append(("android/app/src/main/java/pt/nunomartins/nuva/ui/Palettes.kt", kotlin))
+if FileManager.default.fileExists(atPath: root.appendingPathComponent("windows/NuVa.Core").path) {
+    outputs.append(("windows/NuVa.Core/TokenPalettes.cs", csharp))
+}
 
 for (path, text) in outputs {
     let url = root.appendingPathComponent(path)

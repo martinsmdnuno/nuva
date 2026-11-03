@@ -3,7 +3,8 @@
 ## 1.11 — NuVa on the TV
 
 - **NuVa for Android TV**, a new app for an Android TV box or a TV with Android TV (Android 8.1 or later), in the same release as the Mac app: `NuVa-AndroidTV-1.11.apk`. It plays your Jellyfin server by its real folders, FLAC included (24-bit kept whole), through Android's own player and decoders, and has what the Mac has where a TV allows: the display with the spectrum, the 10-band equalizer, the queue, repeat and shuffle, the six ambient faces with OLED protection, album artwork with the cover's glow, the three skins and five font sets, Terms and Privacy and the update notice. The remote does everything: hold OK to add to the queue or to move and remove; Back asks before leaving; it reopens where you were. Install it with the Downloader app: `nuva.martinsnuno.com/tv`.
-- From now on the Mac and Android TV apps share a version number and a release.
+- **NuVa for Windows**, added to the 1.11 release on 3 November: `NuVa-Windows-1.11.zip`, for Windows 10 (2004) or 11. The Mac app's scope except AirPlay (the display lists the PC's output devices instead): folders, network shares, Jellyfin and audio CDs, FLAC through Windows' own decoders (Media Foundation), the equalizer and spectrum, the queue, the window sizes, all six ambient faces, artwork, skins and font sets, the system media controls and a tray mini player. Unzip and open NuVa.exe.
+- From now on the Mac, Android TV and Windows apps share a version number and a release.
 - Mac: Terms and Privacy cover the Android TV app.
 
 ## 1.10.1 — real needles, the cover's colours

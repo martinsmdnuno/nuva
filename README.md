@@ -6,6 +6,7 @@
 <!-- nuva:downloads -->
   <a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg"><img src="https://img.shields.io/badge/Download_for_Mac-NuVa.dmg-E0A93E?style=for-the-badge&logo=apple&logoColor=white" alt="Download NuVa for Mac"></a>
   <a href="#nuva-for-android-tv"><img src="https://img.shields.io/badge/Android_TV-NuVa--AndroidTV.apk-6B6E73?style=for-the-badge&logo=androidtv&logoColor=white" alt="NuVa for Android TV"></a>
+  <a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-Windows.zip"><img src="https://img.shields.io/badge/Download_for_Windows-NuVa--Windows.zip-6B6E73?style=for-the-badge&logo=windows&logoColor=white" alt="Download NuVa for Windows"></a>
 <!-- /nuva:downloads -->
 </p>
 
@@ -15,6 +16,7 @@
   <img src="https://img.shields.io/badge/macOS-14%2B-2B2D30?style=flat-square" alt="macOS 14 or later">
   <img src="https://img.shields.io/badge/Apple_silicon_%2B_Intel-2B2D30?style=flat-square" alt="Apple silicon and Intel">
   <img src="https://img.shields.io/badge/Android_TV-8.1%2B-2B2D30?style=flat-square" alt="Android TV 8.1 or later">
+  <img src="https://img.shields.io/badge/Windows-10_%7C_11-2B2D30?style=flat-square" alt="Windows 10 or 11">
 <!-- /nuva:requirements -->
   <img src="https://img.shields.io/github/license/martinsmdnuno/nuva?style=flat-square&color=2B2D30" alt="MIT license">
   <br>
@@ -171,6 +173,12 @@ The same player for the living room, on an Android TV box or a TV with Android T
 
 To install it, open the **Downloader** app on the TV (free, in the Play Store) and type `nuva.martinsnuno.com/tv`. Or download [NuVa-AndroidTV.apk](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk) and copy it with a USB stick. Android asks once to allow apps from Downloader (or from the file manager).
 
+## NuVa for Windows
+
+The same player for the PC, on Windows 10 (2004) or 11. It does what the Mac app does, except AirPlay: folders on the PC, external disks and network shares, your **Jellyfin** server by its real folders, and audio CDs; FLAC, 24-bit included, through Windows' own decoders (Media Foundation), with no bundled codecs. The equalizer, the spectrum, the queue, the three window sizes, all six ambient faces (Ctrl+4 or F11), artwork, skins and font sets are all there. The display's output readout opens the list of the PC's output devices. Media keys, the Windows media controls and taskbar buttons work, and closing the window leaves a mini player in the tray. Every Mac shortcut is there with Ctrl for ⌘, and Ctrl+Shift for ⌥⌘.
+
+To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-Windows.zip)**, unzip it anywhere and open **NuVa.exe**; there is nothing to install. NuVa isn't signed with a paid certificate, so Windows asks once: click **More info › Run anyway**. To remove it, delete the folder.
+
 ## Everything else
 
 - Plays FLAC, ALAC, MP3, AAC/M4A, WAV and AIFF.
@@ -188,32 +196,32 @@ To install it, open the **Downloader** app on the TV (free, in the Play Store) a
 ## Which app does what
 
 <!-- nuva:platforms -->
-| | Mac | Android TV |
-|---|:-:|:-:|
-| Folders as they are: a folder is an album, natural sort, never tags | ✓ | ✓ |
-| Folders on the computer, external disks and network shares | ✓ | — |
-| Jellyfin by its real folders, streaming the original file | ✓ | ✓ |
-| Audio CDs, named from MusicBrainz | ✓ | — |
-| FLAC, 24-bit included, through the system's own audio engine | ✓ | ✓ |
-| AirPlay 2 to a WiiM, HomePod or Apple TV | ✓ | — |
-| Queue: play a folder, add, reorder, remove | ✓ | ✓ |
-| Repeat, shuffle, seek and 10-second skips | ✓ | ✓ |
-| 10-band equalizer with presets | ✓ | ✓ |
-| Spectrum on the display, in time with what you hear | ✓ | ✓ |
-| Ambient mode: six full-screen faces, with OLED protection | ✓ | ✓ |
-| Album artwork: the folder's image, then MusicBrainz by folder names | ✓ | ✓ |
-| Correct a wrong or missing cover | ✓ | later |
-| Skins (Rams, Graphite Orange, Phosphor) and five font pairs | ✓ | ✓ |
-| Compact mode, and a mini player when the window is closed | ✓ | — |
-| A keyboard shortcut for everything | ✓ | — |
-| Everything from a TV remote | — | ✓ |
-| Media keys and the system's Now Playing controls | ✓ | ✓ |
-| Reopens where you left off | later | ✓ |
-| A track that fails is tried again, then skipped, and the display says so | ✓ | later |
-| Screen reader: every key, control and row is read | ✓ | later |
-| English and Portuguese, following the system | ✓ | ✓ |
-| Says when there's a new version; never downloads by itself | ✓ | ✓ |
-| No account, no analytics | ✓ | ✓ |
+| | Mac | Android TV | Windows |
+|---|:-:|:-:|:-:|
+| Folders as they are: a folder is an album, natural sort, never tags | ✓ | ✓ | ✓ |
+| Folders on the computer, external disks and network shares | ✓ | — | ✓ |
+| Jellyfin by its real folders, streaming the original file | ✓ | ✓ | ✓ |
+| Audio CDs, named from MusicBrainz | ✓ | — | ✓ |
+| FLAC, 24-bit included, through the system's own audio engine | ✓ | ✓ | ✓ |
+| AirPlay 2 to a WiiM, HomePod or Apple TV | ✓ | — | — |
+| Queue: play a folder, add, reorder, remove | ✓ | ✓ | ✓ |
+| Repeat, shuffle, seek and 10-second skips | ✓ | ✓ | ✓ |
+| 10-band equalizer with presets | ✓ | ✓ | ✓ |
+| Spectrum on the display, in time with what you hear | ✓ | ✓ | ✓ |
+| Ambient mode: six full-screen faces, with OLED protection | ✓ | ✓ | ✓ |
+| Album artwork: the folder's image, then MusicBrainz by folder names | ✓ | ✓ | ✓ |
+| Correct a wrong or missing cover | ✓ | later | ✓ |
+| Skins (Rams, Graphite Orange, Phosphor) and five font pairs | ✓ | ✓ | ✓ |
+| Compact mode, and a mini player when the window is closed | ✓ | — | ✓ |
+| A keyboard shortcut for everything | ✓ | — | ✓ |
+| Everything from a TV remote | — | ✓ | — |
+| Media keys and the system's Now Playing controls | ✓ | ✓ | ✓ |
+| Reopens where you left off | later | ✓ | later |
+| A track that fails is tried again, then skipped, and the display says so | ✓ | later | ✓ |
+| Screen reader: every key, control and row is read | ✓ | later | later |
+| English and Portuguese, following the system | ✓ | ✓ | ✓ |
+| Says when there's a new version; never downloads by itself | ✓ | ✓ | ✓ |
+| No account, no analytics | ✓ | ✓ | ✓ |
 
 *Later*: on its way. —: doesn't apply on that platform.
 <!-- /nuva:platforms -->
@@ -271,7 +279,7 @@ xcodegen generate
 open NuVa.xcodeproj
 ```
 
-`scripts/make-dmg.sh` builds a universal release and the DMG in `dist/`. The Android TV app is in [`android/`](android) (Kotlin, Jetpack Compose for TV and Media3; see [its plan](docs/plans/android-tv.md)); `scripts/make-apk.sh` builds the signed APK. `scripts/make-readme-images.swift` builds the Mac images on this page from the app's own snapshots, and `scripts/make-tv-images.swift` the Android TV ones from screenshots of the TV app. The design system lives in [`docs/design-system`](docs/design-system).
+`scripts/make-dmg.sh` builds a universal release and the DMG in `dist/`. The Android TV app is in [`android/`](android) (Kotlin, Jetpack Compose for TV and Media3; see [its plan](docs/plans/android-tv.md)); `scripts/make-apk.sh` builds the signed APK. The Windows app is in [`windows/`](windows) (C# and WPF on .NET 10, no NuGet packages; see [its plan](docs/plans/windows.md)); `scripts/make-windows-zip.sh` builds the zip, on a Mac too (`brew install dotnet`). `scripts/make-readme-images.swift` builds the Mac images on this page from the app's own snapshots, and `scripts/make-tv-images.swift` the Android TV ones from screenshots of the TV app. The design system lives in [`docs/design-system`](docs/design-system).
 
 ## Credits
 
@@ -293,6 +301,7 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 <!-- nuva:downloads-pt -->
   <a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg"><img src="https://img.shields.io/badge/Descarregar_para_Mac-NuVa.dmg-E0A93E?style=for-the-badge&logo=apple&logoColor=white" alt="Descarregar a NuVa para Mac"></a>
   <a href="#na-tv-nuva-para-android-tv"><img src="https://img.shields.io/badge/Android_TV-NuVa--AndroidTV.apk-6B6E73?style=for-the-badge&logo=androidtv&logoColor=white" alt="NuVa para Android TV"></a>
+  <a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-Windows.zip"><img src="https://img.shields.io/badge/Descarregar_para_Windows-NuVa--Windows.zip-6B6E73?style=for-the-badge&logo=windows&logoColor=white" alt="Descarregar a NuVa para Windows"></a>
 <!-- /nuva:downloads-pt -->
 </p>
 
@@ -318,35 +327,41 @@ O mesmo leitor para a sala, numa box Android TV ou numa TV com Android TV (8.1 o
 
 Para instalar, abre a app **Downloader** na TV (gratuita, na Play Store) e escreve `nuva.martinsnuno.com/tv`. Ou descarrega o [NuVa-AndroidTV.apk](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk) e copia-o com uma pen USB. O Android pede uma vez para permitir apps vindas do Downloader (ou do gestor de ficheiros).
 
+### No PC: NuVa para Windows
+
+O mesmo leitor para o PC, no Windows 10 (2004) ou 11. Faz o que a app do Mac faz, menos o AirPlay: pastas no PC, discos externos e partilhas de rede, o teu servidor **Jellyfin** pelas pastas reais, e CDs áudio; FLAC, 24 bits incluídos, pelos descodificadores do próprio Windows (Media Foundation), sem codecs embutidos. O equalizador, o espectro, a fila, os três tamanhos de janela, as seis faces do modo Ambiente (Ctrl+4 ou F11), as capas, as skins e as fontes estão lá todos. A saída indicada no visor abre a lista das saídas de som do PC. As teclas multimédia, os controlos multimédia do Windows e os botões na barra de tarefas funcionam, e fechar a janela deixa um mini leitor na área de notificação. Todos os atalhos do Mac estão lá, com Ctrl em vez de ⌘ e Ctrl+Shift em vez de ⌥⌘.
+
+Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-Windows.zip)**, descompacta onde quiseres e abre o **NuVa.exe**; não há nada para instalar. A NuVa não está assinada com um certificado pago, por isso o Windows pergunta uma vez: carrega em **Mais informações › Executar mesmo assim**. Para a tirar, apaga a pasta.
+
 ### O que faz cada app
 
 <!-- nuva:platforms-pt -->
-| | Mac | Android TV |
-|---|:-:|:-:|
-| Pastas como estão: uma pasta é um álbum, ordem natural, nunca tags | ✓ | ✓ |
-| Pastas no computador, discos externos e partilhas de rede | ✓ | — |
-| Jellyfin pelas pastas reais, com o ficheiro original | ✓ | ✓ |
-| CDs áudio, com os nomes do MusicBrainz | ✓ | — |
-| FLAC, 24 bits incluídos, pelo motor de áudio do próprio sistema | ✓ | ✓ |
-| AirPlay 2 para um WiiM, HomePod ou Apple TV | ✓ | — |
-| Fila: tocar uma pasta, juntar, reordenar, tirar | ✓ | ✓ |
-| Repetir, aleatório, posição e saltos de 10 segundos | ✓ | ✓ |
-| Equalizador de 10 bandas com presets | ✓ | ✓ |
-| Espectro no visor, a par com o que ouves | ✓ | ✓ |
-| Modo Ambiente: seis faces em ecrã inteiro, com proteção OLED | ✓ | ✓ |
-| Capas: a imagem da pasta, depois o MusicBrainz pelos nomes das pastas | ✓ | ✓ |
-| Corrigir uma capa errada ou em falta | ✓ | mais tarde |
-| Skins (Rams, Graphite Orange, Phosphor) e cinco pares de fontes | ✓ | ✓ |
-| Modo compacto, e um mini player com a janela fechada | ✓ | — |
-| Um atalho de teclado para tudo | ✓ | — |
-| Tudo com o comando da TV | — | ✓ |
-| Teclas multimédia e os controlos de reprodução do sistema | ✓ | ✓ |
-| Volta a abrir onde ficaste | mais tarde | ✓ |
-| Uma faixa que falha é tentada outra vez e saltada, e o visor diz qual | ✓ | mais tarde |
-| Leitor de ecrã: lê cada tecla, controlo e linha | ✓ | mais tarde |
-| Português e inglês, conforme o sistema | ✓ | ✓ |
-| Avisa quando há versão nova; nunca descarrega sozinha | ✓ | ✓ |
-| Sem conta, sem analytics | ✓ | ✓ |
+| | Mac | Android TV | Windows |
+|---|:-:|:-:|:-:|
+| Pastas como estão: uma pasta é um álbum, ordem natural, nunca tags | ✓ | ✓ | ✓ |
+| Pastas no computador, discos externos e partilhas de rede | ✓ | — | ✓ |
+| Jellyfin pelas pastas reais, com o ficheiro original | ✓ | ✓ | ✓ |
+| CDs áudio, com os nomes do MusicBrainz | ✓ | — | ✓ |
+| FLAC, 24 bits incluídos, pelo motor de áudio do próprio sistema | ✓ | ✓ | ✓ |
+| AirPlay 2 para um WiiM, HomePod ou Apple TV | ✓ | — | — |
+| Fila: tocar uma pasta, juntar, reordenar, tirar | ✓ | ✓ | ✓ |
+| Repetir, aleatório, posição e saltos de 10 segundos | ✓ | ✓ | ✓ |
+| Equalizador de 10 bandas com presets | ✓ | ✓ | ✓ |
+| Espectro no visor, a par com o que ouves | ✓ | ✓ | ✓ |
+| Modo Ambiente: seis faces em ecrã inteiro, com proteção OLED | ✓ | ✓ | ✓ |
+| Capas: a imagem da pasta, depois o MusicBrainz pelos nomes das pastas | ✓ | ✓ | ✓ |
+| Corrigir uma capa errada ou em falta | ✓ | mais tarde | ✓ |
+| Skins (Rams, Graphite Orange, Phosphor) e cinco pares de fontes | ✓ | ✓ | ✓ |
+| Modo compacto, e um mini player com a janela fechada | ✓ | — | ✓ |
+| Um atalho de teclado para tudo | ✓ | — | ✓ |
+| Tudo com o comando da TV | — | ✓ | — |
+| Teclas multimédia e os controlos de reprodução do sistema | ✓ | ✓ | ✓ |
+| Volta a abrir onde ficaste | mais tarde | ✓ | mais tarde |
+| Uma faixa que falha é tentada outra vez e saltada, e o visor diz qual | ✓ | mais tarde | ✓ |
+| Leitor de ecrã: lê cada tecla, controlo e linha | ✓ | mais tarde | mais tarde |
+| Português e inglês, conforme o sistema | ✓ | ✓ | ✓ |
+| Avisa quando há versão nova; nunca descarrega sozinha | ✓ | ✓ | ✓ |
+| Sem conta, sem analytics | ✓ | ✓ | ✓ |
 
 *Mais tarde*: a caminho. —: não se aplica nessa plataforma.
 <!-- /nuva:platforms-pt -->

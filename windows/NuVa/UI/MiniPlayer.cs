@@ -34,7 +34,7 @@ public sealed class MiniPlayer : Window
         UseLayoutRounding = true;
 
         display = new DisplayView(model, allowsArtwork: true, isMain: false);
-        display.EqualizerClicked += app.ShowEqualizer;
+        display.EqualizerClicked += () => EqualizerPanel.Open(model.Equalizer, display.EqualizerAnchor);
         display.OutputClicked += app.ShowOutputMenu;
         app.ApplyArtwork(display);
         var keys = new DockPanel { Margin = new Thickness(0, Space.S3, 0, 0), LastChildFill = false };

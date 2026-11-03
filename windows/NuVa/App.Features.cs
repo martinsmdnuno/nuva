@@ -15,7 +15,6 @@ public sealed partial class App
 
     public void DeviceChanged(int kind, IntPtr data) { }
 
-    public void ShowEqualizer() { }
     public void AddJellyfin() { }
     public void EjectDisc(Guid? id) { }
     public void CheckForUpdates() { }

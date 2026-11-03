@@ -137,6 +137,7 @@ public sealed class DisplayView : Border
     }
 
     public SpectrumView? Spectrum => spectrum;
+    public UIElement EqualizerAnchor => eq;
 
     /// <summary>Everything but the time, which <see cref="Tick"/> keeps current.</summary>
     public void Refresh()

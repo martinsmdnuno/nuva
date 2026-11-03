@@ -167,4 +167,11 @@ public sealed partial class App : Application
     }
 
     public void RevealCurrentTrack() => MainWindow.RevealCurrentTrack();
+
+    /// <summary>The equalizer, under the display's EQ readout (Ctrl+Shift+E or a click on it).</summary>
+    public void ShowEqualizer()
+    {
+        ShowMainWindow();
+        if (MainWindow.Display?.EqualizerAnchor is { } anchor) EqualizerPanel.Open(Model.Equalizer, anchor);
+    }
 }

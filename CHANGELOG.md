@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.10.1 — real needles, the cover's colours
+
+- **Needles** move like a real VU meter: a damped spring that reaches a steady tone in 300 ms, overshoots by a hair and rests on its pin left of -20, on a scale proportional to voltage. Tapered needles cast a shadow on the dial, under glass.
+- Ambient mode draws at your screen's own rate, 120 Hz on a ProMotion Mac or a 120 Hz TV, and the sound is measured 120 times a second to match.
+- **Spectrum**: the bass is measured over a longer window, so the lowest bars move on their own instead of together; peak caps hold, then fall faster and faster, like a hi-fi analyser's.
+- The album glow is now made from the cover itself: its colours, in their places, blurred into a soft field behind the face. Every cover glows, dark and grey ones too. On the Display face it breathes with the bass (not with Reduce Motion).
+- Album covers are found for artist folders with a title, such as "Ms. Lauryn Hill".
+- Graphite Green is retired; if you used it, NuVa opens in Graphite Orange. Skins are now ⌥⌘1 to ⌥⌘3. Phosphor is called Phosphor in Portuguese too.
+
 ## 1.10 — smoother meters and the album's colour
 
 - With artwork on, ambient mode takes on the album's colour: a soft glow in the cover's main hue, behind every face. It stays dark enough for the text to read, changes gently with the album, and a cover in black and white leaves the screen as it was.

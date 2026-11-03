@@ -56,9 +56,9 @@ NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that
 
 ## Skins and fonts
 
-<p align="center"><img src="docs/screenshots/skins.png" width="760" alt="NuVa in the Graphite Orange, Graphite Green and Phosphor skins"></p>
+<p align="center"><img src="docs/screenshots/skins.png" width="760" alt="NuVa in the Graphite Orange and Phosphor skins"></p>
 
-The look above is the **Rams** skin. **Graphite Orange** and **Graphite Green** are always dark, with a single bright accent on the play key, the lights and the playing track. **Phosphor** is a nod to the shareware players of the late nineties: a black screen with green text and a blue-grey chassis. Switch in **View › Skin** (⌥⌘1 to ⌥⌘4) or from the mini player. Skins change colours only: the keys, the layout and the shortcuts stay where your hands expect them. **View › Font** picks Inter + IBM Plex Mono or Apple's SF Pro + SF Mono.
+The look above is the **Rams** skin. **Graphite Orange** is always dark, with a single bright orange accent on the play key, the lights and the playing track. **Phosphor** is a nod to the shareware players of the late nineties: a black screen with green text and a blue-grey chassis. Switch in **View › Skin** (⌥⌘1 to ⌥⌘3) or from the mini player. Skins change colours only: the keys, the layout and the shortcuts stay where your hands expect them. **View › Font** picks Inter + IBM Plex Mono or Apple's SF Pro + SF Mono.
 
 ## Ambient mode, for the room
 
@@ -70,10 +70,10 @@ The look above is the **Rams** skin. **Graphite Orange** and **Graphite Green** 
 - **Clock**: the time of day.
 - **Spectrum**: 28 bands from 20 Hz to 20 kHz, with a peak line over each.
 - **Meters**: left and right levels.
-- **Needles**: two backlit VU meters, like the front of a tape deck.
+- **Needles**: two backlit VU meters under glass. The needles move like real ones: a damped spring that takes 300 ms to settle, overshoots a hair and rests on its pin.
 - **Valves**: two valves in their cage, whose filaments glow with each channel.
 
-They all move with what you hear, AirPlay included. With artwork on, the screen takes on the album's colour: a soft glow from the cover, behind the face. Esc or ⌘4 leaves. It can go on another screen or a TV (**View › Ambient Options**), and keeps the screen awake while music plays. **OLED Protection**, on by default, looks after OLED screens: the picture drifts slowly, static parts are dimmer, the face changes every 20 minutes, and after an hour untouched only a small light is left.
+They all move with what you hear, AirPlay included, drawn at your screen's own rate (120 Hz on a ProMotion Mac or a 120 Hz TV). With artwork on, the screen takes on the album's colours: a soft, blurred glow made from the cover itself, behind the face; on the Display face it breathes with the bass. Esc or ⌘4 leaves. It can go on another screen or a TV (**View › Ambient Options**), and keeps the screen awake while music plays. **OLED Protection**, on by default, looks after OLED screens: the picture drifts slowly, static parts are dimmer, the face changes every 20 minutes, and after an hour untouched only a small light is left.
 
 ## Album artwork, if you want it
 
@@ -222,8 +222,8 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 - **AirPlay 2.** WiiM, HomePod, Apple TV ou qualquer coluna AirPlay: carrega na saída que aparece no visor.
 - **Jellyfin sem confusão.** Navega pelas pastas reais do servidor e toca os ficheiros originais.
 - **Uma janela pequena.** As pastas aparecem no lugar da fila (⌘B troca as duas) e há um modo compacto. A janela estica na vertical para veres o álbum inteiro, e na horizontal para nomes compridos.
-- **Skins:** Rams (claro ou escuro, como o sistema), Graphite Orange, Graphite Green e Fósforo (sempre escuras), em Visualização › Skin. Fonte Inter + IBM Plex Mono ou SF Pro + SF Mono, em Visualização › Fonte.
-- **Modo Ambiente** (⌘4): o ecrã inteiro passa a ser o mostrador da NuVa, na skin atual. Seis faces, ← → trocam: a faixa e o tempo em grande, um relógio, o espectro de 28 bandas, os medidores esquerdo e direito, dois VU de ponteiro e duas válvulas que acendem com cada canal. Com as capas ligadas, o ecrã ganha a cor do álbum, num brilho suave por trás. Esc sai. Pode ir para outro ecrã ou uma TV. Protege ecrãs OLED: a imagem desloca-se devagar, o que é fixo fica mais escuro, a face muda a cada 20 minutos e, ao fim de uma hora sem mexer, só fica uma pequena luz.
+- **Skins:** Rams (claro ou escuro, como o sistema), Graphite Orange e Phosphor (sempre escuras), em Visualização › Skin. Fonte Inter + IBM Plex Mono ou SF Pro + SF Mono, em Visualização › Fonte.
+- **Modo Ambiente** (⌘4): o ecrã inteiro passa a ser o mostrador da NuVa, na skin atual. Seis faces, ← → trocam: a faixa e o tempo em grande, um relógio, o espectro de 28 bandas, os medidores esquerdo e direito, dois VU de ponteiro que se mexem como os verdadeiros e duas válvulas que acendem com cada canal, a 120 Hz nos ecrãs que o têm. Com as capas ligadas, o ecrã ganha as cores do álbum, num brilho desfocado feito da própria capa; na face do ecrã, respira com os graves. Esc sai. Pode ir para outro ecrã ou uma TV. Protege ecrãs OLED: a imagem desloca-se devagar, o que é fixo fica mais escuro, a face muda a cada 20 minutos e, ao fim de uma hora sem mexer, só fica uma pequena luz.
 - **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A). Usa a imagem da pasta (`cover`, `folder`, `front`, `album` ou `capa`); se não houver, procura no MusicBrainz pelo nome das pastas. Nunca das tags. Capa errada ou em falta: carrega na capa e corrige o artista ou o álbum, ou escolhe uma imagem. Desligado por defeito.
 - **CDs áudio, como um leitor de CDs.** Mete um disco no leitor e a NuVa toca-o logo. Os nomes do álbum e das faixas vêm do MusicBrainz, pelo índice do disco (um CD não traz nomes). Ejetar com ⌘E. Para abrir a NuVa sempre que entra um CD: Definições do Sistema › CDs e DVDs › Ao inserir um CD de música › Abrir outra aplicação… › NuVa.
 - **Avisa quando há versão nova** (verifica no GitHub uma vez por dia, sem descarregar nada). [Termos e privacidade](TERMS.md) em NuVa › Termos e privacidade.

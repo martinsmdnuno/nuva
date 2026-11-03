@@ -7,6 +7,8 @@
 # No `ports:`: both join the external `web` network and the edge reaches
 # `nuva-web:80` by name.
 
+name: nuva-site
+
 services:
   web:
     image: caddy:2-alpine

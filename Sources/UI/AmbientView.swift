@@ -27,10 +27,17 @@ struct AmbientView: View {
             let unit = geometry.size.width * area / 100
             TimelineView(.periodic(from: .now, by: 1)) { context in
                 let now = isSnapshot ? Self.snapshotDate : context.date
+                // With artwork on, the cover's hue lights the screen from behind (not while resting).
+                let glow = model.currentArtwork.flatMap(ArtworkGlow.color(for:))
                 ZStack {
                     if !isSnapshot, ambient.isResting(at: now) {
                         AmbientRest(size: geometry.size, unit: unit, now: now)
                     } else {
+                        if let glow {
+                            AmbientGlow(color: glow)
+                                .opacity(opacity(now: now))
+                                .transition(.opacity)
+                        }
                         Group {
                             switch face ?? ambient.face {
                             case .display: AmbientDisplayFace(unit: unit)
@@ -63,6 +70,8 @@ struct AmbientView: View {
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                // A new album's glow fades in over the old one.
+                .animation(reduceMotion ? nil : .easeInOut(duration: 1.5), value: glow)
             }
         }
         .background(Color.display)

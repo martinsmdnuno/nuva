@@ -1,6 +1,7 @@
 # NuVa for Windows
 
-Status: plan, stack to be agreed.
+Status: stack agreed (C# + WPF), being built.
+Input: there is no Windows machine for development. A friend of the author installs and uses it on Windows 11 (x64), with a CD drive and access to the author's Jellyfin. So the app builds and is tested on the Mac as far as possible, and everything that only Windows can check is written to a log the friend can send back (`%LOCALAPPDATA%\NuVa\nuva.log`, and `NuVa.exe --selftest`, which plays a second of silence through each stage and writes what worked).
 
 A NuVa for Windows 10 and 11, with the Mac app's scope (`CLAUDE.md`) wherever Windows allows. It lives in `windows/`, next to the Mac app and `android/`, and shares their principles and design system, not their code. It ships in the same GitHub release as the DMG and the APK, with the same version number.
 
@@ -101,4 +102,4 @@ Space play/pause · Ctrl+→ next · Ctrl+← previous · Ctrl+Shift+→ ← 10 
 
 ## Testing
 
-On the Mac: the build and the Core tests (DSP, sorting, `AlbumGuess`, Jellyfin parsing, artwork rules). On the Windows machine: everything that touches Windows (audio, SMTC, devices, CD, the look). How builds reach it is agreed with the user.
+On the Mac: the build and the Core tests (DSP, sorting, `AlbumGuess`, Jellyfin parsing, artwork rules). On Windows, by the friend: everything that touches Windows (audio, SMTC, devices, CD, the look), with the log and `--selftest` coming back to the author. The zip is left in `windows/dist/` for the author to pass on, and later goes on the GitHub release.

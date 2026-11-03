@@ -131,7 +131,7 @@ public sealed partial class App : Application
 
     public void ShowAbout()
     {
-        MessageBox.Show(MainWindow, $"NuVa {Version}\n\n{L.T("Pastas, som nativo, nada a mais.")}\n\nnuva.martinsnuno.com", "NuVa", MessageBoxButton.OK, MessageBoxImage.None);
+        Notice.Show(MainWindow, $"NuVa {Version}", L.T("Pastas, som nativo, nada a mais.") + "\n\nnuva.martinsnuno.com");
     }
 
     // MARK: Skins and fonts

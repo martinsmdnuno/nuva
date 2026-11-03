@@ -34,6 +34,7 @@ public sealed partial class App
     {
         AddTaskbarButtons();
         ScanDrives();
+        CheckAtLaunch();
         foreach (var then in launched) then();
     }
 

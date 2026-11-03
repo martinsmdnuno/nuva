@@ -25,11 +25,11 @@
 
 ---
 
-**NuVa is a small, free music player for the Mac, made for people who keep their music in folders.**
+**NuVa is a small, free music player for the Mac, Android TV and Windows, made for people who keep their music in folders.**
 
 You spent years naming your folders and files just right. Most players throw that away and rebuild your library from tags, so remixes, covers and live sets end up scattered across albums you've never heard of. NuVa doesn't. A folder is an album, a file is a track, and the names you see are the names you gave them.
 
-It plays FLAC through Apple's own audio engine, sends it to your AirPlay speakers, and fits in a window the size of a hi-fi faceplate.
+It plays FLAC through each system's own audio engine (Apple's on the Mac), sends it to your AirPlay speakers from the Mac, and fits in a window the size of a hi-fi faceplate. On the TV and on Windows it's the same player: see [NuVa for Android TV](#nuva-for-android-tv) and [NuVa for Windows](#nuva-for-windows).
 
 ## Why you'll like it
 
@@ -179,7 +179,7 @@ The same player for the PC, on Windows 10 (2004) or 11. It does what the Mac app
 
 To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-Windows.zip)**, unzip it anywhere and open **NuVa.exe**; there is nothing to install. NuVa isn't signed with a paid certificate, so Windows asks once: click **More info › Run anyway**. To remove it, delete the folder.
 
-## Everything else
+## Everything else, on the Mac
 
 - Plays FLAC, ALAC, MP3, AAC/M4A, WAV and AIFF.
 - Folders on your Mac, on an external disk or on a mounted network share (SMB), and audio CDs.
@@ -226,7 +226,9 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 *Later*: on its way. —: doesn't apply on that platform.
 <!-- /nuva:platforms -->
 
-## Install
+## Install on the Mac
+
+For the TV, see [NuVa for Android TV](#nuva-for-android-tv); for the PC, [NuVa for Windows](#nuva-for-windows).
 
 1. **[Download NuVa.dmg](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg)** and open it.
 2. Drag **NuVa** to **Applications**.
@@ -246,6 +248,8 @@ xattr -dr com.apple.quarantine /Applications/NuVa.app
 </details>
 
 ## Keyboard
+
+On Windows, every shortcut is the same with **Ctrl** for ⌘ and **Ctrl+Shift** for ⌥⌘ (F11 also opens Ambient). On the TV, the remote does everything.
 
 | Shortcut | Action |
 |---|---|
@@ -291,11 +295,11 @@ Type: [Inter](https://github.com/rsms/inter), [IBM Plex](https://github.com/IBM/
 
 ## Português
 
-**A NuVa é um leitor de música pequeno e gratuito para Mac, para quem guarda a música em pastas.**
+**A NuVa é um leitor de música pequeno e gratuito para Mac, Android TV e Windows, para quem guarda a música em pastas.**
 
 Passaste anos a dar o nome certo às pastas e aos ficheiros. A maioria dos leitores deita isso fora e refaz a biblioteca a partir das tags, e os remixes, covers e sets ao vivo acabam espalhados por álbuns que nunca ouviste. A NuVa não. Uma pasta é um álbum, um ficheiro é uma faixa, e os nomes que vês são os que lhes deste.
 
-Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colunas AirPlay e cabe numa janela do tamanho da frente de um amplificador.
+Toca FLAC pelo motor de áudio de cada sistema (o da própria Apple, no Mac), envia o som do Mac para as tuas colunas AirPlay e cabe numa janela do tamanho da frente de um amplificador. Na TV e no Windows é o mesmo leitor: vê [Na TV](#na-tv-nuva-para-android-tv) e [No PC](#no-pc-nuva-para-windows).
 
 <p align="center">
 <!-- nuva:downloads-pt -->
@@ -366,7 +370,9 @@ Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnun
 *Mais tarde*: a caminho. —: não se aplica nessa plataforma.
 <!-- /nuva:platforms-pt -->
 
-### Instalar
+### Instalar no Mac
+
+Para a TV, vê [Na TV](#na-tv-nuva-para-android-tv); para o PC, [No PC](#no-pc-nuva-para-windows).
 
 1. **[Descarregar NuVa.dmg](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg)** e abrir.
 2. Arrastar a **NuVa** para **Aplicações**.
@@ -375,4 +381,4 @@ Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnun
 
 Só é preciso uma vez.
 
-Atalhos: Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⇧⌘→ ⇧⌘← avançar/recuar 10 s · ⌘. parar · ⌘↑ ⌘↓ volume · ⌘R ⌥⌘S repetir, aleatório · ⌥⌘↑ ⌥⌘↓ mover na fila · ⌥⌘⌫ limpar fila · ⌥⌘E equalizador · ⌘B fila ou pastas · ⌘1 ⌘2 ⌘3 fila, pastas, compacto · ⌘4 ambiente · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌥⌘V espectro · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin · ⌘E ejetar CD.
+Atalhos (no Windows, Ctrl em vez de ⌘ e Ctrl+Shift em vez de ⌥⌘; F11 também abre o Ambiente): Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⇧⌘→ ⇧⌘← avançar/recuar 10 s · ⌘. parar · ⌘↑ ⌘↓ volume · ⌘R ⌥⌘S repetir, aleatório · ⌥⌘↑ ⌥⌘↓ mover na fila · ⌥⌘⌫ limpar fila · ⌥⌘E equalizador · ⌘B fila ou pastas · ⌘1 ⌘2 ⌘3 fila, pastas, compacto · ⌘4 ambiente · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌥⌘V espectro · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin · ⌘E ejetar CD.

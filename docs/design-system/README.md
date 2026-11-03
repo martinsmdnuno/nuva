@@ -33,7 +33,7 @@ Lead grey with a single accent.
 
 Themes: **Lead** (`chumbo`) is the main one. **Aluminium** (`aluminio`) is the light theme and follows the system appearance. Together they are the **Rams** skin (called Nuno up to 1.4). Every text pair passes 4.5:1 in both themes, and keys, LEDs and focus 3:1 (checked in `Tests/SkinTests.swift`).
 
-Other skins change token values only, never roles or layout: **Graphite Orange** and **Graphite Green** (`skins/graphite.md`) and **Phosphor** (`skins/phosphor.md`), all always dark. View ▸ Skin, ⌥⌘1 to ⌥⌘4.
+Other skins change token values only, never roles or layout: **Graphite Orange** (`skins/graphite.md`; its green twin was retired in 1.10.1) and **Phosphor** (`skins/phosphor.md`), all always dark. View ▸ Skin, ⌥⌘1 to ⌥⌘3.
 
 ## Type
 

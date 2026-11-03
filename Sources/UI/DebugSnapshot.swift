@@ -54,7 +54,6 @@ enum DebugSnapshot {
             (.rams, .inter, "", nil, bothThemes),
             (.rams, .system, "-sf", main, bothThemes),
             (.graphiteOrange, .system, "", main, [(.dark, Skin.graphiteOrange.id)]),
-            (.graphiteGreen, .system, "", main, [(.dark, Skin.graphiteGreen.id)]),
             (.phosphor, .inter, "", main, [(.dark, Skin.phosphor.id)]),
         ]
         // Load the user's saved skin now, so it can't replace the one being drawn when a view

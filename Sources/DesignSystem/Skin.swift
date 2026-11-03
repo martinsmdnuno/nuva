@@ -57,12 +57,11 @@ struct Skin: Identifiable, Sendable, Equatable {
     /// Graphite, from NuVa_Design_Spec_v1 (docs/design-system/skins/graphite.md): the spec's colours,
     /// adjusted so every text pair passes 4.5:1 and the layers can be told apart. Only the accent differs.
     static let graphiteOrange = graphite(id: "graphite-orange", name: "Graphite Orange", accent: 0xFF6A00, selected: 0x382E22)
-    static let graphiteGreen = graphite(id: "graphite-green", name: "Graphite Green", accent: 0x20D66B, selected: 0x1D3628)
 
     /// Phosphor (docs/design-system/skins/phosphor.md): after the classic shareware players. A black display
     /// with phosphor-green ink, a blue-grey chassis, silver keys and a blue selected row.
     static let phosphor = Skin(
-        id: "phosphor", name: String(localized: "Fósforo"), appearance: .alwaysDark, fontSet: .inter,
+        id: "phosphor", name: "Phosphor", appearance: .alwaysDark, fontSet: .inter,
         palette: [
             .surface0: 0x1C1C2B,
             .surface1: 0x2C2C44,
@@ -89,7 +88,7 @@ struct Skin: Identifiable, Sendable, Equatable {
             .focus: 0xF2C744,
         ].mapValues { Pair(light: $0, dark: $0) })
 
-    static let all: [Skin] = [.rams, .graphiteOrange, .graphiteGreen, .phosphor]
+    static let all: [Skin] = [.rams, .graphiteOrange, .phosphor]
 
     private static func graphite(id: String, name: String, accent: UInt32, selected: UInt32) -> Skin {
         let dark: [ColorToken: UInt32] = [
@@ -123,8 +122,8 @@ struct Skin: Identifiable, Sendable, Equatable {
     }
 
     static func with(id: String?) -> Skin {
-        // "nuno" is Rams's id before 1.5.
-        let id = id == "nuno" ? Skin.rams.id : id
+        // "nuno" is Rams's id before 1.5; Graphite Green was retired in 1.10.1 for its orange twin.
+        let id = id == "nuno" ? Skin.rams.id : id == "graphite-green" ? Skin.graphiteOrange.id : id
         return all.first { $0.id == id } ?? .rams
     }
 

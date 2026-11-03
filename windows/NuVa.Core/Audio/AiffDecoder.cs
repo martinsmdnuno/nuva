@@ -41,6 +41,7 @@ public sealed class AiffDecoder : IDecoder
             var compression = "NONE";
             long data = -1;
             Span<byte> chunk = stackalloc byte[8];
+            Span<byte> ssnd = stackalloc byte[8];
             while (stream.Position + 8 <= stream.Length)
             {
                 stream.ReadExactly(chunk);
@@ -59,7 +60,6 @@ public sealed class AiffDecoder : IDecoder
                 }
                 else if (id == "SSND")
                 {
-                    Span<byte> ssnd = stackalloc byte[8];
                     stream.ReadExactly(ssnd);
                     data = start + 8 + BinaryPrimitives.ReadUInt32BigEndian(ssnd);
                 }

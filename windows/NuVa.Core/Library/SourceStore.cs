@@ -21,7 +21,8 @@ public sealed class SourceStore
     private readonly Settings settings;
     private readonly ICredentialStore credentials;
     private List<Record> records = [];
-    private readonly List<IMusicSource> sources = [];
+    // Replaced, never changed in place: the decoder thread reads it while the UI may add a source.
+    private volatile IMusicSource[] sources = [];
 
     /// <summary>Saved sources that failed to open (a folder deleted, a share offline), by id, with the message.</summary>
     public Dictionary<Guid, string> Failed { get; } = new();
@@ -50,11 +51,11 @@ public sealed class SourceStore
             {
                 case SourceKind.Local when record.Path != null:
                     var local = new LocalSource(record.Id, record.Name, record.Path);
-                    if (local.IsReachable) sources.Add(local);
+                    if (local.IsReachable) sources = [.. sources, local];
                     else Failed[record.Id] = SourceException.MissingFolder(record.Name).Message;
                     break;
                 case SourceKind.Jellyfin:
-                    if (MakeJellyfin?.Invoke(record, credentials, DeviceId) is { } jellyfin) sources.Add(jellyfin);
+                    if (MakeJellyfin?.Invoke(record, credentials, DeviceId) is { } jellyfin) sources = [.. sources, jellyfin];
                     break;
             }
         }
@@ -75,7 +76,7 @@ public sealed class SourceStore
             var source = new LocalSource(record.Id, record.Name, record.Path);
             if (!source.IsReachable) continue;
             Failed.Remove(record.Id);
-            sources.Add(source);
+            sources = [.. sources, source];
             changed = true;
         }
         if (changed) Changed?.Invoke();
@@ -94,7 +95,7 @@ public sealed class SourceStore
         var record = new Record(Guid.NewGuid(), name, SourceKind.Local, Path: path);
         var source = new LocalSource(record.Id, record.Name, path);
         records.Add(record);
-        sources.Add(source);
+        sources = [.. sources, source];
         Save();
         return source;
     }
@@ -107,7 +108,7 @@ public sealed class SourceStore
         var source = MakeJellyfin?.Invoke(record, credentials, DeviceId);
         if (source == null) return null;
         records.Add(record);
-        sources.Add(source);
+        sources = [.. sources, source];
         Save();
         return source;
     }
@@ -116,7 +117,7 @@ public sealed class SourceStore
     public void AddTransient(IMusicSource source)
     {
         if (Source(source.Id) != null) return;
-        sources.Add(source);
+        sources = [.. sources, source];
         Changed?.Invoke();
     }
 
@@ -124,7 +125,7 @@ public sealed class SourceStore
     {
         if (records.FirstOrDefault(r => r.Id == id)?.Kind == SourceKind.Jellyfin) credentials.DeletePassword(id.ToString());
         records.RemoveAll(r => r.Id == id);
-        sources.RemoveAll(s => s.Id == id);
+        sources = sources.Where(s => s.Id != id).ToArray();
         Failed.Remove(id);
         Save();
     }

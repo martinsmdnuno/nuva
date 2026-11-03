@@ -14,32 +14,32 @@
 <!-- nuva:platforms -->
 ## What each app does
 
-| | Mac | Android TV |
-|---|:-:|:-:|
-| Folders as they are: a folder is an album, natural sort, never tags | ✓ | ✓ |
-| Folders on the computer, external disks and network shares | ✓ | — |
-| Jellyfin by its real folders, streaming the original file | ✓ | ✓ |
-| Audio CDs, named from MusicBrainz | ✓ | — |
-| FLAC, 24-bit included, through the system's own audio engine | ✓ | ✓ |
-| AirPlay 2 to a WiiM, HomePod or Apple TV | ✓ | — |
-| Queue: play a folder, add, reorder, remove | ✓ | ✓ |
-| Repeat, shuffle, seek and 10-second skips | ✓ | ✓ |
-| 10-band equalizer with presets | ✓ | ✓ |
-| Spectrum on the display, in time with what you hear | ✓ | ✓ |
-| Ambient mode: six full-screen faces, with OLED protection | ✓ | ✓ |
-| Album artwork: the folder's image, then MusicBrainz by folder names | ✓ | ✓ |
-| Correct a wrong or missing cover | ✓ | later |
-| Skins (Rams, Graphite Orange, Phosphor) and five font pairs | ✓ | ✓ |
-| Compact mode, and a mini player when the window is closed | ✓ | — |
-| A keyboard shortcut for everything | ✓ | — |
-| Everything from a TV remote | — | ✓ |
-| Media keys and the system's Now Playing controls | ✓ | ✓ |
-| Reopens where you left off | later | ✓ |
-| A track that fails is tried again, then skipped, and the display says so | ✓ | later |
-| Screen reader: every key, control and row is read | ✓ | later |
-| English and Portuguese, following the system | ✓ | ✓ |
-| Says when there's a new version; never downloads by itself | ✓ | ✓ |
-| No account, no analytics | ✓ | ✓ |
+| | Mac | Android TV | Windows |
+|---|:-:|:-:|:-:|
+| Folders as they are: a folder is an album, natural sort, never tags | ✓ | ✓ | ✓ |
+| Folders on the computer, external disks and network shares | ✓ | — | ✓ |
+| Jellyfin by its real folders, streaming the original file | ✓ | ✓ | ✓ |
+| Audio CDs, named from MusicBrainz | ✓ | — | ✓ |
+| FLAC, 24-bit included, through the system's own audio engine | ✓ | ✓ | ✓ |
+| AirPlay 2 to a WiiM, HomePod or Apple TV | ✓ | — | — |
+| Queue: play a folder, add, reorder, remove | ✓ | ✓ | ✓ |
+| Repeat, shuffle, seek and 10-second skips | ✓ | ✓ | ✓ |
+| 10-band equalizer with presets | ✓ | ✓ | ✓ |
+| Spectrum on the display, in time with what you hear | ✓ | ✓ | ✓ |
+| Ambient mode: six full-screen faces, with OLED protection | ✓ | ✓ | ✓ |
+| Album artwork: the folder's image, then MusicBrainz by folder names | ✓ | ✓ | ✓ |
+| Correct a wrong or missing cover | ✓ | later | ✓ |
+| Skins (Rams, Graphite Orange, Phosphor) and five font pairs | ✓ | ✓ | ✓ |
+| Compact mode, and a mini player when the window is closed | ✓ | — | ✓ |
+| A keyboard shortcut for everything | ✓ | — | ✓ |
+| Everything from a TV remote | — | ✓ | — |
+| Media keys and the system's Now Playing controls | ✓ | ✓ | ✓ |
+| Reopens where you left off | later | ✓ | later |
+| A track that fails is tried again, then skipped, and the display says so | ✓ | later | ✓ |
+| Screen reader: every key, control and row is read | ✓ | later | later |
+| English and Portuguese, following the system | ✓ | ✓ | ✓ |
+| Says when there's a new version; never downloads by itself | ✓ | ✓ | ✓ |
+| No account, no analytics | ✓ | ✓ | ✓ |
 
 *Later*: on its way. —: doesn't apply on that platform.
 <!-- /nuva:platforms -->
@@ -49,6 +49,7 @@
 <!-- nuva:downloads -->
 - [Download NuVa.dmg](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg)
 - [Download NuVa-AndroidTV.apk](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk)
+- [Download NuVa-Windows.zip](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-Windows.zip)
 <!-- /nuva:downloads -->
 - [Source code and issues on GitHub](https://github.com/martinsmdnuno/nuva)
 - [Changelog](https://github.com/martinsmdnuno/nuva/blob/main/CHANGELOG.md)

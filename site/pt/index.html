@@ -40,7 +40,7 @@
       "url": "https://nuva.martinsnuno.com/pt/",
       "applicationCategory": "MultimediaApplication",
       "applicationSubCategory": "Leitor de música",
-      "operatingSystem": "macOS 14 ou posterior (Apple silicon e Intel); Android TV 8.1 ou posterior",
+      "operatingSystem": "macOS 14 ou posterior (Apple silicon e Intel); Android TV 8.1 ou posterior; Windows 10 (2004) ou 11",
       "softwareVersion": "1.11",
       "downloadUrl": "https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg",
       "license": "https://opensource.org/licenses/MIT",
@@ -64,6 +64,7 @@
         {"@type": "Question", "name": "A NuVa é gratuita?", "acceptedAnswer": {"@type": "Answer", "text": "Sim. A NuVa é gratuita e de código aberto, com a licença MIT, sem conta, sem publicidade e sem analytics."}},
         {"@type": "Question", "name": "Porque é que o macOS diz que não consegue verificar a NuVa?", "acceptedAnswer": {"@type": "Answer", "text": "A NuVa não está assinada com um certificado pago de programador da Apple. Depois de a arrastares para Aplicações e a abrires uma vez, vai a Definições do Sistema, Privacidade e segurança, e clica em Abrir na mesma junto à mensagem da NuVa. Só fazes isto uma vez."}},
         {"@type": "Question", "name": "Há NuVa para Android TV?", "acceptedAnswer": {"@type": "Answer", "text": "Sim. A NuVa para Android TV funciona numa box Android TV ou numa TV com Android TV 8.1 ou posterior e toca um servidor Jellyfin pelas pastas, FLAC incluído, com o equalizador, o espetro e as faces do modo ambiente. Instala-se com a app Downloader: escreve nuva.martinsnuno.com/tv."}},
+        {"@type": "Question", "name": "Há NuVa para Windows?", "acceptedAnswer": {"@type": "Answer", "text": "Sim. A NuVa para Windows funciona no Windows 10 (2004) ou 11 e faz o que a app do Mac faz, menos o AirPlay: pastas, partilhas de rede, Jellyfin e CDs áudio, FLAC pelos descodificadores do próprio Windows, o equalizador, o espetro e as faces do modo ambiente. Descarrega o NuVa-Windows.zip, descompacta e abre o NuVa.exe; o Windows pergunta uma vez, em Mais informações, se o queres executar mesmo assim."}},
         {"@type": "Question", "name": "Em que Macs funciona a NuVa?", "acceptedAnswer": {"@type": "Answer", "text": "Em qualquer Mac com macOS 14 Sonoma ou posterior, com Apple silicon ou Intel."}}
       ]
     }
@@ -90,6 +91,7 @@
     <h1>As tuas pastas de música, tocadas tal como estão.</h1>
     <p class="lede" data-for="mac">A NuVa é um leitor de música pequeno e gratuito para Mac. Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colunas AirPlay e navega nas tuas pastas e no teu servidor Jellyfin exatamente como lhes deste o nome.</p>
     <p class="lede" data-for="tv">A NuVa para Android TV é o mesmo leitor pequeno e gratuito, para a sala. Toca o teu servidor Jellyfin pelas pastas reais, FLAC e 24 bits incluídos, pelo leitor do próprio Android.</p>
+    <p class="lede" data-for="windows">A NuVa para Windows é o mesmo leitor pequeno e gratuito, para o PC. Toca FLAC pelos descodificadores do próprio Windows e navega nas tuas pastas, nas partilhas de rede e no teu servidor Jellyfin exatamente como lhes deste o nome.</p>
     <div class="platforms" role="group" aria-label="Plataforma" hidden>
       <div class="group">
         <span class="led" aria-hidden="true"></span>
@@ -98,6 +100,10 @@
       <div class="group">
         <span class="led" aria-hidden="true"></span>
         <button class="key mode" type="button" data-platform="tv" aria-pressed="false">Android TV</button>
+      </div>
+      <div class="group">
+        <span class="led" aria-hidden="true"></span>
+        <button class="key mode" type="button" data-platform="windows" aria-pressed="false">Windows</button>
       </div>
     </div>
     <div class="keys">
@@ -117,6 +123,14 @@
         </a>
         <span class="legend">descarregar</span>
       </div>
+      <div class="group" data-for="windows">
+        <span class="led on" aria-hidden="true"></span>
+        <a class="key play" href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-Windows.zip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>
+          Descarregar para Windows
+        </a>
+        <span class="legend">descarregar</span>
+      </div>
       <div class="group">
         <span class="led" aria-hidden="true"></span>
         <a class="key mode" href="https://github.com/martinsmdnuno/nuva">
@@ -129,8 +143,10 @@
     <!-- nuva:meta -->
     <p class="meta" data-for="mac">Versão <span class="version">1.11</span> · macOS 14 ou posterior · Apple silicon e Intel · gratuita, MIT</p>
     <p class="meta" data-for="tv">Versão <span class="version">1.11</span> · Android TV 8.1 ou posterior · gratuita, MIT</p>
+    <p class="meta" data-for="windows">Versão <span class="version">1.11</span> · Windows 10 (2004) ou 11 · gratuita, MIT</p>
     <!-- /nuva:meta -->
     <p class="meta tv-hint" data-for="tv">Na TV: abre a app Downloader e escreve <code>nuva.martinsnuno.com/tv</code></p>
+    <p class="meta tv-hint" data-for="windows">Descompacta e abre o NuVa.exe. O Windows pergunta uma vez: Mais informações › Executar mesmo assim</p>
     <figure class="shot" data-for="mac">
       <img src="/img/themes.webp" width="1600" height="1259" alt="A janela da NuVa nos temas Chumbo e Alumínio: o visor mostra um FLAC 24/48 a tocar por AirPlay num WiiM, as teclas e a fila">
     </figure>
@@ -145,7 +161,7 @@
       <h2>Feita para música guardada em pastas</h2>
       <p class="muted" style="max-width: 40em; margin-bottom: 40px;">Passaste anos a dar o nome certo às pastas e aos ficheiros. A maioria dos leitores deita isso fora e refaz a biblioteca a partir das tags, e os remixes, covers e sets ao vivo acabam espalhados por álbuns que nunca ouviste. A NuVa não.</p>
       <div class="features">
-        <div data-for="mac">
+        <div data-for="mac windows">
           <h3>As tuas pastas, intactas</h3>
           <p>Uma pasta é um álbum, um ficheiro é uma faixa. Sem importar, sem ler tags, sem uma biblioteca refeita nas tuas costas. Ordem natural: a faixa 2 vem antes da 10.</p>
         </div>
@@ -169,7 +185,7 @@
           <h3>O comando faz tudo</h3>
           <p>Tocar, pausar, saltar e avançar com o comando. Mantém OK carregado para pôr uma pasta ou uma faixa na fila, ou para a mover e tirar; Voltar pergunta antes de sair.</p>
         </div>
-        <div data-for="mac">
+        <div data-for="mac windows">
           <h3>Jellyfin, por pastas</h3>
           <p>Entra no teu servidor Jellyfin e navega pelas pastas reais, não pelas tags. A NuVa toca o ficheiro original, por isso um FLAC continua a ser um FLAC.</p>
         </div>
@@ -193,6 +209,22 @@
           <h3>Teclado primeiro</h3>
           <p>Teclas multimédia, Centro de controlo, AirPods e um atalho para tudo. Fecha a janela e a música continua num mini leitor na barra de menus.</p>
         </div>
+        <div data-for="windows">
+          <h3>FLAC no Windows, de forma nativa</h3>
+          <p>FLAC, 24 bits incluídos, ALAC, WAV, AIFF, MP3 e AAC pelo Media Foundation, os descodificadores do próprio Windows. Sem codecs embutidos, sem VLC, sem ffmpeg.</p>
+        </div>
+        <div data-for="windows">
+          <h3>Qualquer saída de som</h3>
+          <p>Escolhe as colunas, os auscultadores ou o DAC onde o visor diz para onde vai o som; o Windows não tem AirPlay.</p>
+        </div>
+        <div data-for="windows">
+          <h3>Um NAS, um disco ou um CD</h3>
+          <p>Pastas no PC, num disco externo ou numa partilha de rede. Mete um CD áudio e a NuVa dá nome ao álbum e às faixas a partir do MusicBrainz.</p>
+        </div>
+        <div data-for="windows">
+          <h3>Teclado primeiro</h3>
+          <p>Teclas multimédia, os controlos multimédia do Windows, botões na barra de tarefas e um atalho com Ctrl para tudo. Fecha a janela e a música continua num mini leitor na área de notificação.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -204,6 +236,7 @@
         <h2>Um visor de hi-fi para a sala</h2>
         <p class="muted" data-for="tv">Carrega na tecla do visor e a TV inteira passa a ser o visor da NuVa, para deixar a música a tocar como parte da sala. ← e → mudam a face; qualquer outra tecla traz o leitor de volta.</p>
         <p class="muted" data-for="mac">Carrega em ⌘4 e o ecrã inteiro passa a ser o visor da NuVa, para deixar a música a tocar como parte da sala. Desenhado ao ritmo do teu ecrã, até 120 Hz, e a par do que ouves, também por AirPlay.</p>
+        <p class="muted" data-for="windows">Carrega em Ctrl+4 ou F11 e o ecrã inteiro passa a ser o visor da NuVa, para deixar a música a tocar como parte da sala. Desenhado ao ritmo do teu ecrã, e a par do que ouves.</p>
         <ul>
           <li>VU-meters retroiluminados, com ponteiros que se movem como os verdadeiros</li>
           <li>Válvulas cujos filamentos brilham com cada canal</li>
@@ -213,12 +246,12 @@
         </ul>
       </div>
       <img data-for="tv" src="/img/tv-ambient.webp" width="1600" height="959" loading="lazy" alt="Quatro faces do modo ambiente na Android TV: dois VU-meters, duas válvulas acesas, a faixa e o tempo em grande, e um espetro">
-      <img data-for="mac" src="/img/ambient.webp" width="1600" height="1085" loading="lazy" alt="Quatro faces do modo ambiente: dois VU-meters, duas válvulas acesas, a faixa e o tempo sobre um brilho da capa, e um espectro verde de 28 bandas">
+      <img data-for="mac windows" src="/img/ambient.webp" width="1600" height="1085" loading="lazy" alt="Quatro faces do modo ambiente: dois VU-meters, duas válvulas acesas, a faixa e o tempo sobre um brilho da capa, e um espectro verde de 28 bandas">
     </div>
   </section>
 
   <section id="tv">
-    <div class="wrap split" data-for="mac">
+    <div class="wrap split" data-for="mac windows">
       <img src="/img/tv.webp" width="1600" height="942" loading="lazy" alt="A NuVa na Android TV: o visor com FLAC a tocar e o espetro, as teclas e a fila">
       <div>
         <p class="label">android tv</p>
@@ -253,14 +286,15 @@
   <section id="design">
     <div class="wrap split">
       <img data-for="tv" src="/img/tv-skins.webp" width="1600" height="1828" loading="lazy" alt="A NuVa na Android TV com a skin Graphite Orange, com a tecla de tocar laranja, e com a Phosphor, com texto verde num visor preto">
-      <img data-for="mac" src="/img/skins.webp" width="1600" height="1259" loading="lazy" alt="A NuVa com a skin Graphite Orange, com a tecla de tocar laranja, e com a Phosphor, com texto verde num visor preto">
+      <img data-for="mac windows" src="/img/skins.webp" width="1600" height="1259" loading="lazy" alt="A NuVa com a skin Graphite Orange, com a tecla de tocar laranja, e com a Phosphor, com texto verde num visor preto">
       <div>
         <p class="label">design</p>
         <h2>Parece um aparelho</h2>
         <p class="muted" data-for="mac">Um só painel plano, teclas que dizem o que fazem pela cor, pequenas luzes âmbar para o que está ligado e um botão de volume, à maneira de Dieter Rams e da hi-fi clássica da Braun. O visor é sempre escuro, como o de um amplificador.</p>
         <p class="muted" data-for="tv">Um só painel plano, teclas que dizem o que fazem pela cor e pequenas luzes para o que está ligado, à maneira de Dieter Rams e da hi-fi clássica da Braun. O visor é sempre escuro, como o de um amplificador, e as skins são as do Mac.</p>
+        <p class="muted" data-for="windows">Um só painel plano, teclas que dizem o que fazem pela cor, pequenas luzes âmbar para o que está ligado e um botão de volume, à maneira de Dieter Rams e da hi-fi clássica da Braun. O visor é sempre escuro, como o de um amplificador, e as skins são as do Mac.</p>
         <div class="display" aria-hidden="true">
-          <span class="dot">●</span> FLAC 24/96 · <span data-for="mac">AirPlay WiiM</span><span data-for="tv">Jellyfin</span><br>
+          <span class="dot">●</span> FLAC 24/96 · <span data-for="mac">AirPlay WiiM</span><span data-for="tv windows">Jellyfin</span><br>
           <span class="dim">skins</span> Rams · Graphite Orange · Phosphor<br>
           <span class="dim">eq</span> 10 bandas · <span class="dim">língua</span> PT · EN
         </div>
@@ -305,6 +339,10 @@
         <p>Sim. A NuVa para Android TV funciona numa box Android TV ou numa TV com Android TV 8.1 ou posterior e toca um servidor Jellyfin pelas pastas, FLAC incluído, com o equalizador, o espetro e as faces do modo ambiente. Instala-se com a app Downloader: escreve <code>nuva.martinsnuno.com/tv</code>.</p>
       </details>
       <details>
+        <summary>Há NuVa para Windows?</summary>
+        <p>Sim. A NuVa para Windows funciona no Windows 10 (2004) ou 11 e faz o que a app do Mac faz, menos o AirPlay: pastas, partilhas de rede, Jellyfin e CDs áudio, FLAC pelos descodificadores do próprio Windows, o equalizador, o espetro e as faces do modo ambiente. Descarrega o NuVa-Windows.zip, descompacta e abre o NuVa.exe; o Windows pergunta uma vez, em Mais informações, se o queres executar mesmo assim.</p>
+      </details>
+      <details>
         <summary>Em que Macs funciona a NuVa?</summary>
         <p>Em qualquer Mac com macOS 14 Sonoma ou posterior, com Apple silicon ou Intel.</p>
       </details>
@@ -322,6 +360,9 @@ open NuVa.xcodeproj</code></pre>
       <p class="muted" data-for="tv">O código da NuVa está no GitHub com a licença MIT. A app para Android TV é em Kotlin, na pasta <code>android</code>, com Jetpack Compose e AndroidX Media3. Reporta um erro ou sugere uma ideia nos issues, ou envia um pull request. Para a compilar precisas do JDK 17 e do Android SDK.</p>
       <pre data-for="tv"><code>cd android
 ./gradlew assembleDebug</code></pre>
+      <p class="muted" data-for="windows">O código da NuVa está no GitHub com a licença MIT. A app para Windows é em C# e WPF, na pasta <code>windows</code>, sem pacotes NuGet; também compila num Mac. Reporta um erro ou sugere uma ideia nas issues, ou envia um pull request. Para compilar precisas do .NET 10 SDK.</p>
+      <pre data-for="windows"><code>brew install dotnet
+scripts/make-windows-zip.sh</code></pre>
       <p><a class="key mode" href="https://github.com/martinsmdnuno/nuva">Contribuir no GitHub</a></p>
     </div>
   </section>

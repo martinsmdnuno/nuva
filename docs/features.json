@@ -45,8 +45,8 @@
     {
       "id": "windows",
       "name": { "en": "Windows", "pt": "Windows" },
-      "status": "planned",
-      "public": false,
+      "status": "released",
+      "public": true,
       "asset": "NuVa-Windows.zip",
       "buildScript": "scripts/make-windows-zip.sh",
       "termsMention": "Windows",

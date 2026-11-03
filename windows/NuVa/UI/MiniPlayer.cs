@@ -72,12 +72,14 @@ public sealed class MiniPlayer : Window
         Content = stack;
 
         player.Changed += Refresh;
+        app.ArtworkChanged += Refresh;
         ticker = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
         ticker.Tick += (_, _) => display.Tick();
         ticker.Start();
         Closed += (_, _) =>
         {
             player.Changed -= Refresh;
+            app.ArtworkChanged -= Refresh;
             ticker.Stop();
         };
         Deactivated += (_, _) => { if (IsVisible) Close(); };

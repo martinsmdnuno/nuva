@@ -10,7 +10,6 @@ namespace NuVa;
 public sealed partial class App
 {
     public bool AmbientOpen => false;
-    public bool CanFixArtwork => false;
     public Guid? EjectableDisc => null;
 
     public void DeviceChanged(int kind, IntPtr data) { }
@@ -20,7 +19,5 @@ public sealed partial class App
     public void ShowTerms() { }
     public void ToggleAmbient() { }
     public void FillAmbientOptions(MenuItem options) => options.IsEnabled = false;
-    public void FixArtwork() { }
-    public void ApplyArtwork(DisplayView? display) => display?.SetArtwork(null, false);
-    public string? CurrentArtworkFile => null;
+
 }

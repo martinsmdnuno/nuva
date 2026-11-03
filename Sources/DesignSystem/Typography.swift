@@ -3,7 +3,7 @@ import CoreText
 import SwiftUI
 
 // Design-system text styles, in the current font set (View ▸ Font).
-// Inter and IBM Plex Mono are embedded; if they fail to load, falls back to SF Pro / SF Mono.
+// The sets' fonts are embedded; any that fails to load falls back to SF Pro / SF Mono.
 
 enum Typography {
     /// Registers the fonts embedded in the bundle. Call once at launch.
@@ -17,24 +17,23 @@ enum Typography {
     private static var fonts: FontSet { SkinStore.activeFonts.withLock { $0 } }
 
     // Checked once (after registerFonts), not on every redraw now that styles are computed.
-    private static let hasInter = NSFont(name: "Inter", size: 13) != nil
-    private static let hasPlexMono = NSFont(name: "IBMPlexMono-Regular", size: 13) != nil
+    private static let families: Set<String> = Set(FontSet.allCases.compactMap(\.sans).filter {
+        NSFontManager.shared.availableMembers(ofFontFamily: $0) != nil
+    })
+    private static let faces: Set<String> = Set(FontSet.allCases.flatMap { set in
+        [Font.Weight.light, .regular, .medium].compactMap { set.mono($0) }
+    }.filter { NSFont(name: $0, size: 13) != nil })
 
     static func sans(_ size: CGFloat, _ weight: Font.Weight) -> Font {
-        if fonts == .inter, hasInter {
-            return .custom("Inter", fixedSize: size).weight(weight)
+        if let family = fonts.sans, families.contains(family) {
+            return .custom(family, fixedSize: size).weight(weight)
         }
         return .system(size: size, weight: weight)
     }
 
     static func mono(_ size: CGFloat, _ weight: Font.Weight) -> Font {
-        let name = switch weight {
-        case .light: "IBMPlexMono-Light"
-        case .medium: "IBMPlexMono-Medium"
-        default: "IBMPlexMono-Regular"
-        }
-        if fonts == .inter, hasPlexMono {
-            return .custom(name, fixedSize: size).monospacedDigit()
+        if let face = fonts.mono(weight), faces.contains(face) {
+            return .custom(face, fixedSize: size).monospacedDigit()
         }
         return .system(size: size, weight: weight, design: .monospaced).monospacedDigit()
     }

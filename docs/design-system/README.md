@@ -33,7 +33,7 @@ Lead grey with a single accent.
 
 Themes: **Lead** (`chumbo`) is the main one. **Aluminium** (`aluminio`) is the light theme and follows the system appearance. Together they are the **Rams** skin (called Nuno up to 1.4). Every text pair passes 4.5:1 in both themes, and keys, LEDs and focus 3:1 (checked in `Tests/SkinTests.swift`).
 
-Other skins change token values only, never roles or layout: **Graphite Orange** and **Graphite Green** (`skins/graphite.md`) and **Phosphor** (`skins/phosphor.md`), all always dark. View ▸ Skin, ⌥⌘1 to ⌥⌘4.
+Other skins change token values only, never roles or layout: **Graphite Orange** (`skins/graphite.md`; its green twin was retired in 1.10.1) and **Phosphor** (`skins/phosphor.md`), all always dark. View ▸ Skin, ⌥⌘1 to ⌥⌘3.
 
 ## Type
 
@@ -43,7 +43,7 @@ Two families, embedded in the app (`Inter` and `IBM Plex Mono`, both OFL):
 - **Legends** (`legend`, Inter 10px, lowercase, `ink-muted`): the name printed on the chassis under each group of keys (mode, playback, volume) and each zone (queue, folders), as on the Braun TG 60.
 - **IBM Plex Mono** for numbers and the display: time (`display-time`), format and rate (`display-meta`), durations in lists (`duration`), the volume scale (`scale`) and hints beside labels (`hint`). Fixed-width digits so the time doesn't jump.
 
-**Font sets** (View ▸ Font): *Inter + IBM Plex Mono* (above, the default) or *SF Pro + SF Mono* from the system. Each skin names its default set and the user can override it. Only the family changes: every style keeps its size and weight, and the mono keeps tabular digits. SF Mono's lines are slightly shorter, so the display (and Compact mode) is a few points lower.
+**Font sets** (View ▸ Font): *Inter + IBM Plex Mono* (above, the default), *SF Pro + SF Mono* from the system, and three pairs chosen for the skins: *IBM Plex Sans + Plex Mono* (Rams), *DM Sans + DM Mono* (Graphite Orange) and *Share Tech + Share Tech Mono* (Phosphor; one weight, so light and medium fall to regular). Each skin names its default set and the user can override it. Only the family changes: every style keeps its size and weight, and the mono keeps tabular digits. SF Mono's lines are slightly shorter, so the display (and Compact mode) is a few points lower.
 
 Japanese names and other scripts fall back to the system font (Hiragino), which is fine. Never truncate with an ellipsis in the middle: truncate at the end, with the full name in the tooltip.
 
@@ -86,7 +86,7 @@ One device, always the same layout: display, keys with the volume knob, and belo
 
 **OLED Protection** (on by default, View ▸ Ambient Options): the content takes 84% of the screen and wanders slowly over the rest (8% each way, a path that doesn't repeat for days); lit areas that hardly change and aren't text (the position bar, the VU lamps) sit at 55%, while text keeps its contrast; the clock's colon blinks; the face changes every 20 minutes; after an hour without a key or the mouse, only the LED is left, wandering on black. Without it, the content shifts a few points each minute.
 
-Ambient is the one place with two documented exceptions. Its Needles and Valves faces draw a lamp and a glow with radial gradients, because a backlit dial and a heated filament are light, not decoration. With artwork on, a radial glow in the cover's main hue sits behind every face: it says which album is playing from across the room, is darkened until `display-muted` keeps 4.5:1 on it, fades over 1.5 s between albums, and goes when the screen rests. A cover in greys gives no glow. And View ▸ Ambient Options ▸ Dim (40%) and the dimming after 10 minutes paused (30%) take the whole screen below 4.5:1 on purpose, for a dark room; they are the user's choice or a sign that nothing is playing.
+Ambient is the one place with two documented exceptions. Its Needles and Valves faces draw a lamp and a glow with radial gradients, because a backlit dial and a heated filament are light, not decoration. With artwork on, a glow from the cover sits behind every face: the cover reduced to a 4×4 grid of its own colours, each darkened until `display-muted` keeps 4.5:1 on it, blurred into one soft field that keeps the cover's layout, falling towards `display` at the edges and dithered against banding. It says which album is playing from across the room, fades over 1.5 s between albums and goes when the screen rests. On the Display face it breathes with the bass, between 70% and full (never brighter than the field), and holds still with Reduce Motion. And View ▸ Ambient Options ▸ Dim (40%) and the dimming after 10 minutes paused (30%) take the whole screen below 4.5:1 on purpose, for a dark room; they are the user's choice or a sign that nothing is playing.
 
 The width is free from 360 to 480: keys keep their size and the space between the groups grows, while the display, the meter and the lists stretch. With the queue or the folders the height is free too (minimum 540). The app remembers both between modes and launches. Double-clicking the title bar (zoom) stretches the window to the screen's height.
 

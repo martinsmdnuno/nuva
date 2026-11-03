@@ -102,17 +102,21 @@ struct ArtworkResolver {
         case .unknown: break
         }
         guard let query = query(for: entry) else { return nil }
-        switch cache.online(query) {
-        case .image(let url): return ResolvedArtwork(url: url, origin: .online)
-        case .none: return nil
-        case .unknown: break
+        // The folder's names first; then, if they find nothing, without a title before the artist.
+        for candidate in [query] + [query.withoutTitle].compactMap({ $0 }) {
+            switch cache.online(candidate) {
+            case .image(let url): return ResolvedArtwork(url: url, origin: .online)
+            case .none: continue
+            case .unknown: break
+            }
+            do {
+                let data = try await online.cover(for: candidate)
+                if let url = cache.saveOnline(data, for: candidate) { return ResolvedArtwork(url: url, origin: .online) }
+            } catch {
+                // Offline or server error: try again next launch, don't record a miss.
+                return nil
+            }
         }
-        do {
-            let data = try await online.cover(for: query)
-            return cache.saveOnline(data, for: query).map { ResolvedArtwork(url: $0, origin: .online) }
-        } catch {
-            // Offline or server error: try again next launch, don't record a miss.
-            return nil
-        }
+        return nil
     }
 }

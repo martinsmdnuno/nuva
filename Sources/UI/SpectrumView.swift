@@ -77,7 +77,8 @@ struct SpectrumView: View {
 }
 
 /// Ballistics, like a hardware meter: a column jumps up to the level and falls back at a steady
-/// rate; the peak segment holds for a moment, then falls too. Lives across frames, not observed.
+/// rate; the peak segment holds for a moment, then falls too (steadily, or with gravity, like the
+/// peak caps of a hi-fi spectrum analyser). Lives across frames, not observed.
 final class SpectrumMeter {
     /// dBFS shown as an empty and as a full column. Music sits between -50 and -10 in most bands.
     let floor: Float
@@ -88,21 +89,29 @@ final class SpectrumMeter {
     let attack: Float
     static let peakFall: Float = 0.6
     static let peakHold: TimeInterval = 0.8
+    /// Full scale per second², for peaks that fall faster and faster; 0 falls at `peakFall`.
+    let gravity: Float
 
     private(set) var levels: [Float]
     private(set) var peaks: [Float]
     private var peakTimes: [Date]
+    private var peakSpeeds: [Float]
     private var last: Date?
 
     /// One column per band by default; the ambient L/R meters use two, over a wider range.
-    init(count: Int = SpectrumShared.bands, floor: Float = -54, ceiling: Float = -6, fall: Float = 1.6, attack: Float = 0) {
+    init(
+        count: Int = SpectrumShared.bands, floor: Float = -54, ceiling: Float = -6, fall: Float = 1.6,
+        attack: Float = 0, gravity: Float = 0
+    ) {
         self.floor = floor
         self.ceiling = ceiling
         self.fall = fall
         self.attack = attack
+        self.gravity = gravity
         levels = Array(repeating: 0, count: count)
         peaks = Array(repeating: 0, count: count)
         peakTimes = Array(repeating: .distantPast, count: count)
+        peakSpeeds = Array(repeating: 0, count: count)
     }
 
     /// `measured` in dBFS per band, or nil when nothing is playing (the columns fall).
@@ -119,8 +128,14 @@ final class SpectrumMeter {
             if levels[b] >= peaks[b] {
                 peaks[b] = levels[b]
                 peakTimes[b] = date
+                peakSpeeds[b] = 0
             } else if date.timeIntervalSince(peakTimes[b]) > Self.peakHold {
-                peaks[b] = max(levels[b], peaks[b] - Self.peakFall * dt)
+                if gravity > 0 {
+                    peakSpeeds[b] += gravity * dt
+                    peaks[b] = max(levels[b], peaks[b] - peakSpeeds[b] * dt)
+                } else {
+                    peaks[b] = max(levels[b], peaks[b] - Self.peakFall * dt)
+                }
             }
         }
     }

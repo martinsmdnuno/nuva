@@ -1,6 +1,6 @@
 # Skin: Graphite (Orange, Green)
 
-From `NuVa_Design_Spec_v1` (a third-party concept), applied under NuVa's principles. Only colours change: same layout, keys, sizes and rules as Rams. Values in `tokens.json` (`graphite-orange`, `graphite-green`); code in `Sources/DesignSystem/Skin.swift`.
+From `NuVa_Design_Spec_v1` (a third-party concept), applied under NuVa's principles. Only colours change: same layout, keys, sizes and rules as Rams. Values in `tokens.json` (`graphite-orange`; Graphite Green, its green twin, was retired in 1.10.1); code in `Sources/DesignSystem/Skin.swift`.
 
 - **Always dark**, whatever the system appearance (the spec asks for it). No light variant.
 - **Default font set:** SF Pro + SF Mono (the spec's first choice). Inter + IBM Plex Mono stays selectable in View ▸ Font.
@@ -31,4 +31,4 @@ Not used from the spec: *Accent hover* (NuVa shows state with LEDs, not hover), 
 
 ## Checks
 
-`Tests/SkinTests.swift` checks every text pair at 4.5:1 and icons, LEDs and focus at 3:1, that the layers are distinct, that the palette covers every token, and that the accent stays in its three roles. Snapshots: `NuVa --snapshot` writes `snapshot-<view>-graphite-orange.png` and `-graphite-green.png`.
+`Tests/SkinTests.swift` checks every text pair at 4.5:1 and icons, LEDs and focus at 3:1, that the layers are distinct, that the palette covers every token, and that the accent stays in its three roles. Snapshots: `NuVa --snapshot` writes `snapshot-<view>-graphite-orange.png`.

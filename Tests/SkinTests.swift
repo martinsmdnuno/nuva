@@ -1,4 +1,5 @@
 import AppKit
+import SwiftUI
 import Testing
 @testable import NuVa
 
@@ -113,7 +114,7 @@ struct SkinTests {
     }
 
     @Test func darkSkinLayersAreDistinct() {
-        for skin in [Skin.graphiteOrange, .graphiteGreen, .phosphor] {
+        for skin in [Skin.graphiteOrange, .phosphor] {
             #expect(ratio(skin, .surface1, .surface0, dark) >= 1.2)
             #expect(ratio(skin, .surface2, .surface0, dark) >= 1.4)
             #expect(ratio(skin, .keyMode, .surface0, dark) >= 3)
@@ -130,6 +131,24 @@ struct SkinTests {
         #expect(r >= 4.5, "\(skin.id): danger on display is \(r)")
     }
 
+    @Test func everyFontSetIsBundledAndLoads() {
+        Typography.registerFonts()
+        for set in FontSet.allCases {
+            if let family = set.sans {
+                #expect(NSFontManager.shared.availableMembers(ofFontFamily: family) != nil, "\(family)")
+            }
+            for weight in [Font.Weight.light, .regular, .medium] {
+                if let face = set.mono(weight) { #expect(NSFont(name: face, size: 13) != nil, "\(face)") }
+            }
+        }
+    }
+
+    @Test func retiredSkinsOpenAsTheirSuccessor() {
+        #expect(Skin.with(id: "nuno") == .rams)
+        #expect(Skin.with(id: "graphite-green") == .graphiteOrange)
+        #expect(Skin.phosphor.name == "Phosphor")
+    }
+
     @Test func palettesCoverEveryToken() {
         for skin in Skin.all {
             guard let palette = skin.palette else { continue }
@@ -138,7 +157,7 @@ struct SkinTests {
     }
 
     @Test func darkSkinsHaveOneAccent() {
-        for skin in [Skin.graphiteOrange, .graphiteGreen, .phosphor] {
+        for skin in [Skin.graphiteOrange, .phosphor] {
             #expect(skin.appearance == .alwaysDark)
             let accent = skin.palette![.keyPlay]!
             #expect(skin.palette![.led] == accent && skin.palette![.signal] == accent)
@@ -150,7 +169,7 @@ struct SkinTests {
 
     @Test func phosphorKeepsItsIdAndShortcutSlot() {
         #expect(Skin.with(id: "phosphor") == .phosphor)
-        #expect(Skin.all.firstIndex(of: .phosphor) == 3)  // ⌥⌘4
+        #expect(Skin.all.firstIndex(of: .phosphor) == 2)  // ⌥⌘3 since Graphite Green left
     }
 }
 

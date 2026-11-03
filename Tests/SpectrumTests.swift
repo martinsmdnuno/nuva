@@ -3,7 +3,7 @@ import Testing
 @testable import NuVa
 
 struct SpectrumTests {
-    /// Runs `seconds` of a sine through an analyzer, in stereo buffers of 1024 frames,
+    /// Runs a sine through an analyzer, in 40 stereo buffers of 1024 frames,
     /// and returns the last levels written.
     private func levels(sine frequency: Double, amplitude: Float, sampleRate: Double) throws -> [Float] {
         let analyzer = try #require(SpectrumAnalyzer(sampleRate: sampleRate))
@@ -18,7 +18,8 @@ struct SpectrumTests {
         list[1] = AudioBuffer(mNumberChannels: 1, mDataByteSize: UInt32(frames * 4), mData: right)
 
         var n = 0
-        for _ in 0..<20 {
+        // Enough to fill the long (bass) window at 192 kHz.
+        for _ in 0..<40 {
             for j in 0..<frames {
                 let v = amplitude * Float(sin(2 * Double.pi * frequency * Double(n + j) / sampleRate))
                 left[j] = v
@@ -65,11 +66,11 @@ struct SpectrumTests {
         #expect(shared.stereo(at: 10.075).map { abs($0[0] + 25) < 0.01 } == true)
     }
 
-    @Test func aLargeBlockIsMeasuredEverySixtiethOfASecond() throws {
+    @Test func aLargeBlockIsMeasuredEvery120thOfASecond() throws {
         let sampleRate = 48_000.0
         let analyzer = try #require(SpectrumAnalyzer(sampleRate: sampleRate))
         let shared = SpectrumShared()
-        // Six hops of 800 frames in one block, as the player hands them over.
+        // Twelve hops of 400 frames in one block, as the player hands them over.
         let frames = 4800
         let list = AudioBufferList.allocate(maximumBuffers: 1)
         defer { list.unsafeMutablePointer.deallocate() }
@@ -78,11 +79,35 @@ struct SpectrumTests {
         samples.initialize(repeating: 0.1, count: frames)
         list[0] = AudioBuffer(mNumberChannels: 1, mDataByteSize: UInt32(frames * 4), mData: samples)
         analyzer.process(list, frames: frames, end: 1, into: shared)
-        // Each measurement is centred half a 2048-frame window before the end of its hop.
-        for k in 0..<6 {
-            let time = 1 - Double(k * 800) / sampleRate - 1024 / sampleRate
+        // Each measurement is centred half the long (8192-frame) window before the end of its hop.
+        for k in 0..<12 {
+            let time = 1 - Double(k * 400) / sampleRate - 4096 / sampleRate
             #expect(shared.levels(at: time, tolerance: 0.0001) != nil)
         }
+    }
+
+    @Test func bassBandsAreToldApart() throws {
+        let sampleRate = 48_000.0
+        let analyzer = try #require(SpectrumAnalyzer(sampleRate: sampleRate))
+        let shared = SpectrumShared()
+        let frames = 1024
+        let list = AudioBufferList.allocate(maximumBuffers: 1)
+        defer { list.unsafeMutablePointer.deallocate() }
+        let samples = UnsafeMutablePointer<Float>.allocate(capacity: frames)
+        defer { samples.deallocate() }
+        list[0] = AudioBuffer(mNumberChannels: 1, mDataByteSize: UInt32(frames * 4), mData: samples)
+        var n = 0
+        for _ in 0..<20 {
+            for j in 0..<frames { samples[j] = 0.5 * Float(sin(2 * Double.pi * 40 * Double(n + j) / sampleRate)) }
+            n += frames
+            analyzer.process(list, frames: frames, end: Double(n) / sampleRate, into: shared)
+        }
+        let fine = try #require(shared.fineLevels(at: Double(n) / sampleRate, tolerance: 1))
+        let loudest = fine.indices.max { fine[$0] < fine[$1] }!
+        let centre = SpectrumShared.fineCentres[loudest]
+        // 40 Hz lands in its own band, and the lowest band (about 23 Hz) reads well below it.
+        #expect(centre > 32 && centre < 50)
+        #expect(fine[0] < fine[loudest] - 10)
     }
 
     @Test func stereoLevelsAreStoredWithTheBands() {

@@ -12,8 +12,8 @@ final class SpectrumShared: Sendable {
     nonisolated static let fineCentres: [Double] = (0..<fineBands).map { i in
         20 * pow(1000, (Double(i) + 0.5) / Double(fineBands))
     }
-    /// About 4 s of measurements at 60 a second, more than AirPlay's buffer.
-    nonisolated static let capacity = 256
+    /// About 4 s of measurements at 120 a second, more than AirPlay's buffer.
+    nonisolated static let capacity = 512
 
     private struct State {
         var times: [Double]
@@ -108,66 +108,68 @@ final class SpectrumShared: Sendable {
     }
 }
 
-/// Audio thread, one per tap: keeps the last samples in mono, and about 60 times a second
-/// sums an FFT's power into octave bands centred on the equalizer's frequencies.
+/// Audio thread, one per tap: keeps the last samples in mono and, 120 times a second, sums FFT
+/// power into the equalizer's octave bands and the ambient face's 28 fine bands, with the left
+/// and right levels of the same moment.
+///
+/// Two transforms: a short one (about 43 ms) for the mids and treble, and one four times longer
+/// for the bass, where a short window can't tell 25 Hz from 40 Hz (they'd share a bin). Both are
+/// centred on the same moment, which is the time the measurement carries.
 final class SpectrumAnalyzer {
+    /// Measurements a second: one per frame on a 120 Hz screen, with the display blending between them.
+    static let rate = 120.0
+    /// Bands centred below this use the long transform.
+    static let crossover = 400.0
+
     private let sampleRate: Double
-    private let size: Int
-    private let fft: vDSP.FFT<DSPSplitComplex>
-    private let window: [Float]
-    private let bandBins: [Range<Int>]
-    private let fineBins: [Range<Int>]
-    /// Power of a full-scale sine summed over its bins, with this window and vDSP's scaling.
-    private let fullScale: Float
+    private let short: Transform
+    private let long: Transform
+    private let hop: Int
+    /// Per equalizer band and per fine band: which transform, and its bins.
+    private let bandBins: [(long: Bool, bins: Range<Int>)]
+    private let fineBins: [(long: Bool, bins: Range<Int>)]
 
     private var history: [Float]
     private var head = 0
     private var pending = 0
-    private var frame: [Float]
-    private var real: [Float]
-    private var imag: [Float]
-    private var power: [Float]
     private var levels: [Float]
     private var fine: [Float]
-    /// Left and right since the last measurement: sum of squares and highest absolute sample.
+    /// Left and right since the last hop: sum of squares and highest absolute sample.
     private var squares = SIMD2<Float>(repeating: 0)
     private var highs = SIMD2<Float>(repeating: 0)
     private var counted = 0
+    /// The last hops' left and right levels, so each measurement carries the ones of its own moment
+    /// (the middle of the long window), not the newest.
+    private var recent: [SIMD4<Float>]
+    private var recentHead = 0
 
     init?(sampleRate: Double) {
-        // About 46 ms of sound, so the 32 Hz band gets at least one bin at any rate.
+        // About 43 ms of sound at any rate; the long one about 170 ms.
         let size = sampleRate <= 48_000 ? 2048 : sampleRate <= 96_000 ? 4096 : 8192
-        guard let fft = vDSP.FFT(log2n: vDSP_Length(log2(Double(size))), radix: .radix2, ofType: DSPSplitComplex.self)
+        guard let short = Transform(size: size, sampleRate: sampleRate),
+              let long = Transform(size: size * 4, sampleRate: sampleRate)
         else { return nil }
         self.sampleRate = sampleRate
-        self.size = size
-        self.fft = fft
-        window = vDSP.window(ofType: Float.self, usingSequence: .hanningDenormalized, count: size, isHalfWindow: false)
-        let binWidth = sampleRate / Double(size)
+        self.short = short
+        self.long = long
+        hop = max(1, Int(sampleRate / Self.rate))
         bandBins = Equalizer.frequencies.map { f in
-            let lo = max(1, Int((f / 2.squareRoot() / binWidth).rounded()))
-            let hi = min(size / 2, max(lo + 1, Int((f * 2.squareRoot() / binWidth).rounded())))
-            return lo ..< max(lo, hi)
+            let t = f < Self.crossover ? long : short
+            return (f < Self.crossover, t.bins(from: f / 2.squareRoot(), to: f * 2.squareRoot()))
         }
-        // Fine bands: edges halfway (in log frequency) between centres. The lowest share bins,
-        // since a bin is 23 Hz wide at 48 kHz; at least one bin each.
+        // Fine bands: edges halfway (in log frequency) between centres; at least one bin each.
         let ratio = pow(1000, 0.5 / Double(SpectrumShared.fineBands))
         fineBins = SpectrumShared.fineCentres.map { f in
-            let lo = max(1, Int((f / ratio / binWidth).rounded(.down)))
-            let hi = min(size / 2, max(lo + 1, Int((f * ratio / binWidth).rounded(.up))))
-            return lo ..< max(lo, hi)
+            let t = f < Self.crossover ? long : short
+            return (f < Self.crossover, t.bins(from: f / ratio, to: f * ratio))
         }
         fine = Array(repeating: -120, count: SpectrumShared.fineBands)
-        fullScale = 0.375 * Float(size) * Float(size)
-        history = Array(repeating: 0, count: size)
-        frame = Array(repeating: 0, count: size)
-        real = Array(repeating: 0, count: size / 2)
-        imag = Array(repeating: 0, count: size / 2)
-        power = Array(repeating: 0, count: size / 2)
         levels = Array(repeating: -120, count: Equalizer.frequencies.count)
+        history = Array(repeating: 0, count: long.size)
+        recent = Array(repeating: SIMD4(repeating: -120), count: max(1, Int((Double(long.size / 2) / Double(hop)).rounded())) + 1)
     }
 
-    /// Adds the buffer (non-interleaved Float32) and measures every 1/60 s of it, writing each
+    /// Adds the buffer (non-interleaved Float32) and measures every 1/120 s of it, writing each
     /// measurement to `shared` with its own time. `end` is the track time at the end of the buffer.
     func process(_ buffers: UnsafeMutableAudioBufferListPointer, frames: Int, end: Double, into shared: SpectrumShared) {
         // Runs on the audio thread: no allocation, vectorised. Left and right are the first two
@@ -176,7 +178,6 @@ final class SpectrumAnalyzer {
         let right = buffers.count > 1 ? buffers[1].mData?.assumingMemoryBound(to: Float.self) ?? left : left
         // The player hands over blocks of up to several thousand frames (about 1/10 s): measuring
         // once per block would move the meters in steps.
-        let hop = max(1, Int(sampleRate / 60))
         var offset = 0
         while offset < frames {
             let run = min(frames - offset, max(1, hop - pending))
@@ -185,17 +186,18 @@ final class SpectrumAnalyzer {
             pending += run
             guard pending >= hop else { continue }
             pending = 0
-            measure()
             let rms = (squares / Float(max(counted, 1))).squareRoot()
-            let stereo = SIMD4(Self.decibels(rms[0]), Self.decibels(rms[1]), Self.decibels(highs[0]), Self.decibels(highs[1]))
+            recent[recentHead] = SIMD4(Self.decibels(rms[0]), Self.decibels(rms[1]), Self.decibels(highs[0]), Self.decibels(highs[1]))
+            recentHead = (recentHead + 1) % recent.count
             squares = .zero
             highs = .zero
             counted = 0
-            // The bands are centred half a window back; the levels cover the last 1/60 s.
-            let time = end - Double(frames - offset) / sampleRate - Double(size / 2) / sampleRate
+            measure()
+            // Centred half a long window back; `recentHead` is now the oldest hop kept, from then.
+            let time = end - Double(frames - offset) / sampleRate - Double(long.size / 2) / sampleRate
             levels.withUnsafeBufferPointer { bands in
                 fine.withUnsafeBufferPointer {
-                    shared.write(time: time, levels: bands, stereo: stereo, fine: $0)
+                    shared.write(time: time, levels: bands, stereo: recent[recentHead], fine: $0)
                 }
             }
         }
@@ -213,6 +215,7 @@ final class SpectrumAnalyzer {
         highs = pointwiseMax(highs, SIMD2(highL, highR))
 
         // Into the ring buffer in at most two runs (up to its end, then from its start).
+        let size = history.count
         var half: Float = 0.5
         var written = 0
         history.withUnsafeMutableBufferPointer { h in
@@ -236,17 +239,68 @@ final class SpectrumAnalyzer {
     }
 
     private func measure() {
-        // Oldest sample first, windowed as it is copied (multiplying `frame` into itself would copy it).
-        let tail = size - head
+        // The long window is the whole history; the short one sits in its middle.
+        history.withUnsafeBufferPointer { h in
+            long.run(on: h, endingAt: head)
+            short.run(on: h, endingAt: (head - long.size / 2 + short.size / 2 + h.count) % h.count)
+        }
+        for (b, band) in bandBins.enumerated() {
+            levels[b] = (band.long ? long : short).level(band.bins)
+        }
+        for (b, band) in fineBins.enumerated() {
+            fine[b] = (band.long ? long : short).level(band.bins)
+        }
+    }
+}
+
+/// One FFT size with its window and buffers.
+private final class Transform {
+    let size: Int
+    private let fft: vDSP.FFT<DSPSplitComplex>
+    private let window: [Float]
+    private let binWidth: Double
+    /// Power of a full-scale sine summed over its bins, with this window and vDSP's scaling.
+    private let fullScale: Float
+    private var frame: [Float]
+    private var real: [Float]
+    private var imag: [Float]
+    private var power: [Float]
+
+    init?(size: Int, sampleRate: Double) {
+        guard let fft = vDSP.FFT(log2n: vDSP_Length(log2(Double(size))), radix: .radix2, ofType: DSPSplitComplex.self)
+        else { return nil }
+        self.size = size
+        self.fft = fft
+        window = vDSP.window(ofType: Float.self, usingSequence: .hanningDenormalized, count: size, isHalfWindow: false)
+        binWidth = sampleRate / Double(size)
+        fullScale = 0.375 * Float(size) * Float(size)
+        frame = Array(repeating: 0, count: size)
+        real = Array(repeating: 0, count: size / 2)
+        imag = Array(repeating: 0, count: size / 2)
+        power = Array(repeating: 0, count: size / 2)
+    }
+
+    /// The bins covering `low` to `high` Hz, at least one (bin 0 holds DC and Nyquist: never used).
+    func bins(from low: Double, to high: Double) -> Range<Int> {
+        let lo = max(1, Int((low / binWidth).rounded(.down)))
+        let hi = min(size / 2, max(lo + 1, Int((high / binWidth).rounded(.up))))
+        return lo ..< max(lo, hi)
+    }
+
+    /// Power spectrum of the `size` samples of the ring `history` that end just before `end`.
+    func run(on history: UnsafeBufferPointer<Float>, endingAt end: Int) {
+        // Oldest sample first, windowed as it is copied, in at most two runs around the ring.
+        let start = (end - size + history.count) % history.count
+        let first = min(size, history.count - start)
         frame.withUnsafeMutableBufferPointer { f in
-            history.withUnsafeBufferPointer { h in
-                window.withUnsafeBufferPointer { w in
-                    vDSP_vmul(h.baseAddress! + head, 1, w.baseAddress!, 1, f.baseAddress!, 1, vDSP_Length(tail))
-                    vDSP_vmul(h.baseAddress!, 1, w.baseAddress! + tail, 1, f.baseAddress! + tail, 1, vDSP_Length(head))
+            window.withUnsafeBufferPointer { w in
+                vDSP_vmul(history.baseAddress! + start, 1, w.baseAddress!, 1, f.baseAddress!, 1, vDSP_Length(first))
+                if first < size {
+                    vDSP_vmul(history.baseAddress!, 1, w.baseAddress! + first, 1, f.baseAddress! + first, 1,
+                              vDSP_Length(size - first))
                 }
             }
         }
-
         real.withUnsafeMutableBufferPointer { r in
             imag.withUnsafeMutableBufferPointer { i in
                 var split = DSPSplitComplex(realp: r.baseAddress!, imagp: i.baseAddress!)
@@ -256,20 +310,21 @@ final class SpectrumAnalyzer {
                     }
                 }
                 fft.forward(input: split, output: &split)
-                // Bin 0 holds DC and Nyquist packed together; no band uses it.
                 power.withUnsafeMutableBufferPointer { p in
                     vDSP.squareMagnitudes(split, result: &p)
                 }
             }
         }
+    }
 
-        for (b, bins) in bandBins.enumerated() {
-            let sum = bins.isEmpty ? 0 : vDSP.sum(power[bins])
-            levels[b] = 10 * log10(max(sum / fullScale, 1e-12))
+    /// Level in dBFS of the last run's power over `bins`.
+    func level(_ bins: Range<Int>) -> Float {
+        var sum: Float = 0
+        if !bins.isEmpty {
+            power.withUnsafeBufferPointer { p in
+                vDSP_sve(p.baseAddress! + bins.lowerBound, 1, &sum, vDSP_Length(bins.count))
+            }
         }
-        for (b, bins) in fineBins.enumerated() {
-            let sum = bins.isEmpty ? 0 : vDSP.sum(power[bins])
-            fine[b] = 10 * log10(max(sum / fullScale, 1e-12))
-        }
+        return 10 * log10(max(sum / fullScale, 1e-12))
     }
 }

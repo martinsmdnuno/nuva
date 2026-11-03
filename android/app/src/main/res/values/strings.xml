@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NuVa</string>
+    <string name="sign_in_title">Sign in to Jellyfin</string>
+    <string name="sign_in_note">NuVa browses your server by its folders, and plays the original files.</string>
+    <string name="server">Server address</string>
+    <string name="user">User</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="signing_in">Signing in…</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="mode">mode</string>
+    <string name="playback">playback</string>
+    <string name="view">view</string>
+    <string name="folders">folders</string>
+    <string name="queue">queue</string>
+    <string name="play_folder">Play Folder</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="repeat">Repeat</string>
+    <string name="previous">Previous</string>
+    <string name="play_pause">Play or pause</string>
+    <string name="next">Next</string>
+    <string name="up">Up</string>
+    <string name="ambient">Ambient</string>
+    <string name="nothing_playing">Nothing playing</string>
+    <string name="empty_queue">Open the folders and play one.</string>
+    <string name="empty_folder">No folders or tracks here.</string>
+    <string name="loading">Loading…</string>
+    <string name="couldnt_play">Couldn\'t play %1$s</string>
+    <string name="error_offline">Server offline. Try again</string>
+    <string name="error_login">Wrong user or password</string>
+    <string name="error_no_library">No music library for this user</string>
+    <string name="error_unexpected">Unexpected answer. Check the server address</string>
+    <string name="error_missing">Missing folder</string>
+    <string name="error_status">The server answered %1$d</string>
+    <plurals name="tracks">
+        <item quantity="one">%d track</item>
+        <item quantity="other">%d tracks</item>
+    </plurals>
+</resources>

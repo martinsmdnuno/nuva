@@ -15,6 +15,9 @@ Native macOS app in SwiftUI that plays music from folders. Winamp-like simplicit
 4. **Keyboard first.** Media keys, shortcuts, `MPRemoteCommandCenter` and `MPNowPlayingInfoCenter`.
 5. **Pluggable sources.** The app plays from "sources". Each source is a folder tree: Local (a folder on the Mac, including mounted SMB shares), Jellyfin, an audio CD in the drive, and later a generic HTTP server. The player doesn't know where the music comes from.
 
+## Other platforms
+- **Android TV** (`android/`, plan in `docs/plans/android-tv.md`): the same principles and design system, its own Kotlin code. There, "native audio" means the platform's own engine: AndroidX Media3 (ExoPlayer) with Android's system decoders (FLAC from API 27). No VLC, no ffmpeg, no extension decoders. This extends principle 2 to Android; it doesn't change it for the Mac.
+
 ## Architecture
 ```swift
 protocol MusicSource {

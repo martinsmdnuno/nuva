@@ -1,0 +1,38 @@
+# The site's own Caddy. TLS and the domain live in the edge; this one only serves files.
+{
+	auto_https off
+	admin off
+	servers {
+		# The edge reaches us over the private `web` network; keep the visitor's address it forwards.
+		trusted_proxies static private_ranges
+	}
+}
+
+:80 {
+	# No access log: the site keeps no record of visits.
+	encode zstd gzip
+
+	header {
+		Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Content-Type-Options "nosniff"
+		Permissions-Policy "interest-cohort=(), browsing-topics=()"
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+
+	handle /api/feedback {
+		reverse_proxy feedback:8080
+	}
+
+	handle {
+		root * /srv
+		@assets path /fonts/* /img/* *.css *.js *.svg *.png *.ico
+		header @assets Cache-Control "public, max-age=86400"
+		file_server
+		handle_errors {
+			rewrite * /404.html
+			file_server
+		}
+	}
+}

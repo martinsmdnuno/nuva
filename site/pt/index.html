@@ -236,18 +236,16 @@ open NuVa.xcodeproj</code></pre>
       <p class="label">feedback</p>
       <h2>Envia feedback</h2>
       <p class="muted">O que funciona, o que não funciona, o que gostavas que viesse a seguir. Todas as mensagens são lidas por uma pessoa.</p>
-      <form id="feedback-form" action="https://api.web3forms.com/submit" method="POST">
-        <input type="hidden" name="access_key" value="WEB3FORMS_ACCESS_KEY">
-        <input type="hidden" name="subject" value="NuVa feedback (PT)">
-        <input type="hidden" name="from_name" value="nuva.martinsnuno.com">
-        <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <form id="feedback-form" action="/api/feedback" method="POST">
+        <input type="hidden" name="language" value="pt">
+        <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
         <label>Mensagem
           <textarea name="message" required maxlength="5000" placeholder="Gostava que a NuVa…"></textarea>
         </label>
         <label>Email <small>opcional, só se quiseres resposta</small>
           <input type="email" name="email" autocomplete="email" placeholder="tu@exemplo.pt">
         </label>
-        <p class="note">Enviada por email através do Web3Forms. Não incluas dados sensíveis. Vê o <a href="/pt/privacidade/">aviso de privacidade</a>.</p>
+        <p class="note">Chega-me por email e não fica guardada no site. Não incluas dados sensíveis. Vê o <a href="/pt/privacidade/">aviso de privacidade</a>.</p>
         <button class="key play" type="submit">Enviar</button>
         <p class="status" role="status" aria-live="polite"></p>
       </form>

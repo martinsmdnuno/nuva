@@ -1,0 +1,41 @@
+# nuva.martinsnuno.com on the Hetzner server, behind the edge Caddy (/opt/edge).
+#
+# web      serves ../../site as it is in the checkout, so `git pull` publishes;
+#          it also passes /api/feedback to the feedback service.
+# feedback receives the form and sends it by email (secrets in .env, never committed).
+#
+# No `ports:`: both join the external `web` network and the edge reaches
+# `nuva-web:80` by name.
+
+services:
+  web:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    expose:
+      - "80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../../site:/srv:ro
+    networks:
+      web:
+        aliases:
+          - nuva-web
+      internal:
+
+  feedback:
+    image: python:3.13-alpine
+    restart: unless-stopped
+    command: ["python", "-u", "/app/feedback.py"]
+    env_file: .env
+    expose:
+      - "8080"
+    volumes:
+      - ./feedback.py:/app/feedback.py:ro
+    networks:
+      - internal
+
+networks:
+  web:
+    external: true
+    name: web
+  internal:

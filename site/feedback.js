@@ -17,11 +17,11 @@
     try {
       const response = await fetch(form.action, {
         method: "POST",
-        headers: { Accept: "application/json" },
-        body: new FormData(form),
+        headers: { Accept: "application/json", "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(new FormData(form)),
       });
       const result = await response.json().catch(() => ({}));
-      if (!response.ok || result.success === false) throw new Error(result.message);
+      if (!response.ok || !result.success) throw new Error();
       form.reset();
       status.textContent = text.sent;
     } catch {

@@ -74,8 +74,8 @@ In `docs/design-system/`. Read `README.md` and `tokens.json` before any UI work,
 - README images: `NuVa --snapshot -AppleLanguages '(en)'` from a Debug build, then `swift scripts/make-readme-images.swift <snapshot folder> docs/screenshots`.
 
 ## Site
-- nuva.martinsnuno.com, static, in `site/` (English at `/`, Portuguese at `/pt/`, privacy notice at `/privacy/` and `/pt/privacidade/`). Published to GitHub Pages by `.github/workflows/site.yml` on every push to main that touches `site/`.
+- nuva.martinsnuno.com, static, in `site/` (English at `/`, Portuguese at `/pt/`, privacy notice at `/privacy/` and `/pt/privacidade/`).
+- Hosted on the author's Hetzner server behind its edge Caddy: `deploy/site/` (a Caddy that serves `site/` from the checkout and a stdlib Python service for `/api/feedback`, which emails the form through Gmail; secrets in `deploy/site/.env` on the server only). Publishing is `git pull` in `/opt/nuva`; the server's own runbook lives outside this repository.
 - Same tokens and type as the app (Lead, Aluminium when the system is light; Inter and IBM Plex Mono subset to WOFF2 and served from the site). Images are WebP copies of `docs/screenshots`.
-- EU rules: no cookies, no local storage, no analytics, nothing loaded from other hosts. Any new third party (a form service, a font, an embed) needs the privacy notice updated in both languages first.
+- EU rules: no cookies, no local storage, no analytics, no access log, nothing loaded from other hosts (the CSP enforces it). Any new third party or data use needs the privacy notice updated in both languages first.
 - SEO and GEO: titles and descriptions, hreflang, JSON-LD (`SoftwareApplication` and `FAQPage`, kept equal to the visible FAQ), `sitemap.xml`, `robots.txt` and `llms.txt`.
-- Feedback form: Web3Forms, sent to the author's email. The workflow refuses to publish while the access key or the contact email is a placeholder.

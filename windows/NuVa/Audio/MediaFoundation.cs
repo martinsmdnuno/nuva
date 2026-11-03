@@ -40,6 +40,52 @@ internal static unsafe class MF
     [DllImport("mfreadwrite.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
     public static extern int MFCreateSourceReaderFromURL(string url, IntPtr attributes, out IntPtr reader);
 
+    [DllImport("mfreadwrite.dll", ExactSpelling = true)]
+    public static extern int MFCreateSourceReaderFromByteStream(IntPtr byteStream, IntPtr attributes, out IntPtr reader);
+
+    [DllImport("mfplat.dll", ExactSpelling = true)]
+    public static extern int MFCreateMFByteStreamOnStream(IntPtr stream, out IntPtr byteStream);
+
+    public static readonly Guid ByteStreamContentType = new("fc358289-3cb6-460c-a424-b6681260375a");
+    public static readonly Guid ByteStreamOriginName = new("fc358288-3cb6-460c-a424-b6681260375a");
+    private static readonly Guid attributesId = new("2cd2d921-c447-44a7-a13c-4adabfc247e3");
+
+    /// <summary>A source reader on a byte stream of NuVa's own (an IStream), with the type and name hints MF resolves by.</summary>
+    public static IntPtr ReaderOnStream(System.Runtime.InteropServices.ComTypes.IStream stream, string? contentType, string name)
+    {
+        var unknown = Marshal.GetComInterfaceForObject(stream, typeof(System.Runtime.InteropServices.ComTypes.IStream));
+        try
+        {
+            Check(MFCreateMFByteStreamOnStream(unknown, out var byteStream), "MFCreateMFByteStreamOnStream");
+            try
+            {
+                var iid = attributesId;
+                if (Marshal.QueryInterface(byteStream, in iid, out var attributes) >= 0)
+                {
+                    if (contentType != null) SetString(attributes, ByteStreamContentType, contentType);
+                    SetString(attributes, ByteStreamOriginName, name);
+                    Release(attributes);
+                }
+                Check(MFCreateSourceReaderFromByteStream(byteStream, IntPtr.Zero, out var reader), "MFCreateSourceReaderFromByteStream");
+                return reader;
+            }
+            finally
+            {
+                Release(byteStream);
+            }
+        }
+        finally
+        {
+            Marshal.Release(unknown);
+        }
+    }
+
+    public static int SetString(IntPtr attributes, Guid key, string value)
+    {
+        fixed (char* text = value)
+            return ((delegate* unmanaged[Stdcall]<IntPtr, Guid*, char*, int>)Slot(attributes, 25))(attributes, &key, text);
+    }
+
     private static readonly object gate = new();
     private static bool started;
 
@@ -194,7 +240,18 @@ internal sealed unsafe class MediaFoundationDecoder : IDecoder
     public MediaFoundationDecoder(string url)
     {
         MF.Startup();
-        MF.Check(MF.MFCreateSourceReaderFromURL(url, IntPtr.Zero, out reader), "MFCreateSourceReaderFromURL");
+        var hr = MF.MFCreateSourceReaderFromURL(url, IntPtr.Zero, out reader);
+        if (hr < 0 && url.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+        {
+            // Media Foundation wouldn't open the stream by URL: feed it the file over range requests.
+            Log.Write($"decoder: URL refused (0x{hr:X8}), reading it over HTTP ranges");
+            var stream = new HttpByteStream(url);
+            reader = MF.ReaderOnStream(stream, stream.ContentType, url.Split('?')[0]);
+        }
+        else
+        {
+            MF.Check(hr, "MFCreateSourceReaderFromURL");
+        }
         try
         {
             MF.SetStreamSelection(reader, MF.AllStreams, false);

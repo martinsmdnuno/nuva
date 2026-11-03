@@ -168,6 +168,14 @@ public sealed partial class App : Application
 
     public void RevealCurrentTrack() => MainWindow.RevealCurrentTrack();
 
+    /// <summary>The sheet to add a Jellyfin server.</summary>
+    public void AddJellyfin()
+    {
+        ShowMainWindow();
+        Model.WindowMode = WindowMode.Browser;
+        new JellyfinLogin(Model, MainWindow).ShowDialog();
+    }
+
     /// <summary>The equalizer, under the display's EQ readout (Ctrl+Shift+E or a click on it).</summary>
     public void ShowEqualizer()
     {

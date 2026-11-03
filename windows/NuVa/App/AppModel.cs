@@ -37,7 +37,13 @@ public sealed class AppModel
     {
         Settings = settings;
         Ui = ui;
-        Sources = new SourceStore(settings, new CredentialStore());
+        Sources = new SourceStore(settings, new CredentialStore())
+        {
+            MakeJellyfin = (record, credentials, deviceId) => record.Server is { } server && record.Username is { } user
+                ? new JellyfinSource(record.Id, record.Name, new Uri(server), user, deviceId, () => credentials.Password(record.Id.ToString()))
+                : null,
+        };
+        JellyfinSource.ClientVersion = App.Version;
         Browser = new Browser(Sources);
         Equalizer = new Equalizer(settings);
         Output = new GraphOutput();

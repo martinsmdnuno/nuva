@@ -28,18 +28,20 @@ struct AmbientView: View {
             TimelineView(.periodic(from: .now, by: 1)) { context in
                 let now = isSnapshot ? Self.snapshotDate : context.date
                 // With artwork on, the cover's hue lights the screen from behind (not while resting).
-                let glow = model.currentArtwork.flatMap(ArtworkGlow.color(for:))
+                let glow = model.currentArtwork.flatMap(ArtworkGlow.field(for:))
+                let shownFace = face ?? ambient.face
                 ZStack {
                     if !isSnapshot, ambient.isResting(at: now) {
                         AmbientRest(size: geometry.size, unit: unit, now: now)
                     } else {
                         if let glow {
-                            AmbientGlow(color: glow)
+                            // The Display face's glow breathes with the bass.
+                            AmbientGlow(field: glow, pulses: shownFace == .display && !reduceMotion)
                                 .opacity(opacity(now: now))
                                 .transition(.opacity)
                         }
                         Group {
-                            switch face ?? ambient.face {
+                            switch shownFace {
                             case .display: AmbientDisplayFace(unit: unit)
                             case .clock: AmbientClockFace(unit: unit, now: now)
                             case .spectrum: AmbientSpectrumFace(unit: unit)

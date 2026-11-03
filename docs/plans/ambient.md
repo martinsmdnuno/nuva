@@ -8,7 +8,7 @@ A full-screen view to leave the music playing with the Mac as part of the room. 
 
 - **One small window** still holds: ambient is not navigation or a second interface. Nothing to operate, no lists; the 360 pt window is where everything is done.
 - **No decorative animation:** Display and Clock only move with time. Meters and Spectrum (later) show the real signal level, like an amplifier's needles.
-- **No giant cover art:** no "Cover" face. With artwork on, the Display face shows a small tile beside the title, and every face sits on a glow in the cover's main hue (darkened so `display-muted` keeps 4.5:1; none for a cover in greys).
+- **No giant cover art:** no "Cover" face. With artwork on, the Display face shows a small tile beside the title, and every face sits on a blurred field of the cover's own colours (a 4×4 grid of it, darkened so `display-muted` keeps 4.5:1), which breathes with the bass on the Display face.
 - **Folders, not metadata:** title is the file name, folder is the folder name.
 
 ## Phase 1 (done)

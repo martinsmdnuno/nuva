@@ -40,8 +40,8 @@
       "url": "https://nuva.martinsnuno.com/pt/",
       "applicationCategory": "MultimediaApplication",
       "applicationSubCategory": "Leitor de música",
-      "operatingSystem": "macOS 14 ou posterior (Apple silicon e Intel)",
-      "softwareVersion": "1.10.1",
+      "operatingSystem": "macOS 14 ou posterior (Apple silicon e Intel); Android TV 8.1 ou posterior",
+      "softwareVersion": "1.11",
       "downloadUrl": "https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg",
       "license": "https://opensource.org/licenses/MIT",
       "isAccessibleForFree": true,
@@ -63,6 +63,7 @@
         {"@type": "Question", "name": "Posso tocar música de um NAS?", "acceptedAnswer": {"@type": "Answer", "text": "Sim. Liga-te à partilha no Finder (SMB) e adiciona a pasta na NuVa; ela volta sozinha quando a partilha é montada de novo. Também podes usar um servidor Jellyfin no NAS. Servidores Plex e UPnP/DLNA ainda não são suportados."}},
         {"@type": "Question", "name": "A NuVa é gratuita?", "acceptedAnswer": {"@type": "Answer", "text": "Sim. A NuVa é gratuita e de código aberto, com a licença MIT, sem conta, sem publicidade e sem analytics."}},
         {"@type": "Question", "name": "Porque é que o macOS diz que não consegue verificar a NuVa?", "acceptedAnswer": {"@type": "Answer", "text": "A NuVa não está assinada com um certificado pago de programador da Apple. Depois de a arrastares para Aplicações e a abrires uma vez, vai a Definições do Sistema, Privacidade e segurança, e clica em Abrir na mesma junto à mensagem da NuVa. Só fazes isto uma vez."}},
+        {"@type": "Question", "name": "Há NuVa para Android TV?", "acceptedAnswer": {"@type": "Answer", "text": "Sim. A NuVa para Android TV funciona numa box Android TV ou numa TV com Android TV 8.1 ou posterior e toca um servidor Jellyfin pelas pastas, FLAC incluído, com o equalizador, o espetro e as faces do modo ambiente. Instala-se com a app Downloader: escreve nuva.martinsnuno.com/tv."}},
         {"@type": "Question", "name": "Em que Macs funciona a NuVa?", "acceptedAnswer": {"@type": "Answer", "text": "Em qualquer Mac com macOS 14 Sonoma ou posterior, com Apple silicon ou Intel."}}
       ]
     }
@@ -99,6 +100,14 @@
       </div>
       <div class="group">
         <span class="led" aria-hidden="true"></span>
+        <a class="key mode" href="#tv">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="1.5"/><path d="M8 21h8"/></svg>
+          Android TV
+        </a>
+        <span class="legend">tv</span>
+      </div>
+      <div class="group">
+        <span class="led" aria-hidden="true"></span>
         <a class="key mode" href="https://github.com/martinsmdnuno/nuva">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 7-5 5 5 5m8-10 5 5-5 5"/></svg>
           Código no GitHub
@@ -106,7 +115,7 @@
         <span class="legend">código</span>
       </div>
     </div>
-    <p class="meta">Versão <span class="version">1.10.1</span> · macOS 14 ou posterior · Apple silicon e Intel · gratuita, MIT</p>
+    <p class="meta">Versão <span class="version">1.11</span> · macOS 14 ou posterior · Apple silicon e Intel · Android TV 8.1 ou posterior · gratuita, MIT</p>
     <figure class="shot">
       <img src="/img/themes.webp" width="1600" height="1259" alt="A janela da NuVa nos temas Chumbo e Alumínio: o visor mostra um FLAC 24/48 a tocar por AirPlay num WiiM, as teclas e a fila">
     </figure>
@@ -164,6 +173,24 @@
     </div>
   </section>
 
+  <section id="tv">
+    <div class="wrap split">
+      <img src="/img/tv.webp" width="1600" height="900" loading="lazy" alt="A NuVa na Android TV: o visor com FLAC a tocar e o espetro, as teclas e a fila">
+      <div>
+        <p class="label">android tv</p>
+        <h2>Também na TV</h2>
+        <p class="muted">A NuVa para Android TV é o mesmo leitor para a sala, numa box Android TV ou numa TV com Android TV 8.1 ou posterior. Toca o teu servidor Jellyfin pelas pastas reais, FLAC e 24 bits incluídos, pelo leitor do próprio Android.</p>
+        <ul>
+          <li>O visor, o espetro e o equalizador de 10 bandas</li>
+          <li>As seis faces do modo ambiente, com proteção OLED</li>
+          <li>O comando faz tudo; Voltar pergunta antes de sair</li>
+          <li>Volta a abrir onde estavas</li>
+        </ul>
+        <p class="muted">Abre a app Downloader na TV e escreve <code>nuva.martinsnuno.com/tv</code>, ou <a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk">descarrega o APK</a>.</p>
+      </div>
+    </div>
+  </section>
+
   <section id="design">
     <div class="wrap split">
       <img src="/img/skins.webp" width="1600" height="1259" loading="lazy" alt="A NuVa com a skin Graphite Orange, com a tecla de tocar laranja, e com a Phosphor, com texto verde num visor preto">
@@ -211,6 +238,10 @@
       <details>
         <summary>Porque é que o macOS diz que não consegue verificar a NuVa?</summary>
         <p>A NuVa não está assinada com um certificado pago de programador da Apple. Depois de a arrastares para Aplicações e a abrires uma vez, vai a Definições do Sistema › Privacidade e segurança e clica em Abrir na mesma junto à mensagem da NuVa. Só fazes isto uma vez.</p>
+      </details>
+      <details>
+        <summary>Há NuVa para Android TV?</summary>
+        <p>Sim. A NuVa para Android TV funciona numa box Android TV ou numa TV com Android TV 8.1 ou posterior e toca um servidor Jellyfin pelas pastas, FLAC incluído, com o equalizador, o espetro e as faces do modo ambiente. Instala-se com a app Downloader: escreve <code>nuva.martinsnuno.com/tv</code>.</p>
       </details>
       <details>
         <summary>Em que Macs funciona a NuVa?</summary>

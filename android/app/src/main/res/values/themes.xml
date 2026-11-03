@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.NuVa" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/surface0</item>
+        <item name="android:colorBackground">@color/surface0</item>
+    </style>
+    <color name="surface0">#1E2023</color>
+</resources>

@@ -1,6 +1,6 @@
 # Terms and privacy
 
-*Last updated: 21 October 2026*
+*Last updated: 3 November 2026*
 
 ## Terms of use
 
@@ -21,6 +21,8 @@ NuVa only connects to the internet in these cases:
 - **MusicBrainz and the Cover Art Archive**, when you insert an audio CD that NuVa hasn't seen before: NuVa sends the disc's table of contents (its disc ID and track lengths), to find the album, artist and track names, which a CD doesn't carry. With **Show Artwork** on, it also fetches that album's cover. Names and covers are kept on your Mac, so a known disc doesn't go online again.
 - **GitHub**, at most once a day, to check whether there is a newer version of NuVa. Nothing is downloaded or installed automatically.
 
+**NuVa for Android TV** goes online in the same cases: your Jellyfin server, MusicBrainz and the Cover Art Archive (only with **Show Artwork** on), and GitHub at most once a day. It signs in to Jellyfin with your password once and keeps only the server's access token, never the password. Its settings, the queue and where you left off stay on the TV.
+
 These services have their own terms and privacy policies: [MusicBrainz](https://metabrainz.org/privacy), [Internet Archive](https://archive.org/about/terms.php) (which hosts the Cover Art Archive) and [GitHub](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
 
 ## Album artwork
@@ -29,7 +31,7 @@ Album covers belong to their owners. NuVa shows them only on your Mac, as a refe
 
 ## Third parties
 
-Fonts: Inter and IBM Plex Mono, under the SIL Open Font License. NuVa plays audio through Apple's own frameworks.
+Fonts: Inter, IBM Plex, DM Sans and DM Mono, and Share Tech, under the SIL Open Font License. NuVa plays audio through Apple's own frameworks; NuVa for Android TV through Android's own decoders, with AndroidX Media3.
 
 ## Contact
 
@@ -39,7 +41,7 @@ Questions and problems: [github.com/martinsmdnuno/nuva/issues](https://github.co
 
 # Termos e privacidade
 
-*Última atualização: 21 de outubro de 2026*
+*Última atualização: 3 de novembro de 2026*
 
 ## Termos de utilização
 
@@ -60,6 +62,8 @@ A NuVa só se liga à internet nestes casos:
 - **MusicBrainz e Cover Art Archive**, quando metes um CD áudio que a NuVa ainda não conhece: a NuVa envia o índice do disco (o seu disc ID e a duração das faixas), para encontrar os nomes do álbum, do artista e das faixas, que um CD não traz. Com **Mostrar capas** ligado, vai também buscar a capa desse álbum. Os nomes e as capas ficam guardados no teu Mac, por isso um disco conhecido não volta a ir à internet.
 - **GitHub**, no máximo uma vez por dia, para saber se há uma versão nova da NuVa. Nada é descarregado nem instalado automaticamente.
 
+A **NuVa para Android TV** vai à internet nos mesmos casos: o teu servidor Jellyfin, o MusicBrainz e o Cover Art Archive (só com **Mostrar capas** ligado) e o GitHub no máximo uma vez por dia. Entra no Jellyfin com a tua palavra-passe uma vez e guarda apenas a chave de acesso do servidor, nunca a palavra-passe. As definições, a fila e o ponto onde ficaste ficam na TV.
+
 Estes serviços têm os seus próprios termos e políticas de privacidade: [MusicBrainz](https://metabrainz.org/privacy), [Internet Archive](https://archive.org/about/terms.php) (que aloja o Cover Art Archive) e [GitHub](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
 
 ## Capas dos álbuns
@@ -68,7 +72,7 @@ As capas pertencem aos seus donos. A NuVa mostra-as apenas no teu Mac, como refe
 
 ## Terceiros
 
-Fontes: Inter e IBM Plex Mono, com a SIL Open Font License. A NuVa toca áudio através das frameworks da própria Apple.
+Fontes: Inter, IBM Plex, DM Sans e DM Mono, e Share Tech, com a SIL Open Font License. A NuVa toca áudio através das frameworks da própria Apple; a NuVa para Android TV através dos descodificadores do próprio Android, com o AndroidX Media3.
 
 ## Contacto
 

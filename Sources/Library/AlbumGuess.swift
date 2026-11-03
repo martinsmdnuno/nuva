@@ -7,6 +7,13 @@ struct AlbumQuery: Hashable, Codable, Sendable {
 
     /// Key shared by every folder with the same artist and album.
     var key: String { "\(AlbumGuess.normalize(artist))|\(AlbumGuess.normalize(album))" }
+
+    /// The same query without a title before the artist's name ("Ms. Lauryn Hill" → "Lauryn Hill"),
+    /// or nil when there is none. Tried only after the full name finds nothing, so "Dr. Dre" stays.
+    var withoutTitle: AlbumQuery? {
+        guard let match = artist.firstMatch(of: /^(?i:ms|mrs|mr|miss|dr|sir|dame)\.?\s+(.+)$/) else { return nil }
+        return AlbumQuery(artist: String(match.output.1), album: album)
+    }
 }
 
 enum AlbumGuess {

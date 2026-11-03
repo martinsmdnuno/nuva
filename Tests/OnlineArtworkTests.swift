@@ -38,6 +38,17 @@ struct OnlineArtworkTests {
         return try! JSONDecoder().decode(CoverArtArchive.ReleaseGroup.self, from: Data(json.utf8))
     }
 
+    @Test func titlesBeforeTheArtistCanBeDropped() {
+        let album = "The Miseducation of Lauryn Hill"
+        #expect(AlbumQuery(artist: "Ms. Lauryn Hill", album: album).withoutTitle == AlbumQuery(artist: "Lauryn Hill", album: album))
+        #expect(AlbumQuery(artist: "Dr Dre", album: "2001").withoutTitle?.artist == "Dre")
+        #expect(AlbumQuery(artist: "Mrs. Greenbird", album: "x").withoutTitle?.artist == "Greenbird")
+        // No title, or one that is the whole name: nothing to retry.
+        #expect(AlbumQuery(artist: "Lauryn Hill", album: album).withoutTitle == nil)
+        #expect(AlbumQuery(artist: "Msylvia", album: "x").withoutTitle == nil)
+        #expect(AlbumQuery(artist: "Dr.", album: "x").withoutTitle == nil)
+    }
+
     @Test func onlyConfidentMatchesCount() {
         let q = AlbumQuery(artist: "Fleetwood Mac", album: "Rumours")
         #expect(CoverArtArchive.matches(group("Rumours", "Fleetwood Mac"), q))

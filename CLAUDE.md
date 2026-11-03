@@ -16,12 +16,14 @@ Native macOS app in SwiftUI that plays music from folders. Winamp-like simplicit
 5. **Pluggable sources.** The app plays from "sources". Each source is a folder tree: Local (a folder on the Mac, including mounted SMB shares), Jellyfin, an audio CD in the drive, and later a generic HTTP server. The player doesn't know where the music comes from.
 
 ## Other platforms
-- **Android TV** (`android/`, plan in `docs/plans/android-tv.md`): the same principles and design system, its own Kotlin code. There, "native audio" means the platform's own engine: AndroidX Media3 (ExoPlayer) with Android's system decoders (FLAC from API 27). No VLC, no ffmpeg, no extension decoders. This extends principle 2 to Android; it doesn't change it for the Mac.
+Each platform has its own `CLAUDE.md` next to its code, with how the principles apply there, its stack, build and test. It shares the principles and the design system, not the code, and extends a principle to its platform without changing it for the Mac.
+- **Android TV**: `android/` (`android/CLAUDE.md`, plan in `docs/plans/android-tv.md`). Media3 with Android's system decoders.
+- **Windows**: in progress (`docs/plans/windows.md` on its branch). It joins the release when it reaches main with `windows/CLAUDE.md`, `status: released` in `docs/features.json` and a `buildScript` that writes `dist/NuVa-Windows.zip` and `dist/NuVa-Windows-X.zip`.
 
 ## Parity and content
 - `docs/features.json` is the one list of what NuVa does on each platform: `yes`, `planned`, or `n/a` with a `why`. The Mac is the reference; a new feature lands as `yes` on the Mac and `planned` elsewhere, so a gap is always written down. An `n/a` says how a principle applies on that platform, never changes the principle.
 - The README, the site and `llms.txt` carry generated blocks between `<!-- nuva:NAME -->` and `<!-- /nuva:NAME -->` (downloads, requirements, the "which app does what" table, the site's version line and JSON-LD `operatingSystem`/`softwareVersion`). Edit `docs/features.json`, then `swift scripts/content.swift`; never edit inside a block by hand. The prose around the blocks stays hand-written.
-- `scripts/check-content.sh` fails on a stale block, a bad matrix entry, a changelog that isn't at the current version, a download link no release carries, a build script or `gh release create` line that misses an asset, or terms that don't name a released platform in both languages.
+- `scripts/check-content.sh` fails on a stale block, a bad matrix entry, a changelog whose newest entry is older than the current version (or has none for it), a download link no release carries, a build script or `gh release create` line that misses an asset, or terms that don't name a released platform in both languages.
 - A feature is done when: the matrix is updated, the README and site prose say it (both languages), the screenshots are regenerated, the `CHANGELOG.md` has it, and `scripts/check-content.sh` passes.
 
 ## Architecture

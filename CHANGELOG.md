@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.10 — smoother meters and the album's colour
+
+- With artwork on, ambient mode takes on the album's colour: a soft glow in the cover's main hue, behind every face. It stays dark enough for the text to read, changes gently with the album, and a cover in black and white leaves the screen as it was.
+- The Spectrum and Meters faces move smoothly: the sound is measured 60 times a second however the player delivers it, the bars rise and fall instead of jumping, and the Meters' last segment lights in part.
+- Needles and Valves are bright again with the Mac in light appearance. Ambient mode now always uses the skin's dark colours, so the VU lamp is lit and the amber is the bright one. The valves glow stronger, with a halo and a white-hot filament when the music is loud.
+- The README shows the ambient faces and the Phosphor skin.
+
 ## 1.9 — keyboard and VoiceOver
 
 - New shortcuts: ⇧⌘→ and ⇧⌘← jump 10 seconds forward or back, ⌥⌘↑ and ⌥⌘↓ move the selected track in the queue (also Move Up and Move Down in its menu), and ⌥⌘⌫ clears the queue (Controls › Clear Queue).

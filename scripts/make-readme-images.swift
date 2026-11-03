@@ -164,7 +164,20 @@ framed([(snapshot("compacto-chumbo"), .window(dark: true))], name: "compact.png"
 framed([(snapshot("primeiro-chumbo"), .window(dark: true))], name: "first-run.png")
 framed([(snapshot("equalizador-chumbo"), .popover)], name: "equalizer.png")
 framed([(snapshot("barra-chumbo"), .popover)], name: "menubar.png")
-framed([(snapshot("player-graphite-orange"), .window(dark: true)), (snapshot("player-graphite-green"), .window(dark: true))],
+framed([(snapshot("player-graphite-orange"), .window(dark: true)), (snapshot("player-graphite-green"), .window(dark: true)),
+        (snapshot("player-phosphor"), .window(dark: true))],
        name: "skins.png")
 framed([(snapshot("player-capa-chumbo"), .window(dark: true)), (snapshot("barra-capa-aluminio"), .popover)],
        name: "artwork.png")
+
+// Ambient mode: four faces, two by two, as full screens (the third with a cover's glow, the last in Phosphor).
+let faces = ["ponteiros-chumbo", "valvulas-chumbo", "capa-chumbo", "espectro-phosphor"].map { snapshot("ambiente-\($0)") }
+let faceK = 0.34
+let face = framedSize(faces[0], .popover, k: faceK)
+let (facePad, faceGap) = (110.0, 64.0)
+canvas(CGSize(width: face.width * 2 + faceGap + facePad * 2, height: face.height * 2 + faceGap + facePad * 2), "ambient.png") {
+    for (i, image) in faces.enumerated() {
+        drawFramed(image, .popover, at: CGPoint(x: facePad + Double(i % 2) * (face.width + faceGap),
+                                                y: facePad + Double(i / 2) * (face.height + faceGap)), k: faceK)
+    }
+}

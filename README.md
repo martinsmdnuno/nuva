@@ -56,11 +56,24 @@ NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that
 
 ## Skins and fonts
 
-<p align="center"><img src="docs/screenshots/skins.png" width="760" alt="NuVa in the Graphite Orange and Graphite Green skins"></p>
+<p align="center"><img src="docs/screenshots/skins.png" width="760" alt="NuVa in the Graphite Orange, Graphite Green and Phosphor skins"></p>
 
 The look above is the **Rams** skin. **Graphite Orange** and **Graphite Green** are always dark, with a single bright accent on the play key, the lights and the playing track. **Phosphor** is a nod to the shareware players of the late nineties: a black screen with green text and a blue-grey chassis. Switch in **View › Skin** (⌥⌘1 to ⌥⌘4) or from the mini player. Skins change colours only: the keys, the layout and the shortcuts stay where your hands expect them. **View › Font** picks Inter + IBM Plex Mono or Apple's SF Pro + SF Mono.
 
-**View › Ambient** (⌘4) turns the whole screen into NuVa's display, in the current skin, to leave the music playing as part of the room: the track and the time large, a clock, a full-screen spectrum, or left and right meters. ← → switch faces, Esc leaves. It can go on another screen or a TV, keeps the screen awake while music plays, and protects OLED screens: the picture drifts, static parts are dimmer, and after an hour untouched only a small light is left.
+## Ambient mode, for the room
+
+<p align="center"><img src="docs/screenshots/ambient.png" width="760" alt="Ambient mode faces: VU meters with needles, glowing valves, the track and time large on a glow from the album cover, and a 28-band spectrum in Phosphor"></p>
+
+**View › Ambient** (⌘4) turns the whole screen into NuVa's display, in the current skin, to leave the music playing as part of the room. Six faces, ← → to switch:
+
+- **Display**: the track and the time, large.
+- **Clock**: the time of day.
+- **Spectrum**: 28 bands from 20 Hz to 20 kHz, with a peak line over each.
+- **Meters**: left and right levels.
+- **Needles**: two backlit VU meters, like the front of a tape deck.
+- **Valves**: two valves in their cage, whose filaments glow with each channel.
+
+They all move with what you hear, AirPlay included. With artwork on, the screen takes on the album's colour: a soft glow from the cover, behind the face. Esc or ⌘4 leaves. It can go on another screen or a TV (**View › Ambient Options**), and keeps the screen awake while music plays. **OLED Protection**, on by default, looks after OLED screens: the picture drifts slowly, static parts are dimmer, the face changes every 20 minutes, and after an hour untouched only a small light is left.
 
 ## Album artwork, if you want it
 
@@ -124,7 +137,8 @@ On first launch NuVa tells you what to do: add a folder, or sign in to Jellyfin.
 - A 10-band equalizer with presets, and a spectrum meter on the display that follows what you hear, also over AirPlay (**View › Show Spectrum**, ⌥⌘V).
 - Optional album artwork: the image in the folder, or found online from the folder names. Never from tags.
 - Media keys, Control Center, the lock screen and AirPods controls.
-- Keyboard first: every action has a shortcut.
+- Keyboard first: every action has a shortcut. VoiceOver reads the keys, the sliders and every row.
+- Keeps going: a damaged file or a server that went offline is tried once more, then skipped, and the display says which track couldn't play. A disk or NAS that wasn't connected comes back when it's mounted.
 - English and Portuguese, following your system language.
 - No account, no analytics. It only goes online for your Jellyfin server, album covers (when artwork is on), the names of an audio CD and a daily check for new versions, which never downloads anything. See [Terms and privacy](TERMS.md), also in **NuVa › Terms and Privacy**.
 
@@ -209,13 +223,14 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 - **Jellyfin sem confusão.** Navega pelas pastas reais do servidor e toca os ficheiros originais.
 - **Uma janela pequena.** As pastas aparecem no lugar da fila (⌘B troca as duas) e há um modo compacto. A janela estica na vertical para veres o álbum inteiro, e na horizontal para nomes compridos.
 - **Skins:** Rams (claro ou escuro, como o sistema), Graphite Orange, Graphite Green e Fósforo (sempre escuras), em Visualização › Skin. Fonte Inter + IBM Plex Mono ou SF Pro + SF Mono, em Visualização › Fonte.
-- **Modo Ambiente** (⌘4): o ecrã inteiro passa a ser o mostrador da NuVa: a faixa e o tempo em grande, um relógio, o espectro ou os medidores esquerdo e direito. ← → trocam, Esc sai. Protege ecrãs OLED: a imagem desloca-se devagar, o que é fixo fica mais escuro e, ao fim de uma hora sem mexer, só fica uma pequena luz.
+- **Modo Ambiente** (⌘4): o ecrã inteiro passa a ser o mostrador da NuVa, na skin atual. Seis faces, ← → trocam: a faixa e o tempo em grande, um relógio, o espectro de 28 bandas, os medidores esquerdo e direito, dois VU de ponteiro e duas válvulas que acendem com cada canal. Com as capas ligadas, o ecrã ganha a cor do álbum, num brilho suave por trás. Esc sai. Pode ir para outro ecrã ou uma TV. Protege ecrãs OLED: a imagem desloca-se devagar, o que é fixo fica mais escuro, a face muda a cada 20 minutos e, ao fim de uma hora sem mexer, só fica uma pequena luz.
 - **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A). Usa a imagem da pasta (`cover`, `folder`, `front`, `album` ou `capa`); se não houver, procura no MusicBrainz pelo nome das pastas. Nunca das tags. Capa errada ou em falta: carrega na capa e corrige o artista ou o álbum, ou escolhe uma imagem. Desligado por defeito.
 - **CDs áudio, como um leitor de CDs.** Mete um disco no leitor e a NuVa toca-o logo. Os nomes do álbum e das faixas vêm do MusicBrainz, pelo índice do disco (um CD não traz nomes). Ejetar com ⌘E. Para abrir a NuVa sempre que entra um CD: Definições do Sistema › CDs e DVDs › Ao inserir um CD de música › Abrir outra aplicação… › NuVa.
 - **Avisa quando há versão nova** (verifica no GitHub uma vez por dia, sem descarregar nada). [Termos e privacidade](TERMS.md) em NuVa › Termos e privacidade.
 - **Teclas como num deck:** aleatório e repetir à esquerda, tocar ao centro, botão de volume à direita.
 - **Equalizador de 10 bandas** (carrega em "EQ" no visor ou ⌥⌘E) e **espectro no visor**: colunas de segmentos âmbar, uma por banda, que seguem o que estás a ouvir, também em AirPlay (Visualização › Mostrar espectro, ⌥⌘V).
-- Media keys, Centro de Controlo e mini player na barra de menus.
+- Media keys, Centro de Controlo e mini player na barra de menus. Tudo tem atalho de teclado, e o VoiceOver lê as teclas, os controlos e cada linha.
+- **Não pára por qualquer coisa:** um ficheiro danificado ou um servidor que foi abaixo é tentado mais uma vez e depois saltado, e o visor diz que faixa não tocou. Um disco ou NAS que não estava ligado volta quando é montado.
 - Em português e inglês, conforme a língua do sistema. macOS 14 ou posterior, Apple silicon e Intel.
 
 ### Instalar

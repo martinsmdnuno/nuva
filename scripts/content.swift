@@ -217,8 +217,14 @@ for t in targets {
 if let gradle = read("android/app/build.gradle.kts"), !gradle.contains("project.yml") {
     problems.append("android/app/build.gradle.kts no longer takes its version from project.yml")
 }
-if let log = read("CHANGELOG.md"), let top = log.firstMatch(of: try! Regex(#"\n## ([0-9.]+)"#))?[1].substring, top != version {
-    problems.append("CHANGELOG.md: newest entry is \(top), project.yml says \(version)")
+// The newest entry may be ahead: the next release's entry is written before scripts/release.sh bumps project.yml.
+func numbers(_ v: Substring) -> [Int] { v.split(separator: ".").compactMap { Int($0) } }
+if let log = read("CHANGELOG.md") {
+    let entries = log.matches(of: try! Regex(#"\n## ([0-9.]+)"#)).compactMap { $0[1].substring }
+    if let top = entries.first, numbers(top).lexicographicallyPrecedes(numbers(Substring(version))) {
+        problems.append("CHANGELOG.md: newest entry is \(top), older than \(version) in project.yml")
+    }
+    if !entries.contains(Substring(version)) { problems.append("CHANGELOG.md has no entry for \(version)") }
 }
 
 // Every download link names a file a released platform's build script makes and the release uploads.

@@ -48,7 +48,7 @@
       "status": "planned",
       "public": false,
       "asset": "NuVa-Windows.zip",
-      "buildScript": "scripts/make-zip.sh",
+      "buildScript": "scripts/make-windows-zip.sh",
       "termsMention": "Windows",
       "requires": { "en": ["Windows 10 (2004) or 11"], "pt": ["Windows 10 (2004) ou 11"] },
       "schemaOS": { "en": "Windows 10 (2004) or 11", "pt": "Windows 10 (2004) ou 11" },

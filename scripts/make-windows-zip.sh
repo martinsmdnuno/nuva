@@ -1,16 +1,15 @@
 #!/bin/zsh
-# Builds windows/dist/NuVa-<version>-windows-<arch>.zip: one self-contained NuVa.exe (nothing to install),
-# the font licences and a read-me. Runs on macOS (or Linux, or Windows) with the .NET 10 SDK:
-#   brew install dotnet
-# Usage: scripts/make-windows-zip.sh [x64|arm64]   (default x64). Runs the Core tests first.
+# Builds dist/NuVa-Windows-<version>.zip (and dist/NuVa-Windows.zip): one self-contained NuVa.exe for
+# x64 Windows 10 (2004) and 11, nothing to install, with the font licences and a read-me. Runs on macOS
+# (or Linux, or Windows) with the .NET 10 SDK: brew install dotnet. Runs the Core tests first.
 set -euo pipefail
 cd "${0:a:h}/.."
-ARCH=${1:-x64}
+ARCH=x64
 export DOTNET_ROOT=${DOTNET_ROOT:-/opt/homebrew/opt/dotnet/libexec}
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 VERSION=$(sed -nE 's/.*MARKETING_VERSION: "([^"]+)".*/\1/p' project.yml)
-OUT=windows/dist
+OUT=dist
 STAGE=$(mktemp -d)
 trap 'rm -rf "$STAGE"' EXIT
 
@@ -49,8 +48,8 @@ If something doesn't work, send the file %LOCALAPPDATA%\\NuVa\\nuva.log.
 https://nuva.martinsnuno.com · https://github.com/martinsmdnuno/nuva
 TXT
 
-ZIP="$OUT/NuVa-$VERSION-windows-$ARCH.zip"
+ZIP="$OUT/NuVa-Windows-$VERSION.zip"
 rm -f "$ZIP"
 (cd "$STAGE" && zip -qr -X "$OLDPWD/$ZIP" NuVa)
-cp "$ZIP" "$OUT/NuVa-windows-$ARCH.zip"
+cp "$ZIP" "$OUT/NuVa-Windows.zip"
 ls -la "$ZIP"

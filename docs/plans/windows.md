@@ -1,7 +1,7 @@
 # NuVa for Windows
 
-Status: stack agreed (C# + WPF), being built.
-Input: there is no Windows machine for development. A friend of the author installs and uses it on Windows 11 (x64), with a CD drive and access to the author's Jellyfin. So the app builds and is tested on the Mac as far as possible, and everything that only Windows can check is written to a log the friend can send back (`%LOCALAPPDATA%\NuVa\nuva.log`, and `NuVa.exe --selftest`, which plays a second of silence through each stage and writes what worked).
+Status: built (all steps below), not yet run on Windows. Joins the release when a tester confirms it.
+Input: there is no Windows machine for development. A friend of the author installs and uses it on Windows 11 (x64), with a CD drive and access to the author's Jellyfin. So the app builds and is tested on the Mac as far as possible, and everything that only Windows can check is written to a log the friend can send back (`%LOCALAPPDATA%\NuVa\nuva.log`, and `NuVa.exe --selftest [file]`, which decodes a file (or a WAV of silence it makes), plays a second of silence through AudioGraph, lists the output devices and shows what worked).
 
 A NuVa for Windows 10 and 11, with the Mac app's scope (`CLAUDE.md`) wherever Windows allows. It lives in `windows/`, next to the Mac app and `android/`, and shares their principles and design system, not their code. It ships in the same GitHub release as the DMG and the APK, with the same version number.
 
@@ -19,8 +19,8 @@ This extends principle 2 to Windows; it doesn't change it for the Mac.
 
 - **C# on .NET 10 (LTS) with WPF**, target `net10.0-windows10.0.19041.0` (Windows 10 2004 and later), so the app can call WinRT (AudioGraph, SMTC, device lists) through the SDK's own projection. Everything else is in the .NET Windows Desktop runtime: no NuGet packages.
 - **Two projects**: `windows/NuVa.Core` (`net10.0`, no Windows APIs: the DSP, the folder and Jellyfin model, artwork rules, skins, strings, the update check) and `windows/NuVa` (the WPF app: audio I/O, SMTC, windows). A small test runner (`windows/NuVa.Core.Tests`, a console app with its own asserts, since xUnit and MSTest are NuGet packages) runs on any OS.
-- **Built on the Mac**: `brew install --cask dotnet-sdk`, then `dotnet publish windows/NuVa -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:EnableWindowsTargeting=true`. WPF and the Windows SDK projection compile on macOS; only running the app needs Windows. `dotnet run --project windows/NuVa.Core.Tests` runs the DSP and library tests on the Mac.
-- **Delivered as a zip**: `NuVa-X-windows-x64.zip` with one self-contained `NuVa.exe` (no .NET to install) and the licences. Unpack anywhere and run; settings in `%APPDATA%\NuVa`, covers and caches in `%LOCALAPPDATA%\NuVa`. Unsigned, so SmartScreen asks once ("More info ▸ Run anyway"); a signing certificate costs money and can come later. An ARM64 zip too if wanted (`-r win-arm64`).
+- **Built on the Mac**: `brew install dotnet`, then `scripts/make-windows-zip.sh` (the Core tests, then `dotnet publish` for win-x64, self-contained, one file). WPF and the Windows SDK projection compile on macOS; only running the app needs Windows. `dotnet run --project windows/NuVa.Core.Tests` runs the DSP and library tests on the Mac.
+- **Delivered as a zip**: `dist/NuVa-Windows-X.zip` (and `dist/NuVa-Windows.zip`, the fixed download name) with one self-contained `NuVa.exe` for x64 (no .NET to install, about 70 MB zipped), the licences and a read-me. Unpack anywhere and run; settings in `%APPDATA%\NuVa`, covers, CD names and the log in `%LOCALAPPDATA%\NuVa`. Unsigned, so SmartScreen asks once ("More info ▸ Run anyway"); a signing certificate costs money and can come later. ARM64 would be a separate asset (`-r win-arm64`).
 
 Why not the others: WinUI 3 builds only on Windows and needs the Windows App SDK runtime (an extra install or a NuGet package), and NuVa draws its own look anyway. C++/Win32 with Direct2D would be smaller but is several times the code, and cross-compiling it from the Mac needs a MinGW toolchain.
 
@@ -99,6 +99,14 @@ Space play/pause · Ctrl+→ next · Ctrl+← previous · Ctrl+Shift+→ ← 10 
 13. Ambient: the six faces, OLED protection, glow, dimming, options.
 14. Audio CD.
 15. Update check, Terms and Privacy, `TERMS.md` and `CLAUDE.md` ("Other platforms"), README, the zip in the release.
+
+## As built
+
+- **Fonts**: WPF draws only a variable font's default instance, so Inter and DM Sans ship as static Regular and Medium instances (fontTools); IBM Plex Sans keeps its variable file, since its Reserved Font Name rules out a modified copy, and draws at Regular weight on Windows.
+- **Locations** are strings, not `Uri`: `Uri` turns a file named "a%20b" into "a b".
+- **Streams**: if Media Foundation won't open a Jellyfin URL itself, NuVa hands it the file over HTTP range requests (`HttpByteStream`, an IStream).
+- **Menus**: the Mac's menu bar is one menu, opened from Alt, F10, the title bar's icon or a right-click on the window.
+- **Not yet**: the lists aren't read row by row by Narrator (keys and controls are), so `screen-reader` stays `planned`; reopening where you left off is `planned` on the Mac too.
 
 ## Testing
 

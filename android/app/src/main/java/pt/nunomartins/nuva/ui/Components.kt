@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -25,7 +26,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.composed
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,10 +48,12 @@ import androidx.compose.ui.unit.dp
 
 val KeyShape = RoundedCornerShape(6.dp)
 
-enum class Tone(val face: Color, val ink: Color) {
-    Play(Tokens.keyPlay, Tokens.keyInk),
-    Transport(Tokens.keyFace, Tokens.keyInk),
-    Mode(Tokens.keyMode, Tokens.keyModeInk),
+/** The three key tones, as on a Braun calculator; read from the current skin. */
+enum class Tone {
+    Play, Transport, Mode;
+
+    val face: Color get() = when (this) { Play -> Tokens.keyPlay; Transport -> Tokens.keyFace; Mode -> Tokens.keyMode }
+    val ink: Color get() = when (this) { Play, Transport -> Tokens.keyInk; Mode -> Tokens.keyModeInk }
 }
 
 /**
@@ -59,6 +70,7 @@ fun Key(
     text: String? = null,
     led: Boolean? = null,
     description: String? = null,
+    height: Dp? = null,
 ) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
@@ -67,7 +79,7 @@ fun Key(
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         if (led != null) {
             Led(led)
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(5.dp))
         }
         Box(
             Modifier
@@ -77,8 +89,8 @@ fun Key(
                 .clip(KeyShape)
                 .background(face)
                 .clickable(interactionSource = interaction, indication = null, onClick = onClick)
-                .height(if (text != null) 56.dp else 72.dp)
-                .width(width),
+                .height(height ?: if (text != null) 56.dp else 64.dp)
+                .then(if (width > 0.dp) Modifier.width(width) else Modifier.fillMaxWidth()),
             contentAlignment = Alignment.Center,
         ) {
             if (icon != null) {
@@ -120,6 +132,7 @@ fun ListRow(
     modifier: Modifier = Modifier,
     isFolder: Boolean = false,
     playing: Boolean = false,
+    onLongClick: (() -> Unit)? = null,
 ) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
@@ -130,7 +143,7 @@ fun ListRow(
             .height(56.dp)
             .clip(RoundedCornerShape(6.dp))
             .background(background)
-            .clickable(interactionSource = interaction, indication = null, onClick = onClick)
+            .remoteClick(interaction, onClick, onLongClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp),
@@ -141,7 +154,8 @@ fun ListRow(
                 playing -> Led(true)
             }
         }
-        Text(name, Type.body.copy(color = if (playing) Tokens.signal else Tokens.ink), Modifier.weight(1f))
+        // Long names slide while the row has the focus, so they can be read whole.
+        ScrollingText(name, Type.body.copy(color = if (playing) Tokens.signal else Tokens.ink), Modifier.weight(1f), moving = focused)
         if (detail != null) Text(detail, (if (isFolder) Type.body.copy(fontSize = Type.legend.fontSize) else Type.duration).copy(color = Tokens.inkMuted))
     }
 }
@@ -164,4 +178,33 @@ fun clock(seconds: Double): String {
 fun minutes(seconds: Double): String {
     val s = seconds.toLong()
     return "%d:%02d".format(s / 60, s % 60)
+}
+
+/**
+ * OK on the remote: a press is a click, holding it is a long click (the TV's "more" gesture, like
+ * the Mac's ⌘Enter and context menus). Focusable for the D-pad.
+ */
+fun Modifier.remoteClick(interaction: MutableInteractionSource, onClick: () -> Unit, onLongClick: (() -> Unit)?): Modifier = composed {
+    var held by remember { mutableStateOf(false) }
+    this
+        .onPreviewKeyEvent { event ->
+            val ok = event.key == Key.DirectionCenter || event.key == Key.Enter || event.key == Key.NumPadEnter
+            if (!ok) return@onPreviewKeyEvent false
+            when (event.type) {
+                KeyEventType.KeyDown -> {
+                    if (event.nativeKeyEvent.repeatCount == 1 && onLongClick != null) {
+                        held = true
+                        onLongClick()
+                    }
+                    true
+                }
+                KeyEventType.KeyUp -> {
+                    if (!held) onClick()
+                    held = false
+                    true
+                }
+                else -> false
+            }
+        }
+        .focusable(interactionSource = interaction)
 }

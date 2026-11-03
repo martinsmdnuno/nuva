@@ -29,6 +29,22 @@ data class Entry(
 
     /** Name of the folder that holds the entry. */
     val folderName: String get() = parentPath.substringAfterLast('/')
+
+    /** The album's folder: the one holding the track, or the one above a disc folder ("CD 1"). */
+    val albumPath: String
+        get() {
+            var folder = parentPath
+            while (Regex("""^(cd|disc|disk|disco)[\s._-]*\d+\b""", RegexOption.IGNORE_CASE).containsMatchIn(folder.substringAfterLast('/'))) {
+                folder = folder.substringBeforeLast('/', "")
+            }
+            return folder
+        }
+
+    /** The folder above the album, as it is named: usually the artist. Folders, never tags. */
+    val artistFolder: String? get() = albumPath.substringBeforeLast('/', "").substringAfterLast('/').ifEmpty { null }
+
+    /** "Fleetwood Mac · Rumours (1977)": the artist's and the album's folders. */
+    val folderLine: String get() = listOfNotNull(artistFolder, albumPath.substringAfterLast('/').ifEmpty { null }).joinToString(" · ")
 }
 
 object Playable {

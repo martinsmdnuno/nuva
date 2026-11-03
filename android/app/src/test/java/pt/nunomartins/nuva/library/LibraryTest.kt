@@ -38,3 +38,14 @@ class LibraryTest {
         assertEquals("https://jellyfin.local:8920", JellyfinSource.normalise("jellyfin.local:8920"))
     }
 }
+
+class ArtistLineTest {
+    @Test fun artistAndAlbumComeFromTheFolders() {
+        val e = Entry("Fleetwood Mac/Rumours (1977)/02 - Dreams.flac", "02 - Dreams.flac", false)
+        assertEquals("Fleetwood Mac", e.artistFolder)
+        assertEquals("Fleetwood Mac · Rumours (1977)", e.folderLine)
+        val disc = Entry("Pink Floyd/The Wall/CD 2/01 - Hey You.flac", "01 - Hey You.flac", false)
+        assertEquals("Pink Floyd · The Wall", disc.folderLine)
+        assertEquals("Album", Entry("Album/01.flac", "01.flac", false).folderLine)
+    }
+}

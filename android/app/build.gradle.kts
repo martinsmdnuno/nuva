@@ -13,8 +13,8 @@ android {
         // Android 8.1: the first with the system's own FLAC decoder.
         minSdk = 27
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1"
+        versionCode = 2
+        versionName = "0.2"
     }
 
     buildTypes {
@@ -54,3 +54,11 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")
 }
+
+// TERMS.md, from the repository's root, bundled as an asset (NuVa › Terms and Privacy on the Mac).
+val copyTerms by tasks.registering(Copy::class) {
+    from(rootProject.file("../TERMS.md"))
+    into(layout.buildDirectory.dir("generated/terms"))
+}
+android.sourceSets["main"].assets.srcDir(layout.buildDirectory.dir("generated/terms"))
+tasks.named("preBuild") { dependsOn(copyTerms) }

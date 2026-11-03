@@ -28,6 +28,19 @@ A NuVa for an Android TV box, to play the author's FLAC library from Jellyfin on
 
 Later: the equalizer and the meters (a Media3 `AudioProcessor` measuring after the filters), artwork from folder images, Google Cast to a WiiM, more sources.
 
+## Parity with the Mac (0.2)
+
+- **Sound**: a tap in front of the audio output (`TapSink`) runs the 10-band equalizer (same bands, range and presets, biquads in double precision with pre-gain) and measures the 10 bands, the 28 fine bands and L/R RMS and peak 120 times a second, with two FFT sizes for the bass (`SpectrumAnalyzer`, a port of `Spectrum.swift`). Measurements carry the output clock's time, read from the audio sink's own position, so the meters show what is heard. It sits in front of the sink rather than as a Media3 audio processor because those are skipped for 24-bit sources played in float. With the equalizer off and no meter on screen, blocks pass untouched.
+- **Display**: format, artist and album from the folders ("Fleetwood Mac · Rumours (1977)"), the EQ readout that opens the equalizer, the 10-band LED meter, the cover when artwork is on. Long names slide (on the display always, in lists with focus).
+- **Equalizer**: ← → bands, ↑ ↓ half a decibel, eight presets, on/off with its LED.
+- **Ambient**: all six faces (Display, Clock, Spectrum, Meters, Needles with `VUNeedle`, Valves), ← → faces, OK play/pause, ↑ ↓ or Back leave; OLED protection (wander, 55% static parts, blinking colon, a new face every 20 minutes, rest after an hour), dim, dimming after 10 minutes paused, the cover's glow (breathing with the bass on the Display face).
+- **Artwork**: online from the folder names only (`AlbumGuess`, MusicBrainz + Cover Art Archive, confident matches, misses remembered 14 days), in the app's own files; also in Now Playing.
+- **Skins and fonts**: Rams (Lead), Graphite Orange, Phosphor; the five font sets (SF becomes Roboto).
+- **Queue**: hold OK on a folder or track to add it; hold OK on a queue row to move it, remove it or clear the queue. Repeat (all, one) and shuffle.
+- **Settings** (the Mac's View menu): skin, font, artwork, spectrum, ambient face, OLED, dim, ambient after a minute idle, check for updates (GitHub, a notice only), Terms and Privacy (TERMS.md, bundled), sign out.
+- **Leaving**: Back closes what's open, goes up a folder, then asks before leaving; the music keeps playing. Reopening brings back the last queue, paused where it was, and the last folder.
+- Not on the TV: local folders, CDs, AirPlay out, the menu bar and window modes, the volume knob (the TV's volume is the remote's).
+
 ## Design
 
 - Lead only: a TV is a dark room, and the display is always dark anyway. Tokens from `docs/design-system/tokens.json`, as Compose colours.

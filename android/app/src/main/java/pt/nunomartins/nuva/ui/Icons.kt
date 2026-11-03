@@ -48,6 +48,17 @@ object Icons {
         moveTo(20f, 13f); lineTo(20f, 15f); curveTo(20f, 16.1f, 19.1f, 17f, 18f, 17f); lineTo(4f, 17f)
         moveTo(7f, 14f); lineTo(4f, 17f); lineTo(7f, 20f)
     }
+    val repeatOne = icon("repeatOne", false) {
+        moveTo(4f, 11f); lineTo(4f, 9f); curveTo(4f, 7.9f, 4.9f, 7f, 6f, 7f); lineTo(20f, 7f)
+        moveTo(17f, 4f); lineTo(20f, 7f); lineTo(17f, 10f)
+        moveTo(20f, 13f); lineTo(20f, 15f); curveTo(20f, 16.1f, 19.1f, 17f, 18f, 17f); lineTo(4f, 17f)
+        moveTo(7f, 14f); lineTo(4f, 17f); lineTo(7f, 20f)
+        moveTo(11f, 11f); lineTo(12.5f, 10f); lineTo(12.5f, 14.5f)
+    }
+    val settings = icon("settings", false) {
+        moveTo(4f, 7f); lineTo(20f, 7f); moveTo(4f, 12f); lineTo(20f, 12f); moveTo(4f, 17f); lineTo(20f, 17f)
+        moveTo(9f, 5f); lineTo(9f, 9f); moveTo(15f, 10f); lineTo(15f, 14f); moveTo(7f, 15f); lineTo(7f, 19f)
+    }
     val folders = icon("folders", false) {
         moveTo(3f, 6f); lineTo(21f, 6f); lineTo(21f, 18f); lineTo(3f, 18f); close()
         moveTo(9f, 6f); lineTo(9f, 18f)

@@ -2,6 +2,7 @@ package pt.nunomartins.nuva.player
 
 import android.content.ComponentName
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import pt.nunomartins.nuva.library.Entry
+import java.io.ByteArrayOutputStream
 
 /** What the display and the keys show. */
 data class PlayerState(
@@ -35,74 +37,103 @@ data class PlayerState(
     val current: Entry? get() = queue.getOrNull(index)
 }
 
-/** Talks to the playback service. The queue is a folder (or the part of it from a track on). */
+/** Talks to the playback service. The queue lives in the player; entries are kept here by their path. */
 class PlayerModel(context: Context) {
     private val _state = MutableStateFlow(PlayerState())
     val state: StateFlow<PlayerState> = _state.asStateFlow()
     private var controller: MediaController? = null
-    private var entries: List<Entry> = emptyList()
-    private var pending: (() -> Unit)? = null
+    private val known = mutableMapOf<String, Entry>()
+    private val pending = mutableListOf<() -> Unit>()
 
     init {
         val token = SessionToken(context, ComponentName(context, PlaybackService::class.java))
         val future = MediaController.Builder(context, token).buildAsync()
         future.addListener({
             controller = future.get().also { it.addListener(listener) }
-            pending?.invoke()
-            pending = null
+            pending.forEach { it() }
+            pending.clear()
             refresh()
         }, MoreExecutors.directExecutor())
     }
 
-    /** Plays `tracks` from `start`. `urls` are the original files' streams. */
-    fun play(tracks: List<Entry>, urls: List<String>, start: Int) {
-        val action = {
-            val c = controller!!
-            entries = tracks
-            val items = tracks.zip(urls).map { (entry, url) ->
-                MediaItem.Builder()
-                    .setMediaId(entry.path)
-                    .setUri(url)
-                    .setMediaMetadata(
-                        MediaMetadata.Builder()
-                            .setTitle(entry.title)
-                            .setAlbumTitle(entry.folderName)
-                            .setIsPlayable(true)
-                            .build(),
-                    )
-                    .build()
-            }
-            c.setMediaItems(items, start, 0)
-            c.prepare()
-            c.play()
-            _state.update { it.copy(failedTitle = null) }
-        }
-        if (controller != null) action() else pending = action
+    private fun whenReady(action: (MediaController) -> Unit) {
+        val c = controller
+        if (c != null) action(c) else pending += { action(controller!!) }
     }
 
-    fun playPause() = controller?.run { if (isPlaying) pause() else { if (playbackState == Player.STATE_IDLE) prepare(); play() } }
-    fun next() = controller?.seekToNextMediaItem()
-    fun previous() = controller?.seekToPrevious()
-    fun jump(index: Int) = controller?.run { seekTo(index, 0); play() }
-    fun skip(seconds: Int) = controller?.run { seekTo((currentPosition + seconds * 1000L).coerceAtLeast(0)) }
-    fun toggleShuffle() = controller?.run { shuffleModeEnabled = !shuffleModeEnabled }
+    private fun item(entry: Entry, url: String): MediaItem {
+        known[entry.path] = entry
+        return MediaItem.Builder()
+            .setMediaId(entry.path)
+            .setUri(url)
+            .setMediaMetadata(
+                MediaMetadata.Builder().setTitle(entry.title).setArtist(entry.artistFolder)
+                    .setAlbumTitle(entry.albumPath.substringAfterLast('/')).setIsPlayable(true).build(),
+            )
+            .build()
+    }
+
+    /** Replaces the queue with `tracks` and plays from `start`. `urls` are the original files' streams. */
+    fun play(tracks: List<Entry>, urls: List<String>, start: Int, positionMs: Long = 0, autoplay: Boolean = true) = whenReady { c ->
+        c.setMediaItems(tracks.zip(urls).map { (e, u) -> item(e, u) }, start, positionMs)
+        c.prepare()
+        if (autoplay) c.play()
+        _state.update { it.copy(failedTitle = null) }
+    }
+
+    /** Adds to the end of the queue, as ⌘Enter does on the Mac; starts playing if nothing was. */
+    fun append(tracks: List<Entry>, urls: List<String>) = whenReady { c ->
+        val wasEmpty = c.mediaItemCount == 0
+        c.addMediaItems(tracks.zip(urls).map { (e, u) -> item(e, u) })
+        if (wasEmpty) {
+            c.prepare()
+            c.play()
+        }
+    }
+
+    fun remove(index: Int) = whenReady { it.removeMediaItem(index) }
+    fun move(from: Int, to: Int) = whenReady { if (to in 0 until it.mediaItemCount) it.moveMediaItem(from, to) }
+    fun clear() = whenReady { it.clearMediaItems() }
+
+    fun playPause() = whenReady { c -> if (c.isPlaying) c.pause() else { if (c.playbackState == Player.STATE_IDLE) c.prepare(); c.play() } }
+    fun next() = whenReady { it.seekToNextMediaItem() }
+    fun previous() = whenReady { it.seekToPrevious() }
+    fun jump(index: Int) = whenReady { it.seekTo(index, 0); it.play() }
+    fun skip(seconds: Int) = whenReady { it.seekTo((it.currentPosition + seconds * 1000L).coerceAtLeast(0)) }
+    fun toggleShuffle() = whenReady { it.shuffleModeEnabled = !it.shuffleModeEnabled }
 
     /** Off → all → one → off, as on the Mac. */
-    fun cycleRepeat() = controller?.run {
-        repeatMode = when (repeatMode) {
+    fun cycleRepeat() = whenReady {
+        it.repeatMode = when (it.repeatMode) {
             Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
             Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
             else -> Player.REPEAT_MODE_OFF
         }
     }
 
+    /** The cover for Now Playing (the TV's media controls and the remote's screen). */
+    fun setArtwork(path: String, cover: Bitmap?) = whenReady { c ->
+        val index = (0 until c.mediaItemCount).firstOrNull { c.getMediaItemAt(it).mediaId == path } ?: return@whenReady
+        val old = c.getMediaItemAt(index)
+        val bytes = cover?.let { b -> ByteArrayOutputStream().also { b.compress(Bitmap.CompressFormat.JPEG, 85, it) }.toByteArray() }
+        val metadata = old.mediaMetadata.buildUpon().setArtworkData(bytes, MediaMetadata.PICTURE_TYPE_FRONT_COVER).build()
+        c.replaceMediaItem(index, old.buildUpon().setMediaMetadata(metadata).build())
+    }
+
+    /** Something is already in the player (the app was reopened while it played). */
+    val hasQueue: Boolean get() = (controller?.mediaItemCount ?: 0) > 0
+
+    /** Runs `action` once the player is reachable. */
+    fun ready(action: () -> Unit) = whenReady { action() }
+
     /** Called by the display a few times a second for the time and the bar. */
     fun refresh() {
         val c = controller ?: return
+        val queue = (0 until c.mediaItemCount).mapNotNull { known[c.getMediaItemAt(it).mediaId] }
         _state.update {
             it.copy(
-                queue = entries,
-                index = if (entries.isEmpty()) -1 else c.currentMediaItemIndex,
+                queue = queue,
+                index = if (queue.isEmpty()) -1 else c.currentMediaItemIndex,
                 isPlaying = c.isPlaying,
                 position = c.currentPosition.coerceAtLeast(0) / 1000.0,
                 duration = if (c.duration == C.TIME_UNSET) it.current?.duration ?: 0.0 else c.duration / 1000.0,

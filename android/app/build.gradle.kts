@@ -1,3 +1,11 @@
+// One version for every platform: the Mac app's MARKETING_VERSION in project.yml.
+// "1.11" → versionCode 11100 ("1.11.2" → 11102), so every release installs over the last.
+val nuvaVersion: String = Regex("""MARKETING_VERSION:\s*"([\d.]+)"""")
+    .find(rootProject.file("../project.yml").readText())!!.groupValues[1]
+val nuvaVersionCode: Int = nuvaVersion.split('.').map { it.toInt() }.let { v ->
+    v.getOrElse(0) { 0 } * 10000 + v.getOrElse(1) { 0 } * 100 + v.getOrElse(2) { 0 }
+}
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -13,8 +21,22 @@ android {
         // Android 8.1: the first with the system's own FLAC decoder.
         minSdk = 27
         targetSdk = 35
-        versionCode = 2
-        versionName = "0.2"
+        versionCode = nuvaVersionCode
+        versionName = nuvaVersion
+    }
+
+    // The release key stays on the author's Mac, never in the repository: scripts/make-apk.sh
+    // passes its path and password (from the Keychain) as environment variables.
+    signingConfigs {
+        create("release") {
+            val store = System.getenv("NUVA_KEYSTORE")
+            if (store != null) {
+                storeFile = file(store)
+                storePassword = System.getenv("NUVA_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("NUVA_KEY_ALIAS") ?: "nuva"
+                keyPassword = System.getenv("NUVA_KEYSTORE_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
@@ -22,6 +44,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+            if (System.getenv("NUVA_KEYSTORE") != null) signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

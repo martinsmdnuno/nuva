@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <!-- Builds for Windows from macOS or Linux too. -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <!-- The same version as the Mac app: MARKETING_VERSION in project.yml. -->
+    <NuVaVersion>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)../project.yml')), 'MARKETING_VERSION:\s*"([^"]+)"').Groups[1].Value)</NuVaVersion>
+    <Version>$(NuVaVersion)</Version>
+    <Product>NuVa</Product>
+    <Company>Nuno Martins</Company>
+    <Copyright>© Nuno Martins · MIT License</Copyright>
+    <SatelliteResourceLanguages>en;pt</SatelliteResourceLanguages>
+  </PropertyGroup>
+</Project>

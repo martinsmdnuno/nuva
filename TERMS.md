@@ -23,6 +23,8 @@ NuVa only connects to the internet in these cases:
 
 **NuVa for Android TV** goes online in the same cases: your Jellyfin server, MusicBrainz and the Cover Art Archive (only with **Show Artwork** on), and GitHub at most once a day. It signs in to Jellyfin with your password once and keeps only the server's access token, never the password. Its settings, the queue and where you left off stay on the TV.
 
+**NuVa for Windows** goes online in the same cases as on the Mac: your Jellyfin server, MusicBrainz and the Cover Art Archive (with **Show Artwork** on, and for an audio CD it hasn't seen before), and GitHub at most once a day. Your Jellyfin password is kept in Windows Credential Manager. Its settings stay in your user's AppData folder, and covers, CD names and a log of what the app did (for when something goes wrong; it is only sent if you send it) stay on your computer.
+
 These services have their own terms and privacy policies: [MusicBrainz](https://metabrainz.org/privacy), [Internet Archive](https://archive.org/about/terms.php) (which hosts the Cover Art Archive) and [GitHub](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
 
 ## Album artwork
@@ -31,7 +33,7 @@ Album covers belong to their owners. NuVa shows them only on your Mac, as a refe
 
 ## Third parties
 
-Fonts: Inter, IBM Plex, DM Sans and DM Mono, and Share Tech, under the SIL Open Font License. NuVa plays audio through Apple's own frameworks; NuVa for Android TV through Android's own decoders, with AndroidX Media3.
+Fonts: Inter, IBM Plex, DM Sans and DM Mono, and Share Tech, under the SIL Open Font License. NuVa plays audio through Apple's own frameworks; NuVa for Android TV through Android's own decoders, with AndroidX Media3; NuVa for Windows through Windows' own Media Foundation and audio engine.
 
 ## Contact
 
@@ -64,6 +66,8 @@ A NuVa só se liga à internet nestes casos:
 
 A **NuVa para Android TV** vai à internet nos mesmos casos: o teu servidor Jellyfin, o MusicBrainz e o Cover Art Archive (só com **Mostrar capas** ligado) e o GitHub no máximo uma vez por dia. Entra no Jellyfin com a tua palavra-passe uma vez e guarda apenas a chave de acesso do servidor, nunca a palavra-passe. As definições, a fila e o ponto onde ficaste ficam na TV.
 
+A **NuVa para Windows** vai à internet nos mesmos casos que no Mac: o teu servidor Jellyfin, o MusicBrainz e o Cover Art Archive (com **Mostrar capas** ligado, e para um CD áudio que ainda não conhece) e o GitHub no máximo uma vez por dia. A palavra-passe do Jellyfin fica no Gestor de Credenciais do Windows. As definições ficam na pasta AppData do teu utilizador, e as capas, os nomes dos CDs e um registo do que a app fez (para quando algo corre mal; só é enviado se tu o enviares) ficam no teu computador.
+
 Estes serviços têm os seus próprios termos e políticas de privacidade: [MusicBrainz](https://metabrainz.org/privacy), [Internet Archive](https://archive.org/about/terms.php) (que aloja o Cover Art Archive) e [GitHub](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement).
 
 ## Capas dos álbuns
@@ -72,7 +76,7 @@ As capas pertencem aos seus donos. A NuVa mostra-as apenas no teu Mac, como refe
 
 ## Terceiros
 
-Fontes: Inter, IBM Plex, DM Sans e DM Mono, e Share Tech, com a SIL Open Font License. A NuVa toca áudio através das frameworks da própria Apple; a NuVa para Android TV através dos descodificadores do próprio Android, com o AndroidX Media3.
+Fontes: Inter, IBM Plex, DM Sans e DM Mono, e Share Tech, com a SIL Open Font License. A NuVa toca áudio através das frameworks da própria Apple; a NuVa para Android TV através dos descodificadores do próprio Android, com o AndroidX Media3; a NuVa para Windows através do Media Foundation e do motor de áudio do próprio Windows.
 
 ## Contacto
 

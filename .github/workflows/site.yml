@@ -1,0 +1,38 @@
+# Publishes site/ to GitHub Pages (nuva.martinsnuno.com) when it changes on main.
+name: Site
+
+on:
+  push:
+    branches: [main]
+    paths: ["site/**", ".github/workflows/site.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check that the placeholders are filled in
+        run: |
+          if grep -rl -e WEB3FORMS_ACCESS_KEY -e CONTACT_EMAIL site; then
+            echo "::error::Fill in the feedback key and the contact email before publishing."
+            exit 1
+          fi
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

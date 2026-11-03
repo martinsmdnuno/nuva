@@ -69,5 +69,13 @@ In `docs/design-system/`. Read `README.md` and `tokens.json` before any UI work,
 ## Releases
 - Bump `MARKETING_VERSION` in `project.yml`, commit "Version X", run `scripts/make-dmg.sh` (writes `dist/NuVa-X.dmg` and `dist/NuVa.dmg`).
 - Tag `vX`, push, `gh release create vX dist/NuVa.dmg dist/NuVa-X.dmg`, and add the version to `CHANGELOG.md`.
+- Run `scripts/update-site.sh` (version and dates on the site) and bring `site/` up to date with any new feature, in both languages, like the README.
 - `releases/latest/download/NuVa.dmg` is the fixed download link in the README.
 - README images: `NuVa --snapshot -AppleLanguages '(en)'` from a Debug build, then `swift scripts/make-readme-images.swift <snapshot folder> docs/screenshots`.
+
+## Site
+- nuva.martinsnuno.com, static, in `site/` (English at `/`, Portuguese at `/pt/`, privacy notice at `/privacy/` and `/pt/privacidade/`). Published to GitHub Pages by `.github/workflows/site.yml` on every push to main that touches `site/`.
+- Same tokens and type as the app (Lead, Aluminium when the system is light; Inter and IBM Plex Mono subset to WOFF2 and served from the site). Images are WebP copies of `docs/screenshots`.
+- EU rules: no cookies, no local storage, no analytics, nothing loaded from other hosts. Any new third party (a form service, a font, an embed) needs the privacy notice updated in both languages first.
+- SEO and GEO: titles and descriptions, hreflang, JSON-LD (`SoftwareApplication` and `FAQPage`, kept equal to the visible FAQ), `sitemap.xml`, `robots.txt` and `llms.txt`.
+- Feedback form: Web3Forms, sent to the author's email. The workflow refuses to publish while the access key or the contact email is a placeholder.

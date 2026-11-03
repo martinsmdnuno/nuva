@@ -54,6 +54,37 @@ struct SpectrumTests {
         #expect(shared.levels(at: 11) == nil)
     }
 
+    @Test func lookupBlendsTheMeasurementsAroundTheTime() {
+        let shared = SpectrumShared()
+        let a: [Float] = Array(repeating: -10, count: SpectrumShared.bands)
+        let b: [Float] = Array(repeating: -30, count: SpectrumShared.bands)
+        a.withUnsafeBufferPointer { shared.write(time: 10, levels: $0, stereo: SIMD4(repeating: -10)) }
+        b.withUnsafeBufferPointer { shared.write(time: 10.1, levels: $0, stereo: SIMD4(repeating: -30)) }
+        let halfway = try? #require(shared.levels(at: 10.05))
+        #expect(halfway?.allSatisfy { abs($0 + 20) < 0.01 } == true)
+        #expect(shared.stereo(at: 10.075).map { abs($0[0] + 25) < 0.01 } == true)
+    }
+
+    @Test func aLargeBlockIsMeasuredEverySixtiethOfASecond() throws {
+        let sampleRate = 48_000.0
+        let analyzer = try #require(SpectrumAnalyzer(sampleRate: sampleRate))
+        let shared = SpectrumShared()
+        // Six hops of 800 frames in one block, as the player hands them over.
+        let frames = 4800
+        let list = AudioBufferList.allocate(maximumBuffers: 1)
+        defer { list.unsafeMutablePointer.deallocate() }
+        let samples = UnsafeMutablePointer<Float>.allocate(capacity: frames)
+        defer { samples.deallocate() }
+        samples.initialize(repeating: 0.1, count: frames)
+        list[0] = AudioBuffer(mNumberChannels: 1, mDataByteSize: UInt32(frames * 4), mData: samples)
+        analyzer.process(list, frames: frames, end: 1, into: shared)
+        // Each measurement is centred half a 2048-frame window before the end of its hop.
+        for k in 0..<6 {
+            let time = 1 - Double(k * 800) / sampleRate - 1024 / sampleRate
+            #expect(shared.levels(at: time, tolerance: 0.0001) != nil)
+        }
+    }
+
     @Test func stereoLevelsAreStoredWithTheBands() {
         let shared = SpectrumShared()
         let bands: [Float] = Array(repeating: -20, count: SpectrumShared.bands)

@@ -29,6 +29,7 @@
       "asset": "NuVa-AndroidTV.apk",
       "buildScript": "scripts/make-apk.sh",
       "termsMention": "Android TV",
+      "releaseNote": "On the TV, open the Downloader app and type `nuva.martinsnuno.com/tv`.",
       "requires": { "en": ["Android TV 8.1 or later"], "pt": ["Android TV 8.1 ou posterior"] },
       "schemaOS": { "en": "Android TV 8.1 or later", "pt": "Android TV 8.1 ou posterior" },
       "badge": {

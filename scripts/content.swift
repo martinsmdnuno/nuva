@@ -2,6 +2,9 @@
 // Keeps the GitHub page, the site and llms.txt in step with docs/features.json.
 //   swift scripts/content.swift           writes every generated block
 //   swift scripts/content.swift --check   changes nothing; fails if a block is stale or the touchpoints disagree
+//   swift scripts/content.swift --assets  prints build script, fixed and versioned file of each released platform
+//   swift scripts/content.swift --title   prints this version's release title, from CHANGELOG.md
+//   swift scripts/content.swift --notes   prints this version's release notes: its CHANGELOG.md entry and the downloads
 // A generated block sits between <!-- nuva:NAME --> and <!-- /nuva:NAME -->; the text around it is written by hand.
 import Foundation
 
@@ -16,6 +19,7 @@ struct Platform: Decodable {
     let asset: String
     let buildScript: String
     let termsMention: String?
+    let releaseNote: String?
     let requires: Localized<[String]>
     let schemaOS: Localized<String>
     let badge: BadgeSet
@@ -66,6 +70,35 @@ let version = read("project.yml").flatMap { yml in
 } ?? "?"
 let shown = matrix.platforms.filter(\.public)
 let released = matrix.platforms.filter(\.released)
+
+// MARK: - Release (read-only modes for scripts/release.sh)
+
+/// "NuVa.dmg" → "NuVa-1.11.dmg": the file the update notices look for.
+func versioned(_ asset: String) -> String {
+    let ext = (asset as NSString).pathExtension
+    return (asset as NSString).deletingPathExtension + "-\(version)." + ext
+}
+/// The CHANGELOG.md entry for this version: its heading and its text.
+func changelogEntry() -> (title: String, body: String)? {
+    guard let log = read("CHANGELOG.md") else { return nil }
+    let entries = log.components(separatedBy: "\n## ").dropFirst()
+    guard let entry = entries.first(where: { $0.hasPrefix(version + " ") || $0.hasPrefix(version + "\n") }) else { return nil }
+    let lines = entry.split(separator: "\n", omittingEmptySubsequences: false)
+    return (String(lines[0]), lines.dropFirst().joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines))
+}
+if CommandLine.arguments.contains("--assets") {
+    for p in released { print([p.buildScript, p.asset, versioned(p.asset)].joined(separator: "\t")) }
+    exit(0)
+}
+if CommandLine.arguments.contains("--title") || CommandLine.arguments.contains("--notes") {
+    guard let entry = changelogEntry() else { print("CHANGELOG.md has no entry for \(version)"); exit(1) }
+    if CommandLine.arguments.contains("--title") { print(entry.title); exit(0) }
+    let downloads = released.filter(\.public).map { p in
+        "- \(p.name.en): **\(p.asset)** (\(p.requires.en.joined(separator: ", ")))." + (p.releaseNote.map { " " + $0 } ?? "")
+    }
+    print(entry.body + "\n\n**Download**\n" + downloads.joined(separator: "\n"))
+    exit(0)
+}
 
 // MARK: - The matrix itself
 

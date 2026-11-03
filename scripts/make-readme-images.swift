@@ -170,8 +170,8 @@ framed([(snapshot("player-graphite-orange"), .window(dark: true)), (snapshot("pl
 framed([(snapshot("player-capa-chumbo"), .window(dark: true)), (snapshot("barra-capa-aluminio"), .popover)],
        name: "artwork.png")
 
-// Ambient mode: four faces, two by two, as full screens (the last one in Phosphor).
-let faces = ["ponteiros-chumbo", "valvulas-chumbo", "ecra-chumbo", "espectro-phosphor"].map { snapshot("ambiente-\($0)") }
+// Ambient mode: four faces, two by two, as full screens (the third with a cover's glow, the last in Phosphor).
+let faces = ["ponteiros-chumbo", "valvulas-chumbo", "capa-chumbo", "espectro-phosphor"].map { snapshot("ambiente-\($0)") }
 let faceK = 0.34
 let face = framedSize(faces[0], .popover, k: faceK)
 let (facePad, faceGap) = (110.0, 64.0)

@@ -166,6 +166,10 @@ framed([(snapshot("equalizador-chumbo"), .popover)], name: "equalizer.png")
 framed([(snapshot("barra-chumbo"), .popover)], name: "menubar.png")
 framed([(snapshot("player-graphite-orange"), .window(dark: true)), (snapshot("player-phosphor"), .window(dark: true))],
        name: "skins.png")
+// The embedded font pairs, each in its skin: Plex in Rams, DM in Graphite Orange, Share Tech in Phosphor.
+framed([(snapshot("player-plex-chumbo"), .window(dark: true)), (snapshot("player-dm-graphite-orange"), .window(dark: true)),
+        (snapshot("player-sharetech-phosphor"), .window(dark: true))],
+       name: "fonts.png")
 framed([(snapshot("player-capa-chumbo"), .window(dark: true)), (snapshot("barra-capa-aluminio"), .popover)],
        name: "artwork.png")
 

@@ -58,7 +58,9 @@ NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that
 
 <p align="center"><img src="docs/screenshots/skins.png" width="760" alt="NuVa in the Graphite Orange and Phosphor skins"></p>
 
-The look above is the **Rams** skin. **Graphite Orange** is always dark, with a single bright orange accent on the play key, the lights and the playing track. **Phosphor** is a nod to the shareware players of the late nineties: a black screen with green text and a blue-grey chassis. Switch in **View › Skin** (⌥⌘1 to ⌥⌘3) or from the mini player. Skins change colours only: the keys, the layout and the shortcuts stay where your hands expect them. **View › Font** picks Inter + IBM Plex Mono or Apple's SF Pro + SF Mono.
+The look above is the **Rams** skin. **Graphite Orange** is always dark, with a single bright orange accent on the play key, the lights and the playing track. **Phosphor** is a nod to the shareware players of the late nineties: a black screen with green text and a blue-grey chassis. Switch in **View › Skin** (⌥⌘1 to ⌥⌘3) or from the mini player. Skins change colours only: the keys, the layout and the shortcuts stay where your hands expect them. **View › Font** picks the type, in five pairs: Inter + IBM Plex Mono, Apple's SF Pro + SF Mono, and three chosen for the skins: **IBM Plex Sans** for Rams, **DM Sans** for Graphite Orange and **Share Tech**, a digital readout, for Phosphor.
+
+<p align="center"><img src="docs/screenshots/fonts.png" width="760" alt="IBM Plex Sans in Rams, DM Sans in Graphite Orange and Share Tech in Phosphor"></p>
 
 ## Ambient mode, for the room
 
@@ -199,7 +201,7 @@ open NuVa.xcodeproj
 
 ## Credits
 
-Type: [Inter](https://github.com/rsms/inter) and [IBM Plex Mono](https://github.com/IBM/plex), both under the SIL Open Font License. Built with [Claude Code](https://claude.com/claude-code).
+Type: [Inter](https://github.com/rsms/inter), [IBM Plex](https://github.com/IBM/plex), [DM Sans and DM Mono](https://github.com/googlefonts/dm-fonts) and [Share Tech](https://fonts.google.com/specimen/Share+Tech), all under the SIL Open Font License. Built with [Claude Code](https://claude.com/claude-code).
 
 [MIT](LICENSE) © 2026 Nuno Martins
 
@@ -222,7 +224,7 @@ Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colun
 - **AirPlay 2.** WiiM, HomePod, Apple TV ou qualquer coluna AirPlay: carrega na saída que aparece no visor.
 - **Jellyfin sem confusão.** Navega pelas pastas reais do servidor e toca os ficheiros originais.
 - **Uma janela pequena.** As pastas aparecem no lugar da fila (⌘B troca as duas) e há um modo compacto. A janela estica na vertical para veres o álbum inteiro, e na horizontal para nomes compridos.
-- **Skins:** Rams (claro ou escuro, como o sistema), Graphite Orange e Phosphor (sempre escuras), em Visualização › Skin. Fonte Inter + IBM Plex Mono ou SF Pro + SF Mono, em Visualização › Fonte.
+- **Skins:** Rams (claro ou escuro, como o sistema), Graphite Orange e Phosphor (sempre escuras), em Visualização › Skin. Cinco pares de fontes em Visualização › Fonte: Inter + IBM Plex Mono, SF Pro + SF Mono, IBM Plex Sans (para a Rams), DM Sans (para a Graphite Orange) e Share Tech (para a Phosphor).
 - **Modo Ambiente** (⌘4): o ecrã inteiro passa a ser o mostrador da NuVa, na skin atual. Seis faces, ← → trocam: a faixa e o tempo em grande, um relógio, o espectro de 28 bandas, os medidores esquerdo e direito, dois VU de ponteiro que se mexem como os verdadeiros e duas válvulas que acendem com cada canal, a 120 Hz nos ecrãs que o têm. Com as capas ligadas, o ecrã ganha as cores do álbum, num brilho desfocado feito da própria capa; na face do ecrã, respira com os graves. Esc sai. Pode ir para outro ecrã ou uma TV. Protege ecrãs OLED: a imagem desloca-se devagar, o que é fixo fica mais escuro, a face muda a cada 20 minutos e, ao fim de uma hora sem mexer, só fica uma pequena luz.
 - **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A). Usa a imagem da pasta (`cover`, `folder`, `front`, `album` ou `capa`); se não houver, procura no MusicBrainz pelo nome das pastas. Nunca das tags. Capa errada ou em falta: carrega na capa e corrige o artista ou o álbum, ou escolhe uma imagem. Desligado por defeito.
 - **CDs áudio, como um leitor de CDs.** Mete um disco no leitor e a NuVa toca-o logo. Os nomes do álbum e das faixas vêm do MusicBrainz, pelo índice do disco (um CD não traz nomes). Ejetar com ⌘E. Para abrir a NuVa sempre que entra um CD: Definições do Sistema › CDs e DVDs › Ao inserir um CD de música › Abrir outra aplicação… › NuVa.

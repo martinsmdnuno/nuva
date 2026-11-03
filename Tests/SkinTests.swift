@@ -1,4 +1,5 @@
 import AppKit
+import SwiftUI
 import Testing
 @testable import NuVa
 
@@ -128,6 +129,18 @@ struct SkinTests {
     @Test(arguments: Skin.all) func errorReadsOnTheDisplay(skin: Skin) {
         let r = ratio(skin, .danger, .display, dark)
         #expect(r >= 4.5, "\(skin.id): danger on display is \(r)")
+    }
+
+    @Test func everyFontSetIsBundledAndLoads() {
+        Typography.registerFonts()
+        for set in FontSet.allCases {
+            if let family = set.sans {
+                #expect(NSFontManager.shared.availableMembers(ofFontFamily: family) != nil, "\(family)")
+            }
+            for weight in [Font.Weight.light, .regular, .medium] {
+                if let face = set.mono(weight) { #expect(NSFont(name: face, size: 13) != nil, "\(face)") }
+            }
+        }
     }
 
     @Test func retiredSkinsOpenAsTheirSuccessor() {

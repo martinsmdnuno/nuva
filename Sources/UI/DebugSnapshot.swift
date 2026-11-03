@@ -55,6 +55,10 @@ enum DebugSnapshot {
             (.rams, .system, "-sf", main, bothThemes),
             (.graphiteOrange, .system, "", main, [(.dark, Skin.graphiteOrange.id)]),
             (.phosphor, .inter, "", main, [(.dark, Skin.phosphor.id)]),
+            // Each embedded pair in the skin it was chosen for.
+            (.rams, .plex, "-plex", ["player"], bothThemes),
+            (.graphiteOrange, .dm, "-dm", ["player"], [(.dark, Skin.graphiteOrange.id)]),
+            (.phosphor, .shareTech, "-sharetech", ["player", "ambiente-ecra"], [(.dark, Skin.phosphor.id)]),
         ]
         // Load the user's saved skin now, so it can't replace the one being drawn when a view
         // first reads the store.

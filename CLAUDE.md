@@ -54,7 +54,7 @@ Out (for now): generic server source, search, favourites, accounts.
 ## Design system
 In `docs/design-system/`. Read `README.md` and `tokens.json` before any UI work, and the component's file in `components/` before building it.
 - Colours: one `Color` per token in `Assets.xcassets` (Any variant = Aluminium, Dark = Lead), named like the tokens.
-- Type: Inter and IBM Plex Mono embedded in the app (OFL, Google Fonts files); falls back to SF Pro/SF Mono if missing. Font sets (View ▸ Font): Inter + Plex Mono or SF Pro + SF Mono; text styles are computed `Font.ds…` properties that read the current set, so never use `Typography.sans/mono` directly in views.
+- Type: Inter, IBM Plex (Sans, Mono), DM Sans + DM Mono and Share Tech + Share Tech Mono embedded in the app (OFL, Google Fonts files); falls back to SF Pro/SF Mono if missing. Font sets (View ▸ Font, `FontSet`): Inter + Plex Mono (default), SF Pro + SF Mono, IBM Plex Sans + Plex Mono, DM Sans + DM Mono, Share Tech + Share Tech Mono; text styles are computed `Font.ds…` properties that read the current set, so never use `Typography.sans/mono` directly in views.
 - Dieter Rams language in Lead: one plane, no cards or outlines, hierarchy from key colour, state shown by LEDs.
 - Keys: a single `ButtonStyle` (`KeyButtonStyle`) with three tones: play, transport, mode.
 - Interface text in European Portuguese and English, following the system language (English fallback). The Portuguese text is the key in `Resources/Localizable.xcstrings`; every new string gets its English translation there. Text that goes through `String` (ternaries, parameters, model) uses `String(localized:)`.

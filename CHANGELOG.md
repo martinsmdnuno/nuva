@@ -7,6 +7,7 @@
 - **Spectrum**: the bass is measured over a longer window, so the lowest bars move on their own instead of together; peak caps hold, then fall faster and faster, like a hi-fi analyser's.
 - The album glow is now made from the cover itself: its colours, in their places, blurred into a soft field behind the face. Every cover glows, dark and grey ones too. On the Display face it breathes with the bass (not with Reduce Motion).
 - Album covers are found for artist folders with a title, such as "Ms. Lauryn Hill".
+- Three new font pairs in **View › Font**, each chosen for a skin: IBM Plex Sans + Plex Mono (Rams), DM Sans + DM Mono (Graphite Orange) and Share Tech + Share Tech Mono (Phosphor, a digital readout). Skins keep their default type.
 - Graphite Green is retired; if you used it, NuVa opens in Graphite Orange. Skins are now ⌥⌘1 to ⌥⌘3. Phosphor is called Phosphor in Portuguese too.
 
 ## 1.10 — smoother meters and the album's colour

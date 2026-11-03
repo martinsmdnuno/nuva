@@ -16,7 +16,7 @@ The root `CLAUDE.md` holds for this app too: its principles, the parity matrix a
 - A Mac change to shared logic (EQ, spectrum, artwork rules, Jellyfin parsing, disc IDs) is ported to `NuVa.Core` in the same spirit, with the matching test in `NuVa.Core.Tests`.
 
 ## Design
-- Same design system as the Mac (`docs/design-system/`): read it before UI work. `Skin.cs` holds every token for every skin; Rams follows Windows' app mode (Aluminium light, Lead dark).
+- Same design system as the Mac (`docs/design-system/`): read it before UI work. Every skin's value for every token is in `NuVa.Core/TokenPalettes.cs`, written by `scripts/tokens.swift` from `docs/design-system/tokens.json` (never by hand); `Skin.cs` reads it. Rams follows Windows' app mode (Aluminium light, Lead dark).
 - Fonts embedded (OFL). WPF draws only a variable font's default instance, so Inter and DM Sans are static Regular and Medium instances made with fontTools; IBM Plex Sans keeps its variable file (its Reserved Font Name forbids a modified copy) and draws at Regular. SF Pro + SF Mono becomes Segoe UI + Cascadia Mono.
 - Icons are NuVa's own vectors after the SF Symbols (`UI/Icons.cs`, as `android/…/ui/Icons.kt`).
 - Text: the Portuguese is the key, its English in `NuVa.Core/Strings.json`; `StringTests` fails on a key without English.

@@ -9,7 +9,6 @@ namespace NuVa;
 // The features that arrive step by step (see docs/plans/windows.md). Each fills in its part here.
 public sealed partial class App
 {
-    public bool AmbientOpen => false;
     public Guid? EjectableDisc => null;
 
     public void DeviceChanged(int kind, IntPtr data) { }
@@ -17,7 +16,5 @@ public sealed partial class App
     public void EjectDisc(Guid? id) { }
     public void CheckForUpdates() { }
     public void ShowTerms() { }
-    public void ToggleAmbient() { }
-    public void FillAmbientOptions(MenuItem options) => options.IsEnabled = false;
 
 }

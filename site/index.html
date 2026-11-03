@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-platform="mac">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -48,7 +48,7 @@
       "isAccessibleForFree": true,
       "inLanguage": ["en", "pt-PT"],
       "image": "https://nuva.martinsnuno.com/icon-512.png",
-      "screenshot": ["https://nuva.martinsnuno.com/img/themes.webp", "https://nuva.martinsnuno.com/img/ambient.webp", "https://nuva.martinsnuno.com/img/skins.webp"],
+      "screenshot": ["https://nuva.martinsnuno.com/img/themes.webp", "https://nuva.martinsnuno.com/img/ambient.webp", "https://nuva.martinsnuno.com/img/skins.webp", "https://nuva.martinsnuno.com/img/tv.webp", "https://nuva.martinsnuno.com/img/tv-ambient.webp"],
       "featureList": ["Plays music folders as they are; never reorganises by tags", "FLAC, ALAC, WAV, AIFF, MP3 and AAC through AVFoundation", "AirPlay 2 output (WiiM, HomePod, Apple TV)", "Jellyfin client that browses by folder and streams the original file", "Local folders, external disks, NAS over SMB and audio CDs", "10-band equalizer and spectrum meter", "Full-screen ambient mode with VU meters, valves and spectrum", "Android TV app with the same player, equalizer and ambient faces, for Jellyfin", "Media keys, Control Center and keyboard shortcuts", "English and Portuguese"],
       "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
       "author": {"@type": "Person", "name": "Nuno Martins", "url": "https://github.com/martinsmdnuno"},
@@ -90,9 +90,20 @@
 <main id="main">
   <div class="wrap hero">
     <h1>Your music folders, played as they are.</h1>
-    <p class="lede">NuVa is a small, free music player for the Mac. It plays FLAC through Apple's own audio engine, sends it to your AirPlay speakers, and browses your folders and your Jellyfin server exactly as you named them.</p>
-    <div class="keys">
+    <p class="lede" data-for="mac">NuVa is a small, free music player for the Mac. It plays FLAC through Apple's own audio engine, sends it to your AirPlay speakers, and browses your folders and your Jellyfin server exactly as you named them.</p>
+    <p class="lede" data-for="tv">NuVa for Android TV is the same small, free player for the living room. It plays your Jellyfin server by its real folders, FLAC and 24-bit included, through Android's own player.</p>
+    <div class="platforms" role="group" aria-label="Platform" hidden>
       <div class="group">
+        <span class="led" aria-hidden="true"></span>
+        <button class="key mode" type="button" data-platform="mac" aria-pressed="true">Mac</button>
+      </div>
+      <div class="group">
+        <span class="led" aria-hidden="true"></span>
+        <button class="key mode" type="button" data-platform="tv" aria-pressed="false">Android TV</button>
+      </div>
+    </div>
+    <div class="keys">
+      <div class="group" data-for="mac">
         <span class="led on" aria-hidden="true"></span>
         <a class="key play" href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>
@@ -100,13 +111,13 @@
         </a>
         <span class="legend">download</span>
       </div>
-      <div class="group">
-        <span class="led" aria-hidden="true"></span>
-        <a class="key mode" href="#tv">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="1.5"/><path d="M8 21h8"/></svg>
-          Android TV
+      <div class="group" data-for="tv">
+        <span class="led on" aria-hidden="true"></span>
+        <a class="key play" href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>
+          Download for Android TV
         </a>
-        <span class="legend">tv</span>
+        <span class="legend">download</span>
       </div>
       <div class="group">
         <span class="led" aria-hidden="true"></span>
@@ -118,10 +129,15 @@
       </div>
     </div>
     <!-- nuva:meta -->
-    <p class="meta">Version <span class="version">1.11</span> · macOS 14 or later · Apple silicon and Intel · Android TV 8.1 or later · free, MIT</p>
+    <p class="meta" data-for="mac">Version <span class="version">1.11</span> · macOS 14 or later · Apple silicon and Intel · free, MIT</p>
+    <p class="meta" data-for="tv">Version <span class="version">1.11</span> · Android TV 8.1 or later · free, MIT</p>
     <!-- /nuva:meta -->
-    <figure class="shot">
+    <p class="meta tv-hint" data-for="tv">On the TV: open the Downloader app and type <code>nuva.martinsnuno.com/tv</code></p>
+    <figure class="shot" data-for="mac">
       <img src="/img/themes.webp" width="1600" height="1259" alt="NuVa's window in the dark Lead and light Aluminium themes: a display showing FLAC 24/48 playing over AirPlay to a WiiM, the keys, and the queue">
+    </figure>
+    <figure class="shot" data-for="tv">
+      <img src="/img/tv.webp" width="1600" height="942" loading="lazy" alt="NuVa on Android TV: the display with Dreams playing in FLAC 16/44.1 and the spectrum, the keys, and the queue of six tracks">
     </figure>
   </div>
 
@@ -131,27 +147,51 @@
       <h2>Made for music kept in folders</h2>
       <p class="muted" style="max-width: 40em; margin-bottom: 40px;">You spent years naming your folders and files just right. Most players throw that away and rebuild your library from tags, so remixes, covers and live sets end up scattered across albums you've never heard of. NuVa doesn't.</p>
       <div class="features">
-        <div>
+        <div data-for="mac">
           <h3>Your folders, untouched</h3>
           <p>A folder is an album, a file is a track. No import, no tag scanning, no library rebuilt behind your back. Natural sort order, so track 2 comes before track 10.</p>
         </div>
-        <div>
+        <div data-for="tv">
+          <h3>Your server's folders, untouched</h3>
+          <p>NuVa browses Jellyfin by the folders on the server's disk, never by its tags. A folder is an album, a file is a track, in natural order: track 2 comes before track 10.</p>
+        </div>
+        <div data-for="mac">
           <h3>FLAC on a Mac, natively</h3>
           <p>Apple's Music app won't open FLAC. NuVa plays FLAC, ALAC, WAV, AIFF, MP3 and AAC through AVFoundation, the engine behind QuickTime. No bundled codecs, no surprises over Bluetooth.</p>
         </div>
-        <div>
+        <div data-for="tv">
+          <h3>FLAC on the TV, natively</h3>
+          <p>FLAC, 24-bit included, MP3 and AAC, through Android's own player and decoders. NuVa streams the original file, so a FLAC stays a FLAC.</p>
+        </div>
+        <div data-for="mac">
           <h3>AirPlay 2 to your hi-fi</h3>
           <p>Send the sound to a WiiM streamer, a HomePod, an Apple TV or any AirPlay 2 speaker: click where the display says the sound is going.</p>
         </div>
-        <div>
+        <div data-for="tv">
+          <h3>The remote does everything</h3>
+          <p>Play, pause, skip and seek from the remote. Hold OK to add a folder or a track to the queue, or to move and remove it; Back asks before leaving.</p>
+        </div>
+        <div data-for="mac">
           <h3>Jellyfin, by folder</h3>
           <p>Sign in to your Jellyfin server and browse it by its real folders, not its tags. NuVa streams the original file, so a FLAC stays a FLAC.</p>
         </div>
-        <div>
+        <div data-for="tv">
+          <h3>An equalizer and a spectrum</h3>
+          <p>Ten bands and eight presets, opened from EQ on the display. The spectrum on the display moves with what you hear.</p>
+        </div>
+        <div data-for="tv">
+          <h3>Reopens where you were</h3>
+          <p>Turn the TV back on and NuVa is on the same folder, with the same queue and the same track.</p>
+        </div>
+        <div data-for="tv">
+          <h3>Free, no ads</h3>
+          <p>Free and open source under the MIT license, with no ads and no analytics. Your music stays on your server.</p>
+        </div>
+        <div data-for="mac">
           <h3>A NAS, a disk or a CD</h3>
           <p>Folders on your Mac, an external disk or a NAS over SMB. Put in an audio CD and NuVa names the album and its tracks from MusicBrainz.</p>
         </div>
-        <div>
+        <div data-for="mac">
           <h3>Keyboard first</h3>
           <p>Media keys, Control Center, AirPods and a shortcut for everything. Close the window and the music goes on in a mini player in the menu bar.</p>
         </div>
@@ -164,7 +204,8 @@
       <div>
         <p class="label">ambient mode</p>
         <h2>A hi-fi display for the room</h2>
-        <p class="muted">Press ⌘4 and the whole screen becomes NuVa's display, to leave the music playing as part of the room. Drawn at your screen's own rate, up to 120 Hz, and in time with what you hear, AirPlay included.</p>
+        <p class="muted" data-for="tv">Press the display key and the whole TV becomes NuVa's display, to leave the music playing as part of the room. ← and → change the face; any other key brings the player back.</p>
+        <p class="muted" data-for="mac">Press ⌘4 and the whole screen becomes NuVa's display, to leave the music playing as part of the room. Drawn at your screen's own rate, up to 120 Hz, and in time with what you hear, AirPlay included.</p>
         <ul>
           <li>Backlit VU meters whose needles move like real ones</li>
           <li>Valves whose filaments glow with each channel</li>
@@ -173,13 +214,14 @@
           <li>OLED protection, on by default</li>
         </ul>
       </div>
-      <img src="/img/ambient.webp" width="1600" height="1085" loading="lazy" alt="Four ambient faces: two VU meters, two glowing valves, the track and time on a glow from the album cover, and a green 28-band spectrum">
+      <img data-for="tv" src="/img/tv-ambient.webp" width="1600" height="959" loading="lazy" alt="Four ambient faces on Android TV: two VU meters, two glowing valves, the track and time large, and a spectrum">
+      <img data-for="mac" src="/img/ambient.webp" width="1600" height="1085" loading="lazy" alt="Four ambient faces: two VU meters, two glowing valves, the track and time on a glow from the album cover, and a green 28-band spectrum">
     </div>
   </section>
 
   <section id="tv">
-    <div class="wrap split">
-      <img src="/img/tv.webp" width="1600" height="900" loading="lazy" alt="NuVa on Android TV: the display with FLAC playing and the spectrum, the keys, and the queue">
+    <div class="wrap split" data-for="mac">
+      <img src="/img/tv.webp" width="1600" height="942" loading="lazy" alt="NuVa on Android TV: the display with FLAC playing and the spectrum, the keys, and the queue">
       <div>
         <p class="label">android tv</p>
         <h2>On the TV, too</h2>
@@ -193,17 +235,34 @@
         <p class="muted">Open the Downloader app on the TV and type <code>nuva.martinsnuno.com/tv</code>, or <a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk">download the APK</a>.</p>
       </div>
     </div>
+    <div class="wrap split" data-for="tv">
+      <img src="/img/tv-equalizer.webp" width="1600" height="942" loading="lazy" alt="NuVa's equalizer on Android TV: ten bands set by the Rock preset, and the eight presets">
+      <div>
+        <p class="label">android tv</p>
+        <h2>Made for the sofa</h2>
+        <p class="muted">Type large enough to read from across the room, a clear outline on the key the remote is on, and nothing to type once you have signed in to Jellyfin.</p>
+        <ul>
+          <li>Folders on the right, or the queue, a key away</li>
+          <li>The equalizer opens from EQ on the display</li>
+          <li>Skins and font sets, as on the Mac</li>
+          <li>Android TV 8.1 or later, on a box or a TV</li>
+        </ul>
+        <p class="muted">Open the Downloader app on the TV and type <code>nuva.martinsnuno.com/tv</code>, or <a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk">download the APK</a>. NuVa is also <a href="/#mac" data-switch="mac">on the Mac</a>.</p>
+      </div>
+    </div>
   </section>
 
   <section id="design">
     <div class="wrap split">
-      <img src="/img/skins.webp" width="1600" height="1259" loading="lazy" alt="NuVa in the Graphite Orange skin, with an orange play key, and in Phosphor, with green text on a black display">
+      <img data-for="tv" src="/img/tv-skins.webp" width="1600" height="1828" loading="lazy" alt="NuVa on Android TV in the Graphite Orange skin, with an orange play key, and in Phosphor, with green text on a black display">
+      <img data-for="mac" src="/img/skins.webp" width="1600" height="1259" loading="lazy" alt="NuVa in the Graphite Orange skin, with an orange play key, and in Phosphor, with green text on a black display">
       <div>
         <p class="label">design</p>
         <h2>Feels like hardware</h2>
-        <p class="muted">One flat panel, keys that say what they do by their colour, small amber lights for what's on, and a volume knob, after Dieter Rams and classic Braun hi-fi. The display is always dark, like an amplifier's.</p>
+        <p class="muted" data-for="mac">One flat panel, keys that say what they do by their colour, small amber lights for what's on, and a volume knob, after Dieter Rams and classic Braun hi-fi. The display is always dark, like an amplifier's.</p>
+        <p class="muted" data-for="tv">One flat panel, keys that say what they do by their colour and small lights for what's on, after Dieter Rams and classic Braun hi-fi. The display is always dark, like an amplifier's, and the skins are the Mac's.</p>
         <div class="display" aria-hidden="true">
-          <span class="dot">●</span> FLAC 24/96 · AirPlay WiiM<br>
+          <span class="dot">●</span> FLAC 24/96 · <span data-for="mac">AirPlay WiiM</span><span data-for="tv">Jellyfin</span><br>
           <span class="dim">skins</span> Rams · Graphite Orange · Phosphor<br>
           <span class="dim">eq</span> 10 bands · <span class="dim">lang</span> EN · PT
         </div>
@@ -258,10 +317,13 @@
     <div class="wrap narrow">
       <p class="label">open source</p>
       <h2>Built in the open</h2>
-      <p class="muted">NuVa's code is on GitHub under the MIT license, in Swift and SwiftUI with no dependencies. Report a bug or suggest an idea in the issues, or send a pull request. To build it you need Xcode 16 and XcodeGen.</p>
-      <pre><code>brew install xcodegen
+      <p class="muted" data-for="mac">NuVa's code is on GitHub under the MIT license, in Swift and SwiftUI with no dependencies. Report a bug or suggest an idea in the issues, or send a pull request. To build it you need Xcode 16 and XcodeGen.</p>
+      <pre data-for="mac"><code>brew install xcodegen
 xcodegen generate
 open NuVa.xcodeproj</code></pre>
+      <p class="muted" data-for="tv">NuVa's code is on GitHub under the MIT license. The Android TV app is in Kotlin, in the <code>android</code> folder, with Jetpack Compose and AndroidX Media3. Report a bug or suggest an idea in the issues, or send a pull request. To build it you need JDK 17 and the Android SDK.</p>
+      <pre data-for="tv"><code>cd android
+./gradlew assembleDebug</code></pre>
       <p><a class="key mode" href="https://github.com/martinsmdnuno/nuva">Contribute on GitHub</a></p>
     </div>
   </section>
@@ -299,6 +361,7 @@ open NuVa.xcodeproj</code></pre>
   </div>
 </footer>
 
+<script src="/platform.js"></script>
 <script src="/feedback.js" defer></script>
 </body>
 </html>

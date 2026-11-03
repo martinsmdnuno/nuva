@@ -151,11 +151,13 @@ func requirementBadges() -> String {
         "  <img src=\"https://img.shields.io/badge/\($0.label)-2B2D30?style=flat-square\" alt=\"\($0.alt)\">"
     }.joined(separator: "\n")
 }
+/// One line per platform, shown by the site's platform switcher (`data-for` is the platform's id).
 func siteMeta(pt: Bool) -> String {
-    let needs = released.filter(\.public).flatMap { pt ? $0.requires.pt : $0.requires.en }
-    let parts = [pt ? "Versão <span class=\"version\">\(version)</span>" : "Version <span class=\"version\">\(version)</span>"]
-        + needs + [pt ? "gratuita, MIT" : "free, MIT"]
-    return "    <p class=\"meta\">" + parts.joined(separator: " · ") + "</p>"
+    released.filter(\.public).map { p in
+        let parts = [pt ? "Versão <span class=\"version\">\(version)</span>" : "Version <span class=\"version\">\(version)</span>"]
+            + (pt ? p.requires.pt : p.requires.en) + [pt ? "gratuita, MIT" : "free, MIT"]
+        return "    <p class=\"meta\" data-for=\"\(p.id)\">" + parts.joined(separator: " · ") + "</p>"
+    }.joined(separator: "\n")
 }
 func llmsPlatforms() -> String {
     "## What each app does\n\n" + table(pt: false)

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-PT">
+<html lang="pt-PT" data-platform="mac">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -88,9 +88,20 @@
 <main id="main">
   <div class="wrap hero">
     <h1>As tuas pastas de música, tocadas tal como estão.</h1>
-    <p class="lede">A NuVa é um leitor de música pequeno e gratuito para Mac. Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colunas AirPlay e navega nas tuas pastas e no teu servidor Jellyfin exatamente como lhes deste o nome.</p>
-    <div class="keys">
+    <p class="lede" data-for="mac">A NuVa é um leitor de música pequeno e gratuito para Mac. Toca FLAC pelo motor de áudio da própria Apple, envia o som para as tuas colunas AirPlay e navega nas tuas pastas e no teu servidor Jellyfin exatamente como lhes deste o nome.</p>
+    <p class="lede" data-for="tv">A NuVa para Android TV é o mesmo leitor pequeno e gratuito, para a sala. Toca o teu servidor Jellyfin pelas pastas reais, FLAC e 24 bits incluídos, pelo leitor do próprio Android.</p>
+    <div class="platforms" role="group" aria-label="Plataforma" hidden>
       <div class="group">
+        <span class="led" aria-hidden="true"></span>
+        <button class="key mode" type="button" data-platform="mac" aria-pressed="true">Mac</button>
+      </div>
+      <div class="group">
+        <span class="led" aria-hidden="true"></span>
+        <button class="key mode" type="button" data-platform="tv" aria-pressed="false">Android TV</button>
+      </div>
+    </div>
+    <div class="keys">
+      <div class="group" data-for="mac">
         <span class="led on" aria-hidden="true"></span>
         <a class="key play" href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>
@@ -98,13 +109,13 @@
         </a>
         <span class="legend">descarregar</span>
       </div>
-      <div class="group">
-        <span class="led" aria-hidden="true"></span>
-        <a class="key mode" href="#tv">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="1.5"/><path d="M8 21h8"/></svg>
-          Android TV
+      <div class="group" data-for="tv">
+        <span class="led on" aria-hidden="true"></span>
+        <a class="key play" href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>
+          Descarregar para Android TV
         </a>
-        <span class="legend">tv</span>
+        <span class="legend">descarregar</span>
       </div>
       <div class="group">
         <span class="led" aria-hidden="true"></span>
@@ -116,10 +127,15 @@
       </div>
     </div>
     <!-- nuva:meta -->
-    <p class="meta">Versão <span class="version">1.11</span> · macOS 14 ou posterior · Apple silicon e Intel · Android TV 8.1 ou posterior · gratuita, MIT</p>
+    <p class="meta" data-for="mac">Versão <span class="version">1.11</span> · macOS 14 ou posterior · Apple silicon e Intel · gratuita, MIT</p>
+    <p class="meta" data-for="tv">Versão <span class="version">1.11</span> · Android TV 8.1 ou posterior · gratuita, MIT</p>
     <!-- /nuva:meta -->
-    <figure class="shot">
+    <p class="meta tv-hint" data-for="tv">Na TV: abre a app Downloader e escreve <code>nuva.martinsnuno.com/tv</code></p>
+    <figure class="shot" data-for="mac">
       <img src="/img/themes.webp" width="1600" height="1259" alt="A janela da NuVa nos temas Chumbo e Alumínio: o visor mostra um FLAC 24/48 a tocar por AirPlay num WiiM, as teclas e a fila">
+    </figure>
+    <figure class="shot" data-for="tv">
+      <img src="/img/tv.webp" width="1600" height="942" loading="lazy" alt="A NuVa na Android TV: o visor com Dreams a tocar em FLAC 16/44.1 e o espetro, as teclas e uma fila de seis faixas">
     </figure>
   </div>
 
@@ -129,27 +145,51 @@
       <h2>Feita para música guardada em pastas</h2>
       <p class="muted" style="max-width: 40em; margin-bottom: 40px;">Passaste anos a dar o nome certo às pastas e aos ficheiros. A maioria dos leitores deita isso fora e refaz a biblioteca a partir das tags, e os remixes, covers e sets ao vivo acabam espalhados por álbuns que nunca ouviste. A NuVa não.</p>
       <div class="features">
-        <div>
+        <div data-for="mac">
           <h3>As tuas pastas, intactas</h3>
           <p>Uma pasta é um álbum, um ficheiro é uma faixa. Sem importar, sem ler tags, sem uma biblioteca refeita nas tuas costas. Ordem natural: a faixa 2 vem antes da 10.</p>
         </div>
-        <div>
+        <div data-for="tv">
+          <h3>As pastas do servidor, intactas</h3>
+          <p>A NuVa navega no Jellyfin pelas pastas do disco do servidor, nunca pelas tags. Uma pasta é um álbum, um ficheiro é uma faixa, por ordem natural: a faixa 2 vem antes da 10.</p>
+        </div>
+        <div data-for="mac">
           <h3>FLAC no Mac, de forma nativa</h3>
           <p>A app Música da Apple não abre FLAC. A NuVa toca FLAC, ALAC, WAV, AIFF, MP3 e AAC pelo AVFoundation, o motor do QuickTime. Sem codecs embutidos, sem surpresas no Bluetooth.</p>
         </div>
-        <div>
+        <div data-for="tv">
+          <h3>FLAC na TV, de forma nativa</h3>
+          <p>FLAC, 24 bits incluídos, MP3 e AAC, pelo leitor e pelos descodificadores do próprio Android. A NuVa toca o ficheiro original, por isso um FLAC continua a ser um FLAC.</p>
+        </div>
+        <div data-for="mac">
           <h3>AirPlay 2 para a aparelhagem</h3>
           <p>Envia o som para um streamer WiiM, um HomePod, uma Apple TV ou qualquer coluna AirPlay 2: clica onde o visor diz para onde vai o som.</p>
         </div>
-        <div>
+        <div data-for="tv">
+          <h3>O comando faz tudo</h3>
+          <p>Tocar, pausar, saltar e avançar com o comando. Mantém OK carregado para pôr uma pasta ou uma faixa na fila, ou para a mover e tirar; Voltar pergunta antes de sair.</p>
+        </div>
+        <div data-for="mac">
           <h3>Jellyfin, por pastas</h3>
           <p>Entra no teu servidor Jellyfin e navega pelas pastas reais, não pelas tags. A NuVa toca o ficheiro original, por isso um FLAC continua a ser um FLAC.</p>
         </div>
-        <div>
+        <div data-for="tv">
+          <h3>Um equalizador e um espetro</h3>
+          <p>Dez bandas e oito predefinições, que se abrem a partir do EQ no visor. O espetro no visor mexe-se com o que ouves.</p>
+        </div>
+        <div data-for="tv">
+          <h3>Volta a abrir onde estavas</h3>
+          <p>Liga a TV outra vez e a NuVa está na mesma pasta, com a mesma fila e a mesma faixa.</p>
+        </div>
+        <div data-for="tv">
+          <h3>Gratuita, sem anúncios</h3>
+          <p>Gratuita e de código aberto, com a licença MIT, sem anúncios e sem estatísticas. A tua música fica no teu servidor.</p>
+        </div>
+        <div data-for="mac">
           <h3>Um NAS, um disco ou um CD</h3>
           <p>Pastas no teu Mac, num disco externo ou num NAS por SMB. Mete um CD áudio e a NuVa dá nome ao álbum e às faixas a partir do MusicBrainz.</p>
         </div>
-        <div>
+        <div data-for="mac">
           <h3>Teclado primeiro</h3>
           <p>Teclas multimédia, Centro de controlo, AirPods e um atalho para tudo. Fecha a janela e a música continua num mini leitor na barra de menus.</p>
         </div>
@@ -162,7 +202,8 @@
       <div>
         <p class="label">modo ambiente</p>
         <h2>Um visor de hi-fi para a sala</h2>
-        <p class="muted">Carrega em ⌘4 e o ecrã inteiro passa a ser o visor da NuVa, para deixar a música a tocar como parte da sala. Desenhado ao ritmo do teu ecrã, até 120 Hz, e a par do que ouves, também por AirPlay.</p>
+        <p class="muted" data-for="tv">Carrega na tecla do visor e a TV inteira passa a ser o visor da NuVa, para deixar a música a tocar como parte da sala. ← e → mudam a face; qualquer outra tecla traz o leitor de volta.</p>
+        <p class="muted" data-for="mac">Carrega em ⌘4 e o ecrã inteiro passa a ser o visor da NuVa, para deixar a música a tocar como parte da sala. Desenhado ao ritmo do teu ecrã, até 120 Hz, e a par do que ouves, também por AirPlay.</p>
         <ul>
           <li>VU-meters retroiluminados, com ponteiros que se movem como os verdadeiros</li>
           <li>Válvulas cujos filamentos brilham com cada canal</li>
@@ -171,13 +212,14 @@
           <li>Proteção OLED, ligada de origem</li>
         </ul>
       </div>
-      <img src="/img/ambient.webp" width="1600" height="1085" loading="lazy" alt="Quatro faces do modo ambiente: dois VU-meters, duas válvulas acesas, a faixa e o tempo sobre um brilho da capa, e um espectro verde de 28 bandas">
+      <img data-for="tv" src="/img/tv-ambient.webp" width="1600" height="959" loading="lazy" alt="Quatro faces do modo ambiente na Android TV: dois VU-meters, duas válvulas acesas, a faixa e o tempo em grande, e um espetro">
+      <img data-for="mac" src="/img/ambient.webp" width="1600" height="1085" loading="lazy" alt="Quatro faces do modo ambiente: dois VU-meters, duas válvulas acesas, a faixa e o tempo sobre um brilho da capa, e um espectro verde de 28 bandas">
     </div>
   </section>
 
   <section id="tv">
-    <div class="wrap split">
-      <img src="/img/tv.webp" width="1600" height="900" loading="lazy" alt="A NuVa na Android TV: o visor com FLAC a tocar e o espetro, as teclas e a fila">
+    <div class="wrap split" data-for="mac">
+      <img src="/img/tv.webp" width="1600" height="942" loading="lazy" alt="A NuVa na Android TV: o visor com FLAC a tocar e o espetro, as teclas e a fila">
       <div>
         <p class="label">android tv</p>
         <h2>Também na TV</h2>
@@ -191,17 +233,34 @@
         <p class="muted">Abre a app Downloader na TV e escreve <code>nuva.martinsnuno.com/tv</code>, ou <a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk">descarrega o APK</a>.</p>
       </div>
     </div>
+    <div class="wrap split" data-for="tv">
+      <img src="/img/tv-equalizer.webp" width="1600" height="942" loading="lazy" alt="O equalizador da NuVa na Android TV: dez bandas com a predefinição Rock, e as oito predefinições">
+      <div>
+        <p class="label">android tv</p>
+        <h2>Feita para o sofá</h2>
+        <p class="muted">Letra grande para ler do outro lado da sala, um contorno claro na tecla onde está o comando, e nada para escrever depois de entrares no Jellyfin.</p>
+        <ul>
+          <li>As pastas à direita, ou a fila, à distância de uma tecla</li>
+          <li>O equalizador abre-se a partir do EQ no visor</li>
+          <li>Skins e conjuntos de letra, como no Mac</li>
+          <li>Android TV 8.1 ou posterior, numa box ou numa TV</li>
+        </ul>
+        <p class="muted">Abre a app Downloader na TV e escreve <code>nuva.martinsnuno.com/tv</code>, ou <a href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk">descarrega o APK</a>. A NuVa também existe <a href="/pt/#mac" data-switch="mac">para Mac</a>.</p>
+      </div>
+    </div>
   </section>
 
   <section id="design">
     <div class="wrap split">
-      <img src="/img/skins.webp" width="1600" height="1259" loading="lazy" alt="A NuVa com a skin Graphite Orange, com a tecla de tocar laranja, e com a Phosphor, com texto verde num visor preto">
+      <img data-for="tv" src="/img/tv-skins.webp" width="1600" height="1828" loading="lazy" alt="A NuVa na Android TV com a skin Graphite Orange, com a tecla de tocar laranja, e com a Phosphor, com texto verde num visor preto">
+      <img data-for="mac" src="/img/skins.webp" width="1600" height="1259" loading="lazy" alt="A NuVa com a skin Graphite Orange, com a tecla de tocar laranja, e com a Phosphor, com texto verde num visor preto">
       <div>
         <p class="label">design</p>
         <h2>Parece um aparelho</h2>
-        <p class="muted">Um só painel plano, teclas que dizem o que fazem pela cor, pequenas luzes âmbar para o que está ligado e um botão de volume, à maneira de Dieter Rams e da hi-fi clássica da Braun. O visor é sempre escuro, como o de um amplificador.</p>
+        <p class="muted" data-for="mac">Um só painel plano, teclas que dizem o que fazem pela cor, pequenas luzes âmbar para o que está ligado e um botão de volume, à maneira de Dieter Rams e da hi-fi clássica da Braun. O visor é sempre escuro, como o de um amplificador.</p>
+        <p class="muted" data-for="tv">Um só painel plano, teclas que dizem o que fazem pela cor e pequenas luzes para o que está ligado, à maneira de Dieter Rams e da hi-fi clássica da Braun. O visor é sempre escuro, como o de um amplificador, e as skins são as do Mac.</p>
         <div class="display" aria-hidden="true">
-          <span class="dot">●</span> FLAC 24/96 · AirPlay WiiM<br>
+          <span class="dot">●</span> FLAC 24/96 · <span data-for="mac">AirPlay WiiM</span><span data-for="tv">Jellyfin</span><br>
           <span class="dim">skins</span> Rams · Graphite Orange · Phosphor<br>
           <span class="dim">eq</span> 10 bandas · <span class="dim">língua</span> PT · EN
         </div>
@@ -256,10 +315,13 @@
     <div class="wrap narrow">
       <p class="label">código aberto</p>
       <h2>Feita às claras</h2>
-      <p class="muted">O código da NuVa está no GitHub com a licença MIT, em Swift e SwiftUI, sem dependências. Reporta um erro ou sugere uma ideia nos issues, ou envia um pull request. Para a compilar precisas do Xcode 16 e do XcodeGen.</p>
-      <pre><code>brew install xcodegen
+      <p class="muted" data-for="mac">O código da NuVa está no GitHub com a licença MIT, em Swift e SwiftUI, sem dependências. Reporta um erro ou sugere uma ideia nos issues, ou envia um pull request. Para a compilar precisas do Xcode 16 e do XcodeGen.</p>
+      <pre data-for="mac"><code>brew install xcodegen
 xcodegen generate
 open NuVa.xcodeproj</code></pre>
+      <p class="muted" data-for="tv">O código da NuVa está no GitHub com a licença MIT. A app para Android TV é em Kotlin, na pasta <code>android</code>, com Jetpack Compose e AndroidX Media3. Reporta um erro ou sugere uma ideia nos issues, ou envia um pull request. Para a compilar precisas do JDK 17 e do Android SDK.</p>
+      <pre data-for="tv"><code>cd android
+./gradlew assembleDebug</code></pre>
       <p><a class="key mode" href="https://github.com/martinsmdnuno/nuva">Contribuir no GitHub</a></p>
     </div>
   </section>
@@ -297,6 +359,7 @@ open NuVa.xcodeproj</code></pre>
   </div>
 </footer>
 
+<script src="/platform.js"></script>
 <script src="/feedback.js" defer></script>
 </body>
 </html>

@@ -66,11 +66,11 @@ fun PlayerScreen(model: AppModel) {
 
     Row(
         Modifier.fillMaxSize().background(Tokens.surface0).padding(horizontal = 48.dp, vertical = 36.dp),
-        horizontalArrangement = Arrangement.spacedBy(40.dp),
+        horizontalArrangement = Arrangement.spacedBy(48.dp),
     ) {
         Column(Modifier.width(500.dp).fillMaxHeight()) {
             DisplayPanel(model, state)
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(24.dp))
             Keys(model, state, playKey)
         }
         Column(Modifier.weight(1f).fillMaxHeight()) {
@@ -87,8 +87,8 @@ fun DisplayPanel(model: AppModel, state: PlayerState, modifier: Modifier = Modif
     val current = state.current
     val eq = Audio.equalizer
     Column(
-        modifier.fillMaxWidth().clip(RoundedCornerShape(6.dp)).background(Tokens.display).padding(horizontal = 24.dp, vertical = 18.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier.fillMaxWidth().clip(RoundedCornerShape(6.dp)).background(Tokens.display).padding(horizontal = 24.dp, vertical = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Led(state.isPlaying)
@@ -149,6 +149,7 @@ private fun ScrubRow(model: AppModel, state: PlayerState) {
     LaunchedEffect(focused) { if (!focused && player.scrubbing) player.endScrub(keep = true) }
     Row(
         Modifier
+            .bleed(8.dp)
             .border(2.dp, if (focused) Tokens.focus else Color.Transparent, RoundedCornerShape(4.dp))
             .onPreviewKeyEvent { e ->
                 val ok = e.key == Key.DirectionCenter || e.key == Key.Enter || e.key == Key.NumPadEnter
@@ -168,9 +169,9 @@ private fun ScrubRow(model: AppModel, state: PlayerState) {
                 }
             }
             .focusable(interactionSource = interaction)
-            .padding(horizontal = 6.dp, vertical = 4.dp),
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         val shown = state.shownPosition
         Text(clock(shown), Type.displayMeta.copy(color = if (scrubbing) Tokens.displayInk else Tokens.displayMuted))
@@ -198,11 +199,13 @@ fun presetName(key: String): String = when (key) {
 private fun Readout(onClick: () -> Unit, content: @Composable () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
+    // Bled out by its padding, so the readout's text ends where the display's content does.
     Box(
         Modifier
+            .bleed(8.dp)
             .border(2.dp, if (focused) Tokens.focus else Color.Transparent, RoundedCornerShape(4.dp))
             .remoteClick(interaction, onClick, null)
-            .padding(horizontal = 6.dp, vertical = 2.dp),
+            .padding(horizontal = 8.dp, vertical = 2.dp),
     ) { content() }
 }
 
@@ -293,7 +296,7 @@ private fun Tabs(model: AppModel) {
         if (model.focusTabs == 0) return@LaunchedEffect
         runCatching { active.requestFocus() }
     }
-    Row(Modifier.fillMaxWidth().height(72.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    Row(Modifier.fillMaxWidth().height(64.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         val queue = !model.showingFolders
         Tab(stringResource(R.string.queue), queue, if (queue) Modifier.focusRequester(active) else Modifier) { model.showingFolders = false }
         Tab(stringResource(R.string.folders), !queue, if (!queue) Modifier.focusRequester(active) else Modifier) { model.showingFolders = true }
@@ -309,7 +312,8 @@ private fun Tab(label: String, active: Boolean, modifier: Modifier, onClick: () 
         modifier
             .border(2.dp, if (focused) Tokens.focus else Color.Transparent, RoundedCornerShape(6.dp))
             .remoteClick(interaction, onClick, null)
-            .padding(horizontal = 14.dp, vertical = 10.dp),
+            // The LED in the rows' LED column: 16 of row padding plus half of its 24-point column.
+            .padding(start = 25.dp, end = 16.dp, top = 10.dp, bottom = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -336,7 +340,7 @@ private fun ColumnScope.Folders(model: AppModel, state: PlayerState) {
     // ("12 tracks added"); the folder's name on its own line.
     val note = model.note
     if (model.path.isNotEmpty() || tracks > 0 || note != null) {
-        Row(Modifier.fillMaxWidth().height(72.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(Modifier.fillMaxWidth().height(64.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             if (model.path.isNotEmpty()) Key(Tone.Mode, 48.dp, { model.up() }, icon = Icons.back, description = stringResource(R.string.up))
             Box(Modifier.weight(1f)) { if (note != null) Text(note, Type.hint.copy(color = Tokens.ink)) }
             if (tracks > 0) Key(Tone.Mode, 170.dp, { model.playFolder() }, text = stringResource(R.string.play_folder))

@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
-/** The keys' symbols, drawn after the SF Symbols the Mac uses: regular weight, filled only for play and pause. */
+/** The keys' symbols, drawn after the SF Symbols the Mac uses: regular weight (a 1.5 line on 24), filled only for play and pause. */
 object Icons {
     private fun icon(name: String, filled: Boolean, block: PathBuilder.() -> Unit) =
         ImageVector.Builder(name, 24.dp, 24.dp, 24f, 24f).apply {
@@ -17,7 +17,7 @@ object Icons {
                 path(fill = SolidColor(Color.Black), pathBuilder = block)
             } else {
                 path(
-                    stroke = SolidColor(Color.Black), strokeLineWidth = 1.8f,
+                    stroke = SolidColor(Color.Black), strokeLineWidth = 1.5f,
                     strokeLineCap = StrokeCap.Round, strokeLineJoin = StrokeJoin.Round, pathBuilder = block,
                 )
             }

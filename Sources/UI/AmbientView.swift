@@ -779,7 +779,7 @@ private struct AmbientNeedlesFace: View {
             gc.drawLayer { layer in
                 layer.clip(to: shape)
                 layer.fill(shape, with: .linearGradient(
-                    Gradient(colors: [Color.white.opacity(0.07), Color.white.opacity(0)]),
+                    Gradient(colors: [Color.displayInk.opacity(0.07), Color.displayInk.opacity(0)]),
                     startPoint: CGPoint(x: w * 0.3, y: 0), endPoint: CGPoint(x: w * 0.45, y: h * 0.5)))
                 layer.addFilter(.blur(radius: unit * 0.6))
                 layer.stroke(shape, with: .color(Color.display.opacity(0.55)), lineWidth: unit * 1.2)

@@ -52,11 +52,11 @@ shot() {
   echo "  tv-$1.png"
 }
 
-# Wherever the focus is after an overlay closes, it ends on the leftmost key (shuffle):
+# Wherever the focus is after an overlay closes, it ends on the leftmost key (mode):
 # a row goes left to the display or the keys, the display goes down to the keys, the keys go left.
 home() { press DPAD_LEFT DPAD_DOWN DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT; }
 
-# The keys from shuffle: 0 shuffle, 1 repeat, 2 previous, 3 play, 4 next, 5 folders, 6 ambient, 7 settings.
+# The keys from mode: 0 mode, 1 previous, 2 play, 3 next, 4 ambient, 5 settings.
 key() { home; local i; for (( i = 0; i < $1; i++ )); do press DPAD_RIGHT; done; }
 
 snapshot_cleanup() {
@@ -175,13 +175,13 @@ tour() {
   press BACK
 
   # Holding OK on a queue row: move, remove, clear.
-  key 7; press DPAD_RIGHT
+  key 5; press DPAD_RIGHT
   $adb shell input keyevent --longpress DPAD_CENTER
   shot queue-actions 1.5
   press BACK
 
   # Ambient: every face, → from one to the next (each shows its name for a moment first).
-  key 6; press DPAD_CENTER
+  key 4; press DPAD_CENTER
   local face
   for face in display clock spectrum meters needles valves; do
     shot ambient-$face 4
@@ -190,16 +190,23 @@ tour() {
   press DPAD_UP
 
   # Settings; OK on the skin moves to the next one: Graphite Orange, then Phosphor.
-  key 7; press DPAD_CENTER
+  # The mode key twice: shuffle, then repeat all, its name under it.
+  key 0; press DPAD_CENTER DPAD_CENTER
+  shot mode 1
+  press DPAD_CENTER DPAD_CENTER
+
+  key 5; press DPAD_CENTER
   shot settings 1.5
   local skin
   for skin in graphite-orange phosphor; do
     press DPAD_CENTER BACK
     shot player-$skin 1.5
-    key 5; press DPAD_CENTER
+    # The folders from the tabs: → into the queue, Back to its tab, → to Folders, OK. OK on the
+    # album's first track plays it and brings the queue back.
+    key 5; press DPAD_RIGHT BACK DPAD_RIGHT DPAD_CENTER
     shot folders-$skin 1.5
     press DPAD_CENTER
-    key 7; press DPAD_CENTER
+    key 5; press DPAD_CENTER
   done
   press BACK
 

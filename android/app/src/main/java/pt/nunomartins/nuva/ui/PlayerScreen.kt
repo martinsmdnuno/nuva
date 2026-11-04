@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -44,11 +45,11 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.media3.common.Player
 import pt.nunomartins.nuva.AppModel
 import pt.nunomartins.nuva.Overlay
 import pt.nunomartins.nuva.R
 import pt.nunomartins.nuva.audio.Audio
+import pt.nunomartins.nuva.player.PlayMode
 import pt.nunomartins.nuva.player.PlayerState
 
 /** One device: the display and the keys on the left, the folders or the queue on the right. */
@@ -67,6 +68,7 @@ fun PlayerScreen(model: AppModel) {
             Keys(model, state, playKey)
         }
         Column(Modifier.weight(1f).fillMaxHeight()) {
+            Tabs(model)
             if (model.showingFolders) Folders(model, state) else Queue(model, state)
         }
     }
@@ -180,14 +182,15 @@ private fun DisplaySpectrum(playing: Boolean) {
     }
 }
 
-/** mode | playback | view, each group with its legend. */
+/** mode | playback | view, each group with its legend; the mode's legend is the mode itself. */
 @Composable
 private fun Keys(model: AppModel, state: PlayerState, playKey: FocusRequester) {
     val player = model.player
+    val mode = state.mode
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
-        Group(stringResource(R.string.mode)) {
-            Key(Tone.Mode, 48.dp, { player.toggleShuffle() }, icon = Icons.shuffle, led = state.shuffle, description = stringResource(R.string.shuffle))
-            Key(Tone.Mode, 48.dp, { player.cycleRepeat() }, icon = if (state.repeat == Player.REPEAT_MODE_ONE) Icons.repeatOne else Icons.repeat, led = state.repeat != Player.REPEAT_MODE_OFF, description = stringResource(R.string.repeat))
+        // Wide enough for the longest mode's name, so the keys don't move when it changes.
+        Group(modeName(mode), Modifier.width(104.dp)) {
+            Key(Tone.Mode, 48.dp, { player.cycleMode() }, icon = modeIcon(mode), led = mode != PlayMode.Normal, description = stringResource(R.string.mode))
         }
         Group(stringResource(R.string.playback)) {
             Key(Tone.Transport, 56.dp, { player.previous() }, icon = Icons.previous, description = stringResource(R.string.previous))
@@ -198,7 +201,6 @@ private fun Keys(model: AppModel, state: PlayerState, playKey: FocusRequester) {
             Key(Tone.Transport, 56.dp, { player.next() }, icon = Icons.next, description = stringResource(R.string.next))
         }
         Group(stringResource(R.string.view)) {
-            Key(Tone.Mode, 48.dp, { model.showingFolders = !model.showingFolders }, icon = Icons.folders, led = model.showingFolders, description = stringResource(R.string.folders))
             Key(Tone.Mode, 48.dp, { model.ambient = true }, icon = Icons.ambient, description = stringResource(R.string.ambient))
             Key(Tone.Mode, 48.dp, { model.overlay = Overlay.Settings }, icon = Icons.settings, description = stringResource(R.string.settings))
         }
@@ -206,18 +208,61 @@ private fun Keys(model: AppModel, state: PlayerState, playKey: FocusRequester) {
 }
 
 @Composable
-private fun Group(legend: String, keys: @Composable () -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+private fun modeName(mode: PlayMode) = stringResource(
+    when (mode) {
+        PlayMode.Normal -> R.string.mode_normal
+        PlayMode.Shuffle -> R.string.mode_shuffle
+        PlayMode.RepeatAll -> R.string.mode_repeat_all
+        PlayMode.RepeatOne -> R.string.mode_repeat_one
+    },
+)
+
+private fun modeIcon(mode: PlayMode) = when (mode) {
+    PlayMode.Normal -> Icons.inOrder
+    PlayMode.Shuffle -> Icons.shuffle
+    PlayMode.RepeatAll -> Icons.repeat
+    PlayMode.RepeatOne -> Icons.repeatOne
+}
+
+@Composable
+private fun Group(legend: String, modifier: Modifier = Modifier, keys: @Composable () -> Unit) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.Bottom) { keys() }
         Legend(legend, Modifier.padding(start = 4.dp))
     }
 }
 
-/** A note on the header for a few seconds ("12 tracks added"), in place of the legend. */
+/** The right column's top: "queue" and "folders", each with its LED (lit: the one shown); OK on one shows it. Back from a list comes here. */
 @Composable
-private fun HeaderLegend(model: AppModel, legend: String, modifier: Modifier) {
-    val note = model.note
-    if (note != null) Text(note, Type.hint.copy(color = Tokens.ink), modifier) else Legend(legend, modifier)
+private fun Tabs(model: AppModel) {
+    val active = remember { FocusRequester() }
+    LaunchedEffect(model.focusTabs) {
+        if (model.focusTabs == 0) return@LaunchedEffect
+        runCatching { active.requestFocus() }
+    }
+    Row(Modifier.fillMaxWidth().height(72.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        val queue = !model.showingFolders
+        Tab(stringResource(R.string.queue), queue, if (queue) Modifier.focusRequester(active) else Modifier) { model.showingFolders = false }
+        Tab(stringResource(R.string.folders), !queue, if (!queue) Modifier.focusRequester(active) else Modifier) { model.showingFolders = true }
+    }
+}
+
+/** A tab: no key face, its LED and its name, and the focus ring. */
+@Composable
+private fun Tab(label: String, active: Boolean, modifier: Modifier, onClick: () -> Unit) {
+    val interaction = remember { MutableInteractionSource() }
+    val focused by interaction.collectIsFocusedAsState()
+    Row(
+        modifier
+            .border(2.dp, if (focused) Tokens.focus else Color.Transparent, RoundedCornerShape(6.dp))
+            .remoteClick(interaction, onClick, null)
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Led(active, size = 6.dp)
+        Text(label, Type.label.copy(color = if (active) Tokens.ink else Tokens.inkMuted, fontSize = Type.body.fontSize))
+    }
 }
 
 @Composable
@@ -234,17 +279,21 @@ private fun ColumnScope.Folders(model: AppModel, state: PlayerState) {
         withFrameNanos { }
         runCatching { row.requestFocus() }
     }
-    // The browser's keys on the header row, as on the Mac; the folder's name on its own line.
-    Row(Modifier.fillMaxWidth().height(80.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        if (model.path.isNotEmpty()) Key(Tone.Mode, 48.dp, { model.up() }, icon = Icons.back, description = stringResource(R.string.up))
-        HeaderLegend(model, stringResource(R.string.folders), Modifier.weight(1f))
-        if (tracks > 0) Key(Tone.Mode, 170.dp, { model.playFolder() }, text = stringResource(R.string.play_folder))
+    // The browser's keys, as on the Mac: up and Play Folder, a note between them for a few seconds
+    // ("12 tracks added"); the folder's name on its own line.
+    val note = model.note
+    if (model.path.isNotEmpty() || tracks > 0 || note != null) {
+        Row(Modifier.fillMaxWidth().height(72.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            if (model.path.isNotEmpty()) Key(Tone.Mode, 48.dp, { model.up() }, icon = Icons.back, description = stringResource(R.string.up))
+            Box(Modifier.weight(1f)) { if (note != null) Text(note, Type.hint.copy(color = Tokens.ink)) }
+            if (tracks > 0) Key(Tone.Mode, 170.dp, { model.playFolder() }, text = stringResource(R.string.play_folder))
+        }
     }
     if (model.path.isNotEmpty()) {
         ScrollingText(model.path.substringAfterLast('/'), Type.label.copy(color = Tokens.ink, fontSize = Type.body.fontSize), Modifier.padding(start = 16.dp, top = 4.dp))
     }
     Spacer(Modifier.height(8.dp))
-    Box(Modifier.weight(1f)) {
+    Box(Modifier.weight(1f).onFocusChanged { model.listFocused = it.hasFocus }) {
         when {
             model.error != null -> Text(model.error!!, Type.body.copy(color = Tokens.danger), maxLines = 3)
             model.loading && entries.isEmpty() -> Text(stringResource(R.string.loading), Type.body.copy(color = Tokens.inkMuted))
@@ -269,19 +318,19 @@ private fun ColumnScope.Folders(model: AppModel, state: PlayerState) {
 
 @Composable
 private fun ColumnScope.Queue(model: AppModel, state: PlayerState) {
-    val total = state.queue.sumOf { it.duration ?: 0.0 }
-    Row(Modifier.fillMaxWidth().height(80.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        Led(state.queue.isNotEmpty())
-        Text(stringResource(R.string.queue), Type.label.copy(color = Tokens.ink, fontSize = Type.body.fontSize))
-        if (state.queue.isNotEmpty()) {
-            Text(pluralStringResource(R.plurals.tracks, state.queue.size, state.queue.size) + " · " + minutes(total), Type.duration.copy(color = Tokens.inkMuted), Modifier.weight(1f))
-        }
+    // The queue's length on its own line, as the folder's name is in the folders.
+    if (state.queue.isNotEmpty()) {
+        val total = state.queue.sumOf { it.duration ?: 0.0 }
+        Text(
+            pluralStringResource(R.plurals.tracks, state.queue.size, state.queue.size) + " · " + minutes(total),
+            Type.duration.copy(color = Tokens.inkMuted), Modifier.padding(start = 16.dp, top = 4.dp),
+        )
     }
     Spacer(Modifier.height(8.dp))
     if (state.queue.isEmpty()) {
         Text(stringResource(R.string.empty_queue), Type.body.copy(color = Tokens.inkMuted))
     } else {
-        LazyColumn(Modifier.weight(1f)) {
+        LazyColumn(Modifier.weight(1f).onFocusChanged { model.listFocused = it.hasFocus }) {
             itemsIndexed(state.queue) { index, entry ->
                 ListRow(
                     entry.listName,

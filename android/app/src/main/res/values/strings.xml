@@ -12,13 +12,16 @@
     <string name="signing_in">Signing in…</string>
     <string name="sign_out">Sign Out</string>
     <string name="mode">mode</string>
+    <!-- The mode key's legend: the mode it is in. -->
+    <string name="mode_normal">normal</string>
+    <string name="mode_shuffle">shuffle</string>
+    <string name="mode_repeat_all">repeat all</string>
+    <string name="mode_repeat_one">repeat track</string>
     <string name="playback">playback</string>
     <string name="view">view</string>
     <string name="folders">folders</string>
     <string name="queue">queue</string>
     <string name="play_folder">Play Folder</string>
-    <string name="shuffle">Shuffle</string>
-    <string name="repeat">Repeat</string>
     <string name="previous">Previous</string>
     <string name="play_pause">Play or pause</string>
     <string name="next">Next</string>

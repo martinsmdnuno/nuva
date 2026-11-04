@@ -63,7 +63,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
     /** A short note on the header ("12 tracks added"), gone after a few seconds. */
     var note by mutableStateOf<String?>(null)
         private set
-    /** Folders or the queue below the keys, as ⌘B swaps them on the Mac. */
+    /** Folders or the queue on the right, as ⌘B swaps them on the Mac; the tabs choose. */
     var showingFolders by mutableStateOf(true)
     var ambient by mutableStateOf(false)
     var overlay by mutableStateOf<Overlay?>(null)
@@ -76,6 +76,13 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         private set
     var played by mutableIntStateOf(0)
         private set
+    /** Bumped when Back on a list sends the focus to the right column's tabs. */
+    var focusTabs by mutableIntStateOf(0)
+        private set
+    /** A row of the folders or the queue has the focus (Back then goes to the tabs). */
+    var listFocused = false
+
+    fun focusTheTabs() { focusTabs++ }
 
     // Options, as in the Mac's View menu.
     var showArtwork by mutableStateOf(prefs.getBoolean("artwork", false))

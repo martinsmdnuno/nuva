@@ -42,6 +42,11 @@ object Icons {
         moveTo(18f, 4f); lineTo(21f, 7f); lineTo(18f, 10f)
         moveTo(18f, 14f); lineTo(21f, 17f); lineTo(18f, 20f)
     }
+    /** The mode key in normal play: the queue in its order, once. */
+    val inOrder = icon("inOrder", false) {
+        moveTo(3f, 12f); lineTo(20f, 12f)
+        moveTo(16f, 8f); lineTo(20f, 12f); lineTo(16f, 16f)
+    }
     val repeat = icon("repeat", false) {
         moveTo(4f, 11f); lineTo(4f, 9f); curveTo(4f, 7.9f, 4.9f, 7f, 6f, 7f); lineTo(20f, 7f)
         moveTo(17f, 4f); lineTo(20f, 7f); lineTo(17f, 10f)

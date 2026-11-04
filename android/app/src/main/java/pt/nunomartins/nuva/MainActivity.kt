@@ -52,12 +52,14 @@ class MainActivity : ComponentActivity() {
                 else window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             }
 
-            // Back: closes what is open, then goes up a folder, then asks before leaving the app.
+            // Back: closes what is open, then goes up a folder, then from a list to the tabs above
+            // it, then asks before leaving the app.
             BackHandler(enabled = model.signedIn) {
                 when {
                     model.ambient -> model.ambient = false
                     model.overlay != null -> model.overlay = null
                     model.showingFolders && model.path.isNotEmpty() -> model.up()
+                    model.listFocused -> model.focusTheTabs()
                     else -> model.overlay = Overlay.ConfirmExit
                 }
             }

@@ -11,13 +11,16 @@
     <string name="signing_in">A entrar…</string>
     <string name="sign_out">Sair</string>
     <string name="mode">modo</string>
+    <!-- The mode key's legend: the mode it is in. -->
+    <string name="mode_normal">normal</string>
+    <string name="mode_shuffle">aleatório</string>
+    <string name="mode_repeat_all">repetir tudo</string>
+    <string name="mode_repeat_one">repetir faixa</string>
     <string name="playback">reprodução</string>
     <string name="view">vista</string>
     <string name="folders">pastas</string>
     <string name="queue">fila</string>
     <string name="play_folder">Tocar pasta</string>
-    <string name="shuffle">Aleatório</string>
-    <string name="repeat">Repetir</string>
     <string name="previous">Anterior</string>
     <string name="play_pause">Tocar ou pausa</string>
     <string name="next">Seguinte</string>

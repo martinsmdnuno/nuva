@@ -21,7 +21,8 @@ A NuVa for an Android TV box, to play the author's FLAC library from Jellyfin on
 - **Sign in** to a Jellyfin server: address, user, password, typed with the TV keyboard. The app keeps the server, the user and the access token (Jellyfin tokens don't expire), never the password. A 401 sends you back to sign in.
 - **Folders**: the music library's folders by `Path` (more than one music library shows the libraries first). OK on a folder opens it; "Play Folder" plays it from the top; OK on a track plays the folder from that track.
 - **Queue**: the folder that is playing, with the playing track in `signal` and its LED.
-- **Keys**: shuffle, repeat | previous, play/pause, next. Same three tones as `KeyButtonStyle`; focus is the `focus` ring.
+- **Keys**: mode | previous, play/pause, next | ambient, settings. One mode key moves through normal, shuffle, repeat all and repeat one, its name under it (the Mac keeps shuffle and repeat apart). Same three tones as `KeyButtonStyle`; focus is the `focus` ring.
+- **Queue and folders**: two tabs at the top of the right column, each with its LED; OK on one shows it, and Back from a list goes to them.
 - **Display**: format (FLAC 24/96 when known), title, folder, elapsed time in IBM Plex Mono Light, the position bar.
 - **Ambient**: the Display face full screen, entered with a key or after a minute without input while playing; any key leaves. OLED protection: a slow wander and the 55% rule for static parts. The other faces (Spectrum, Meters, Needles, Valves) need the audio's levels; they come in a later version with Media3's audio processor.
 - **Playback**: gapless through Media3's playlist, keeps playing with the screen off or in another app, Now Playing on the TV's media controls.

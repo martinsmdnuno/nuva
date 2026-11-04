@@ -146,23 +146,36 @@ h1 {
 .key:active { transform: translateY(1px); filter: brightness(0.85); }
 .key.play { background: var(--key-play); color: var(--key-ink); }
 .key.mode { background: var(--key-mode); color: var(--key-mode-ink); }
-.key.small { min-height: 30px; padding: 0 14px; font-size: 13px; }
 .key svg { width: 18px; height: 18px; flex: none; }
 .legend { font-size: 12px; color: var(--ink-muted); text-transform: lowercase; margin-left: 2px; }
-.meta { font: 400 13px/1.5 var(--mono); color: var(--ink-muted); margin: var(--space-6) auto 0; max-width: 40em; }
+.meta { font: 400 13px/1.5 var(--mono); color: var(--ink-muted); margin: var(--space-6) auto 0; max-width: 40em; text-wrap: balance; }
 .meta.tv-hint { margin-top: var(--space-2); }
+
+/* Phones: one column of keys of equal width, the legends left to the LEDs */
+@media (max-width: 600px) {
+  .hero { padding-top: 48px; }
+  .lede { font-size: 18px; margin-bottom: 32px; }
+  .keys { flex-direction: column; align-items: stretch; gap: var(--space-4); max-width: 360px; margin: 0 auto; }
+  .keys .group { align-items: stretch; }
+  .keys .key { width: 100%; }
+  .keys .legend { display: none; }
+  .meta { font-size: 12px; }
+  h2 { margin-bottom: var(--space-4); }
+  .faq summary { font-size: 17px; padding: 16px 0; }
+  footer .wrap { flex-direction: column; }
+}
 
 /* Platform switcher: one segmented strip of mode keys; the LED says which one is on */
 .platforms {
   display: inline-flex; gap: 2px; padding: 3px; margin: 0 auto 32px;
-  background: var(--surface-1); border-radius: calc(var(--radius-sm) + 3px);
+  background: color-mix(in srgb, var(--ink) 8%, transparent); border-radius: calc(var(--radius-sm) + 3px);
 }
 .platforms[hidden] { display: none; }
 .platforms .group { flex-direction: row; align-items: center; gap: 0; position: relative; }
 .platforms .led { position: absolute; left: 10px; top: 50%; margin: -2px 0 0; }
 .platforms .key { min-height: 36px; padding: 0 16px 0 24px; font-size: 14px; background: transparent; color: var(--ink-muted); }
 .platforms .key:hover { color: var(--ink); filter: none; }
-.platforms .key[aria-pressed="true"] { background: var(--key-face); color: var(--key-ink); }
+.platforms .key[aria-pressed="true"] { background: var(--surface-2); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18); }
 .platforms .group:has(.key[aria-pressed="true"]) .led { background: var(--led); }
 
 /* Content for one platform only. Without JavaScript the page stays on the Mac. */
@@ -170,7 +183,7 @@ html[data-platform="mac"] [data-for]:not([data-for~="mac"]),
 html[data-platform="tv"] [data-for]:not([data-for~="tv"]),
 html[data-platform="windows"] [data-for]:not([data-for~="windows"]) { display: none !important; }
 
-.shot { margin: clamp(48px, 7vw, 88px) auto 0; max-width: 1040px; }
+.shot { margin: clamp(40px, 5vw, 64px) auto 0; max-width: 1040px; }
 .shot img { display: block; width: 100%; height: auto; }
 
 /* Windows' hero: the display, drawn */

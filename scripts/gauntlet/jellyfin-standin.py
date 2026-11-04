@@ -41,7 +41,7 @@ LIBRARY = {
         "Late Night Tales": ["1. Intro.flac", "2. Outro.flac", "10. Hidden Track.flac"],
     },
 }
-SECONDS = 40  # every track's length, as RunTimeTicks
+SECONDS = 180  # every track's length, as RunTimeTicks: the tones tv.sh makes are three minutes
 
 
 def item_id(path):

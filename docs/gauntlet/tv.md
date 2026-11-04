@@ -9,7 +9,7 @@ Each criterion has an id. A finding names the id, its severity and its evidence 
 In `build/gauntlet/tv/`: `diff.patch` (the branch against `main`), `logs/` (build, lint report, the stand-in's requests) and `snapshots/pt-PT/` and `snapshots/en/`, 1920×1080 captures of the debug build on the `nuva_tv` emulator (960×540 dp), driven with the remote's keys against `scripts/gauntlet/jellyfin-standin.py` (a made-up library; its tracks are tones, 3:00 each). Each folder has the same files:
 
 - `tv-sign-in.png` (first run), `tv-folders.png` (the library's top), `tv-folders-long.png` and `tv-folders-long-inside.png` (a folder name longer than the list, with the focus on it and then inside it), `tv-folders-album.png` (an album's tracks, the first with the focus).
-- `tv-player.png` (the queue, the second track playing), `tv-equalizer.png` (Rock chosen), `tv-equalizer-bands.png` (a fader raised), `tv-equalizer-back.png` (Back from the fader: the presets), `tv-queue-actions.png` (OK held on a queue row), `tv-settings.png`, `tv-exit.png` (Back on the main screen).
+- `tv-player.png` (the queue, the second track playing), `tv-equalizer.png` (Rock chosen), `tv-equalizer-bands.png` (a fader held with OK, its LED lit, and raised), `tv-equalizer-back.png` (OK lets go of the fader, ↑ reaches the presets), `tv-queue-actions.png` (OK held on a queue row), `tv-settings.png`, `tv-exit.png` (Back on the main screen).
 - `tv-ambient-display.png`, `-clock`, `-spectrum`, `-meters`, `-needles`, `-valves`: the six faces.
 - `tv-player-graphite-orange.png`, `tv-folders-graphite-orange.png`, `tv-player-phosphor.png`, `tv-folders-phosphor.png`: the other skins (the unsuffixed views are Rams).
 
@@ -26,7 +26,7 @@ Look at every one of them in both languages. The code is in `android/app/src/mai
 ## Remote
 
 - **R1 Back.** Back closes the overlay that is open (and ambient mode), then goes up a folder, then asks before leaving the app (`tv-exit.png`); leaving keeps the music playing. Blocker if Back ever does nothing or leaves the app without asking from the main screen.
-- **R2 Focus lands.** Opening an overlay puts the focus inside it, on its first row or key (the equalizer: its first preset, where Back from a fader also puts it, `tv-equalizer-back.png`); closing it puts the focus back on the main screen; after a folder opens or closes, the focus is on a row of the list (the folder just left, going up); playing a folder puts it on the play key (`tv-player.png`).
+- **R2 Focus lands.** Opening an overlay puts the focus inside it, on its first row or key (the equalizer: its first preset; the arrows move between the on/off key, the presets and the faders, and only a fader held with OK keeps ↑ ↓ for itself, `tv-equalizer-back.png`); closing it puts the focus back on the main screen; after a folder opens or closes, the focus is on a row of the list (the folder just left, going up); playing a folder puts it on the play key (`tv-player.png`).
 - **R3 Holding OK** is the "more" gesture (add to the queue, the queue row's actions), and each list says so in its legend.
 
 ## Design system

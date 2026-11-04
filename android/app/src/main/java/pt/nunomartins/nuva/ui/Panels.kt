@@ -25,6 +25,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -102,10 +104,10 @@ private fun OptionRow(label: String, value: String? = null, led: Boolean? = null
 }
 
 /**
- * The on/off key with its LED, the presets, then the 10 faders, as on the Mac. The faders keep ↑ ↓
- * for themselves (half a decibel at a time, like motorised faders; ← → between bands), so Back on
- * a fader takes the focus back to the presets, and from there ↑ reaches the on/off key. Same bands
- * and presets as the Mac.
+ * The on/off key with its LED, the presets, then the 10 faders, as on the Mac. Moving and adjusting
+ * are apart: the arrows move the focus between the key, the presets and the bands; OK on a band
+ * takes hold of it (its LED lights) and then ↑ ↓ move it half a decibel at a time; OK or Back lets
+ * go. Same bands and presets as the Mac.
  */
 @Composable
 private fun EqualizerPanel(model: AppModel) {
@@ -129,7 +131,7 @@ private fun EqualizerPanel(model: AppModel) {
         }
         Row(Modifier.fillMaxWidth().height(210.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             for (band in 0 until 10) {
-                Fader(band, eq.gains[band], eq.enabled, { runCatching { presets.requestFocus() } }) { eq.nudge(band, it) }
+                Fader(band, eq.gains[band], eq.enabled) { eq.nudge(band, it) }
             }
         }
         Legend(stringResource(R.string.eq_hint))
@@ -138,25 +140,35 @@ private fun EqualizerPanel(model: AppModel) {
 }
 
 @Composable
-private fun Fader(band: Int, gain: Float, enabled: Boolean, onBack: () -> Unit, nudge: (Int) -> Unit) {
+private fun Fader(band: Int, gain: Float, enabled: Boolean, nudge: (Int) -> Unit) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
+    // Held: ↑ ↓ adjust the band. Not held: they move the focus like everywhere else.
+    var held by remember { mutableStateOf(false) }
+    // The key that let go was pressed while held: its release is ours too, not the panel's.
+    var swallow by remember { mutableStateOf<Key?>(null) }
+    LaunchedEffect(focused) { if (!focused) held = false }
     val fill = if (enabled) Tokens.fill else Tokens.track
     val track = Tokens.track
-    val led = Tokens.led
     Column(
         Modifier.width(64.dp).fillMaxHeight()
             .border(2.dp, if (focused) Tokens.focus else Color.Transparent, RoundedCornerShape(6.dp))
-            .onKeyEvent { e ->
-                // Back leaves the faders (on release, so the panel's own Back doesn't see it).
-                if (e.key == Key.Back) {
-                    if (e.type == KeyEventType.KeyUp) onBack()
-                    return@onKeyEvent true
+            .onPreviewKeyEvent { e ->
+                val ok = e.key == Key.DirectionCenter || e.key == Key.Enter || e.key == Key.NumPadEnter
+                if (e.type == KeyEventType.KeyUp) {
+                    if (swallow == e.key) { swallow = null; return@onPreviewKeyEvent true }
+                    if (ok) { held = true; return@onPreviewKeyEvent true }
+                    return@onPreviewKeyEvent false
                 }
-                if (e.type != KeyEventType.KeyDown) return@onKeyEvent false
-                when (e.key) {
-                    Key.DirectionUp -> { nudge(1); true }
-                    Key.DirectionDown -> { nudge(-1); true }
+                if (e.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+                when {
+                    ok && held -> { held = false; swallow = e.key; true }
+                    ok -> true
+                    e.key == Key.Back && held -> { held = false; swallow = e.key; true }
+                    held && e.key == Key.DirectionUp -> { nudge(1); true }
+                    held && e.key == Key.DirectionDown -> { nudge(-1); true }
+                    // Held, ← → stay on the band; OK or Back lets go first.
+                    held && (e.key == Key.DirectionLeft || e.key == Key.DirectionRight) -> true
                     else -> false
                 }
             }
@@ -165,6 +177,7 @@ private fun Fader(band: Int, gain: Float, enabled: Boolean, onBack: () -> Unit, 
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
+        Led(held, size = 6.dp)
         Text((if (gain > 0) "+" else "") + if (gain % 1f == 0f) gain.toInt().toString() else gain.toString(), Type.hint.copy(color = Tokens.ink))
         Canvas(Modifier.width(24.dp).weight(1f)) {
             val x = size.width / 2

@@ -65,7 +65,7 @@ struct DisplayView: View {
                                 .transition(.opacity)
                         } else {
                             // Too long for the line, the name scrolls.
-                            ScrollingText(text: entry?.folderName ?? (model.sources.sources.isEmpty
+                            ScrollingText(text: entry?.folderLine ?? (model.sources.sources.isEmpty
                                 ? String(localized: "Adicionar uma pasta ou um servidor Jellyfin")
                                 : String(localized: "Escolher uma pasta para tocar")),
                                 tooltip: entry?.parentPath)

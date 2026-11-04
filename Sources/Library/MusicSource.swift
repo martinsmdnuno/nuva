@@ -35,6 +35,27 @@ struct Entry: Identifiable, Hashable, Sendable {
 
     /// Path of the folder containing the entry.
     var parentPath: String { (path as NSString).deletingLastPathComponent }
+
+    /// The album's folder: the one holding the track, or the one above a disc folder ("CD 1").
+    var albumPath: String {
+        var folder = parentPath
+        while AlbumGuess.isDiscFolder((folder as NSString).lastPathComponent) {
+            folder = (folder as NSString).deletingLastPathComponent
+        }
+        return folder
+    }
+
+    /// The folder above the album, as it is named: usually the artist. Folders, never tags.
+    var artistFolder: String? {
+        let name = ((albumPath as NSString).deletingLastPathComponent as NSString).lastPathComponent
+        return name.isEmpty ? nil : name
+    }
+
+    /// "Fleetwood Mac · Rumours (1977)": the artist's and the album's folders.
+    var folderLine: String {
+        let album = (albumPath as NSString).lastPathComponent
+        return [artistFolder, album.isEmpty ? nil : album].compactMap { $0 }.joined(separator: " · ")
+    }
 }
 
 enum SourceKind: String, Codable, Sendable {

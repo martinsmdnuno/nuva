@@ -5,7 +5,7 @@ The device's screen: what's playing and where it's going. Always dark (`display`
 ## Content, top to bottom
 1. LED (6px, `led`) while playing, `led-off` when paused · format and rate in `display-meta` (`FLAC 24/96`) · source name on the right.
 2. Track title in `title`, `display-ink`: the file name without extension or leading number.
-3. Folder name in `caption`, `display-muted`, scrolling when it doesn't fit (the output keeps its room) · the output on the right (`airplayaudio` 9px + "AirPlay WiiM" or "Speakers · 48 kHz", `display-meta`).
+3. The artist's and album's folders as they are named ("Fleetwood Mac · Rumours (1977)"; a disc folder gives way to its album, and with no folder above the album only the album) in `caption`, `display-muted`, scrolling when it doesn't fit (the output keeps its room) · the output on the right (`airplayaudio` 9px + "AirPlay WiiM" or "Speakers · 48 kHz", `display-meta`).
 4. Elapsed time in `display-time` · the equalizer on the right, on the time's baseline: LED + "EQ · Rock" ("EQ" alone when off), `display-meta`.
 5. Spectrum meter (see Spectrum.md), full width, when View ▸ Show Spectrum is on.
 6. Position row: elapsed time in `display-meta` on the left, the position bar (see PositionBar.md) in between, the duration in `display-meta` on the right.

@@ -208,7 +208,7 @@ private struct AmbientDisplayFace: View {
                     Text(entry?.title ?? String(localized: "Sem faixa"))
                         .font(.dsAmbientTitle(unit * 5.6))
                         .foregroundStyle(entry == nil ? Color.displayMuted : Color.displayInk)
-                    Text(entry?.folderName ?? String(localized: "Escolher uma pasta para tocar"))
+                    ScrollingText(text: entry?.folderLine ?? String(localized: "Escolher uma pasta para tocar"))
                         .font(.dsAmbientCaption(unit * 2.3))
                         .foregroundStyle(Color.displayMuted)
                 }
@@ -260,7 +260,7 @@ private struct AmbientClockFace: View {
                 HStack(spacing: unit * 1.4) {
                     LED(isOn: player.isPlaying, size: unit)
                     Text(entry.title)
-                    Text(verbatim: "· \(entry.folderName)")
+                    Text(verbatim: "· \(entry.folderLine)")
                         .foregroundStyle(Color.displayMuted)
                 }
                 .font(.dsAmbientCaption(unit * 2.1))
@@ -346,7 +346,7 @@ private struct AmbientTrackFoot: View {
                 Text(entry?.title ?? String(localized: "Sem faixa"))
                     .font(.dsAmbientTitle(unit * 2.8))
                     .foregroundStyle(entry == nil ? Color.displayMuted : Color.displayInk)
-                Text(entry?.folderName ?? "")
+                ScrollingText(text: entry?.folderLine ?? "")
                     .font(.dsAmbientCaption(unit * 1.9))
                     .foregroundStyle(Color.displayMuted)
             }

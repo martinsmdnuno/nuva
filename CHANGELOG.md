@@ -4,6 +4,8 @@
 
 - Android TV: the equalizer's presets and its on/off key can be reached with the remote: the presets come first, as on the Mac, and Back on a fader goes back to them.
 - Android TV: on the sign-in screen, ↑ and ↓ move between the fields and the Sign In key; a field no longer keeps the remote's focus.
+- Android TV: the equalizer's on/off key shows "Desligado" whole.
+- Android TV: pressed keys, the dimming behind a panel and the VU meters' glass take their shade from the skin's colours.
 
 ## 1.12 — the artist, and names that scroll
 

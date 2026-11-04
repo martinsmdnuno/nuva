@@ -191,7 +191,7 @@ public sealed class QueueView : Grid
         var player = model.Player;
         var i = list.Selected;
         var key = e.Key == Key.System ? e.SystemKey : e.Key;
-        if (Keyboard.Modifiers == ModifierKeys.Alt && key is Key.Up or Key.Down && i >= 0)
+        if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift) && key is Key.Up or Key.Down && i >= 0)
         {
             Move(i, key == Key.Up ? -1 : 1);
             e.Handled = true;
@@ -219,8 +219,8 @@ public sealed class QueueView : Grid
         var player = model.Player;
         var menu = new ContextMenu();
         menu.Items.Add(Item(L.T("Tocar"), () => player.Play(player.Queue[index].Id)));
-        menu.Items.Add(Item(L.T("Mover para cima") + "\tAlt+↑", () => Move(index, -1), index > 0));
-        menu.Items.Add(Item(L.T("Mover para baixo") + "\tAlt+↓", () => Move(index, 1), index < player.Queue.Count - 1));
+        menu.Items.Add(Item(L.T("Mover para cima") + "\tCtrl+Shift+↑", () => Move(index, -1), index > 0));
+        menu.Items.Add(Item(L.T("Mover para baixo") + "\tCtrl+Shift+↓", () => Move(index, 1), index < player.Queue.Count - 1));
         menu.Items.Add(new Separator());
         menu.Items.Add(Item(L.T("Remover da fila"), () => player.Remove([index])));
         return menu;

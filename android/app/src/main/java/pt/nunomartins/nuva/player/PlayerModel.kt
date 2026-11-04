@@ -3,6 +3,7 @@ package pt.nunomartins.nuva.player
 import android.content.ComponentName
 import android.content.Context
 import android.graphics.Bitmap
+import androidx.annotation.OptIn
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
@@ -10,6 +11,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.MoreExecutors
@@ -38,6 +40,7 @@ data class PlayerState(
 }
 
 /** Talks to the playback service. The queue lives in the player; entries are kept here by their path. */
+@OptIn(UnstableApi::class)
 class PlayerModel(context: Context) {
     private val _state = MutableStateFlow(PlayerState())
     val state: StateFlow<PlayerState> = _state.asStateFlow()

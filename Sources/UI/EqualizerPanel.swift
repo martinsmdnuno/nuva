@@ -147,7 +147,8 @@ private struct BandSlider: View {
                 ZStack(alignment: .top) {
                     ForEach(marks, id: \.self) { mark in
                         Rectangle()
-                            .fill(mark == 0 ? Color.line : Color.surface2)
+                            // A printed scale: the 0 line in full, the others fainter.
+                            .fill(mark == 0 ? Color.line : Color.line.opacity(0.5))
                             .frame(height: 1)
                             .offset(y: y(mark))
                     }

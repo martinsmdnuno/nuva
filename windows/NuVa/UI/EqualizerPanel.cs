@@ -226,7 +226,8 @@ internal sealed class BandSlider : FrameworkElement
         var opacity = isOn ? 1 : 0.5;
         dc.PushOpacity(opacity);
         foreach (var mark in new float[] { 12, 6, 0, -6, -12 })
-            dc.DrawRectangle(Theme.Brush(mark == 0 ? Token.Line : Token.Surface2), null, new Rect(0, EqualizerPanel.Y(mark), w, 1));
+            // A printed scale: the 0 line in full, the others fainter.
+            dc.DrawRectangle(mark == 0 ? Theme.Brush(Token.Line) : Theme.Brush(Token.Line, 0.5), null, new Rect(0, EqualizerPanel.Y(mark), w, 1));
         dc.DrawRectangle(Theme.Brush(Token.Surface0), null, new Rect(cx - 1, 0, Space.Bar, 120));
         var y = EqualizerPanel.Y((float)Shown) - 4;
         var cap = new Rect(cx - 8, y, 16, 8);

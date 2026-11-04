@@ -28,7 +28,7 @@ Only `blocker` findings from the judge send the loop round again; `minor` ones g
 |---|---|---|
 | Mac | `scripts/gauntlet.sh mac` | `mac.md` |
 | Android TV | planned | planned |
-| Windows | planned (the core's tests run on the Mac; the app needs Windows) | planned |
+| Windows | `scripts/gauntlet.sh windows` (builds and tests on the Mac; no screenshots, the app needs Windows) | `windows.md` |
 | Site | planned | planned |
 
-Run it in Claude Code with `/gauntlet mac`.
+Run it in Claude Code with `/gauntlet mac` or `/gauntlet windows`.

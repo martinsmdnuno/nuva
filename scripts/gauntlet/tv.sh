@@ -148,9 +148,15 @@ tour() {
   press DPAD_DOWN DPAD_CENTER
   shot player 5
 
-  # The equalizer from the display's "EQ" readout (the one control up from the keys), with Rock.
+  # The equalizer from the display's "EQ" readout (the one control up from the keys): Rock (the
+  # focus starts on the first preset), then a fader up half a decibel; Back to the presets, Back to close.
   home; press DPAD_UP DPAD_CENTER
-  shot equalizer 1.5
+  sleep 1; press DPAD_DOWN DPAD_RIGHT DPAD_CENTER
+  shot equalizer 1
+  press DPAD_DOWN DPAD_UP
+  shot equalizer-bands 1
+  press BACK
+  shot equalizer-back 1
   press BACK
 
   # Holding OK on a queue row: move, remove, clear.

@@ -27,7 +27,7 @@ Only `blocker` findings from the judge send the loop round again; `minor` ones g
 | Platform | Gates | Rubric |
 |---|---|---|
 | Mac | `scripts/gauntlet.sh mac` | `mac.md` |
-| Android TV | planned | planned |
+| Android TV | `scripts/gauntlet.sh tv` (the `nuva_tv` emulator, booted headless when no device is attached, against `scripts/gauntlet/jellyfin-standin.py`) | `tv.md` |
 | Windows | `scripts/gauntlet.sh windows` (builds and tests on the Mac; no screenshots, the app needs Windows) | `windows.md` |
 | Site | `scripts/gauntlet.sh site` | `site.md` |
 

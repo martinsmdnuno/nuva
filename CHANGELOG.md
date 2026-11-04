@@ -1,9 +1,14 @@
 # Changelog
 
-## 1.12.1 — Windows in step
+## 1.12.1 — the remote reaches everything, Windows in step
 
+- Android TV: the equalizer's presets and its on/off key can be reached with the remote: the presets come first, as on the Mac, and Back on a fader goes back to them. The active preset is lit by its LED.
+- Android TV: on the sign-in screen, ↑ and ↓ move between the fields and the Sign In key; a field no longer keeps the remote's focus.
+- Android TV: the equalizer's on/off key shows "Desligado" whole.
+- Android TV: pressed keys, the dimming behind a panel and the VU meters' glass take their shade from the skin's colours; amber is kept for the play key and the lights.
 - Windows: a selected track moves in the queue with Ctrl+Shift+↑ ↓, the Mac's ⌥⌘↑ ↓ (it was Alt+↑ ↓).
 - Windows: pressed keys, the display's edge, a held equalizer fader and the VU meters' glass take their shade from the skin's colours, as on the Mac.
+- Site: the privacy page names the daily update check, and the Windows answer in the FAQ says what the app does today.
 
 ## 1.12 — the artist, and names that scroll
 

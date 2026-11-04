@@ -41,7 +41,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -449,6 +448,7 @@ private fun VuPanel(deflection: Float, clipping: Boolean, channel: Int, u: Dp, s
     val ink = Tokens.ink
     val led = Tokens.led
     val display = Tokens.display
+    val sheen = Tokens.displayInk
     val markStyle = Type.displayMeta.copy(color = display.copy(alpha = 0.85f), fontSize = sp(u * 1.25f))
     val vuStyle = Type.displayMeta.copy(color = display.copy(alpha = 0.85f), fontSize = sp(u * 1.6f))
     val channelStyle = Type.displayMeta.copy(color = display.copy(alpha = 0.6f), fontSize = sp(u * 1.3f))
@@ -508,7 +508,7 @@ private fun VuPanel(deflection: Float, clipping: Boolean, channel: Int, u: Dp, s
             drawPath(needle(Offset(unit * 0.22f, unit * 0.4f)), display.copy(alpha = 0.22f))
             drawPath(needle(Offset.Zero), display)
             // Under glass: a faint sheen across the top and a shadow inside the opening.
-            drawRect(Brush.linearGradient(listOf(Color.White.copy(alpha = 0.07f), Color.White.copy(alpha = 0f)), Offset(w * 0.3f, 0f), Offset(w * 0.45f, h * 0.5f)))
+            drawRect(Brush.linearGradient(listOf(sheen.copy(alpha = 0.07f), sheen.copy(alpha = 0f)), Offset(w * 0.3f, 0f), Offset(w * 0.45f, h * 0.5f)))
             drawRoundRect(display.copy(alpha = 0.35f), cornerRadius = corner, style = Stroke(unit * 1.2f))
         }
         // Peak light, top right, with its glow on the panel.
@@ -552,7 +552,7 @@ private fun Valve(glow: Float, heated: Boolean, channel: Int, u: Dp, measurer: T
         val left = w * 0.24f; val right = w * 0.76f; val top = h * 0.16f; val shoulder = h * 0.3f; val bottom = h * 0.86f
         val envelope = Path().apply {
             moveTo(left, bottom); lineTo(left, shoulder)
-            quadraticBezierTo(w / 2, top - h * 0.1f, right, shoulder)
+            quadraticTo(w / 2, top - h * 0.1f, right, shoulder)
             lineTo(right, bottom)
         }
         val centre = Offset(w / 2, h * 0.57f)

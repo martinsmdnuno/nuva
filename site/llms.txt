@@ -1,6 +1,6 @@
 # NuVa
 
-> NuVa is a free, open-source music player for macOS (14 Sonoma or later, Apple silicon and Intel) that plays music folders as they are: a folder is an album, a file is a track, and it never reads tags to organise the library. There is also an Android TV app. Current version: 1.11. MIT license.
+> NuVa is a free, open-source music player for macOS (14 Sonoma or later, Apple silicon and Intel) that plays music folders as they are: a folder is an album, a file is a track, and it never reads tags to organise the library. There is also an Android TV app. Current version: 1.12 MIT license.
 
 - Formats: FLAC (including 24-bit hi-res), ALAC, WAV, AIFF, MP3 and AAC/M4A, played through Apple's AVFoundation (the engine behind QuickTime). No VLC, no ffmpeg, no bundled codecs.
 - Sources: folders on the Mac, external disks, NAS shares mounted over SMB, audio CDs (named from MusicBrainz), and Jellyfin servers browsed by their real folders, streaming the original file. Plex and UPnP/DLNA are not supported yet.

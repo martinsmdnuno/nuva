@@ -76,7 +76,9 @@ struct DisplayView: View {
                                 .motion(Motion.state, value: entry?.parentPath)
                         }
                         Spacer(minLength: 0)
+                        // The output's name is short and says where the sound goes: the folder truncates first.
                         OutputControl()
+                            .layoutPriority(2)
                     }
                     .foregroundStyle(Color.displayMuted)
 

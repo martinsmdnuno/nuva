@@ -32,6 +32,8 @@ class JellyfinSource(
         val container: String?,
         val runTimeTicks: Long?,
         val collectionType: String?,
+        /** The file's size, from its first media source. */
+        val size: Long? = null,
     ) {
         /** Path with forward slashes (Windows servers use `\`). */
         val unixPath: String? get() = path?.replace('\\', '/')
@@ -45,6 +47,7 @@ class JellyfinSource(
                 container = json.optStringOrNull("Container"),
                 runTimeTicks = if (json.has("RunTimeTicks") && !json.isNull("RunTimeTicks")) json.getLong("RunTimeTicks") else null,
                 collectionType = json.optStringOrNull("CollectionType"),
+                size = json.optJSONArray("MediaSources")?.optJSONObject(0)?.let { if (it.has("Size") && !it.isNull("Size")) it.getLong("Size") else null },
             )
         }
     }
@@ -96,7 +99,7 @@ class JellyfinSource(
                 }
                 item.isFolder -> if (seen.add(rel)) result.add(Entry(rel, rest, isFolder = true))
                 Playable.isPlayable(rel) ->
-                    result.add(Entry(rel, rest, isFolder = false, duration = item.runTimeTicks?.let { it / 10_000_000.0 }))
+                    result.add(Entry(rel, rest, isFolder = false, duration = item.runTimeTicks?.let { it / 10_000_000.0 }, size = item.size))
             }
         }
         return result.naturallySorted()
@@ -149,7 +152,7 @@ class JellyfinSource(
     }
 
     private suspend fun items(parentId: String): List<Item> {
-        val query = mapOf("parentId" to parentId, "fields" to "Path", "enableImages" to "false", "enableUserData" to "false")
+        val query = mapOf("parentId" to parentId, "fields" to "Path,MediaSources", "enableImages" to "false", "enableUserData" to "false")
         if (!legacyRoutes) {
             try {
                 return get("Items", query + ("userId" to session.userId))

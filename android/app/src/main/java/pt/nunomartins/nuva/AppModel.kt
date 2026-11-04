@@ -244,7 +244,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
             lastIndex = state.index
             lastSaved = now
             val tracks = JSONArray()
-            state.queue.forEach { tracks.put(JSONObject().put("path", it.path).put("name", it.name).put("duration", it.duration ?: -1.0)) }
+            state.queue.forEach { tracks.put(JSONObject().put("path", it.path).put("name", it.name).put("duration", it.duration ?: -1.0).put("size", it.size ?: -1L)) }
             prefs.edit().putString("session", JSONObject()
                 .put("tracks", tracks).put("index", state.index).put("position", (state.position * 1000).toLong()).toString()).apply()
         }
@@ -263,7 +263,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
                     val list = json.getJSONArray("tracks")
                     val tracks = (0 until list.length()).map {
                         val t = list.getJSONObject(it)
-                        Entry(t.getString("path"), t.getString("name"), false, t.getDouble("duration").takeIf { d -> d >= 0 })
+                        Entry(t.getString("path"), t.getString("name"), false, t.getDouble("duration").takeIf { d -> d >= 0 }, t.optLong("size", -1).takeIf { b -> b > 0 })
                     }
                     if (tracks.isEmpty()) return@launch
                     val urls = tracks.map { source.url(it) }

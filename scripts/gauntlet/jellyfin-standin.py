@@ -121,7 +121,14 @@ class Handler(BaseHTTPRequestHandler):
             parent = query.get("parentId", [""])[0]
             if parent not in ITEMS:
                 return self.send_json({}, 404)
-            return self.send_json({"Items": [self.public(i) for i in CHILDREN.get(parent, [])]})
+            items = [self.public(i) for i in CHILDREN.get(parent, [])]
+            # MediaSources only when asked for, as Jellyfin does: the size of the tone that streams.
+            if "MediaSources" in query.get("fields", [""])[0]:
+                for i in items:
+                    if not i["IsFolder"]:
+                        tone = os.path.join(self.audio, f"tone-{ITEMS[i['Id']]['Tone']}.flac")
+                        i["MediaSources"] = [{"Id": i["Id"], "Size": os.path.getsize(tone)}]
+            return self.send_json({"Items": items})
         match = re.fullmatch(r"/Audio/([0-9a-f]+)/stream\.(\w+)", url.path)
         if match and match.group(1) in ITEMS:
             return self.stream(os.path.join(self.audio, f"tone-{ITEMS[match.group(1)]['Tone']}.flac"))

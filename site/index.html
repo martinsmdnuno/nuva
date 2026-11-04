@@ -77,7 +77,8 @@
 <body>
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="wrap top">
+<header class="top">
+  <div class="wrap bar">
   <a class="brand" href="/" aria-label="NuVa, home"><img src="/favicon.svg" alt="" width="32" height="32">NuVa</a>
   <nav aria-label="Main">
     <a href="#features">Features</a>
@@ -86,6 +87,8 @@
     <a href="https://github.com/martinsmdnuno/nuva">GitHub</a>
     <a href="/pt/" hreflang="pt" lang="pt">Português</a>
   </nav>
+  <a class="key play small" href="#download">Download</a>
+  </div>
 </header>
 
 <main id="main">
@@ -108,7 +111,7 @@
         <button class="key mode" type="button" data-platform="windows" aria-pressed="false">Windows</button>
       </div>
     </div>
-    <div class="keys">
+    <div class="keys" id="download">
       <div class="group" data-for="mac">
         <span class="led on" aria-hidden="true"></span>
         <a class="key play" href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg">
@@ -150,10 +153,19 @@
     <p class="meta tv-hint" data-for="tv">On the TV: open the Downloader app and type <code>nuva.martinsnuno.com/tv</code></p>
     <p class="meta tv-hint" data-for="windows">Unzip it and open NuVa.exe. Windows asks once: More info › Run anyway</p>
     <figure class="shot" data-for="mac">
-      <img src="/img/themes.webp" width="1600" height="1259" alt="NuVa's window in the dark Lead and light Aluminium themes: a display showing FLAC 24/48 playing over AirPlay to a WiiM, the keys, and the queue">
+      <img src="/img/themes.webp" width="1600" height="1259" fetchpriority="high" decoding="async" alt="NuVa's window in the dark Lead and light Aluminium themes: a display showing FLAC 24/48 playing over AirPlay to a WiiM, the keys, and the queue">
     </figure>
     <figure class="shot" data-for="tv">
       <img src="/img/tv.webp" width="1600" height="942" loading="lazy" alt="NuVa on Android TV: the display with Dreams playing in FLAC 16/44.1 and the spectrum, the keys, and the queue of six tracks">
+    </figure>
+    <figure class="shot panel" data-for="windows" aria-hidden="true">
+      <div class="display big">
+        <div class="row"><span><span class="dot">●</span> FLAC 24/96</span><span class="dim">Speakers (USB DAC)</span></div>
+        <div class="title">Dreams</div>
+        <div class="dim">Rumours (1977)</div>
+        <div class="row"><span class="time">01:07</span><span class="dim"><span class="dot">●</span> EQ · Rock</span></div>
+        <div class="bars"><i style="--h:38"></i><i style="--h:62"></i><i style="--h:80"></i><i style="--h:71"></i><i style="--h:88"></i><i style="--h:64"></i><i style="--h:52"></i><i style="--h:70"></i><i style="--h:46"></i><i style="--h:30"></i></div>
+      </div>
     </figure>
   </div>
 
@@ -161,7 +173,7 @@
     <div class="wrap">
       <p class="label">why</p>
       <h2>Made for music kept in folders</h2>
-      <p class="muted" style="max-width: 40em; margin-bottom: 40px;">You spent years naming your folders and files just right. Most players throw that away and rebuild your library from tags, so remixes, covers and live sets end up scattered across albums you've never heard of. NuVa doesn't.</p>
+      <p class="muted intro">You spent years naming your folders and files just right. Most players throw that away and rebuild your library from tags, so remixes, covers and live sets end up scattered across albums you've never heard of. NuVa doesn't.</p>
       <div class="features">
         <div data-for="mac windows">
           <h3>Your folders, untouched</h3>

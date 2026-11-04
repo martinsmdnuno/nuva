@@ -75,7 +75,8 @@
 <body>
 <a class="skip" href="#main">Saltar para o conteúdo</a>
 
-<header class="wrap top">
+<header class="top">
+  <div class="wrap bar">
   <a class="brand" href="/pt/" aria-label="NuVa, início"><img src="/favicon.svg" alt="" width="32" height="32">NuVa</a>
   <nav aria-label="Principal">
     <a href="#features">Funções</a>
@@ -84,6 +85,8 @@
     <a href="https://github.com/martinsmdnuno/nuva">GitHub</a>
     <a href="/" hreflang="en" lang="en">English</a>
   </nav>
+  <a class="key play small" href="#download">Descarregar</a>
+  </div>
 </header>
 
 <main id="main">
@@ -106,7 +109,7 @@
         <button class="key mode" type="button" data-platform="windows" aria-pressed="false">Windows</button>
       </div>
     </div>
-    <div class="keys">
+    <div class="keys" id="download">
       <div class="group" data-for="mac">
         <span class="led on" aria-hidden="true"></span>
         <a class="key play" href="https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa.dmg">
@@ -148,10 +151,19 @@
     <p class="meta tv-hint" data-for="tv">Na TV: abre a app Downloader e escreve <code>nuva.martinsnuno.com/tv</code></p>
     <p class="meta tv-hint" data-for="windows">Descompacta e abre o NuVa.exe. O Windows pergunta uma vez: Mais informações › Executar mesmo assim</p>
     <figure class="shot" data-for="mac">
-      <img src="/img/themes.webp" width="1600" height="1259" alt="A janela da NuVa nos temas Chumbo e Alumínio: o visor mostra um FLAC 24/48 a tocar por AirPlay num WiiM, as teclas e a fila">
+      <img src="/img/themes.webp" width="1600" height="1259" fetchpriority="high" decoding="async" alt="A janela da NuVa nos temas Chumbo e Alumínio: o visor mostra um FLAC 24/48 a tocar por AirPlay num WiiM, as teclas e a fila">
     </figure>
     <figure class="shot" data-for="tv">
       <img src="/img/tv.webp" width="1600" height="942" loading="lazy" alt="A NuVa na Android TV: o visor com Dreams a tocar em FLAC 16/44.1 e o espetro, as teclas e uma fila de seis faixas">
+    </figure>
+    <figure class="shot panel" data-for="windows" aria-hidden="true">
+      <div class="display big">
+        <div class="row"><span><span class="dot">●</span> FLAC 24/96</span><span class="dim">Colunas (DAC USB)</span></div>
+        <div class="title">Dreams</div>
+        <div class="dim">Rumours (1977)</div>
+        <div class="row"><span class="time">01:07</span><span class="dim"><span class="dot">●</span> EQ · Rock</span></div>
+        <div class="bars"><i style="--h:38"></i><i style="--h:62"></i><i style="--h:80"></i><i style="--h:71"></i><i style="--h:88"></i><i style="--h:64"></i><i style="--h:52"></i><i style="--h:70"></i><i style="--h:46"></i><i style="--h:30"></i></div>
+      </div>
     </figure>
   </div>
 
@@ -159,7 +171,7 @@
     <div class="wrap">
       <p class="label">porquê</p>
       <h2>Feita para música guardada em pastas</h2>
-      <p class="muted" style="max-width: 40em; margin-bottom: 40px;">Passaste anos a dar o nome certo às pastas e aos ficheiros. A maioria dos leitores deita isso fora e refaz a biblioteca a partir das tags, e os remixes, covers e sets ao vivo acabam espalhados por álbuns que nunca ouviste. A NuVa não.</p>
+      <p class="muted intro">Passaste anos a dar o nome certo às pastas e aos ficheiros. A maioria dos leitores deita isso fora e refaz a biblioteca a partir das tags, e os remixes, covers e sets ao vivo acabam espalhados por álbuns que nunca ouviste. A NuVa não.</p>
       <div class="features">
         <div data-for="mac windows">
           <h3>As tuas pastas, intactas</h3>

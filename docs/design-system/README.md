@@ -61,7 +61,7 @@ Flat keys, as on a Braun calculator or tape recorder:
 
 ## Motion
 
-Movement only shows what the hardware would do. Nothing moves on its own, nothing loops, and everything snaps with Reduce Motion. Tokens in `Sources/DesignSystem/Motion.swift`:
+Movement only shows what the hardware would do. Nothing moves on its own, nothing loops, and everything snaps with Reduce Motion. One exception: a name too long for the display's folder line scrolls, back and forth with a rest at each end, because a VFD does the same with a long title (see Type); with Reduce Motion it truncates. Tokens in `Sources/DesignSystem/Motion.swift`:
 
 - **Keys travel.** Pressed, the face goes down 1px and darkens in 60ms; released, a short spring brings it back. Changing icons (play/pause, repeat/repeat one) swap in place.
 - **LEDs glow and fade.** On in 80ms; off in 350ms, a short afterglow like a filament.

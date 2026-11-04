@@ -65,11 +65,11 @@ fun Overlays(model: AppModel, onLeave: () -> Unit) {
     }
 }
 
-/** A panel on surface-1, over the chassis darkened behind it. */
+/** A panel on surface-1, over the chassis darkened behind it (by the display's own dark). */
 @OptIn(androidx.compose.ui.ExperimentalComposeUiApi::class)
 @Composable
 private fun Panel(width: Dp, content: @Composable ColumnScope.() -> Unit) {
-    Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.55f)), contentAlignment = Alignment.Center) {
+    Box(Modifier.fillMaxSize().background(Tokens.display.copy(alpha = 0.55f)), contentAlignment = Alignment.Center) {
         // The remote's focus stays inside the panel until it closes.
         Column(
             Modifier.width(width).clip(RoundedCornerShape(10.dp)).background(Tokens.surface1)

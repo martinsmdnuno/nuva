@@ -10,7 +10,7 @@ for page in site/index.html site/pt/index.html; do
     -e "s|(<span class=\"version\">)[^<]*|\1$version|" \
     "$page"
 done
-sed -i '' -E "s|(Current version: )[0-9.]+|\1$version|" site/llms.txt
+sed -i '' -E "s|(Current version: )[0-9]+(\.[0-9]+)*|\1$version|" site/llms.txt
 sed -i '' -E "s|<lastmod>[^<]*</lastmod>|<lastmod>$today</lastmod>|" site/sitemap.xml
 scripts/site-assets.sh
 echo "Site: version $version, $today"

@@ -301,3 +301,6 @@ footer a:hover { color: var(--ink); }
 }
 @media (prefers-reduced-motion: reduce) { .key { transition: none; } }
 @media print { .top, .platforms, #feedback, .keys { display: none; } }
+
+/* Keeps a hyphenated word on one line ("hi-fi"). */
+.nowrap { white-space: nowrap; }

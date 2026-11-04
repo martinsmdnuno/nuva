@@ -26,6 +26,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
+import pt.nunomartins.nuva.artwork.ArtworkGlow
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -191,30 +197,36 @@ fun AmbientScreen(model: AppModel) {
             ) { Led(state.isPlaying, size = u) }
             return@BoxWithConstraints
         }
-        val glow = model.glow
+        // The cover's glow or, without one, the skin's own: there is always something moving behind the face.
+        val skinGlow = remember(Look.skin.id) { ArtworkGlow.skinField(Tokens.display.toArgb(), Tokens.displayMuted.toArgb(), Tokens.led.toArgb()) }
+        val glow = model.glow ?: skinGlow
         Crossfade(glow, animationSpec = tween(1500), label = "glow") { field ->
-            if (field != null) Glow(field, pulses = AmbientState.face == AmbientFace.Display, playing = state.isPlaying, opacity)
+            if (field != null) Glow(field, strong = AmbientState.face == AmbientFace.Display, playing = state.isPlaying, opacity, now)
         }
         val (dx, dy) = drift(now, protects)
         // While scrubbing, every face shows where the track will go on from.
         val shown = state.scrub?.let { state.copy(position = it.target) } ?: state
-        Box(
-            Modifier
-                .align(Alignment.Center)
-                .fillMaxWidth(area)
-                .fillMaxHeight(area)
-                .offset(maxWidth * dx, maxHeight * dy)
-                .padding(horizontal = u * 7, vertical = u * 6)
-                .alpha(opacity),
-        ) {
-            val static = if (protects) 0.55f else 1f
-            when (AmbientState.face) {
-                AmbientFace.Display -> DisplayFace(model, shown, u, static)
-                AmbientFace.Clock -> ClockFace(shown, u, now, protects, static)
-                AmbientFace.Spectrum -> SpectrumFace(shown, u, static)
-                AmbientFace.Meters -> MetersFace(shown, u, static)
-                AmbientFace.Needles -> NeedlesFace(shown, u, static)
-                AmbientFace.Valves -> ValvesFace(shown, u, static)
+        val cover = model.cover?.takeIf { model.showArtwork }
+        val art = remember(cover) { cover?.asImageBitmap() }
+        CompositionLocalProvider(LocalCover provides art) {
+            Box(
+                Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth(area)
+                    .fillMaxHeight(area)
+                    .offset(maxWidth * dx, maxHeight * dy)
+                    .padding(horizontal = u * 7, vertical = u * 6)
+                    .alpha(opacity),
+            ) {
+                val static = if (protects) 0.55f else 1f
+                when (AmbientState.face) {
+                    AmbientFace.Display -> DisplayFace(model, shown, u, static)
+                    AmbientFace.Clock -> ClockFace(shown, u, now, protects, static)
+                    AmbientFace.Spectrum -> SpectrumFace(shown, u, static)
+                    AmbientFace.Meters -> MetersFace(shown, u, static)
+                    AmbientFace.Needles -> NeedlesFace(shown, u, static)
+                    AmbientFace.Valves -> ValvesFace(shown, u, static)
+                }
             }
         }
         val scrubbing = state.scrub != null
@@ -239,17 +251,41 @@ private fun drift(now: Long, protects: Boolean): Pair<Float, Float> {
     return (wave(3187.0, 1279.0, 0.0) * 0.08).toFloat() to (wave(4253.0, 1531.0, 1.7) * 0.08).toFloat()
 }
 
-/** The cover's field behind the faces; on the Display face it breathes with the bass, between 70% and full. */
+/**
+ * The glow behind the faces: the cover's field, or the skin's. It breathes with the bass (between 70%
+ * and full on the Display face, between 85% and full on the others) and drifts slowly, a few percent of
+ * the screen over minutes, playing or not: the screen never holds still behind the face.
+ */
 @Composable
-private fun Glow(field: android.graphics.Bitmap, pulses: Boolean, playing: Boolean, opacity: Float) {
+private fun Glow(field: android.graphics.Bitmap, strong: Boolean, playing: Boolean, opacity: Float, now: Long) {
     val image = remember(field) { field.asImageBitmap() }
-    var level = 1f
-    if (pulses) {
-        val pulse = remember { pt.nunomartins.nuva.ui.GlowPulse() }
-        val time = meterFrames(playing)
-        level = 0.7f + 0.3f * pulse.update(time, if (playing) Audio.spectrum.levels(Audio.clock.now()) else null).toFloat()
-    }
-    Image(image, null, Modifier.fillMaxSize().alpha(level * opacity), contentScale = ContentScale.FillBounds, filterQuality = FilterQuality.High)
+    val pulse = remember { pt.nunomartins.nuva.ui.GlowPulse() }
+    val time = meterFrames(playing)
+    val beat = pulse.update(time, if (playing) Audio.spectrum.levels(Audio.clock.now()) else null).toFloat()
+    val level = if (strong) 0.7f + 0.3f * beat else 0.85f + 0.15f * beat
+    val t = now / 1000.0
+    Image(
+        image, null,
+        Modifier.fillMaxSize()
+            .graphicsLayer {
+                scaleX = 1.12f
+                scaleY = 1.12f
+                translationX = size.width * 0.04f * sin(2 * PI * t / 617).toFloat()
+                translationY = size.height * 0.04f * sin(2 * PI * t / 853 + 1.3).toFloat()
+            }
+            .alpha(level * opacity),
+        contentScale = ContentScale.FillBounds, filterQuality = FilterQuality.High,
+    )
+}
+
+/** The playing album's cover for the faces (with artwork on), or null. */
+private val LocalCover = compositionLocalOf<ImageBitmap?> { null }
+
+/** The cover at `size`, a little dimmer with OLED protection (it doesn't move but with the wander). */
+@Composable
+private fun AlbumCover(size: Dp, static: Float) {
+    val art = LocalCover.current ?: return
+    Image(art, null, Modifier.size(size).alpha(0.5f + static * 0.5f).clip(RoundedCornerShape(3.dp)), contentScale = ContentScale.Crop)
 }
 
 @Composable
@@ -280,9 +316,10 @@ private fun Position(state: PlayerState, u: Dp, static: Float, modifier: Modifie
 
 /** The track at the foot of the animated faces: title and folders on the left, elapsed time on the right. */
 @Composable
-private fun TrackFoot(state: PlayerState, u: Dp) {
+private fun TrackFoot(state: PlayerState, u: Dp, static: Float) {
     val entry = state.current
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(u * 2)) {
+        AlbumCover(u * 6.4f, static)
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(u * 0.6f)) {
             ScrollingText(entry?.title ?: stringResource(R.string.no_track), Type.title.copy(color = if (entry == null) Tokens.displayMuted else Tokens.displayInk, fontSize = sp(u * 2.8f)))
             ScrollingText(entry?.folderLine.orEmpty(), Type.body.copy(color = Tokens.displayMuted, fontSize = sp(u * 1.9f)))
@@ -299,10 +336,7 @@ private fun DisplayFace(model: AppModel, state: PlayerState, u: Dp, static: Floa
         MetaLine(state, u, stringResource(R.string.source_server))
         Spacer(Modifier.weight(1f))
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(u * 2.4f)) {
-            val cover = model.cover
-            if (model.showArtwork && cover != null) {
-                Image(remember(cover) { cover.asImageBitmap() }, null, Modifier.size(u * 10).clip(RoundedCornerShape(3.dp)), contentScale = ContentScale.Crop)
-            }
+            AlbumCover(u * 12, static)
             Column(verticalArrangement = Arrangement.spacedBy(u * 1.2f)) {
                 ScrollingText(entry?.title ?: stringResource(R.string.no_track), Type.title.copy(color = if (entry == null) Tokens.displayMuted else Tokens.displayInk, fontSize = sp(u * 5.6f), lineHeight = sp(u * 6.6f)))
                 ScrollingText(entry?.folderLine ?: stringResource(R.string.choose_folder), Type.body.copy(color = Tokens.displayMuted, fontSize = sp(u * 2.3f), lineHeight = sp(u * 3f)))
@@ -310,7 +344,8 @@ private fun DisplayFace(model: AppModel, state: PlayerState, u: Dp, static: Floa
         }
         Spacer(Modifier.weight(1f))
         Row(Modifier.fillMaxWidth().padding(bottom = u * 2), verticalAlignment = Alignment.Bottom) {
-            Text(clock(state.position), Type.displayTime.copy(color = Tokens.displayInk, fontSize = sp(u * 13f), lineHeight = sp(u * 14f)), Modifier.weight(1f))
+            // The big time lights the same segments for minutes: a little dimmer with OLED protection.
+            Text(clock(state.position), Type.displayTime.copy(color = Tokens.displayInk, fontSize = sp(u * 13f), lineHeight = sp(u * 14f)), Modifier.weight(1f).alpha(0.5f + static * 0.5f))
             Text(clock(state.duration), Type.displayMeta.copy(color = Tokens.displayMuted, fontSize = sp(u * 2.2f)))
         }
         Position(state, u, static)
@@ -325,7 +360,7 @@ private fun ClockFace(state: PlayerState, u: Dp, now: Long, blinks: Boolean, sta
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(u * 1.4f)) {
         Spacer(Modifier.weight(1f))
         val style = Type.displayTime.copy(color = Tokens.displayInk, fontSize = sp(u * 20f), lineHeight = sp(u * 22f))
-        Row {
+        Row(Modifier.alpha(0.5f + static * 0.5f)) {
             Text(SimpleDateFormat("HH", Locale.getDefault()).format(date), style)
             Text(":", style, Modifier.alpha(if (colon) 1f else 0f))
             Text(SimpleDateFormat("mm", Locale.getDefault()).format(date), style)
@@ -334,6 +369,7 @@ private fun ClockFace(state: PlayerState, u: Dp, now: Long, blinks: Boolean, sta
         Spacer(Modifier.weight(1f))
         state.current?.let { entry ->
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(u * 1.4f)) {
+                AlbumCover(u * 4, static)
                 Led(state.isPlaying, size = u)
                 ScrollingText("${entry.title}  ·  ${entry.folderLine}", Type.body.copy(color = Tokens.displayInk, fontSize = sp(u * 2.1f)), Modifier.width(u * 60))
             }
@@ -368,7 +404,7 @@ private fun SpectrumFace(state: PlayerState, u: Dp, static: Float) {
             }
         }
         Position(state, u, static, Modifier.padding(top = u * 1.6f, bottom = u * 3))
-        TrackFoot(state, u)
+        TrackFoot(state, u, static)
     }
 }
 
@@ -419,7 +455,7 @@ private fun MetersFace(state: PlayerState, u: Dp, static: Float) {
         }
         Spacer(Modifier.weight(1f))
         Position(state, u, static, Modifier.padding(bottom = u * 3))
-        TrackFoot(state, u)
+        TrackFoot(state, u, static)
     }
 }
 
@@ -452,7 +488,7 @@ private fun NeedlesFace(state: PlayerState, u: Dp, static: Float) {
         }
         Spacer(Modifier.weight(1f))
         Position(state, u, static, Modifier.padding(bottom = u * 3))
-        TrackFoot(state, u)
+        TrackFoot(state, u, static)
     }
 }
 
@@ -546,7 +582,7 @@ private fun ValvesFace(state: PlayerState, u: Dp, static: Float) {
         }
         Spacer(Modifier.weight(1f))
         Position(state, u, static, Modifier.padding(bottom = u * 3))
-        TrackFoot(state, u)
+        TrackFoot(state, u, static)
     }
 }
 

@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import pt.nunomartins.nuva.artwork.ArtworkGlow
+import pt.nunomartins.nuva.artwork.ArtworkOrigin
 import pt.nunomartins.nuva.artwork.ArtworkResolver
 import pt.nunomartins.nuva.artwork.CoverArtArchive
 import pt.nunomartins.nuva.library.Account
@@ -45,7 +46,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
     val player = PlayerModel(app)
     val updates = Updates(app, VERSION)
     private var source: JellyfinSource? = account.server?.let { server -> account.session?.let { open(server, it) } }
-    private val artwork = ArtworkResolver(File(app.filesDir, "artwork"), CoverArtArchive(VERSION))
+    private val artwork = ArtworkResolver(File(app.filesDir, "artwork"), CoverArtArchive(VERSION)) { folder -> source?.folderArtwork(folder) }
 
     var signedIn by mutableStateOf(source != null)
         private set
@@ -98,6 +99,9 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         private set
     var glow by mutableStateOf<Bitmap?>(null)
         private set
+    /** Where the playing album's cover came from, or why there is none (null: not looked up). */
+    var artworkOrigin by mutableStateOf<ArtworkOrigin?>(null)
+        private set
     private var coverFor: String? = null
     private var coverJob: Job? = null
     private var glowSkin: String? = null
@@ -120,6 +124,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         if (!on) {
             cover = null
             glow = null
+            artworkOrigin = null
         }
     }
 
@@ -292,14 +297,22 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         if (entry == null) {
             cover = null
             glow = null
+            artworkOrigin = null
             return
         }
         coverJob = viewModelScope.launch {
-            val found = artwork.resolve(entry)
+            val resolved = artwork.resolve(entry)
+            val found = resolved.cover
             cover = found
+            artworkOrigin = resolved.origin
             glowSkin = skin
             glow = found?.let { ArtworkGlow.field(it, Tokens.display.toArgb(), Tokens.displayMuted.toArgb()) }
             player.setArtwork(entry.path, found)
+            // The server or the internet was away: look again in a minute, for the same album.
+            if (resolved.origin == ArtworkOrigin.Offline) {
+                delay(60_000)
+                if (coverFor == album) coverFor = null
+            }
         }
     }
 

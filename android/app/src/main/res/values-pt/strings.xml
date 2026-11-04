@@ -69,6 +69,11 @@
     <string name="font">Fonte</string>
     <string name="font_follows">%1$s (da skin)</string>
     <string name="show_artwork">Mostrar capas</string>
+    <!-- Settings, next to Show Artwork: where the playing album's cover came from. -->
+    <string name="artwork_folder">da pasta</string>
+    <string name="artwork_online">online</string>
+    <string name="artwork_none">não encontrada</string>
+    <string name="artwork_offline">sem ligação</string>
     <string name="show_spectrum">Mostrar espetro</string>
     <string name="section_ambient">ambiente</string>
     <string name="ambient_face">Mostrador</string>

@@ -51,6 +51,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pt.nunomartins.nuva.AppModel
 import pt.nunomartins.nuva.Overlay
 import pt.nunomartins.nuva.R
+import pt.nunomartins.nuva.artwork.ArtworkOrigin
 import pt.nunomartins.nuva.audio.Audio
 import pt.nunomartins.nuva.audio.Equalizer
 
@@ -211,7 +212,17 @@ private fun SettingsPanel(model: AppModel) {
                     Look.choose(sets[(sets.indexOf(Look.fontChoice) + 1) % sets.size])
                 }
             }
-            item { OptionRow(stringResource(R.string.show_artwork), led = model.showArtwork) { model.toggleShowArtwork() } }
+            item {
+                // With artwork on, where the playing album's cover came from (or that none was found).
+                val origin = when (model.artworkOrigin) {
+                    ArtworkOrigin.Folder -> stringResource(R.string.artwork_folder)
+                    ArtworkOrigin.Online -> stringResource(R.string.artwork_online)
+                    ArtworkOrigin.None -> stringResource(R.string.artwork_none)
+                    ArtworkOrigin.Offline -> stringResource(R.string.artwork_offline)
+                    null -> null
+                }
+                OptionRow(stringResource(R.string.show_artwork), origin?.takeIf { model.showArtwork }, led = model.showArtwork) { model.toggleShowArtwork() }
+            }
             item { OptionRow(stringResource(R.string.show_spectrum), led = model.showSpectrum) { model.toggleShowSpectrum() } }
             item { Legend(stringResource(R.string.section_ambient), Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp)) }
             item { OptionRow(stringResource(R.string.ambient_face), stringResource(AmbientState.face.label)) { AmbientState.choose(AmbientState.face.moved(1)) } }

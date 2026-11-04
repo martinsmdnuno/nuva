@@ -162,6 +162,16 @@ tour() {
   press DPAD_DOWN DPAD_CENTER
   shot player 5
 
+  # Ambient without a cover (artwork is off at first): the skin's own glow behind the face.
+  key 4; press DPAD_CENTER
+  shot ambient-skin-glow 4
+  press DPAD_UP
+
+  # Artwork on (Settings, its third row): Rumours has a cover.png in its folder on the stand-in, a
+  # made-up one; the folder's image comes before any online lookup, so nothing is asked of MusicBrainz.
+  key 5; press DPAD_CENTER DPAD_DOWN DPAD_DOWN DPAD_CENTER BACK
+  sleep 3
+
   # The position bar, up from the keys: OK holds it, → twice goes on 20 s (the elapsed time lit, the
   # bar thicker); Back goes back to where it was.
   home; press DPAD_UP DPAD_CENTER DPAD_RIGHT DPAD_RIGHT

@@ -70,6 +70,11 @@
     <string name="font">Font</string>
     <string name="font_follows">%1$s (from the skin)</string>
     <string name="show_artwork">Show Artwork</string>
+    <!-- Settings, next to Show Artwork: where the playing album's cover came from. -->
+    <string name="artwork_folder">from the folder</string>
+    <string name="artwork_online">online</string>
+    <string name="artwork_none">not found</string>
+    <string name="artwork_offline">offline</string>
     <string name="show_spectrum">Show Spectrum</string>
     <string name="section_ambient">ambient</string>
     <string name="ambient_face">Face</string>

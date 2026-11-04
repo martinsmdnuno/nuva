@@ -28,7 +28,9 @@ A NuVa for an Android TV box, to play the author's FLAC library from Jellyfin on
 - **Ambient**: the Display face full screen, entered with a key or after a minute without input while playing; any key leaves. OLED protection: a slow wander and the 55% rule for static parts. The other faces (Spectrum, Meters, Needles, Valves) need the audio's levels; they come in a later version with Media3's audio processor.
 - **Playback**: gapless through Media3's playlist, keeps playing with the screen off or in another app, Now Playing on the TV's media controls.
 
-Later: the equalizer and the meters (a Media3 `AudioProcessor` measuring after the filters), artwork from folder images, Google Cast to a WiiM, more sources.
+- **Artwork**: the image file in the album's folder on the server first (`cover`, `folder`, `front`, `album`, `capa` · jpg/jpeg/png, as on the Mac; only an image whose file Jellyfin reports in that folder, never one from the tags or downloaded by Jellyfin), then MusicBrainz + Cover Art Archive by the folder names. Settings shows where the playing album's cover came from; each album's steps go to the log (`NuVa.Artwork`); a lookup that couldn't reach the server or the internet is tried again a minute later. On every ambient face, with the glow of its colours behind; without a cover, a glow in the skin's own light. The glow breathes with the bass and drifts slowly, playing or paused.
+
+Later: the equalizer and the meters (a Media3 `AudioProcessor` measuring after the filters), Google Cast to a WiiM, more sources.
 
 ## Parity with the Mac (0.2)
 

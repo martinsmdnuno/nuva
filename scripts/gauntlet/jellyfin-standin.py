@@ -80,6 +80,27 @@ def build():
 VIEW, ITEMS, CHILDREN = build()
 
 
+def cover_png(side=240):
+    """A made-up cover, never a real one: four colour fields in the corners, as a PNG."""
+    import struct
+    import zlib
+    corners = [(196, 120, 64), (52, 92, 148), (40, 128, 108), (168, 64, 84)]
+    rows = bytearray()
+    for y in range(side):
+        rows.append(0)
+        for x in range(side):
+            fx, fy = x / (side - 1), y / (side - 1)
+            top = [a * (1 - fx) + b * fx for a, b in zip(corners[0], corners[1])]
+            bottom = [a * (1 - fx) + b * fx for a, b in zip(corners[2], corners[3])]
+            rows += bytes(int(t * (1 - fy) + b * fy) for t, b in zip(top, bottom))
+
+    def chunk(kind, data):
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data) & 0xFFFFFFFF)
+
+    header = struct.pack(">IIBBBBB", side, side, 8, 2, 0, 0, 0)
+    return b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", header) + chunk(b"IDAT", zlib.compress(bytes(rows))) + chunk(b"IEND", b"")
+
+
 class Handler(BaseHTTPRequestHandler):
     audio = "."
 
@@ -129,6 +150,21 @@ class Handler(BaseHTTPRequestHandler):
                         tone = os.path.join(self.audio, f"tone-{ITEMS[i['Id']]['Tone']}.flac")
                         i["MediaSources"] = [{"Id": i["Id"], "Size": os.path.getsize(tone)}]
             return self.send_json({"Items": items})
+        # Folder artwork: Rumours (1977) has a cover.png in the folder, as Jellyfin reports it.
+        match = re.fullmatch(r"/Items/([0-9a-f]+)/Images(/Primary)?", url.path)
+        if match and match.group(1) in ITEMS:
+            item = ITEMS[match.group(1)]
+            has_cover = item.get("IsFolder") and item["Path"].endswith("/Rumours (1977)")
+            if match.group(2) is None:
+                return self.send_json([{"ImageType": "Primary", "Path": item["Path"] + "/cover.png"}] if has_cover else [])
+            if has_cover:
+                body = cover_png()
+                self.send_response(200)
+                self.send_header("Content-Type", "image/png")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                return self.wfile.write(body)
+            return self.send_json({}, 404)
         match = re.fullmatch(r"/Audio/([0-9a-f]+)/stream\.(\w+)", url.path)
         if match and match.group(1) in ITEMS:
             return self.stream(os.path.join(self.audio, f"tone-{ITEMS[match.group(1)]['Tone']}.flac"))

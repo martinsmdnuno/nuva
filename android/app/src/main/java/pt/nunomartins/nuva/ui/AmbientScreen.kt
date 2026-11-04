@@ -552,7 +552,7 @@ private fun Valve(glow: Float, heated: Boolean, channel: Int, u: Dp, measurer: T
         val left = w * 0.24f; val right = w * 0.76f; val top = h * 0.16f; val shoulder = h * 0.3f; val bottom = h * 0.86f
         val envelope = Path().apply {
             moveTo(left, bottom); lineTo(left, shoulder)
-            quadraticBezierTo(w / 2, top - h * 0.1f, right, shoulder)
+            quadraticTo(w / 2, top - h * 0.1f, right, shoulder)
             lineTo(right, bottom)
         }
         val centre = Offset(w / 2, h * 0.57f)

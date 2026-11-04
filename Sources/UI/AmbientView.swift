@@ -682,7 +682,7 @@ private struct AmbientNeedlesFace: View {
 
     /// Deflection of a VU value, 0 (the rest pin) to 1 (+3 VU): a VU meter moves with voltage, not
     /// decibels, so -20 sits just right of the pin and 0 VU at about 70%.
-    static func position(vu: Float) -> CGFloat {
+    nonisolated static func position(vu: Float) -> CGFloat {
         CGFloat(VUNeedle.deflection(vu: Double(vu)))
     }
 

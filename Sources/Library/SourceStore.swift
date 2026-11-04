@@ -32,7 +32,7 @@ final class SourceStore {
         mountObserver = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didMountNotification, object: nil, queue: .main
         ) { [weak self] _ in
-            MainActor.assumeIsolated { self?.retryFailed() }
+            _ = MainActor.assumeIsolated { self?.retryFailed() }
         }
     }
 

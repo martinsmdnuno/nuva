@@ -10,7 +10,7 @@ objective gates → judge → green?  ─ yes → report
 
 ## Two halves
 
-1. **Objective gates**: `scripts/gauntlet.sh <platform>`. Build, warnings, tests, strings, content, screenshots in both languages, cheapest first, stopping at the first that fails. Logs, screenshots and the diff against `main` go to `build/gauntlet/<platform>/`.
+1. **Objective gates**: `scripts/gauntlet.sh <platform>`, the platform's gates in `scripts/gauntlet/<platform>.sh`. Build, warnings, tests, strings, content, screenshots in both languages, cheapest first, stopping at the first that fails. Logs, screenshots and the diff against `main` go to `build/gauntlet/<platform>/`.
 2. **The judge**: a separate agent (`.claude/agents/gauntlet-judge.md`) that never wrote the code. It reads that folder and grades it against the platform's rubric in this directory. It reports, never edits.
 
 Only `blocker` findings from the judge send the loop round again; `minor` ones go to the report.

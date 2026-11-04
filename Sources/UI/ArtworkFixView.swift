@@ -9,6 +9,7 @@ struct ArtworkFixView: View {
     let entry: Entry
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.isSnapshot) private var isSnapshot
     @State private var artist: String
     @State private var album: String
     @State private var error: String?
@@ -30,8 +31,8 @@ struct ArtworkFixView: View {
                 .font(.dsCaption)
                 .foregroundStyle(Color.inkMuted)
                 .fixedSize(horizontal: false, vertical: true)
-            field("Artista") { TextField("", text: $artist) }
-            field("Álbum") { TextField("", text: $album) }
+            field("Artista", text: $artist)
+            field("Álbum", text: $album)
             if let error {
                 Text(error)
                     .font(.dsCaption)
@@ -72,15 +73,25 @@ struct ArtworkFixView: View {
         return a.isEmpty || b.isEmpty ? nil : AlbumQuery(artist: a, album: b)
     }
 
-    private func field(_ label: LocalizedStringKey, @ViewBuilder _ content: () -> some View) -> some View {
+    private func field(_ label: LocalizedStringKey, text: Binding<String>) -> some View {
         VStack(alignment: .leading, spacing: Space.s1) {
             Text(label)
                 .font(.dsLabel)
                 .foregroundStyle(Color.inkMuted)
-            content()
-                .textFieldStyle(.roundedBorder)
-                .font(.dsBody)
-                .disabled(busy)
+            if isSnapshot {
+                // ImageRenderer can't draw an AppKit text field: the snapshot shows its text instead.
+                Text(text.wrappedValue)
+                    .font(.dsBody)
+                    .foregroundStyle(Color.ink)
+                    .padding(.horizontal, Space.s1)
+                    .frame(maxWidth: .infinity, minHeight: 22, alignment: .leading)
+                    .background(Color.surface0, in: RoundedRectangle(cornerRadius: Radius.sm, style: .continuous))
+            } else {
+                TextField("", text: text)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.dsBody)
+                    .disabled(busy)
+            }
         }
     }
 

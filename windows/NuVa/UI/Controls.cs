@@ -158,7 +158,6 @@ public class KeyButton : FrameworkElement
     public static string Spoken(string help)
     {
         var at = help.IndexOf("Ctrl+", StringComparison.Ordinal);
-        if (at < 0) at = help.IndexOf("Alt+", StringComparison.Ordinal);
         return (at > 0 ? help[..at] : help).Trim();
     }
 

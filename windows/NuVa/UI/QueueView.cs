@@ -110,7 +110,7 @@ public sealed class QueueHeader : DockPanel
     };
 }
 
-/// <summary>The queue. Double-click or Enter plays; Delete removes; drag or Alt+↑ Alt+↓ reorders.</summary>
+/// <summary>The queue. Double-click or Enter plays; Delete removes; drag or Ctrl+Shift+↑ Ctrl+Shift+↓ reorders.</summary>
 public sealed class QueueView : Grid
 {
     private readonly AppModel model;

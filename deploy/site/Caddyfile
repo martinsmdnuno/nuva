@@ -31,8 +31,20 @@
 
 	handle {
 		root * /srv
-		@assets path /fonts/* /img/* *.css *.js *.svg *.png *.ico
+		# Pages are checked on every visit, so a new page always brings its new CSS and JS;
+		# those are stamped with their hash (scripts/site-assets.sh) and never change under one address.
+		@stamped {
+			path *.css *.js
+			query v=*
+		}
+		@assets {
+			path /fonts/* /img/* *.css *.js *.svg *.png *.ico
+			not query v=*
+		}
+		@pages path / *.html */
+		header @stamped Cache-Control "public, max-age=31536000, immutable"
 		header @assets Cache-Control "public, max-age=86400"
+		header @pages Cache-Control "no-cache"
 		file_server
 	}
 

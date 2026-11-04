@@ -3,6 +3,7 @@
 ## 1.12.1 — Windows in step
 
 - Windows: a selected track moves in the queue with Ctrl+Shift+↑ ↓, the Mac's ⌥⌘↑ ↓ (it was Alt+↑ ↓).
+- Windows: pressed keys, the display's edge, a held equalizer fader and the VU meters' glass take their shade from the skin's colours, as on the Mac.
 
 ## 1.12 — the artist, and names that scroll
 

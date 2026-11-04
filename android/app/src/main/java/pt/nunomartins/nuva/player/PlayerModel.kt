@@ -37,6 +37,7 @@ data class PlayerState(
     val failedTitle: String? = null,
 ) {
     val current: Entry? get() = queue.getOrNull(index)
+    val mode: PlayMode get() = PlayMode.of(shuffle, repeat)
 }
 
 /** Talks to the playback service. The queue lives in the player; entries are kept here by their path. */
@@ -103,15 +104,11 @@ class PlayerModel(context: Context) {
     fun previous() = whenReady { it.seekToPrevious() }
     fun jump(index: Int) = whenReady { it.seekTo(index, 0); it.play() }
     fun skip(seconds: Int) = whenReady { it.seekTo((it.currentPosition + seconds * 1000L).coerceAtLeast(0)) }
-    fun toggleShuffle() = whenReady { it.shuffleModeEnabled = !it.shuffleModeEnabled }
-
-    /** Off → all → one → off, as on the Mac. */
-    fun cycleRepeat() = whenReady {
-        it.repeatMode = when (it.repeatMode) {
-            Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
-            Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
-            else -> Player.REPEAT_MODE_OFF
-        }
+    /** The mode key: normal → shuffle → repeat all → repeat one → normal. */
+    fun cycleMode() = whenReady {
+        val mode = PlayMode.of(it.shuffleModeEnabled, it.repeatMode).next
+        it.shuffleModeEnabled = mode.shuffle
+        it.repeatMode = mode.repeat
     }
 
     /** The cover for Now Playing (the TV's media controls and the remote's screen). */

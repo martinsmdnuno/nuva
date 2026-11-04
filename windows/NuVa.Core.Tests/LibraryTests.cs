@@ -17,6 +17,23 @@ public static class LibraryTests
     }
 
     [Test]
+    public static void FolderLineNamesArtistAndAlbumFolders()
+    {
+        Entry At(string path) => new(Guid.NewGuid(), path, "01 - Dreams.flac", EntryKind.Track);
+        var album = At("Fleetwood Mac/Rumours (1977)/01 - Dreams.flac");
+        Assert.Equal("Fleetwood Mac", album.ArtistFolder);
+        Assert.Equal("Fleetwood Mac · Rumours (1977)", album.FolderLine);
+        // A disc folder belongs to the album above it.
+        var disc = At("Música/Fleetwood Mac/Tusk/CD 2/01 - Dreams.flac");
+        Assert.Equal("Música/Fleetwood Mac/Tusk", disc.AlbumPath);
+        Assert.Equal("Fleetwood Mac · Tusk", disc.FolderLine);
+        // A source added at the album: nothing above it.
+        var root = At("Rumours/01 - Dreams.flac");
+        Assert.Equal(null, root.ArtistFolder);
+        Assert.Equal("Rumours", root.FolderLine);
+    }
+
+    [Test]
     public static void FoldersComeFirst()
     {
         var id = Guid.NewGuid();

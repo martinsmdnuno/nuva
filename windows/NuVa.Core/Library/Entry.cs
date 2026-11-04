@@ -38,6 +38,23 @@ public sealed record Entry(Guid SourceId, string Path, string Name, EntryKind Ki
 
     /// <summary>Path of the folder containing the entry.</summary>
     public string ParentPath => Paths.Parent(Path);
+
+    /// <summary>The album's folder: the one holding the track, or the one above a disc folder ("CD 1").</summary>
+    public string AlbumPath
+    {
+        get
+        {
+            var folder = ParentPath;
+            while (folder.Length > 0 && AlbumGuess.IsDiscFolder(Paths.LastComponent(folder))) folder = Paths.Parent(folder);
+            return folder;
+        }
+    }
+
+    /// <summary>The folder above the album, as it is named: usually the artist. Folders, never tags.</summary>
+    public string? ArtistFolder => Paths.LastComponent(Paths.Parent(AlbumPath)) is { Length: > 0 } name ? name : null;
+
+    /// <summary>"Fleetwood Mac · Rumours (1977)": the artist's and the album's folders.</summary>
+    public string FolderLine => string.Join(" · ", new[] { ArtistFolder, Paths.LastComponent(AlbumPath) }.Where(s => !string.IsNullOrEmpty(s)));
 }
 
 /// <summary>Helpers for the sources' '/' paths, whatever the OS.</summary>

@@ -10,7 +10,7 @@ cd "$(dirname "$0")/.."
 platform=${1:-}
 gates=scripts/gauntlet/$platform.sh
 if [[ -z $platform || ! -f $gates ]]; then
-  echo "usage: scripts/gauntlet.sh <$(ls scripts/gauntlet | sed 's/\.sh$//' | paste -sd '|' -)>"; exit 2
+  echo "usage: scripts/gauntlet.sh <$(cd scripts/gauntlet && ls *.sh | sed 's/\.sh$//' | paste -sd '|' -)>"; exit 2
 fi
 
 out=build/gauntlet/$platform

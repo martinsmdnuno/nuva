@@ -182,7 +182,7 @@ public class KeyButton : FrameworkElement
     protected override Size MeasureOverride(Size available)
     {
         if (text == null) return new Size(Width, Height);
-        var formatted = TextStyle.Label.Format(text, Brushes.Black, VisualTreeHelper.GetDpi(this).PixelsPerDip);
+        var formatted = TextStyle.Label.Format(text, Theme.Brush(Token.KeyModeInk), VisualTreeHelper.GetDpi(this).PixelsPerDip);
         return new Size(Math.Ceiling(formatted.WidthIncludingTrailingWhitespace) + 2 * Space.S3, Space.KeyText);
     }
 

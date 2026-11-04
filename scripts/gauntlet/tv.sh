@@ -65,7 +65,7 @@ snapshot_cleanup() {
     $adb emu kill >/dev/null 2>&1
   elif $adb get-state >/dev/null 2>&1; then
     $adb shell am force-stop $package
-    $adb shell ime reset >/dev/null 2>&1
+    $adb shell ime reset >/dev/null 2>&1   # the keyboards no_keyboard turned off
   fi
 }
 
@@ -107,8 +107,18 @@ device() {
     (( waited > 240 )) && { echo "the emulator didn't boot"; return 1; }
   done
   $adb shell input keyevent WAKEUP
-  # No on-screen keyboard: `input text` types straight into the field, and the sign-in screen shows whole.
-  $adb shell ime list -s | tr -d '\r' | while read -r ime; do $adb shell ime disable $ime >/dev/null; done
+}
+
+# No on-screen keyboard: `input text` types straight into the field. The system keeps one input method
+# on, so the remote service's (no keys, a bar at the bottom while a field has the focus) is the one.
+bridge=com.google.android.tv.remote.service/.ImeBridgeService
+no_keyboard() {
+  local ime
+  $adb shell ime enable $bridge >/dev/null
+  $adb shell ime set $bridge >/dev/null
+  $adb shell ime list -s | tr -d '\r' | while read -r ime; do
+    [[ $ime == $bridge ]] || $adb shell ime disable $ime >/dev/null
+  done
 }
 
 # A fresh app in the language: no account, no options, no last session.
@@ -116,6 +126,7 @@ fresh() {
   $adb shell am force-stop $package
   $adb shell pm clear $package >/dev/null
   $adb shell cmd locale set-app-locales $package --locales $1
+  no_keyboard
   $adb shell am start -W -n $package/.MainActivity >/dev/null
   sleep 3
 }
@@ -126,7 +137,10 @@ tour() {
   mkdir -p $dir
   echo "$1:"
   fresh $1
+  # With the focus on the Sign In key (↓ from each field) the input method's bar goes, and the form shows whole.
+  press DPAD_DOWN DPAD_DOWN DPAD_DOWN
   shot sign-in || return 1
+  press DPAD_UP DPAD_UP DPAD_UP
 
   # Any user and password: the stand-in accepts them. Enter moves to the next field and signs in from the last.
   $adb shell input text "http://10.0.2.2:$port"; press ENTER

@@ -50,8 +50,9 @@ public sealed record Entry(Guid SourceId, string Path, string Name, EntryKind Ki
         }
     }
 
-    /// <summary>The folder above the album, as it is named: usually the artist. Folders, never tags.</summary>
-    public string? ArtistFolder => Paths.LastComponent(Paths.Parent(AlbumPath)) is { Length: > 0 } name ? name : null;
+    /// <summary>The folder above the album, as it is named: usually the artist. Folders, never tags.
+    /// None when it is a library-level folder ("Music", a Jellyfin library named so).</summary>
+    public string? ArtistFolder => Paths.LastComponent(Paths.Parent(AlbumPath)) is { Length: > 0 } name && !AlbumGuess.IsGeneric(name) ? name : null;
 
     /// <summary>"Fleetwood Mac · Rumours (1977)": the artist's and the album's folders.</summary>
     public string FolderLine => string.Join(" · ", new[] { ArtistFolder, Paths.LastComponent(AlbumPath) }.Where(s => !string.IsNullOrEmpty(s)));

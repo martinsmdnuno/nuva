@@ -1,5 +1,6 @@
 package pt.nunomartins.nuva.library
 
+import pt.nunomartins.nuva.artwork.AlbumGuess
 import java.text.Collator
 import java.util.Locale
 
@@ -40,8 +41,10 @@ data class Entry(
             return folder
         }
 
-    /** The folder above the album, as it is named: usually the artist. Folders, never tags. */
-    val artistFolder: String? get() = albumPath.substringBeforeLast('/', "").substringAfterLast('/').ifEmpty { null }
+    /** The folder above the album, as it is named: usually the artist. Folders, never tags.
+     *  None when it is a library-level folder ("Music", a Jellyfin library named so). */
+    val artistFolder: String?
+        get() = albumPath.substringBeforeLast('/', "").substringAfterLast('/').takeIf { it.isNotEmpty() && !AlbumGuess.isGeneric(it) }
 
     /** "Fleetwood Mac · Rumours (1977)": the artist's and the album's folders. */
     val folderLine: String get() = listOfNotNull(artistFolder, albumPath.substringAfterLast('/').ifEmpty { null }).joinToString(" · ")

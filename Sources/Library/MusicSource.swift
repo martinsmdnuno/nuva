@@ -46,9 +46,10 @@ struct Entry: Identifiable, Hashable, Sendable {
     }
 
     /// The folder above the album, as it is named: usually the artist. Folders, never tags.
+    /// None when it is a library-level folder ("Music", a Jellyfin library named so).
     var artistFolder: String? {
         let name = ((albumPath as NSString).deletingLastPathComponent as NSString).lastPathComponent
-        return name.isEmpty ? nil : name
+        return name.isEmpty || AlbumGuess.isGeneric(name) ? nil : name
     }
 
     /// "Fleetwood Mac · Rumours (1977)": the artist's and the album's folders.

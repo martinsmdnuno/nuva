@@ -31,6 +31,10 @@ public static class LibraryTests
         var root = At("Rumours/01 - Dreams.flac");
         Assert.Equal(null, root.ArtistFolder);
         Assert.Equal("Rumours", root.FolderLine);
+        // A library-level folder is not an artist.
+        var library = At("Music/Fleetwood Mac - Rumours/01 - Dreams.flac");
+        Assert.Equal(null, library.ArtistFolder);
+        Assert.Equal("Fleetwood Mac - Rumours", library.FolderLine);
     }
 
     [Test]

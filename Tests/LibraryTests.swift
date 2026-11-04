@@ -28,6 +28,10 @@ struct LibraryTests {
         let root = at("Rumours/01 - Dreams.flac")
         #expect(root.artistFolder == nil)
         #expect(root.folderLine == "Rumours")
+        // A library-level folder is not an artist.
+        let library = at("Music/Fleetwood Mac - Rumours/01 - Dreams.flac")
+        #expect(library.artistFolder == nil)
+        #expect(library.folderLine == "Fleetwood Mac - Rumours")
     }
 
     @Test func naturalOrderFoldersFirst() {

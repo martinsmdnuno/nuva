@@ -77,10 +77,14 @@ public static class Theme
         return brush;
     }
 
-    /// <summary>Brush for a fixed 0xRRGGBB value.</summary>
+    /// <summary>A skin's 0xRRGGBB token value (<see cref="Skin.Color"/>) as a colour, with an opacity (0–1).</summary>
+    public static Color Rgb(uint hex, double opacity = 1) =>
+        System.Windows.Media.Color.FromArgb((byte)Math.Round(255 * Math.Clamp(opacity, 0, 1)), (byte)(hex >> 16), (byte)(hex >> 8), (byte)hex);
+
+    /// <summary>Brush for a skin's 0xRRGGBB token value.</summary>
     public static SolidColorBrush Hex(uint hex, double opacity = 1)
     {
-        var brush = new SolidColorBrush(System.Windows.Media.Color.FromArgb((byte)Math.Round(255 * opacity), (byte)(hex >> 16), (byte)(hex >> 8), (byte)hex));
+        var brush = new SolidColorBrush(Rgb(hex, opacity));
         brush.Freeze();
         return brush;
     }

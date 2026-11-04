@@ -27,8 +27,8 @@ Only `blocker` findings from the judge send the loop round again; `minor` ones g
 | Platform | Gates | Rubric |
 |---|---|---|
 | Mac | `scripts/gauntlet.sh mac` | `mac.md` |
-| Android TV | planned | planned |
+| Android TV | `scripts/gauntlet.sh tv` (the `nuva_tv` emulator, booted headless when no device is attached, against `scripts/gauntlet/jellyfin-standin.py`) | `tv.md` |
 | Windows | planned (the core's tests run on the Mac; the app needs Windows) | planned |
 | Site | planned | planned |
 
-Run it in Claude Code with `/gauntlet mac`.
+Run it in Claude Code with `/gauntlet mac` or `/gauntlet tv`.

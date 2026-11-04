@@ -102,49 +102,57 @@ private fun OptionRow(label: String, value: String? = null, led: Boolean? = null
 }
 
 /**
- * The 10 faders, ← → between bands, ↑ ↓ half a decibel at a time, like motorised faders; presets
- * below and the on/off key with its LED. Same bands and presets as the Mac.
+ * The on/off key with its LED, the presets, then the 10 faders, as on the Mac. The faders keep ↑ ↓
+ * for themselves (half a decibel at a time, like motorised faders; ← → between bands), so Back on
+ * a fader takes the focus back to the presets, and from there ↑ reaches the on/off key. Same bands
+ * and presets as the Mac.
  */
 @Composable
 private fun EqualizerPanel(model: AppModel) {
     val eq = Audio.equalizer
-    val first = remember { FocusRequester() }
+    val presets = remember { FocusRequester() }
     Panel(820.dp) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             PanelTitle(stringResource(R.string.equalizer))
             Spacer(Modifier.weight(1f))
             Key(Tone.Mode, 160.dp, { eq.toggle() }, text = stringResource(if (eq.enabled) R.string.on else R.string.off), led = eq.enabled)
         }
-        Row(Modifier.fillMaxWidth().height(210.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-            for (band in 0 until 10) {
-                Fader(band, eq.gains[band], eq.enabled, if (band == 0) Modifier.focusRequester(first) else Modifier) { eq.nudge(band, it) }
-            }
-        }
-        Legend(stringResource(R.string.eq_hint))
         // The presets in two rows of four; the active one in the transport keys' lighter face.
-        for (row in Equalizer.presets.chunked(4)) {
+        for ((r, row) in Equalizer.presets.chunked(4).withIndex()) {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                for (preset in row) {
+                for ((i, preset) in row.withIndex()) {
                     val active = eq.enabled && eq.preset == preset.key
-                    Key(if (active) Tone.Transport else Tone.Mode, 0.dp, { eq.apply(preset) }, text = presetName(preset.key), modifier = Modifier.weight(1f), height = 44.dp)
+                    val modifier = Modifier.weight(1f).then(if (r == 0 && i == 0) Modifier.focusRequester(presets) else Modifier)
+                    Key(if (active) Tone.Transport else Tone.Mode, 0.dp, { eq.apply(preset) }, text = presetName(preset.key), modifier = modifier, height = 44.dp)
                 }
             }
         }
+        Row(Modifier.fillMaxWidth().height(210.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+            for (band in 0 until 10) {
+                Fader(band, eq.gains[band], eq.enabled, { runCatching { presets.requestFocus() } }) { eq.nudge(band, it) }
+            }
+        }
+        Legend(stringResource(R.string.eq_hint))
     }
-    LaunchedEffect(Unit) { runCatching { first.requestFocus() } }
+    LaunchedEffect(Unit) { runCatching { presets.requestFocus() } }
 }
 
 @Composable
-private fun Fader(band: Int, gain: Float, enabled: Boolean, modifier: Modifier, nudge: (Int) -> Unit) {
+private fun Fader(band: Int, gain: Float, enabled: Boolean, onBack: () -> Unit, nudge: (Int) -> Unit) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
     val fill = if (enabled) Tokens.fill else Tokens.track
     val track = Tokens.track
     val led = Tokens.led
     Column(
-        modifier.width(64.dp).fillMaxHeight()
+        Modifier.width(64.dp).fillMaxHeight()
             .border(2.dp, if (focused) Tokens.focus else Color.Transparent, RoundedCornerShape(6.dp))
             .onKeyEvent { e ->
+                // Back leaves the faders (on release, so the panel's own Back doesn't see it).
+                if (e.key == Key.Back) {
+                    if (e.type == KeyEventType.KeyUp) onBack()
+                    return@onKeyEvent true
+                }
                 if (e.type != KeyEventType.KeyDown) return@onKeyEvent false
                 when (e.key) {
                     Key.DirectionUp -> { nudge(1); true }

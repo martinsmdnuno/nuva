@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.12.1 — the remote reaches everything
+
+- Android TV: the equalizer's presets and its on/off key can be reached with the remote: the presets come first, as on the Mac, and Back on a fader goes back to them.
+
 ## 1.12 — the artist, and names that scroll
 
 - Mac and Windows: the display, the mini player and the ambient faces show the artist's folder beside the album's ("Fleetwood Mac · Rumours (1977)"), as the TV app does. A disc folder ("CD 2") gives way to its album. Control Center and the Windows media controls get the artist too. Still folders, never tags. A library folder such as "Music" is never taken for the artist, on the TV too.

@@ -3,6 +3,7 @@
 ## 1.12.1 — the remote reaches everything
 
 - Android TV: the equalizer's presets and its on/off key can be reached with the remote: the presets come first, as on the Mac, and Back on a fader goes back to them.
+- Android TV: on the sign-in screen, ↑ and ↓ move between the fields and the Sign In key; a field no longer keeps the remote's focus.
 
 ## 1.12 — the artist, and names that scroll
 

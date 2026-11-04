@@ -60,7 +60,7 @@ Send the music to a WiiM, a HomePod, an Apple TV or any AirPlay speaker: click w
 
 <p align="center"><img src="docs/screenshots/themes.png" width="760" alt="NuVa in the dark Lead theme and the light Aluminium theme"></p>
 
-NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that say what they do by their colour, small amber lights for what's on, and a volume knob. Shuffle and repeat on the left, play in the middle, volume on the right. An always-dark display shows the format, the bit depth, where the sound is going and the equalizer preset (click either to change it), with a spectrum meter of amber segments that dances with the music, one column per equalizer band. It follows your Mac's appearance, in dark **Lead** or light **Aluminium**.
+NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that say what they do by their colour, small amber lights for what's on, and a volume knob. Shuffle and repeat on the left, play in the middle, volume on the right. An always-dark display shows the format, the bit depth, where the sound is going and the equalizer preset (click either to change it), with a spectrum meter of amber segments that dances with the music, one column per equalizer band. Under the title, the artist's and album's folders ("Fleetwood Mac · Rumours"), scrolling across when they're too long, as on a hi-fi display. It follows your Mac's appearance, in dark **Lead** or light **Aluminium**.
 
 ## Skins and fonts
 
@@ -199,6 +199,7 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 | | Mac | Android TV | Windows |
 |---|:-:|:-:|:-:|
 | Folders as they are: a folder is an album, natural sort, never tags | ✓ | ✓ | ✓ |
+| The display names the artist's and album's folders, scrolling when they're too long | ✓ | ✓ | later |
 | Folders on the computer, external disks and network shares | ✓ | — | ✓ |
 | Jellyfin by its real folders, streaming the original file | ✓ | ✓ | ✓ |
 | Audio CDs, named from MusicBrainz | ✓ | — | ✓ |
@@ -313,7 +314,7 @@ Toca FLAC pelo motor de áudio de cada sistema (o da própria Apple, no Mac), en
 - **Soa como deve.** FLAC, ALAC, WAV e AIFF pelo AVFoundation, o mesmo motor do QuickTime.
 - **AirPlay 2.** WiiM, HomePod, Apple TV ou qualquer coluna AirPlay: carrega na saída que aparece no visor.
 - **Jellyfin sem confusão.** Navega pelas pastas reais do servidor e toca os ficheiros originais.
-- **Uma janela pequena.** As pastas aparecem no lugar da fila (⌘B troca as duas) e há um modo compacto. A janela estica na vertical para veres o álbum inteiro, e na horizontal para nomes compridos.
+- **Uma janela pequena.** As pastas aparecem no lugar da fila (⌘B troca as duas) e há um modo compacto. A janela estica na vertical para veres o álbum inteiro, e na horizontal para nomes compridos. No visor, por baixo do título, as pastas do artista e do álbum ("Fleetwood Mac · Rumours"), que rolam quando não cabem, como num visor de hi-fi.
 - **Skins:** Rams (claro ou escuro, como o sistema), Graphite Orange e Phosphor (sempre escuras), em Visualização › Skin. Cinco pares de fontes em Visualização › Fonte: Inter + IBM Plex Mono, SF Pro + SF Mono, IBM Plex Sans (para a Rams), DM Sans (para a Graphite Orange) e Share Tech (para a Phosphor).
 - **Modo Ambiente** (⌘4): o ecrã inteiro passa a ser o mostrador da NuVa, na skin atual. Seis faces, ← → trocam: a faixa e o tempo em grande, um relógio, o espectro de 28 bandas, os medidores esquerdo e direito, dois VU de ponteiro que se mexem como os verdadeiros e duas válvulas que acendem com cada canal, a 120 Hz nos ecrãs que o têm. Com as capas ligadas, o ecrã ganha as cores do álbum, num brilho desfocado feito da própria capa; na face do ecrã, respira com os graves. Esc sai. Pode ir para outro ecrã ou uma TV. Protege ecrãs OLED: a imagem desloca-se devagar, o que é fixo fica mais escuro, a face muda a cada 20 minutos e, ao fim de uma hora sem mexer, só fica uma pequena luz.
 - **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A). Usa a imagem da pasta (`cover`, `folder`, `front`, `album` ou `capa`); se não houver, procura no MusicBrainz pelo nome das pastas. Nunca das tags. Capa errada ou em falta: carrega na capa e corrige o artista ou o álbum, ou escolhe uma imagem. Desligado por defeito.
@@ -343,6 +344,7 @@ Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnun
 | | Mac | Android TV | Windows |
 |---|:-:|:-:|:-:|
 | Pastas como estão: uma pasta é um álbum, ordem natural, nunca tags | ✓ | ✓ | ✓ |
+| O visor mostra as pastas do artista e do álbum, a rolar quando não cabem | ✓ | ✓ | mais tarde |
 | Pastas no computador, discos externos e partilhas de rede | ✓ | — | ✓ |
 | Jellyfin pelas pastas reais, com o ficheiro original | ✓ | ✓ | ✓ |
 | CDs áudio, com os nomes do MusicBrainz | ✓ | — | ✓ |

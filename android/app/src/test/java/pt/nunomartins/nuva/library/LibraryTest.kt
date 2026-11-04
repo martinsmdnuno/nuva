@@ -47,5 +47,7 @@ class ArtistLineTest {
         val disc = Entry("Pink Floyd/The Wall/CD 2/01 - Hey You.flac", "01 - Hey You.flac", false)
         assertEquals("Pink Floyd · The Wall", disc.folderLine)
         assertEquals("Album", Entry("Album/01.flac", "01.flac", false).folderLine)
+        // A library-level folder is not an artist.
+        assertEquals("Fleetwood Mac - Rumours", Entry("Music/Fleetwood Mac - Rumours/01.flac", "01.flac", false).folderLine)
     }
 }

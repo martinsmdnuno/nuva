@@ -37,7 +37,7 @@ struct TermsView: View {
     private func view(for block: Block) -> some View {
         switch block {
         case .title(let text):
-            Text(text).font(Typography.sans(20, .semibold)).foregroundStyle(Color.ink)
+            Text(text).font(.dsDocumentTitle).foregroundStyle(Color.ink)
         case .heading(let text):
             Text(text).font(.dsTitle).foregroundStyle(Color.ink).padding(.top, Space.s3)
         case .paragraph(let text):

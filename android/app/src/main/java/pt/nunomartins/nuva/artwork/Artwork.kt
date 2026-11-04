@@ -50,7 +50,7 @@ object AlbumGuess {
 
     fun isDiscFolder(name: String) = Regex("""^(cd|disc|disk|disco)[\s._-]*\d+\b""", RegexOption.IGNORE_CASE).containsMatchIn(name)
 
-    private fun isGeneric(name: String) =
+    fun isGeneric(name: String) =
         name.lowercase() in setOf("music", "música", "musica", "flac", "mp3", "albums", "álbuns", "albuns", "library", "biblioteca")
 
     /** "1977 - Rumours (Remastered) [FLAC 24-96]" → "Rumours". */

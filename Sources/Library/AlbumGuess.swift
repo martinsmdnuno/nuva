@@ -53,7 +53,7 @@ enum AlbumGuess {
     }
 
     /// Library-level folders that are not an artist.
-    private static func isGeneric(_ name: String) -> Bool {
+    static func isGeneric(_ name: String) -> Bool {
         ["music", "música", "musica", "flac", "mp3", "albums", "álbuns", "albuns", "library", "biblioteca"]
             .contains(name.lowercased())
     }

@@ -22,7 +22,7 @@ The interface doesn't tell sources apart. Local folders and servers appear in th
 Lead grey with a single accent.
 
 - **Chassis:** `surface-0` is the window's only plane: display, keys and queue all sit on it. `surface-1` is for popovers (equalizer) and `surface-2` for the selected row.
-- **Display:** `display` with `display-ink`, `display-muted` and `display-track` (the position track). The same in both themes, recessed with `shadow-display`.
+- **Display:** `display` with `display-ink`, `display-muted` and `display-track` (the position track). The same in both themes, recessed with `shadow-display` (its 1px edge in `display-edge`).
 - **Text:** `ink` for primary text, `ink-muted` for durations, metadata, legends and resting icons.
 - **Keys:** three tones, as on a Braun calculator. `key-play` (amber) only on the play/pause key. `key-face` (light grey) on transport. `key-mode` (mid grey) on mode keys, the volume knob and text buttons.
 - **Accent:** amber, only one, in three linked roles: the key that plays (`key-play`), the LEDs (`led`) and the name of the track that's playing (`signal`). Never on backgrounds, hovers or any text other than the current track.
@@ -45,7 +45,7 @@ Two families, embedded in the app (`Inter` and `IBM Plex Mono`, both OFL):
 
 **Font sets** (View ▸ Font): *Inter + IBM Plex Mono* (above, the default), *SF Pro + SF Mono* from the system, and three pairs chosen for the skins: *IBM Plex Sans + Plex Mono* (Rams), *DM Sans + DM Mono* (Graphite Orange) and *Share Tech + Share Tech Mono* (Phosphor; one weight, so light and medium fall to regular). Each skin names its default set and the user can override it. Only the family changes: every style keeps its size and weight, and the mono keeps tabular digits. SF Mono's lines are slightly shorter, so the display (and Compact mode) is a few points lower.
 
-Japanese names and other scripts fall back to the system font (Hiragino), which is fine. Never truncate with an ellipsis in the middle: truncate at the end, with the full name in the tooltip.
+Japanese names and other scripts fall back to the system font (Hiragino), which is fine. Never truncate with an ellipsis in the middle: truncate at the end, with the full name in the tooltip. On the display, the folder line scrolls instead (`ScrollingText`): it rests at the start for 2 s, slides at 30 pt/s until the end shows, rests and slides back; still when it fits, and truncated at the end with Reduce Motion.
 
 ## Keys
 
@@ -53,7 +53,7 @@ Flat keys, as on a Braun calculator or tape recorder:
 
 - No outline, no lip. The face is the edge. Corners `radius-sm`.
 - Every icon key has the same height (`key`, 36px). Importance comes from colour and width: play `key-w-lg` 56px in `key-play`, transport `key-w-md` 40px in `key-face`, mode `key-w-sm` 32px in `key-mode`.
-- Pressed: the face darkens 15% while the mouse is down. There is no "sunken" key for state.
+- Pressed: the face darkens 15% while the mouse is down (`key-play-pressed`, `key-face-pressed`, `key-mode-pressed`). There is no "sunken" key for state.
 - On (shuffle, repeat, folders): a 4px LED lit above the key. Keys with state always have their LED, on or off.
 - Keys are grouped by function, with a legend underneath: **mode** (shuffle, repeat) · **playback** (previous, play/pause, next), with play on the window's centre line · **volume**, a knob the height of a key (`components/Volume.md`).
 - Output and equalizer are not keys. They are readouts on the display that open their controls: the output name opens the AirPlay picker, "EQ · Rock" opens the equalizer (`components/Display.md`).
@@ -61,7 +61,7 @@ Flat keys, as on a Braun calculator or tape recorder:
 
 ## Motion
 
-Movement only shows what the hardware would do. Nothing moves on its own, nothing loops, and everything snaps with Reduce Motion. Tokens in `Sources/DesignSystem/Motion.swift`:
+Movement only shows what the hardware would do. Nothing moves on its own, nothing loops, and everything snaps with Reduce Motion. One exception: a name too long for the display's folder line scrolls, back and forth with a rest at each end, because a VFD does the same with a long title (see Type); with Reduce Motion it truncates. Tokens in `Sources/DesignSystem/Motion.swift`:
 
 - **Keys travel.** Pressed, the face goes down 1px and darkens in 60ms; released, a short spring brings it back. Changing icons (play/pause, repeat/repeat one) swap in place.
 - **LEDs glow and fade.** On in 80ms; off in 350ms, a short afterglow like a filament.

@@ -66,7 +66,7 @@ public static class AlbumGuess
     public static bool IsDiscFolder(string name) => disc.IsMatch(name);
 
     /// <summary>Library-level folders that are not an artist.</summary>
-    private static bool IsGeneric(string name) => generic.Contains(name.ToLowerInvariant());
+    public static bool IsGeneric(string name) => generic.Contains(name.ToLowerInvariant());
 
     /// <summary>Removes years, formats and editions: "1977 - Rumours (Remastered) [FLAC 24-96]" → "Rumours".</summary>
     public static string Clean(string name)

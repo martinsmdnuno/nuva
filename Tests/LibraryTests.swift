@@ -15,6 +15,25 @@ struct LibraryTests {
         #expect(entry("Sem número.wav").title == "Sem número")
     }
 
+    @Test func folderLineNamesArtistAndAlbumFolders() {
+        func at(_ path: String) -> Entry { Entry(sourceID: UUID(), path: path, name: "01 - Dreams.flac", kind: .track) }
+        let album = at("Fleetwood Mac/Rumours (1977)/01 - Dreams.flac")
+        #expect(album.artistFolder == "Fleetwood Mac")
+        #expect(album.folderLine == "Fleetwood Mac · Rumours (1977)")
+        // A disc folder belongs to the album above it.
+        let disc = at("Música/Fleetwood Mac/Tusk/CD 2/01 - Dreams.flac")
+        #expect(disc.albumPath == "Música/Fleetwood Mac/Tusk")
+        #expect(disc.folderLine == "Fleetwood Mac · Tusk")
+        // A source added at the album: nothing above it.
+        let root = at("Rumours/01 - Dreams.flac")
+        #expect(root.artistFolder == nil)
+        #expect(root.folderLine == "Rumours")
+        // A library-level folder is not an artist.
+        let library = at("Music/Fleetwood Mac - Rumours/01 - Dreams.flac")
+        #expect(library.artistFolder == nil)
+        #expect(library.folderLine == "Fleetwood Mac - Rumours")
+    }
+
     @Test func naturalOrderFoldersFirst() {
         let sorted = [entry("10 b.flac"), entry("2 a.flac"), entry("CD2", .folder), entry("1 c.flac"), entry("CD1", .folder)]
             .naturallySorted().map(\.name)

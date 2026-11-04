@@ -455,7 +455,7 @@ public sealed class AmbientCanvas : FrameworkElement
         var time = Text(TimeFormat.Display(player.CurrentTime), TextStyle.DisplayTime, u * 4.4, C(Token.DisplayInk));
         DrawText(dc, time, box.Right, box.Bottom - time.Height, 1);
         var width = box.Width - time.Width - u * 2;
-        var folder = Text(entry?.FolderName ?? "", TextStyle.Body, u * 1.9, C(Token.DisplayMuted), width);
+        var folder = Text(entry?.FolderLine ?? "", TextStyle.Body, u * 1.9, C(Token.DisplayMuted), width);
         var title = Text(entry?.Title ?? L.T("Sem faixa"), TextStyle.Title, u * 2.8, entry == null ? C(Token.DisplayMuted) : C(Token.DisplayInk), width);
         DrawText(dc, folder, box.X, box.Bottom - folder.Height - u * 0.4);
         DrawText(dc, title, box.X, box.Bottom - folder.Height - u * 1.0 - title.Height);
@@ -470,7 +470,7 @@ public sealed class AmbientCanvas : FrameworkElement
         var x = box.X;
         var cover = app.CurrentArtwork?.Image;
         var title = Text(entry?.Title ?? L.T("Sem faixa"), TextStyle.Title, u * 5.6, entry == null ? C(Token.DisplayMuted) : C(Token.DisplayInk), box.Width - (cover != null ? u * 12.4 : 0));
-        var folder = Text(entry?.FolderName ?? L.T("Escolher uma pasta para tocar"), TextStyle.Caption, u * 2.3, C(Token.DisplayMuted), box.Width - (cover != null ? u * 12.4 : 0));
+        var folder = Text(entry?.FolderLine ?? L.T("Escolher uma pasta para tocar"), TextStyle.Caption, u * 2.3, C(Token.DisplayMuted), box.Width - (cover != null ? u * 12.4 : 0));
         var blockHeight = Math.Max(cover != null ? u * 10 : 0, title.Height + u * 1.2 + folder.Height);
         var top = box.Y + box.Height * 0.36 - blockHeight / 2;
         if (cover != null)
@@ -518,7 +518,7 @@ public sealed class AmbientCanvas : FrameworkElement
         dc.Pop();
         if (player.Current?.Entry is { } entry)
         {
-            var line = Text($"{entry.Title}  ·  {entry.FolderName}", TextStyle.Body, u * 2.1, ink, u * 60);
+            var line = Text($"{entry.Title}  ·  {entry.FolderLine}", TextStyle.Body, u * 2.1, ink, u * 60);
             var ly = box.Bottom - u * 4 - line.Height;
             DrawLed(dc, new Point(cx - line.Width / 2 - u * 1.4, ly + line.Height / 2), u, player.IsPlaying);
             DrawText(dc, line, cx, ly, 0.5);

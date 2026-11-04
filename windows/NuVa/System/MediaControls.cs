@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using NuVa.Core;
+using NuVa.Core.Library;
 using Windows.Media;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -109,9 +110,9 @@ public sealed class MediaControls
                     updater.Type = MediaPlaybackType.Music;
                     updater.AppMediaId = "NuVa";
                     updater.MusicProperties.Title = entry.Title;
-                    updater.MusicProperties.AlbumTitle = entry.FolderName;
-                    // Never from tags: the folder stands in for the artist line too.
-                    updater.MusicProperties.Artist = entry.FolderName;
+                    // Never from tags: the album's folder, and the one above it for the artist.
+                    updater.MusicProperties.AlbumTitle = Paths.LastComponent(entry.AlbumPath);
+                    updater.MusicProperties.Artist = entry.ArtistFolder ?? "";
                     if (artwork != null)
                     {
                         var file = await StorageFile.GetFileFromPathAsync(artwork);

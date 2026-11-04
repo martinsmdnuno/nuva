@@ -208,7 +208,7 @@ private struct AmbientDisplayFace: View {
                     Text(entry?.title ?? String(localized: "Sem faixa"))
                         .font(.dsAmbientTitle(unit * 5.6))
                         .foregroundStyle(entry == nil ? Color.displayMuted : Color.displayInk)
-                    Text(entry?.folderName ?? String(localized: "Escolher uma pasta para tocar"))
+                    ScrollingText(text: entry?.folderLine ?? String(localized: "Escolher uma pasta para tocar"))
                         .font(.dsAmbientCaption(unit * 2.3))
                         .foregroundStyle(Color.displayMuted)
                 }
@@ -260,7 +260,7 @@ private struct AmbientClockFace: View {
                 HStack(spacing: unit * 1.4) {
                     LED(isOn: player.isPlaying, size: unit)
                     Text(entry.title)
-                    Text(verbatim: "· \(entry.folderName)")
+                    Text(verbatim: "· \(entry.folderLine)")
                         .foregroundStyle(Color.displayMuted)
                 }
                 .font(.dsAmbientCaption(unit * 2.1))
@@ -346,7 +346,7 @@ private struct AmbientTrackFoot: View {
                 Text(entry?.title ?? String(localized: "Sem faixa"))
                     .font(.dsAmbientTitle(unit * 2.8))
                     .foregroundStyle(entry == nil ? Color.displayMuted : Color.displayInk)
-                Text(entry?.folderName ?? "")
+                ScrollingText(text: entry?.folderLine ?? "")
                     .font(.dsAmbientCaption(unit * 1.9))
                     .foregroundStyle(Color.displayMuted)
             }
@@ -682,7 +682,7 @@ private struct AmbientNeedlesFace: View {
 
     /// Deflection of a VU value, 0 (the rest pin) to 1 (+3 VU): a VU meter moves with voltage, not
     /// decibels, so -20 sits just right of the pin and 0 VU at about 70%.
-    static func position(vu: Float) -> CGFloat {
+    nonisolated static func position(vu: Float) -> CGFloat {
         CGFloat(VUNeedle.deflection(vu: Double(vu)))
     }
 
@@ -779,7 +779,7 @@ private struct AmbientNeedlesFace: View {
             gc.drawLayer { layer in
                 layer.clip(to: shape)
                 layer.fill(shape, with: .linearGradient(
-                    Gradient(colors: [Color.white.opacity(0.07), Color.white.opacity(0)]),
+                    Gradient(colors: [Color.displayInk.opacity(0.07), Color.displayInk.opacity(0)]),
                     startPoint: CGPoint(x: w * 0.3, y: 0), endPoint: CGPoint(x: w * 0.45, y: h * 0.5)))
                 layer.addFilter(.blur(radius: unit * 0.6))
                 layer.stroke(shape, with: .color(Color.display.opacity(0.55)), lineWidth: unit * 1.2)

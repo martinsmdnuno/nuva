@@ -17,6 +17,7 @@
 | | Mac | Android TV | Windows |
 |---|:-:|:-:|:-:|
 | Folders as they are: a folder is an album, natural sort, never tags | ✓ | ✓ | ✓ |
+| The display names the artist's and album's folders, scrolling when they're too long | ✓ | ✓ | later |
 | Folders on the computer, external disks and network shares | ✓ | — | ✓ |
 | Jellyfin by its real folders, streaming the original file | ✓ | ✓ | ✓ |
 | Audio CDs, named from MusicBrainz | ✓ | — | ✓ |

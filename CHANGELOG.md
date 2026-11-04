@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.12 — the artist, and names that scroll
+
+- Mac and Windows: the display, the mini player and the ambient faces show the artist's folder beside the album's ("Fleetwood Mac · Rumours (1977)"), as the TV app does. A disc folder ("CD 2") gives way to its album. Control Center and the Windows media controls get the artist too. Still folders, never tags. A library folder such as "Music" is never taken for the artist, on the TV too.
+- Mac and Windows: the equalizer's scale lines are drawn in the skin's line colour; in Phosphor they were blue.
+- Mac: a folder name too long for the display's line now scrolls across it, back and forth with a rest at each end, instead of being cut off. The output readout ("AirPlay") always keeps its room. With Reduce Motion the name is truncated, as before, and the full path is in the tooltip.
+- Mac: pressed keys and the display's edge take their shade from the skin's colours.
+
 ## 1.11 — NuVa on the TV
 
 - **NuVa for Android TV**, a new app for an Android TV box or a TV with Android TV (Android 8.1 or later), in the same release as the Mac app: `NuVa-AndroidTV-1.11.apk`. It plays your Jellyfin server by its real folders, FLAC included (24-bit kept whole), through Android's own player and decoders, and has what the Mac has where a TV allows: the display with the spectrum, the 10-band equalizer, the queue, repeat and shuffle, the six ambient faces with OLED protection, album artwork with the cover's glow, the three skins and five font sets, Terms and Privacy and the update notice. The remote does everything: hold OK to add to the queue or to move and remove; Back asks before leaving; it reopens where you were. Install it with the Downloader app: `nuva.martinsnuno.com/tv`.

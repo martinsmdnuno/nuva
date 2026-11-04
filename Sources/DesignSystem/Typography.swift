@@ -54,6 +54,10 @@ extension Font {
     static var dsScale: Font { Typography.mono(9, .regular) }
     /// Shortcuts and details beside a label.
     static var dsHint: Font { Typography.mono(10, .regular) }
+    /// The title of a document window (Terms and Privacy).
+    static var dsDocumentTitle: Font { Typography.sans(20, .semibold) }
+    /// An SF Symbol beside text or on a key. Symbols live in the system font, whatever the font set.
+    static func dsIcon(_ size: CGFloat) -> Font { .system(size: size, weight: .regular) }
 
     // Ambient mode: the display's styles at the scale of the screen (sizes from 1% of its width).
     static func dsAmbientTime(_ size: CGFloat) -> Font { Typography.mono(size, .light) }

@@ -165,7 +165,7 @@ public sealed class DisplayView : Border
         }
         else
         {
-            folder.Text = entry?.FolderName ?? (model.Sources.Sources.Count == 0
+            folder.Text = entry?.FolderLine ?? (model.Sources.Sources.Count == 0
                 ? L.T("Adicionar uma pasta ou um servidor Jellyfin")
                 : L.T("Escolher uma pasta para tocar"));
             folder.Foreground = Theme.Brush(Token.DisplayMuted);

@@ -85,7 +85,9 @@ final class NowPlaying {
         let artwork = folderArtwork().map(Self.artwork(for:)) ?? defaultArtwork
         center.nowPlayingInfo = [
             MPMediaItemPropertyTitle: entry.title,
-            MPMediaItemPropertyAlbumTitle: entry.folderName,
+            // Folders, never tags: the album's folder, and the one above it for the artist.
+            MPMediaItemPropertyAlbumTitle: (entry.albumPath as NSString).lastPathComponent,
+            MPMediaItemPropertyArtist: entry.artistFolder ?? "",
             MPMediaItemPropertyArtwork: artwork,
             MPMediaItemPropertyPlaybackDuration: player.duration,
             MPNowPlayingInfoPropertyElapsedPlaybackTime: player.currentTime,

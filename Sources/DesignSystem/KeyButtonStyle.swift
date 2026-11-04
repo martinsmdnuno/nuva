@@ -19,6 +19,15 @@ struct KeyButtonStyle: ButtonStyle {
             }
         }
 
+        /// The face while the key is held down.
+        var pressedFace: Color {
+            switch self {
+            case .play: .keyPlayPressed
+            case .transport: .keyFacePressed
+            case .mode: .keyModePressed
+            }
+        }
+
         var ink: Color { self == .mode ? .keyModeInk : .keyInk }
 
         var width: CGFloat {
@@ -59,16 +68,13 @@ struct KeyButtonStyle: ButtonStyle {
             let shape = RoundedRectangle(cornerRadius: Radius.sm, style: .continuous)
 
             configuration.label
-                .font(isText ? .dsLabel : .system(size: tone.iconSize, weight: .regular))
+                .font(isText ? .dsLabel : .dsIcon(tone.iconSize))
                 // Unavailable (a sheet's key before its fields are filled): the legend fades, the face stays.
                 .foregroundStyle(tone.ink.opacity(isEnabled ? 1 : 0.4))
                 .padding(.horizontal, isText ? Space.s3 : 0)
                 .frame(width: isText ? nil : tone.width, height: isText ? Size.keyText : Size.key)
-                .background {
-                    shape.fill(tone.face)
-                    // Pressed: the face darkens while the mouse is down.
-                    shape.fill(Color.black.opacity(configuration.isPressed ? 0.15 : 0))
-                }
+                // Pressed: the face darkens while the mouse is down.
+                .background(shape.fill(configuration.isPressed ? tone.pressedFace : tone.face))
                 // ...and travels 1px, down fast, back up on a short spring.
                 .offset(y: configuration.isPressed ? 1 : 0)
                 .motion(configuration.isPressed ? Motion.press : Motion.release, value: configuration.isPressed)

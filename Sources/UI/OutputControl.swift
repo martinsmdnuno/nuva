@@ -12,7 +12,7 @@ struct OutputControl: View {
         let output = model.output
         HStack(spacing: Space.s1) {
             Image(systemName: "airplayaudio")
-                .font(.system(size: 9))
+                .font(.dsIcon(9))
             Text(output.label.isEmpty ? "AirPlay" : output.name)
                 .lineLimit(1)
                 .truncationMode(.tail)

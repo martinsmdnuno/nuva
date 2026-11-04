@@ -117,13 +117,13 @@ private fun EqualizerPanel(model: AppModel) {
             Spacer(Modifier.weight(1f))
             Key(Tone.Mode, 160.dp, { eq.toggle() }, text = stringResource(if (eq.enabled) R.string.on else R.string.off), led = eq.enabled)
         }
-        // The presets in two rows of four; the active one in the transport keys' lighter face.
+        // The presets in two rows of four; the active one lit by its LED.
         for ((r, row) in Equalizer.presets.chunked(4).withIndex()) {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 for ((i, preset) in row.withIndex()) {
                     val active = eq.enabled && eq.preset == preset.key
                     val modifier = Modifier.weight(1f).then(if (r == 0 && i == 0) Modifier.focusRequester(presets) else Modifier)
-                    Key(if (active) Tone.Transport else Tone.Mode, 0.dp, { eq.apply(preset) }, text = presetName(preset.key), modifier = modifier, height = 44.dp)
+                    Key(Tone.Mode, 0.dp, { eq.apply(preset) }, text = presetName(preset.key), led = active, modifier = modifier, height = 44.dp)
                 }
             }
         }
@@ -171,7 +171,8 @@ private fun Fader(band: Int, gain: Float, enabled: Boolean, onBack: () -> Unit, 
             drawRect(track, Offset(x - 2.dp.toPx(), 0f), Size(4.dp.toPx(), size.height))
             drawRect(track, Offset(0f, size.height / 2 - 1), Size(size.width, 2f))
             val y = size.height * (1 - (gain - Equalizer.MIN) / (Equalizer.MAX - Equalizer.MIN))
-            drawRect(if (focused) led else fill, Offset(0f, y - 4.dp.toPx()), Size(size.width, 8.dp.toPx()))
+            // The focus ring shows the focus; the accent stays on the LEDs.
+            drawRect(fill, Offset(0f, y - 4.dp.toPx()), Size(size.width, 8.dp.toPx()))
         }
         Text(Equalizer.labels[band], Type.hint)
     }
@@ -271,7 +272,7 @@ private fun ConfirmExit(model: AppModel, onLeave: () -> Unit) {
         Text(stringResource(R.string.leave_note), Type.body.copy(color = Tokens.inkMuted), maxLines = 3)
         Spacer(Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Key(Tone.Play, 160.dp, { model.overlay = null }, Modifier.focusRequester(stay), text = stringResource(R.string.stay))
+            Key(Tone.Mode, 160.dp, { model.overlay = null }, Modifier.focusRequester(stay), text = stringResource(R.string.stay))
             Key(Tone.Mode, 160.dp, onLeave, text = stringResource(R.string.leave))
         }
     }

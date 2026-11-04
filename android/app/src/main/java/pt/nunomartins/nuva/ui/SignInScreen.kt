@@ -56,7 +56,7 @@ fun SignInScreen(model: AppModel) {
 
     Box(Modifier.fillMaxSize().background(Tokens.surface0), contentAlignment = Alignment.Center) {
         Column(Modifier.width(560.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
-            Text(stringResource(R.string.sign_in_title), Type.title.copy(color = Tokens.ink, fontSize = Type.title.fontSize * 1.3f))
+            Text(stringResource(R.string.sign_in_title), Type.title.copy(color = Tokens.ink))
             Text(stringResource(R.string.sign_in_note), Type.body.copy(color = Tokens.inkMuted), maxLines = 2)
             Spacer(Modifier.height(6.dp))
             Field(stringResource(R.string.server), server, { server = it }, Modifier.focusRequester(first), KeyboardType.Uri)
@@ -64,7 +64,7 @@ fun SignInScreen(model: AppModel) {
             Field(stringResource(R.string.password), password, { password = it }, secret = true, onDone = submit)
             model.error?.let { Text(it, Type.body.copy(color = Tokens.danger), maxLines = 2) }
             Spacer(Modifier.height(6.dp))
-            Key(Tone.Play, 220.dp, submit, text = stringResource(if (model.loading) R.string.signing_in else R.string.sign_in))
+            Key(Tone.Mode, 220.dp, submit, text = stringResource(if (model.loading) R.string.signing_in else R.string.sign_in))
         }
     }
     LaunchedEffect(Unit) { first.requestFocus() }

@@ -113,7 +113,7 @@ private fun EqualizerPanel(model: AppModel) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             PanelTitle(stringResource(R.string.equalizer))
             Spacer(Modifier.weight(1f))
-            Key(Tone.Mode, 120.dp, { eq.toggle() }, text = stringResource(if (eq.enabled) R.string.on else R.string.off), led = eq.enabled)
+            Key(Tone.Mode, 160.dp, { eq.toggle() }, text = stringResource(if (eq.enabled) R.string.on else R.string.off), led = eq.enabled)
         }
         Row(Modifier.fillMaxWidth().height(210.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             for (band in 0 until 10) {

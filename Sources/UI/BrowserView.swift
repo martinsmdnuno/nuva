@@ -246,7 +246,7 @@ struct BrowserControls: View {
             }
             if let source = browser.source {
                 Image(systemName: source.kind.symbol)
-                    .font(.system(size: 12))
+                    .font(.dsIcon(12))
                     .foregroundStyle(Color.inkMuted)
             }
             Text(browser.title)

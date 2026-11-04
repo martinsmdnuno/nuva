@@ -68,7 +68,7 @@ struct KeyButtonStyle: ButtonStyle {
             let shape = RoundedRectangle(cornerRadius: Radius.sm, style: .continuous)
 
             configuration.label
-                .font(isText ? .dsLabel : .system(size: tone.iconSize, weight: .regular))
+                .font(isText ? .dsLabel : .dsIcon(tone.iconSize))
                 // Unavailable (a sheet's key before its fields are filled): the legend fades, the face stays.
                 .foregroundStyle(tone.ink.opacity(isEnabled ? 1 : 0.4))
                 .padding(.horizontal, isText ? Space.s3 : 0)

@@ -29,11 +29,11 @@ struct ListRow: View {
                 switch leading {
                 case .folder:
                     Image(systemName: "folder")
-                        .font(.system(size: 11))
+                        .font(.dsIcon(11))
                         .foregroundStyle(Color.inkMuted)
                 case .symbol(let name):
                     Image(systemName: name)
-                        .font(.system(size: 11))
+                        .font(.dsIcon(11))
                         .foregroundStyle(isError ? Color.danger : Color.inkMuted)
                 case .track:
                     LED(isOn: true)

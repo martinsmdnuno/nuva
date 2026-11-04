@@ -251,7 +251,7 @@ private struct LegendToggle: View {
                 // In the track LED column, for alignment.
                 LED(isOn: isOn).frame(width: symbol == nil ? nil : 12)
                 if let symbol {
-                    Image(systemName: symbol).font(.system(size: 10))
+                    Image(systemName: symbol).font(.dsIcon(10))
                 }
                 Text(label).font(.dsLegend)
                 if let detail {

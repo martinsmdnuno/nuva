@@ -285,7 +285,7 @@ private fun TrackFoot(state: PlayerState, u: Dp) {
 private fun DisplayFace(model: AppModel, state: PlayerState, u: Dp, static: Float) {
     val entry = state.current
     Column(Modifier.fillMaxSize()) {
-        MetaLine(state, u, model.server.substringAfter("://"))
+        MetaLine(state, u, stringResource(R.string.source_server))
         Spacer(Modifier.weight(1f))
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(u * 2.4f)) {
             val cover = model.cover
@@ -369,7 +369,7 @@ private fun MetersFace(model: AppModel, state: PlayerState, u: Dp) {
     val marks = listOf(-48, -36, -24, -18, -12, -6, -3, 0)
     val measurer = rememberTextMeasurer()
     Column(Modifier.fillMaxSize()) {
-        MetaLine(state, u, model.server.substringAfter("://"))
+        MetaLine(state, u, stringResource(R.string.source_server))
         Spacer(Modifier.weight(1f))
         val time = meterFrames(state.isPlaying)
         meter.update(time, if (state.isPlaying) Audio.spectrum.stereo(Audio.clock.now())?.let { floatArrayOf(it[0], it[1]) } else null)
@@ -429,7 +429,7 @@ private fun NeedlesFace(model: AppModel, state: PlayerState, u: Dp, static: Floa
     val meter = remember { NeedleMeter() }
     val measurer = rememberTextMeasurer()
     Column(Modifier.fillMaxSize()) {
-        MetaLine(state, u, model.server.substringAfter("://"))
+        MetaLine(state, u, stringResource(R.string.source_server))
         Spacer(Modifier.weight(1f))
         val time = meterFrames(state.isPlaying)
         meter.update(time, if (state.isPlaying) Audio.spectrum.stereo(Audio.clock.now()) else null)
@@ -524,7 +524,7 @@ private fun ValvesFace(model: AppModel, state: PlayerState, u: Dp) {
     val meter = remember { SlowMeter(floor = -40f, ceiling = -8f, rise = 4f, fall = 1.5f) }
     val measurer = rememberTextMeasurer()
     Column(Modifier.fillMaxSize()) {
-        MetaLine(state, u, model.server.substringAfter("://"))
+        MetaLine(state, u, stringResource(R.string.source_server))
         Spacer(Modifier.weight(1f))
         val time = meterFrames(state.isPlaying)
         meter.update(time, if (state.isPlaying) Audio.spectrum.stereo(Audio.clock.now()) else null)

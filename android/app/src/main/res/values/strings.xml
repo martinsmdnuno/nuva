@@ -4,6 +4,8 @@
     <string name="sign_in_title">Sign in to Jellyfin</string>
     <string name="sign_in_note">NuVa browses your server by its folders, and plays the original files.</string>
     <string name="server">Server address</string>
+    <!-- The source on the ambient screen's top line, in place of the server's address. -->
+    <string name="source_server">Server</string>
     <string name="user">User</string>
     <string name="password">Password</string>
     <string name="sign_in">Sign In</string>

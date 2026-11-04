@@ -51,7 +51,6 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         private set
     val savedServer: String get() = account.server.orEmpty()
     val savedUser: String get() = account.username.orEmpty()
-    val server: String get() = account.server.orEmpty()
 
     var path by mutableStateOf("")
         private set

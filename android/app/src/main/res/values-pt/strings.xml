@@ -3,6 +3,8 @@
     <string name="sign_in_title">Entrar no Jellyfin</string>
     <string name="sign_in_note">A NuVa navega no teu servidor pelas pastas e toca os ficheiros originais.</string>
     <string name="server">Endereço do servidor</string>
+    <!-- The source on the ambient screen's top line, in place of the server's address. -->
+    <string name="source_server">Servidor</string>
     <string name="user">Utilizador</string>
     <string name="password">Palavra-passe</string>
     <string name="sign_in">Entrar</string>

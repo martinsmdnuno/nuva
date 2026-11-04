@@ -21,7 +21,7 @@ Inputs, in `build/gauntlet/mac/`: `snapshots/pt-PT/` and `snapshots/en/` (`snaps
 - **D3 One accent.** Amber only on the play key, the LEDs and the playing track's name. Never on a background, hover or other text.
 - **D4 Keys.** Every key uses `KeyButtonStyle` with one of its three tones.
 - **D5 Type.** Views use the `Font.ds…` styles, never `Typography.sans/mono` or a raw `.font(.system…)`. Numbers in the mono with tabular digits.
-- **D6 Truncation.** Names truncate at the end, never the middle, and the full name is in the tooltip. No text clipped or overlapping in any screenshot, in either language (Portuguese is longer: compare `pt-PT` and `en`).
+- **D6 Truncation.** Names truncate at the end, never the middle, and the full name is in the tooltip. No text clipped or overlapping in any screenshot, in either language (Portuguese is longer: compare `pt-PT` and `en`). Blocker.
 - **D7 Skins.** Each skin only changes colours: the same view in `chumbo`, `aluminio`, `graphite-orange` and `phosphor` has the same layout and sizes.
 - **D8 Contrast.** Text readable on its background in every screenshot (4.5:1 for text, 3:1 for keys and LEDs; `Tests/SkinTests.swift` checks the tokens, you check what is drawn, such as text over artwork).
 

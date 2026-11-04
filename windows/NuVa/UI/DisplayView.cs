@@ -127,11 +127,11 @@ public sealed class DisplayView : Border
         }
         stack.Children.Add(positionRow);
 
-        // shadow-display: recessed into the chassis, a 1px dark line at the top.
+        // shadow-display: recessed into the chassis, a 1px line in display-edge at the top.
         var grid = new Grid();
         grid.Children.Add(stack);
         Child = grid;
-        var shade = new Border { Height = 1, Background = new SolidColorBrush(Color.FromArgb(128, 0, 0, 0)), VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(-Space.S3, -Space.S3, -Space.S3, 0) };
+        var shade = new Border { Height = 1, Background = Theme.Brush(Token.DisplayEdge), VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(-Space.S3, -Space.S3, -Space.S3, 0) };
         grid.Children.Add(shade);
         Refresh();
     }

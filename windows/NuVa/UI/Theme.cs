@@ -67,10 +67,24 @@ public static class Theme
         return brush;
     }
 
-    /// <summary>Brush for a fixed 0xRRGGBB value.</summary>
+    /// <summary>A token lifted by <paramref name="amount"/> (0–1) in each channel, as SwiftUI's brightness().</summary>
+    public static SolidColorBrush Brighter(Token token, double amount)
+    {
+        var hex = Hex(token);
+        byte Lift(uint channel) => (byte)Math.Min(255, Math.Round((channel & 0xFF) + 255 * amount));
+        var brush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(Lift(hex >> 16), Lift(hex >> 8), Lift(hex)));
+        brush.Freeze();
+        return brush;
+    }
+
+    /// <summary>A skin's 0xRRGGBB token value (<see cref="Skin.Color"/>) as a colour, with an opacity (0–1).</summary>
+    public static Color Rgb(uint hex, double opacity = 1) =>
+        System.Windows.Media.Color.FromArgb((byte)Math.Round(255 * Math.Clamp(opacity, 0, 1)), (byte)(hex >> 16), (byte)(hex >> 8), (byte)hex);
+
+    /// <summary>Brush for a skin's 0xRRGGBB token value.</summary>
     public static SolidColorBrush Hex(uint hex, double opacity = 1)
     {
-        var brush = new SolidColorBrush(System.Windows.Media.Color.FromArgb((byte)Math.Round(255 * opacity), (byte)(hex >> 16), (byte)(hex >> 8), (byte)hex));
+        var brush = new SolidColorBrush(Rgb(hex, opacity));
         brush.Freeze();
         return brush;
     }

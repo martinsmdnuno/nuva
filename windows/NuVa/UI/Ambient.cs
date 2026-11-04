@@ -343,6 +343,7 @@ public sealed class AmbientCanvas : FrameworkElement
     // MARK: Drawing
 
     private Brush C(Token token, double opacity = 1) => Theme.Hex(Theme.Skin.Color(token, true), opacity);
+    private static Color Tint(Token token, double opacity) => Theme.Rgb(Theme.Skin.Color(token, true), opacity);
     private double dpi = 1;
 
     private FormattedText Text(string text, TextStyle style, double size, Brush brush, double maxWidth = 0)
@@ -613,13 +614,12 @@ public sealed class AmbientCanvas : FrameworkElement
 
     private void VuPanel(DrawingContext dc, Rect r, double deflection, bool clipping, int channel, double u, double still)
     {
-        var display = Theme.Skin.Color(Token.Display, true);
         var corner = u * 0.4;
         var panel = new RectangleGeometry(r, corner, corner);
         // The lamp: the skin's ink warmed by its accent, lit from behind by one bulb.
         dc.DrawGeometry(C(Token.Ink), null, panel);
         dc.DrawGeometry(C(Token.Led, 0.5), null, panel);
-        var lamp = new RadialGradientBrush(Color.FromArgb(0, (byte)(display >> 16), (byte)(display >> 8), (byte)display), Color.FromArgb(102, (byte)(display >> 16), (byte)(display >> 8), (byte)display))
+        var lamp = new RadialGradientBrush(Tint(Token.Display, 0), Tint(Token.Display, 0.4))
         {
             MappingMode = BrushMappingMode.Absolute,
             Center = new Point(r.X + r.Width / 2, r.Y + r.Height * 0.6),
@@ -681,14 +681,13 @@ public sealed class AmbientCanvas : FrameworkElement
         dc.DrawGeometry(C(Token.Display, 0.22), null, Needle(new Vector(u * 0.22, u * 0.4)));
         dc.DrawGeometry(C(Token.Display), null, Needle(new Vector()));
         // Under glass: a faint sheen across the top and a shadow inside the opening.
-        dc.DrawRectangle(new LinearGradientBrush(Color.FromArgb(18, 255, 255, 255), Color.FromArgb(0, 255, 255, 255), new Point(0.3, 0), new Point(0.45, 0.5)), null, r);
+        dc.DrawRectangle(new LinearGradientBrush(Tint(Token.DisplayInk, 0.07), Tint(Token.DisplayInk, 0), new Point(0.3, 0), new Point(0.45, 0.5)), null, r);
         dc.DrawGeometry(null, new Pen(C(Token.Display, 0.35), u * 1.2), panel);
         dc.Pop();
         var light = new Point(r.Right - u * 1.55, r.Y + u * 1.45);
         if (clipping)
         {
-            var led = Theme.Skin.Color(Token.Led, true);
-            dc.DrawEllipse(new RadialGradientBrush(Color.FromArgb(204, (byte)(led >> 16), (byte)(led >> 8), (byte)led), Color.FromArgb(0, (byte)(led >> 16), (byte)(led >> 8), (byte)led)), null, light, u * 1.2, u * 1.2);
+            dc.DrawEllipse(new RadialGradientBrush(Tint(Token.Led, 0.8), Tint(Token.Led, 0)), null, light, u * 1.2, u * 1.2);
         }
         dc.DrawEllipse(clipping ? C(Token.Led) : C(Token.Display, 0.35), null, light, u * 0.45, u * 0.45);
     }
@@ -723,8 +722,7 @@ public sealed class AmbientCanvas : FrameworkElement
         envelope.Segments.Add(new LineSegment(new Point(right, bottom), true));
         var outline = new PathGeometry([envelope]);
         var centre = new Point(ox + w / 2, oy + h * 0.57);
-        var led = Theme.Skin.Color(Token.Led, true);
-        Color Led(double alpha) => Color.FromArgb((byte)Math.Clamp(alpha * 255, 0, 255), (byte)(led >> 16), (byte)(led >> 8), (byte)led);
+        Color Led(double alpha) => Tint(Token.Led, alpha);
         RadialGradientBrush Radial(Color inner, Color outer, double radius) => new(inner, outer)
         {
             MappingMode = BrushMappingMode.Absolute, Center = centre, GradientOrigin = centre, RadiusX = radius, RadiusY = radius,

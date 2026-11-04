@@ -71,7 +71,7 @@ Media Foundation Source Reader (float PCM, per track)
 
 ⌘ becomes Ctrl. ⌥⌘ becomes **Ctrl+Shift**, never Ctrl+Alt: Ctrl+Alt is AltGr on Portuguese and other European keyboards, and would type € or @ instead.
 
-Space play/pause · Ctrl+→ next · Ctrl+← previous · Ctrl+Shift+→ ← 10 s · Ctrl+. stop · Ctrl+↑ ↓ volume · Ctrl+Shift+E equalizer · Ctrl+L go to the current track · Enter play selection · Ctrl+Enter add to queue · Alt+↑ ↓ move in the queue · Ctrl+Shift+Delete clear the queue · Ctrl+B swap queue and folders · Ctrl+1 2 3 queue, folders, compact · Ctrl+4 or F11 ambient · Ctrl+O add folder · Ctrl+Shift+O add Jellyfin · Ctrl+E eject CD · Ctrl+R repeat · Ctrl+Shift+S shuffle · Ctrl+Shift+A artwork · Ctrl+Shift+V spectrum · Ctrl+Shift+1 2 3 skins · Ctrl+Q quit.
+Space play/pause · Ctrl+→ next · Ctrl+← previous · Ctrl+Shift+→ ← 10 s · Ctrl+. stop · Ctrl+↑ ↓ volume · Ctrl+Shift+E equalizer · Ctrl+L go to the current track · Enter play selection · Ctrl+Enter add to queue · Ctrl+Shift+↑ ↓ move in the queue · Ctrl+Shift+Delete clear the queue · Ctrl+B swap queue and folders · Ctrl+1 2 3 queue, folders, compact · Ctrl+4 or F11 ambient · Ctrl+O add folder · Ctrl+Shift+O add Jellyfin · Ctrl+E eject CD · Ctrl+R repeat · Ctrl+Shift+S shuffle · Ctrl+Shift+A artwork · Ctrl+Shift+V spectrum · Ctrl+Shift+1 2 3 skins · Ctrl+Q quit.
 
 ## What doesn't apply
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.12.1 — Windows in step
+
+- Windows: a selected track moves in the queue with Ctrl+Shift+↑ ↓, the Mac's ⌥⌘↑ ↓ (it was Alt+↑ ↓).
+- Windows: pressed keys, the display's edge, a held equalizer fader and the VU meters' glass take their shade from the skin's colours, as on the Mac.
+
 ## 1.12 — the artist, and names that scroll
 
 - Mac and Windows: the display, the mini player and the ambient faces show the artist's folder beside the album's ("Fleetwood Mac · Rumours (1977)"), as the TV app does. A disc folder ("CD 2") gives way to its album. Control Center and the Windows media controls get the artist too. Still folders, never tags. A library folder such as "Music" is never taken for the artist, on the TV too.

@@ -101,7 +101,7 @@ public enum Tone { Play, Transport, Mode }
 
 /// <summary>
 /// The device's flat key, as on a Braun calculator: no outline, the face is the edge. Pressed, the face
-/// darkens 15% and travels 1px; with keyboard focus, a 2px ring 4px away. An icon key (36 high, width by
+/// turns to its pressed token (15% darker) and travels 1px; with keyboard focus, a 2px ring 4px away. An icon key (36 high, width by
 /// tone) or a text key (28 high, in the mode tone).
 /// </summary>
 public class KeyButton : FrameworkElement
@@ -158,7 +158,6 @@ public class KeyButton : FrameworkElement
     public static string Spoken(string help)
     {
         var at = help.IndexOf("Ctrl+", StringComparison.Ordinal);
-        if (at < 0) at = help.IndexOf("Alt+", StringComparison.Ordinal);
         return (at > 0 ? help[..at] : help).Trim();
     }
 
@@ -182,17 +181,18 @@ public class KeyButton : FrameworkElement
     protected override Size MeasureOverride(Size available)
     {
         if (text == null) return new Size(Width, Height);
-        var formatted = TextStyle.Label.Format(text, Brushes.Black, VisualTreeHelper.GetDpi(this).PixelsPerDip);
+        var formatted = TextStyle.Label.Format(text, Theme.Brush(Token.KeyModeInk), VisualTreeHelper.GetDpi(this).PixelsPerDip);
         return new Size(Math.Ceiling(formatted.WidthIncludingTrailingWhitespace) + 2 * Space.S3, Space.KeyText);
     }
 
     protected override void OnRender(DrawingContext dc)
     {
         var face = Tone switch { Tone.Play => Token.KeyPlay, Tone.Transport => Token.KeyFace, _ => Token.KeyMode };
+        var pressedFace = Tone switch { Tone.Play => Token.KeyPlayPressed, Tone.Transport => Token.KeyFacePressed, _ => Token.KeyModePressed };
         var ink = Tone == Tone.Mode ? Token.KeyModeInk : Token.KeyInk;
         var rect = new Rect(0, Press, ActualWidth, ActualHeight);
         dc.DrawRoundedRectangle(Theme.Brush(face), null, rect, Space.RadiusSm, Space.RadiusSm);
-        if (Press > 0) dc.DrawRoundedRectangle(new SolidColorBrush(Color.FromArgb((byte)(0.15 * 255 * Press), 0, 0, 0)), null, rect, Space.RadiusSm, Space.RadiusSm);
+        if (Press > 0) dc.DrawRoundedRectangle(Theme.Brush(pressedFace, Math.Min(Press, 1)), null, rect, Space.RadiusSm, Space.RadiusSm);
         var brush = Available ? Theme.Brush(ink) : Theme.Brush(ink, 0.4);
         var centre = new Point(ActualWidth / 2, ActualHeight / 2 + Press);
         if (text != null)

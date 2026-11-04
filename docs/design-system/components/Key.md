@@ -9,7 +9,7 @@ All at height `key` (36px) with corners `radius-sm`. No outline, no lip.
 - **Mode** (shuffle, repeat, folders): `key-mode`, icon in `key-mode-ink`, width `key-w-sm` (32px).
 
 ## States
-- Pressed: the face darkens 15% and goes down 1px while the mouse is down (60ms), and springs back on release. The LED and legend stay put.
+- Pressed: the face darkens 15% (its `-pressed` token) and goes down 1px while the mouse is down (60ms), and springs back on release. The LED and legend stay put.
 - A key whose icon changes with state (play/pause, repeat/repeat one) swaps the symbol in place.
 - On: a 4px LED above the key, `led` on, `led-off` off. Keys with state (shuffle, repeat, folders) always show the LED. The others leave the space empty so the faces line up.
 - Keyboard focus: 2px ring in `focus`, 4px away.

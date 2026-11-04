@@ -124,7 +124,7 @@ struct DisplayView: View {
             let shape = RoundedRectangle(cornerRadius: Radius.sm, style: .continuous)
             // shadow-display: recessed into the chassis.
             shape.fill(Color.display)
-                .overlay(alignment: .top) { Rectangle().fill(Color.black.opacity(0.5)).frame(height: 1) }
+                .overlay(alignment: .top) { Rectangle().fill(Color.displayEdge).frame(height: 1) }
                 .clipShape(shape)
         }
     }

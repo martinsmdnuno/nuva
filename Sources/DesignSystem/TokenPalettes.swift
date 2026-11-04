@@ -9,6 +9,7 @@ enum ColorToken: String, CaseIterable, Sendable {
     case displayInk = "display-ink"
     case displayMuted = "display-muted"
     case displayTrack = "display-track"
+    case displayEdge = "display-edge"
     case ink
     case inkMuted = "ink-muted"
     case line
@@ -17,6 +18,9 @@ enum ColorToken: String, CaseIterable, Sendable {
     case keyPlay = "key-play"
     case keyInk = "key-ink"
     case keyModeInk = "key-mode-ink"
+    case keyPlayPressed = "key-play-pressed"
+    case keyFacePressed = "key-face-pressed"
+    case keyModePressed = "key-mode-pressed"
     case track
     case fill
     case led
@@ -36,6 +40,7 @@ enum TokenPalette {
         .displayInk: 0xF2F4F5,
         .displayMuted: 0x9AA3A7,
         .displayTrack: 0x252C2F,
+        .displayEdge: 0x020404,
         .ink: 0xF2F4F5,
         .inkMuted: 0x9AA3A7,
         .line: 0x2A3032,
@@ -44,6 +49,9 @@ enum TokenPalette {
         .keyPlay: 0xFF6A00,
         .keyInk: 0x0B0F10,
         .keyModeInk: 0xF2F4F5,
+        .keyPlayPressed: 0xD95A00,
+        .keyFacePressed: 0xABAFB1,
+        .keyModePressed: 0x4D565C,
         .track: 0x363E41,
         .fill: 0xC9CED0,
         .led: 0xFF6A00,
@@ -61,6 +69,7 @@ enum TokenPalette {
         .displayInk: 0x00E838,
         .displayMuted: 0x1FA83C,
         .displayTrack: 0x0E3A18,
+        .displayEdge: 0x000000,
         .ink: 0xD8DCE6,
         .inkMuted: 0xA4A8BE,
         .line: 0x34344C,
@@ -69,6 +78,9 @@ enum TokenPalette {
         .keyPlay: 0x00D02A,
         .keyInk: 0x10101C,
         .keyModeInk: 0xF6F7FB,
+        .keyPlayPressed: 0x00B124,
+        .keyFacePressed: 0x9B9EAD,
+        .keyModePressed: 0x575779,
         .track: 0x3E3E58,
         .fill: 0xB6BACB,
         .led: 0x00D02A,

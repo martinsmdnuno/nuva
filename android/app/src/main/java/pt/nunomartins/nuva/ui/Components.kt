@@ -53,6 +53,8 @@ enum class Tone {
     Play, Transport, Mode;
 
     val face: Color get() = when (this) { Play -> Tokens.keyPlay; Transport -> Tokens.keyFace; Mode -> Tokens.keyMode }
+    /** The face while the key is held down: 85% of it. */
+    val pressed: Color get() = when (this) { Play -> Tokens.keyPlayPressed; Transport -> Tokens.keyFacePressed; Mode -> Tokens.keyModePressed }
     val ink: Color get() = when (this) { Play, Transport -> Tokens.keyInk; Mode -> Tokens.keyModeInk }
 }
 
@@ -75,7 +77,7 @@ fun Key(
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
     val pressed by interaction.collectIsPressedAsState()
-    val face by animateColorAsState(if (pressed) tone.face.darker(0.15f) else tone.face, tween(60), label = "face")
+    val face by animateColorAsState(if (pressed) tone.pressed else tone.face, tween(60), label = "face")
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         if (led != null) {
             Led(led)
@@ -165,8 +167,6 @@ fun ListRow(
 fun Text(text: String, style: TextStyle, modifier: Modifier = Modifier, maxLines: Int = 1) {
     BasicText(text, modifier, style = style, maxLines = maxLines, overflow = TextOverflow.Ellipsis)
 }
-
-fun Color.darker(by: Float) = Color(red * (1 - by), green * (1 - by), blue * (1 - by), alpha)
 
 /** 83 → "01:23"; an hour or more → "1:02:03". */
 fun clock(seconds: Double): String {

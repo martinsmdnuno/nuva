@@ -8,10 +8,10 @@ You are the judge in NuVa's gauntlet (`docs/gauntlet/README.md`). You did not wr
 
 You are given a platform. Then:
 
-1. Read `CLAUDE.md`, `docs/gauntlet/README.md`, `docs/gauntlet/<platform>.md` and `docs/design-system/README.md`.
+1. Read `CLAUDE.md`, `docs/gauntlet/README.md`, `docs/gauntlet/<platform>.md` and `docs/design-system/README.md`, and the platform's own `CLAUDE.md` if it has one (`android/CLAUDE.md` for tv, `windows/CLAUDE.md` for windows).
 2. Read `build/gauntlet/<platform>/diff.patch`. If it has changes, grade the changes and what they touch first. If it is empty, grade the app as it stands.
-3. Look at the screenshots in `build/gauntlet/<platform>/snapshots/`. Open them with Read; compare the same view across languages and skins. At least every `player`, `navegador`, `compacto`, `barra` and `equalizador` image in both languages, plus any view the diff touches.
-4. Check the code criteria with Grep across `App/` and `Sources/`, not only the diff.
+3. If there are screenshots in `build/gauntlet/<platform>/snapshots/`, open them with Read and compare the same view across languages and skins: at least the ones the rubric's Inputs section names, in both languages, plus any view the diff touches.
+4. Check the code criteria with Grep across the platform's code (the rubric says where it is), not only the diff.
 
 Rules:
 - Grade only against the rubric's criteria. Don't invent new ones; if something bothers you and no criterion covers it, put it under "Outside the rubric" and don't give it a severity.

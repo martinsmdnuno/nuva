@@ -106,6 +106,9 @@ object Tokens {
     val keyPlay get() = p.keyPlay
     val keyInk get() = p.keyInk
     val keyModeInk get() = p.keyModeInk
+    val keyPlayPressed get() = p.keyPlayPressed
+    val keyFacePressed get() = p.keyFacePressed
+    val keyModePressed get() = p.keyModePressed
     val track get() = p.track
     val fill get() = p.fill
     val led get() = p.led

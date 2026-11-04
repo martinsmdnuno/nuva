@@ -1,6 +1,6 @@
 ---
 name: gauntlet
-description: Run NuVa's gauntlet loop for one platform (mac; later tv, windows, site) — objective gates, then an independent judge, fixing one failure per round until everything passes or five rounds are used. Use when the user says /gauntlet, "run the gauntlet" or asks to evaluate and fix a platform end to end.
+description: Run NuVa's gauntlet loop for one platform (mac, tv, windows or site) — objective gates, then an independent judge, fixing one failure per round until everything passes or five rounds are used. Use when the user says /gauntlet, "run the gauntlet" or asks to evaluate and fix a platform end to end.
 argument-hint: <mac|tv|windows|site>
 ---
 

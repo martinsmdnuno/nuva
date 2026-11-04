@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.12.1 — the remote reaches everything, Windows in step
+
+- Android TV: the equalizer's presets and its on/off key can be reached with the remote: the presets come first, as on the Mac, and Back on a fader goes back to them. The active preset is lit by its LED.
+- Android TV: on the sign-in screen, ↑ and ↓ move between the fields and the Sign In key; a field no longer keeps the remote's focus.
+- Android TV: the equalizer's on/off key shows "Desligado" whole.
+- Android TV: pressed keys, the dimming behind a panel and the VU meters' glass take their shade from the skin's colours; amber is kept for the play key and the lights.
+- Windows: a selected track moves in the queue with Ctrl+Shift+↑ ↓, the Mac's ⌥⌘↑ ↓ (it was Alt+↑ ↓).
+- Windows: pressed keys, the display's edge, a held equalizer fader and the VU meters' glass take their shade from the skin's colours, as on the Mac.
+- Site: the privacy page names the daily update check, and the Windows answer in the FAQ says what the app does today.
+
 ## 1.12 — the artist, and names that scroll
 
 - Mac and Windows: the display, the mini player and the ambient faces show the artist's folder beside the album's ("Fleetwood Mac · Rumours (1977)"), as the TV app does. A disc folder ("CD 2") gives way to its album. Control Center and the Windows media controls get the artist too. Still folders, never tags. A library folder such as "Music" is never taken for the artist, on the TV too.

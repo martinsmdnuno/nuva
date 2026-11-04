@@ -75,29 +75,37 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /** Seen before Compose: in ambient mode nothing on screen has the focus. */
-    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        lastInput = System.currentTimeMillis()
-        if (model.ambient && event.keyCode != KeyEvent.KEYCODE_BACK) {
-            val resting = AmbientState.isResting(lastInput)
-            AmbientState.noteInteraction()
-            if (event.action != KeyEvent.ACTION_DOWN) return event.keyCode in AMBIENT_KEYS || super.dispatchKeyEvent(event)
+    /** Every key, before Compose sees it: the remote was used. */
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        val now = System.currentTimeMillis()
+        if (model.ambient) {
             // Resting, the first key only wakes the screen.
-            if (resting && event.keyCode in AMBIENT_KEYS) return true
-            when (event.keyCode) {
-                // ← → change the face, OK plays or pauses, ↑ ↓ leave (as Esc on the Mac; Back too).
-                KeyEvent.KEYCODE_DPAD_LEFT -> AmbientState.changeFace(-1)
-                KeyEvent.KEYCODE_DPAD_RIGHT -> AmbientState.changeFace(1)
-                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> model.player.playPause()
-                KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN -> model.ambient = false
-                else -> return super.dispatchKeyEvent(event)
-            }
-            return true
+            restingKey = AmbientState.isResting(now)
+            AmbientState.noteInteraction()
         }
-        return super.dispatchKeyEvent(event)
+        lastInput = now
     }
 
+    /** In ambient mode nothing on screen has the focus, so the remote's keys come here. */
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (!model.ambient || keyCode !in AMBIENT_KEYS) return super.onKeyDown(keyCode, event)
+        if (restingKey) return true
+        when (keyCode) {
+            // ← → change the face, OK plays or pauses, ↑ ↓ leave (as Esc on the Mac; Back too).
+            KeyEvent.KEYCODE_DPAD_LEFT -> AmbientState.changeFace(-1)
+            KeyEvent.KEYCODE_DPAD_RIGHT -> AmbientState.changeFace(1)
+            KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> model.player.playPause()
+            KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN -> model.ambient = false
+        }
+        return true
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean =
+        (model.ambient && keyCode in AMBIENT_KEYS) || super.onKeyUp(keyCode, event)
+
     private var lastInput = System.currentTimeMillis()
+    private var restingKey = false
 
     private companion object {
         const val IDLE = 60_000L

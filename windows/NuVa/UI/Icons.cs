@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using NuVa.Core;
 
 namespace NuVa.UI;
 
@@ -80,7 +81,7 @@ public static class Icons
 public sealed class IconView : FrameworkElement
 {
     private Icon icon;
-    private Brush brush = Brushes.Gray;
+    private Brush brush = Theme.Brush(Token.InkMuted);
 
     public IconView(Icon icon, double size)
     {

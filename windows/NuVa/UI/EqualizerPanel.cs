@@ -231,8 +231,8 @@ internal sealed class BandSlider : FrameworkElement
         dc.DrawRectangle(Theme.Brush(Token.Surface0), null, new Rect(cx - 1, 0, Space.Bar, 120));
         var y = EqualizerPanel.Y((float)Shown) - 4;
         var cap = new Rect(cx - 8, y, 16, 8);
-        dc.DrawRoundedRectangle(Theme.Brush(Token.KeyFace), null, cap, 1, 1);
-        if (active) dc.DrawRoundedRectangle(new SolidColorBrush(Color.FromArgb(16, 255, 255, 255)), null, cap, 1, 1);
+        // Held, the cap lights a little (the Mac's brightness 0.06).
+        dc.DrawRoundedRectangle(active ? Theme.Brighter(Token.KeyFace, 0.06) : Theme.Brush(Token.KeyFace), null, cap, 1, 1);
         dc.DrawRectangle(Theme.Brush(Token.KeyInk, 0.5), null, new Rect(cap.X + 2, cap.Y + 3.5, 12, 1));
         dc.Pop();
         var text = TextStyle.DisplayMeta.Format(label, Theme.Brush(Token.InkMuted), VisualTreeHelper.GetDpi(this).PixelsPerDip);

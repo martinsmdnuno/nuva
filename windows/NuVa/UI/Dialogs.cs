@@ -84,8 +84,8 @@ public sealed class TermsWindow : Window
             switch (kind)
             {
                 case Terms.Kind.Title:
-                    paragraph.FontSize = 20;
-                    paragraph.FontWeight = FontWeights.SemiBold;
+                    paragraph.FontSize = TextStyle.DocumentTitle.Size;
+                    paragraph.FontWeight = TextStyle.DocumentTitle.FontWeight;
                     break;
                 case Terms.Kind.Heading:
                     paragraph.FontSize = TextStyle.Title.Size;

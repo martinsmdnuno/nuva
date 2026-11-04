@@ -22,6 +22,8 @@ public readonly record struct TextStyle(bool Mono, double Size, int Weight)
     public static readonly TextStyle Duration = new(true, 12, 400);
     public static readonly TextStyle Scale = new(true, 9, 400);
     public static readonly TextStyle Hint = new(true, 10, 400);
+    /// <summary>A document's title (Terms and Privacy).</summary>
+    public static readonly TextStyle DocumentTitle = new(false, 20, 600);
 
     public TextStyle Sized(double size) => this with { Size = size };
 

@@ -27,9 +27,12 @@ tv_test() { gradle testDebugUnitTest }
 # Android lint; an error fails (warnings are in the report, for the judge).
 tv_lint() {
   gradle lintDebug
-  local status=$?
-  grep -E ': (Error|Warning):' android/app/build/intermediates/lint_intermediate_text_report/debug/lintReportDebug/lint-results-debug.txt 2>/dev/null
-  return $status
+  local result=$?   # not `status`: zsh's read-only alias of $?
+  local report=android/app/build/intermediates/lint_intermediate_text_report/debug/lintReportDebug/lint-results-debug.txt
+  # Warnings first, so the errors are the log's last lines.
+  grep ': Warning:' $report 2>/dev/null
+  grep ': Error:' $report 2>/dev/null
+  return $result
 }
 
 # MARK: Snapshots

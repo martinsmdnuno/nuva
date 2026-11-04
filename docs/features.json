@@ -66,6 +66,8 @@
   "features": [
     { "id": "folders", "en": "Folders as they are: a folder is an album, natural sort, never tags", "pt": "Pastas como estão: uma pasta é um álbum, ordem natural, nunca tags",
       "mac": "yes", "tv": "yes", "windows": "yes" },
+    { "id": "display-names", "en": "The display names the artist's and album's folders, scrolling when they're too long", "pt": "O visor mostra as pastas do artista e do álbum, a rolar quando não cabem",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
     { "id": "local", "en": "Folders on the computer, external disks and network shares", "pt": "Pastas no computador, discos externos e partilhas de rede",
       "mac": "yes", "tv": "n/a", "windows": "yes",
       "why": { "tv": "A TV box keeps no music; it plays from a server." } },

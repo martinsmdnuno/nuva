@@ -199,6 +199,7 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 | | Mac | Android TV | Windows |
 |---|:-:|:-:|:-:|
 | Folders as they are: a folder is an album, natural sort, never tags | ✓ | ✓ | ✓ |
+| The display names the artist's and album's folders, scrolling when they're too long | ✓ | ✓ | later |
 | Folders on the computer, external disks and network shares | ✓ | — | ✓ |
 | Jellyfin by its real folders, streaming the original file | ✓ | ✓ | ✓ |
 | Audio CDs, named from MusicBrainz | ✓ | — | ✓ |
@@ -343,6 +344,7 @@ Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnun
 | | Mac | Android TV | Windows |
 |---|:-:|:-:|:-:|
 | Pastas como estão: uma pasta é um álbum, ordem natural, nunca tags | ✓ | ✓ | ✓ |
+| O visor mostra as pastas do artista e do álbum, a rolar quando não cabem | ✓ | ✓ | mais tarde |
 | Pastas no computador, discos externos e partilhas de rede | ✓ | — | ✓ |
 | Jellyfin pelas pastas reais, com o ficheiro original | ✓ | ✓ | ✓ |
 | CDs áudio, com os nomes do MusicBrainz | ✓ | — | ✓ |

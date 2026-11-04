@@ -45,6 +45,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.layout.layout
+import pt.nunomartins.nuva.player.PlayerState
 
 val KeyShape = RoundedCornerShape(6.dp)
 
@@ -96,7 +98,7 @@ fun Key(
             contentAlignment = Alignment.Center,
         ) {
             if (icon != null) {
-                Image(icon, description, Modifier.size(30.dp), colorFilter = ColorFilter.tint(tone.ink))
+                Image(icon, description, Modifier.size(28.dp), colorFilter = ColorFilter.tint(tone.ink))
             } else if (text != null) {
                 BasicText(text, Modifier.padding(horizontal = 20.dp), style = Type.label.copy(color = tone.ink), maxLines = 1)
             }
@@ -108,6 +110,17 @@ fun Key(
 @Composable
 fun Legend(text: String, modifier: Modifier = Modifier) {
     BasicText(text.lowercase(), modifier, style = Type.legend)
+}
+
+/**
+ * Lets a control's focus ring and padding (`by` on each side) stand out past the column it sits in,
+ * so its content lines up with the text above and below it.
+ */
+fun Modifier.bleed(by: Dp): Modifier = layout { measurable, constraints ->
+    val extra = by.roundToPx() * 2
+    val maxWidth = if (constraints.hasBoundedWidth) constraints.maxWidth + extra else constraints.maxWidth
+    val placeable = measurable.measure(constraints.copy(minWidth = (constraints.minWidth + extra).coerceAtMost(maxWidth), maxWidth = maxWidth))
+    layout((placeable.width - extra).coerceAtLeast(0), placeable.height) { placeable.place(-extra / 2, 0) }
 }
 
 /** State LED: amber on, grey off. Lights in 80 ms and fades in 350 ms, like a filament. */
@@ -123,6 +136,19 @@ fun PositionBar(fraction: Float, modifier: Modifier = Modifier, height: Dp = 4.d
     Box(modifier.fillMaxWidth().height(height).clip(RoundedCornerShape(2.dp)).background(Tokens.displayTrack)) {
         Box(Modifier.fillMaxWidth(fraction.coerceIn(0f, 1f)).height(height).background(Tokens.displayInk))
     }
+}
+
+/**
+ * The quality badge: "FLAC 905 kbps | 16-bit/44.1 kHz" in a pill a step lighter than the display, no
+ * outline (one plane: the pill is a printed field, as on a hi-fi front). The format alone before the
+ * decoder has said more.
+ */
+@Composable
+fun QualityBadge(state: PlayerState, style: TextStyle, horizontal: Dp = 12.dp, vertical: Dp = 4.dp, compact: Boolean = false) {
+    val quality = state.quality
+    val text = (if (compact) quality?.compactLabel else quality?.label) ?: state.current?.format ?: return
+    if (text.isEmpty()) return
+    Text(text, style, Modifier.clip(CircleShape).background(Tokens.displayTrack.copy(alpha = 0.6f)).padding(horizontal = horizontal, vertical = vertical))
 }
 
 /** A list row (folder or track). Focus shows as surface-2, the playing track in signal with its LED. */
@@ -148,7 +174,7 @@ fun ListRow(
             .remoteClick(interaction, onClick, onLongClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Box(Modifier.width(24.dp), contentAlignment = Alignment.Center) {
             when {

@@ -3,19 +3,26 @@
     <string name="sign_in_title">Entrar no Jellyfin</string>
     <string name="sign_in_note">A NuVa navega no teu servidor pelas pastas e toca os ficheiros originais.</string>
     <string name="server">Endereço do servidor</string>
+    <!-- The source on the ambient screen's top line, in place of the server's address. -->
+    <string name="source_server">Servidor</string>
+    <!-- On the ambient screen while ↓ holds the position bar. -->
+    <string name="scrub_hint">← → 10 s · OK para ficar · voltar para cancelar</string>
     <string name="user">Utilizador</string>
     <string name="password">Palavra-passe</string>
     <string name="sign_in">Entrar</string>
     <string name="signing_in">A entrar…</string>
     <string name="sign_out">Sair</string>
     <string name="mode">modo</string>
+    <!-- The mode key's legend: the mode it is in. -->
+    <string name="mode_normal">normal</string>
+    <string name="mode_shuffle">aleatório</string>
+    <string name="mode_repeat_all">repetir tudo</string>
+    <string name="mode_repeat_one">repetir faixa</string>
     <string name="playback">reprodução</string>
     <string name="view">vista</string>
     <string name="folders">pastas</string>
     <string name="queue">fila</string>
     <string name="play_folder">Tocar pasta</string>
-    <string name="shuffle">Aleatório</string>
-    <string name="repeat">Repetir</string>
     <string name="previous">Anterior</string>
     <string name="play_pause">Tocar ou pausa</string>
     <string name="next">Seguinte</string>
@@ -49,7 +56,7 @@
     <string name="equalizer">Equalizador</string>
     <string name="on">Ligado</string>
     <string name="off">Desligado</string>
-    <string name="eq_hint">← → banda · ↑ ↓ meio decibel · voltar: presets</string>
+    <string name="eq_hint">OK numa banda para a ajustar · ↑ ↓ meio decibel · OK ou voltar para terminar</string>
     <string name="preset_flat">Plano</string>
     <string name="preset_bass">Graves</string>
     <string name="preset_treble">Agudos</string>
@@ -62,6 +69,11 @@
     <string name="font">Fonte</string>
     <string name="font_follows">%1$s (da skin)</string>
     <string name="show_artwork">Mostrar capas</string>
+    <!-- Settings, next to Show Artwork: where the playing album's cover came from. -->
+    <string name="artwork_folder">da pasta</string>
+    <string name="artwork_online">online</string>
+    <string name="artwork_none">não encontrada</string>
+    <string name="artwork_offline">sem ligação</string>
     <string name="show_spectrum">Mostrar espetro</string>
     <string name="section_ambient">ambiente</string>
     <string name="ambient_face">Mostrador</string>

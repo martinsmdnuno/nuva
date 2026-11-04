@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import pt.nunomartins.nuva.artwork.ArtworkGlow
+import pt.nunomartins.nuva.artwork.ArtworkOrigin
 import pt.nunomartins.nuva.artwork.ArtworkResolver
 import pt.nunomartins.nuva.artwork.CoverArtArchive
 import pt.nunomartins.nuva.library.Account
@@ -45,13 +46,12 @@ class AppModel(app: Application) : AndroidViewModel(app) {
     val player = PlayerModel(app)
     val updates = Updates(app, VERSION)
     private var source: JellyfinSource? = account.server?.let { server -> account.session?.let { open(server, it) } }
-    private val artwork = ArtworkResolver(File(app.filesDir, "artwork"), CoverArtArchive(VERSION))
+    private val artwork = ArtworkResolver(File(app.filesDir, "artwork"), CoverArtArchive(VERSION)) { folder -> source?.folderArtwork(folder) }
 
     var signedIn by mutableStateOf(source != null)
         private set
     val savedServer: String get() = account.server.orEmpty()
     val savedUser: String get() = account.username.orEmpty()
-    val server: String get() = account.server.orEmpty()
 
     var path by mutableStateOf("")
         private set
@@ -64,7 +64,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
     /** A short note on the header ("12 tracks added"), gone after a few seconds. */
     var note by mutableStateOf<String?>(null)
         private set
-    /** Folders or the queue below the keys, as ⌘B swaps them on the Mac. */
+    /** Folders or the queue on the right, as ⌘B swaps them on the Mac; the tabs choose. */
     var showingFolders by mutableStateOf(true)
     var ambient by mutableStateOf(false)
     var overlay by mutableStateOf<Overlay?>(null)
@@ -77,6 +77,13 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         private set
     var played by mutableIntStateOf(0)
         private set
+    /** Bumped when Back on a list sends the focus to the right column's tabs. */
+    var focusTabs by mutableIntStateOf(0)
+        private set
+    /** A row of the folders or the queue has the focus (Back then goes to the tabs). */
+    var listFocused = false
+
+    fun focusTheTabs() { focusTabs++ }
 
     // Options, as in the Mac's View menu.
     var showArtwork by mutableStateOf(prefs.getBoolean("artwork", false))
@@ -91,6 +98,9 @@ class AppModel(app: Application) : AndroidViewModel(app) {
     var cover by mutableStateOf<Bitmap?>(null)
         private set
     var glow by mutableStateOf<Bitmap?>(null)
+        private set
+    /** Where the playing album's cover came from, or why there is none (null: not looked up). */
+    var artworkOrigin by mutableStateOf<ArtworkOrigin?>(null)
         private set
     private var coverFor: String? = null
     private var coverJob: Job? = null
@@ -114,6 +124,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         if (!on) {
             cover = null
             glow = null
+            artworkOrigin = null
         }
     }
 
@@ -238,7 +249,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
             lastIndex = state.index
             lastSaved = now
             val tracks = JSONArray()
-            state.queue.forEach { tracks.put(JSONObject().put("path", it.path).put("name", it.name).put("duration", it.duration ?: -1.0)) }
+            state.queue.forEach { tracks.put(JSONObject().put("path", it.path).put("name", it.name).put("duration", it.duration ?: -1.0).put("size", it.size ?: -1L)) }
             prefs.edit().putString("session", JSONObject()
                 .put("tracks", tracks).put("index", state.index).put("position", (state.position * 1000).toLong()).toString()).apply()
         }
@@ -257,7 +268,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
                     val list = json.getJSONArray("tracks")
                     val tracks = (0 until list.length()).map {
                         val t = list.getJSONObject(it)
-                        Entry(t.getString("path"), t.getString("name"), false, t.getDouble("duration").takeIf { d -> d >= 0 })
+                        Entry(t.getString("path"), t.getString("name"), false, t.getDouble("duration").takeIf { d -> d >= 0 }, t.optLong("size", -1).takeIf { b -> b > 0 })
                     }
                     if (tracks.isEmpty()) return@launch
                     val urls = tracks.map { source.url(it) }
@@ -286,14 +297,22 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         if (entry == null) {
             cover = null
             glow = null
+            artworkOrigin = null
             return
         }
         coverJob = viewModelScope.launch {
-            val found = artwork.resolve(entry)
+            val resolved = artwork.resolve(entry)
+            val found = resolved.cover
             cover = found
+            artworkOrigin = resolved.origin
             glowSkin = skin
             glow = found?.let { ArtworkGlow.field(it, Tokens.display.toArgb(), Tokens.displayMuted.toArgb()) }
             player.setArtwork(entry.path, found)
+            // The server or the internet was away: look again in a minute, for the same album.
+            if (resolved.origin == ArtworkOrigin.Offline) {
+                delay(60_000)
+                if (coverFor == album) coverFor = null
+            }
         }
     }
 

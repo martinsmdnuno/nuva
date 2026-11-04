@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.13 — the TV, by hand
+
+- Android TV: queue and folders are two tabs at the top of the right column, each with its light; OK on one shows it, and Back from a list goes up to them. The folders key on the left is gone.
+- Android TV: one mode key moves through normal, shuffle, repeat all and repeat one, with the mode's name under it.
+- Android TV: the position bar takes the focus. OK holds it, ← → move 10 seconds a press (faster when held), the track goes there when you let go; OK keeps the place, Back goes back. In ambient mode ↓ holds the bar, ↑ leaves.
+- Android TV: a quality badge on the display and the ambient faces: "FLAC 905 kbps | 16-bit/44.1 kHz", the bitrate being the file's average, as on the Mac and Windows.
+- Android TV: covers come first from the image file in the album's folder on your Jellyfin server (cover, folder, front, album or capa), then from MusicBrainz; an image Jellyfin took from the tags never counts. Settings shows where the playing album's cover came from, and a lookup that couldn't reach the server is tried again.
+- Android TV: the cover is on every ambient face, and without one a soft glow in the skin's own light sits behind the face. The glow breathes with the bass and drifts slowly, paused too; with OLED Protection the big time is a little dimmer.
+- Android TV: every ambient face has the position bar, and the top line names the source ("Server") instead of the server's address.
+- Android TV: in the equalizer the arrows move between the on/off key, the presets and the bands; OK on a band holds it for ↑ ↓, OK or Back lets go.
+- Android TV: names too long for a list end in an ellipsis; with the focus they slide, with a pause at the start and soft ends.
+- Android TV: finer icons, one spacing throughout, and the display's lines lined up.
+
 ## 1.12.1 — the remote reaches everything, Windows in step
 
 - Android TV: the equalizer's presets and its on/off key can be reached with the remote: the presets come first, as on the Mac, and Back on a fader goes back to them. The active preset is lit by its LED.

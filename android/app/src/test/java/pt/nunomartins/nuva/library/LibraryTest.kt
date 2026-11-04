@@ -31,6 +31,12 @@ class LibraryTest {
         assertEquals("Album/01.flac", JellyfinSource.relativePath(windows, "", "D:/Music"))
     }
 
+    @Test fun theFilesSizeComesFromItsMediaSource() {
+        val json = org.json.JSONObject("""{"Id":"1","Name":"Dreams","IsFolder":false,"MediaSources":[{"Id":"1","Size":20362500}]}""")
+        assertEquals(20_362_500L, JellyfinSource.Item.from(json).size)
+        assertEquals(null, JellyfinSource.Item.from(org.json.JSONObject("""{"Id":"2","IsFolder":false}""")).size)
+    }
+
     @Test fun addressGetsAScheme() {
         assertEquals("https://cinema.example.com", JellyfinSource.normalise(" cinema.example.com/ "))
         assertEquals("http://192.168.1.2:8096", JellyfinSource.normalise("http://192.168.1.2:8096"))

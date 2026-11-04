@@ -1,11 +1,13 @@
 package pt.nunomartins.nuva.library
 
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import pt.nunomartins.nuva.artwork.FolderArtwork
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -32,6 +34,8 @@ class JellyfinSource(
         val container: String?,
         val runTimeTicks: Long?,
         val collectionType: String?,
+        /** The file's size, from its first media source. */
+        val size: Long? = null,
     ) {
         /** Path with forward slashes (Windows servers use `\`). */
         val unixPath: String? get() = path?.replace('\\', '/')
@@ -45,6 +49,7 @@ class JellyfinSource(
                 container = json.optStringOrNull("Container"),
                 runTimeTicks = if (json.has("RunTimeTicks") && !json.isNull("RunTimeTicks")) json.getLong("RunTimeTicks") else null,
                 collectionType = json.optStringOrNull("CollectionType"),
+                size = json.optJSONArray("MediaSources")?.optJSONObject(0)?.let { if (it.has("Size") && !it.isNull("Size")) it.getLong("Size") else null },
             )
         }
     }
@@ -69,6 +74,35 @@ class JellyfinSource(
         val id = tracks[track.path] ?: throw SourceException(SourceException.Reason.MissingFolder)
         val ext = track.name.substringAfterLast('.', "").lowercase()
         "$server/Audio/$id/stream.$ext?static=true&api_key=${session.token.encoded()}"
+    }
+
+    /**
+     * The image file the user put in `folder` on the server (cover.jpg, folder.png…, as on the Mac),
+     * as Jellyfin serves it; null when there is none. Only an image whose file is in the folder itself
+     * counts: never one Jellyfin took from the tags or downloaded (folders, not metadata).
+     */
+    suspend fun folderArtwork(folder: String): ByteArray? = lock.withLock {
+        if (!rootLoaded) loadRoot()
+        val (rel, node) = try {
+            anchor(folder)
+        } catch (e: SourceException) {
+            return@withLock null
+        }
+        val abs = node.abs ?: return@withLock null
+        if (rel != folder) return@withLock null
+        val auth = authorization(deviceId, version, session.token)
+        val (status, body) = send("GET", "$server/Items/${node.id}/Images", auth, null)
+        if (status == 401) throw SourceException(SourceException.Reason.LoginFailed, status)
+        if (status !in 200..299) return@withLock null
+        val images = try {
+            JSONArray(body).objects().map { FolderArtwork.Image(it.optString("ImageType"), it.optStringOrNull("Path"), if (it.has("ImageIndex") && !it.isNull("ImageIndex")) it.getInt("ImageIndex") else null) }
+        } catch (e: Exception) {
+            return@withLock null
+        }
+        val image = FolderArtwork.choose(images, abs) ?: return@withLock null
+        val index = image.index?.let { "/$it" }.orEmpty()
+        val (imageStatus, bytes) = sendBytes("GET", "$server/Items/${node.id}/Images/${image.type}$index?maxWidth=800&quality=90", auth)
+        if (imageStatus !in 200..299 || bytes.isEmpty()) null else bytes
     }
 
     private suspend fun listLocked(path: String): List<Entry> {
@@ -96,7 +130,7 @@ class JellyfinSource(
                 }
                 item.isFolder -> if (seen.add(rel)) result.add(Entry(rel, rest, isFolder = true))
                 Playable.isPlayable(rel) ->
-                    result.add(Entry(rel, rest, isFolder = false, duration = item.runTimeTicks?.let { it / 10_000_000.0 }))
+                    result.add(Entry(rel, rest, isFolder = false, duration = item.runTimeTicks?.let { it / 10_000_000.0 }, size = item.size))
             }
         }
         return result.naturallySorted()
@@ -149,7 +183,7 @@ class JellyfinSource(
     }
 
     private suspend fun items(parentId: String): List<Item> {
-        val query = mapOf("parentId" to parentId, "fields" to "Path", "enableImages" to "false", "enableUserData" to "false")
+        val query = mapOf("parentId" to parentId, "fields" to "Path,MediaSources", "enableImages" to "false", "enableUserData" to "false")
         if (!legacyRoutes) {
             try {
                 return get("Items", query + ("userId" to session.userId))
@@ -219,6 +253,9 @@ class JellyfinSource(
         }
 
         private suspend fun send(method: String, url: String, authorization: String, body: String?): Pair<Int, String> =
+            sendBytes(method, url, authorization, body).let { (status, bytes) -> status to String(bytes) }
+
+        private suspend fun sendBytes(method: String, url: String, authorization: String, body: String? = null): Pair<Int, ByteArray> =
             withContext(Dispatchers.IO) {
                 try {
                     val connection = URL(url).openConnection() as HttpURLConnection
@@ -234,9 +271,9 @@ class JellyfinSource(
                     }
                     val status = connection.responseCode
                     val stream = if (status in 200..299) connection.inputStream else connection.errorStream
-                    val text = stream?.bufferedReader()?.use { it.readText() } ?: ""
+                    val bytes = stream?.use { it.readBytes() } ?: ByteArray(0)
                     connection.disconnect()
-                    status to text
+                    status to bytes
                 } catch (e: IOException) {
                     throw SourceException(SourceException.Reason.ServerUnavailable)
                 }

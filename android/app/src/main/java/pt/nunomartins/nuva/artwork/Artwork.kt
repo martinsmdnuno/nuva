@@ -161,37 +161,106 @@ class CoverArtArchive(private val version: String) {
     }
 }
 
+/** The image files that count as a folder's artwork, as the Mac's `Artwork`: "cover", "folder", "front", "album", "capa" (Portuguese) · jpg, jpeg, png. */
+object FolderArtwork {
+    val names = listOf("cover", "folder", "front", "album", "capa")
+    val extensions = setOf("jpg", "jpeg", "png")
+
+    /** One of a server item's images: its type ("Primary"), the file it was read from, its index. */
+    data class Image(val type: String, val path: String?, val index: Int?)
+
+    /** Rank of a file name among `names` (0 is best), or null when it isn't artwork. Case-insensitive. */
+    fun rank(fileName: String): Int? {
+        if (fileName.substringAfterLast('.', "").lowercase() !in extensions) return null
+        return names.indexOf(fileName.substringBeforeLast('.').lowercase()).takeIf { it >= 0 }
+    }
+
+    /** The best image whose file sits in `folder` itself (the server's path, `/` or `\`) and is named as artwork. */
+    fun choose(images: List<Image>, folder: String): Image? {
+        val dir = folder.replace('\\', '/').trimEnd('/')
+        return images
+            .mapNotNull { image ->
+                val path = image.path?.replace('\\', '/') ?: return@mapNotNull null
+                if (path.substringBeforeLast('/') != dir) return@mapNotNull null
+                rank(path.substringAfterLast('/'))?.let { image to it }
+            }
+            .minByOrNull { it.second }?.first
+    }
+}
+
+/** Where a cover came from, as the Mac's `ArtworkOrigin`, or why there is none. */
+enum class ArtworkOrigin { Folder, Online, None, Offline }
+
+data class ResolvedArtwork(val cover: Bitmap?, val origin: ArtworkOrigin)
+
 /**
- * Finds a folder's cover online from its names and keeps it in the app's own files (never in the
- * music folders). A miss is remembered for 14 days; an error (offline) isn't remembered at all.
+ * Finds a folder's cover: the image file in the folder on the server first (a disc folder also looks
+ * in its album folder), then online from its names, kept in the app's own files (never in the music
+ * folders). An online miss is remembered for 14 days; an error (offline) isn't remembered at all.
+ * Each album's outcome goes to the log ("NuVa.Artwork"), step by step.
  */
-class ArtworkResolver(private val root: File, private val online: CoverArtArchive) {
+class ArtworkResolver(
+    private val root: File,
+    private val online: CoverArtArchive,
+    private val folderImage: suspend (String) -> ByteArray?,
+) {
     private val missLifetime = 14L * 24 * 3600 * 1000
 
-    suspend fun resolve(track: Entry): Bitmap? = withContext(Dispatchers.IO) {
+    suspend fun resolve(track: Entry): ResolvedArtwork = withContext(Dispatchers.IO) {
+        val steps = mutableListOf<String>()
+        fun done(result: ResolvedArtwork): ResolvedArtwork {
+            android.util.Log.i("NuVa.Artwork", "${track.albumPath}: ${steps.joinToString(", ")} → ${result.origin}")
+            return result
+        }
+        var offline = false
         var folder = track.parentPath
-        while (AlbumGuess.isDiscFolder(folder.substringAfterLast('/'))) folder = folder.substringBeforeLast('/', "")
-        val query = AlbumGuess.from(folder) ?: return@withContext null
+        while (true) {
+            val data = try {
+                folderImage(folder)
+            } catch (e: Exception) {
+                offline = true
+                null
+            }
+            val image = data?.let { BitmapFactory.decodeByteArray(it, 0, it.size) }
+            steps += "folder ${folder.substringAfterLast('/')}: ${if (image != null) "found" else if (offline) "unreachable" else "none"}"
+            if (image != null) return@withContext done(ResolvedArtwork(image, ArtworkOrigin.Folder))
+            if (!AlbumGuess.isDiscFolder(folder.substringAfterLast('/'))) break
+            folder = folder.substringBeforeLast('/', "")
+        }
+        val query = AlbumGuess.from(folder)
+        if (query == null) {
+            steps += "online: no artist and album in the folder names"
+            return@withContext done(ResolvedArtwork(null, if (offline) ArtworkOrigin.Offline else ArtworkOrigin.None))
+        }
         for (candidate in listOfNotNull(query, query.withoutTitle)) {
             val base = file(candidate.key)
             val jpg = File("$base.jpg")
             val miss = File("$base.none")
-            if (jpg.exists()) return@withContext BitmapFactory.decodeFile(jpg.path)
-            if (miss.exists() && System.currentTimeMillis() - miss.lastModified() < missLifetime) continue
+            if (jpg.exists()) {
+                steps += "online \"${candidate.artist} / ${candidate.album}\": kept"
+                return@withContext done(ResolvedArtwork(BitmapFactory.decodeFile(jpg.path), ArtworkOrigin.Online))
+            }
+            if (miss.exists() && System.currentTimeMillis() - miss.lastModified() < missLifetime) {
+                steps += "online \"${candidate.artist} / ${candidate.album}\": not found before"
+                continue
+            }
             val data = try {
                 online.cover(candidate)
             } catch (e: Exception) {
-                return@withContext null
+                steps += "online \"${candidate.artist} / ${candidate.album}\": unreachable (${e.message})"
+                return@withContext done(ResolvedArtwork(null, ArtworkOrigin.Offline))
             }
             jpg.parentFile?.mkdirs()
             if (data != null) {
                 jpg.writeBytes(data)
                 miss.delete()
-                return@withContext BitmapFactory.decodeByteArray(data, 0, data.size)
+                steps += "online \"${candidate.artist} / ${candidate.album}\": found"
+                return@withContext done(ResolvedArtwork(BitmapFactory.decodeByteArray(data, 0, data.size), ArtworkOrigin.Online))
             }
+            steps += "online \"${candidate.artist} / ${candidate.album}\": no confident match"
             miss.writeBytes(ByteArray(0))
         }
-        null
+        done(ResolvedArtwork(null, if (offline) ArtworkOrigin.Offline else ArtworkOrigin.None))
     }
 
     private fun file(key: String): String {
@@ -250,6 +319,23 @@ object ArtworkGlow {
             field[y * w + x] = Color.rgb(out(Color::red), out(Color::green), out(Color::blue))
         }
         return Bitmap.createBitmap(blur(blur(field, w, h), w, h), w, h, Bitmap.Config.ARGB_8888)
+    }
+
+    /**
+     * The glow for an album without a cover: the skin's own light (its LED colour) as a soft spot left
+     * of centre, fading into the display, through the same shading and blur as a cover's field.
+     */
+    fun skinField(display: Int, muted: Int, led: Int): Bitmap? {
+        val side = GRID * 4
+        val pixels = IntArray(side * side) { i ->
+            val x = (i % side + 0.5) / side
+            val y = (i / side + 0.5) / side
+            val d = sqrt((x - 0.38) * (x - 0.38) + (y - 0.45) * (y - 0.45))
+            val k = (1 - d / 0.75).coerceIn(0.0, 1.0)
+            fun mix(channel: (Int) -> Int) = (channel(led) * k + channel(display) * (1 - k)).toInt().coerceIn(0, 255)
+            Color.rgb(mix(Color::red), mix(Color::green), mix(Color::blue))
+        }
+        return field(Bitmap.createBitmap(pixels, side, side, Bitmap.Config.ARGB_8888), display, muted)
     }
 
     /** A 5-tap box blur, horizontal then vertical. */

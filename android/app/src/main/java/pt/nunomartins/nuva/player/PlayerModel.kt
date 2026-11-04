@@ -29,14 +29,19 @@ data class PlayerState(
     val isPlaying: Boolean = false,
     val position: Double = 0.0,
     val duration: Double = 0.0,
-    /** "FLAC 24/96", from the decoder's own format. */
-    val formatLabel: String = "",
+    /** Format, bitrate, depth and rate, from the decoder's own format and the file's size. */
+    val quality: Quality? = null,
     val shuffle: Boolean = false,
     val repeat: Int = Player.REPEAT_MODE_OFF,
     /** The title that couldn't play, shown on the display until a track plays. */
     val failedTitle: String? = null,
+    /** Moving through the track with ← →; null when not. */
+    val scrub: Scrub? = null,
 ) {
     val current: Entry? get() = queue.getOrNull(index)
+    val mode: PlayMode get() = PlayMode.of(shuffle, repeat)
+    /** Where the display says the track is: the scrub's target while scrubbing. */
+    val shownPosition: Double get() = scrub?.target ?: position
 }
 
 /** Talks to the playback service. The queue lives in the player; entries are kept here by their path. */
@@ -102,16 +107,39 @@ class PlayerModel(context: Context) {
     fun next() = whenReady { it.seekToNextMediaItem() }
     fun previous() = whenReady { it.seekToPrevious() }
     fun jump(index: Int) = whenReady { it.seekTo(index, 0); it.play() }
-    fun skip(seconds: Int) = whenReady { it.seekTo((it.currentPosition + seconds * 1000L).coerceAtLeast(0)) }
-    fun toggleShuffle() = whenReady { it.shuffleModeEnabled = !it.shuffleModeEnabled }
 
-    /** Off → all → one → off, as on the Mac. */
-    fun cycleRepeat() = whenReady {
-        it.repeatMode = when (it.repeatMode) {
-            Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL
-            Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE
-            else -> Player.REPEAT_MODE_OFF
-        }
+    // MARK: Scrubbing (see `Scrub`)
+
+    val scrubbing: Boolean get() = _state.value.scrub != null
+
+    /** Starts moving through the playing track; false when it has no known length. */
+    fun startScrub(): Boolean {
+        val s = _state.value
+        if (s.current == null || s.duration <= 0) return false
+        _state.update { it.copy(scrub = Scrub(it.index, it.position, it.position, it.duration)) }
+        return true
+    }
+
+    fun scrubStep(direction: Int, repeat: Int) = _state.update { it.copy(scrub = it.scrub?.step(direction, repeat)) }
+
+    /** The key was let go: the player goes to the target, and scrubbing goes on. */
+    fun scrubSeek() {
+        val target = _state.value.scrub?.target ?: return
+        whenReady { it.seekTo((target * 1000).toLong()) }
+    }
+
+    /** OK keeps the target; Back (`keep` false) goes back to where scrubbing started. */
+    fun endScrub(keep: Boolean) {
+        val scrub = _state.value.scrub ?: return
+        val to = if (keep) scrub.target else scrub.origin
+        whenReady { it.seekTo((to * 1000).toLong()) }
+        _state.update { it.copy(scrub = null, position = to) }
+    }
+    /** The mode key: normal → shuffle → repeat all → repeat one → normal. */
+    fun cycleMode() = whenReady {
+        val mode = PlayMode.of(it.shuffleModeEnabled, it.repeatMode).next
+        it.shuffleModeEnabled = mode.shuffle
+        it.repeatMode = mode.repeat
     }
 
     /** The cover for Now Playing (the TV's media controls and the remote's screen). */
@@ -142,6 +170,8 @@ class PlayerModel(context: Context) {
                 duration = if (c.duration == C.TIME_UNSET) it.current?.duration ?: 0.0 else c.duration / 1000.0,
                 shuffle = c.shuffleModeEnabled,
                 repeat = c.repeatMode,
+                // Another track (the last one ended, or a remote's next): scrubbing stops.
+                scrub = it.scrub?.takeIf { s -> s.index == c.currentMediaItemIndex },
             )
         }
     }
@@ -156,7 +186,9 @@ class PlayerModel(context: Context) {
 
         override fun onTracksChanged(tracks: Tracks) {
             val format = tracks.groups.firstOrNull { it.type == C.TRACK_TYPE_AUDIO && it.isSelected }?.getTrackFormat(0)
-            _state.update { it.copy(formatLabel = format?.let(::label) ?: it.current?.format.orEmpty()) }
+            // The entry the format belongs to is the controller's current item (the state may not have caught up).
+            val entry = controller?.currentMediaItem?.mediaId?.let { known[it] }
+            _state.update { it.copy(quality = format?.let { f -> quality(f, entry) } ?: entry?.let { e -> Quality(e.format, null, null, null) }) }
         }
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
@@ -176,15 +208,15 @@ class PlayerModel(context: Context) {
     }
 
     companion object {
-        /** "FLAC 24/96", "FLAC 16/44.1", or just the codec when the bit depth isn't known. */
-        fun label(format: Format): String {
+        /** The badge's quality: codec, depth and rate from the decoder's format; the bitrate from the file's size and length. */
+        fun quality(format: Format, entry: Entry?): Quality {
             val codec = when (format.sampleMimeType) {
                 "audio/flac" -> "FLAC"
                 "audio/mpeg" -> "MP3"
                 "audio/mp4a-latm" -> "AAC"
                 "audio/alac" -> "ALAC"
-                "audio/raw" -> "PCM"
-                else -> format.sampleMimeType?.substringAfter('/')?.uppercase() ?: ""
+                "audio/raw" -> entry?.format?.ifEmpty { null } ?: "PCM"
+                else -> format.sampleMimeType?.substringAfter('/')?.uppercase() ?: entry?.format.orEmpty()
             }
             val bits = when (format.pcmEncoding) {
                 C.ENCODING_PCM_16BIT -> 16
@@ -192,15 +224,11 @@ class PlayerModel(context: Context) {
                 C.ENCODING_PCM_32BIT, C.ENCODING_PCM_FLOAT -> 32
                 else -> null
             }
-            val rate = format.sampleRate.takeIf { it > 0 }?.let { r ->
-                val k = r / 1000.0
-                if (k % 1.0 == 0.0) k.toInt().toString() else "%.1f".format(java.util.Locale.ROOT, k)
-            }
-            return when {
-                bits != null && rate != null -> "$codec $bits/$rate"
-                rate != null -> "$codec · $rate kHz"
-                else -> codec
-            }
+            // The file's average; for a stream whose size the server didn't give, the decoder's own figure.
+            val kbps = Quality.kbps(entry?.size, entry?.duration)
+                ?: format.averageBitrate.takeIf { it > 0 }?.let { it / 1000 }
+                ?: format.bitrate.takeIf { it > 0 }?.let { it / 1000 }
+            return Quality(codec, bits, format.sampleRate.takeIf { it > 0 }, kbps)
         }
     }
 }

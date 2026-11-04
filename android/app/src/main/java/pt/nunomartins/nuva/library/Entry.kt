@@ -11,6 +11,8 @@ data class Entry(
     val isFolder: Boolean,
     /** Seconds, when the server already knows it. */
     val duration: Double? = null,
+    /** The file's size in bytes, when the server gives it (for the bitrate on the display). */
+    val size: Long? = null,
 ) {
     /** Uppercase extension, for the display ("FLAC"). */
     val format: String get() = name.substringAfterLast('.', "").uppercase()

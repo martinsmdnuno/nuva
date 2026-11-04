@@ -19,6 +19,7 @@
 |---|:-:|:-:|:-:|
 | Folders as they are: a folder is an album, natural sort, never tags | ✓ | ✓ | ✓ |
 | The display names the artist's and album's folders, scrolling when they're too long | ✓ | ✓ | later |
+| Format, bitrate, bit depth and sample rate on the display | ✓ | ✓ | ✓ |
 | Folders on the computer, external disks and network shares | ✓ | — | ✓ |
 | Jellyfin by its real folders, streaming the original file | ✓ | ✓ | ✓ |
 | Audio CDs, named from MusicBrainz | ✓ | — | ✓ |
@@ -29,7 +30,10 @@
 | 10-band equalizer with presets | ✓ | ✓ | ✓ |
 | Spectrum on the display, in time with what you hear | ✓ | ✓ | ✓ |
 | Ambient mode: six full-screen faces, with OLED protection | ✓ | ✓ | ✓ |
+| A glow behind the ambient faces, from the cover or, without one, the skin's own light | later | ✓ | later |
+| Move through the track from ambient mode | later | ✓ | later |
 | Album artwork: the folder's image, then MusicBrainz by folder names | ✓ | ✓ | ✓ |
+| Jellyfin covers from the image file in the album's folder | later | ✓ | later |
 | Correct a wrong or missing cover | ✓ | later | ✓ |
 | Skins (Rams, Graphite Orange, Phosphor) and five font pairs | ✓ | ✓ | ✓ |
 | Compact mode, and a mini player when the window is closed | ✓ | — | ✓ |

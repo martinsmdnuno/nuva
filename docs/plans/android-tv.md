@@ -21,12 +21,16 @@ A NuVa for an Android TV box, to play the author's FLAC library from Jellyfin on
 - **Sign in** to a Jellyfin server: address, user, password, typed with the TV keyboard. The app keeps the server, the user and the access token (Jellyfin tokens don't expire), never the password. A 401 sends you back to sign in.
 - **Folders**: the music library's folders by `Path` (more than one music library shows the libraries first). OK on a folder opens it; "Play Folder" plays it from the top; OK on a track plays the folder from that track.
 - **Queue**: the folder that is playing, with the playing track in `signal` and its LED.
-- **Keys**: shuffle, repeat | previous, play/pause, next. Same three tones as `KeyButtonStyle`; focus is the `focus` ring.
+- **Keys**: mode | previous, play/pause, next | ambient, settings. One mode key moves through normal, shuffle, repeat all and repeat one, its name under it (the Mac keeps shuffle and repeat apart). Same three tones as `KeyButtonStyle`; focus is the `focus` ring.
+- **Queue and folders**: two tabs at the top of the right column, each with its LED; OK on one shows it, and Back from a list goes to them.
 - **Display**: format (FLAC 24/96 when known), title, folder, elapsed time in IBM Plex Mono Light, the position bar.
+- **Position and quality**: the position bar takes the focus; OK holds it, ← → move 10 s a press (faster held), the track goes there when the key is let go, OK keeps it and Back goes back. In ambient, ↓ holds it. Every face has the bar. The quality badge ("FLAC 905 kbps | 16-bit/44.1 kHz", compact on the player's display) takes the bitrate from the file's size over its length (Jellyfin's `MediaSources`), as the Mac and Windows do.
 - **Ambient**: the Display face full screen, entered with a key or after a minute without input while playing; any key leaves. OLED protection: a slow wander and the 55% rule for static parts. The other faces (Spectrum, Meters, Needles, Valves) need the audio's levels; they come in a later version with Media3's audio processor.
 - **Playback**: gapless through Media3's playlist, keeps playing with the screen off or in another app, Now Playing on the TV's media controls.
 
-Later: the equalizer and the meters (a Media3 `AudioProcessor` measuring after the filters), artwork from folder images, Google Cast to a WiiM, more sources.
+- **Artwork**: the image file in the album's folder on the server first (`cover`, `folder`, `front`, `album`, `capa` · jpg/jpeg/png, as on the Mac; only an image whose file Jellyfin reports in that folder, never one from the tags or downloaded by Jellyfin), then MusicBrainz + Cover Art Archive by the folder names. Settings shows where the playing album's cover came from; each album's steps go to the log (`NuVa.Artwork`); a lookup that couldn't reach the server or the internet is tried again a minute later. On every ambient face, with the glow of its colours behind; without a cover, a glow in the skin's own light. The glow breathes with the bass and drifts slowly, playing or paused.
+
+Later: the equalizer and the meters (a Media3 `AudioProcessor` measuring after the filters), Google Cast to a WiiM, more sources.
 
 ## Parity with the Mac (0.2)
 

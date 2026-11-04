@@ -6,6 +6,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -44,11 +51,11 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.media3.common.Player
 import pt.nunomartins.nuva.AppModel
 import pt.nunomartins.nuva.Overlay
 import pt.nunomartins.nuva.R
 import pt.nunomartins.nuva.audio.Audio
+import pt.nunomartins.nuva.player.PlayMode
 import pt.nunomartins.nuva.player.PlayerState
 
 /** One device: the display and the keys on the left, the folders or the queue on the right. */
@@ -59,14 +66,15 @@ fun PlayerScreen(model: AppModel) {
 
     Row(
         Modifier.fillMaxSize().background(Tokens.surface0).padding(horizontal = 48.dp, vertical = 36.dp),
-        horizontalArrangement = Arrangement.spacedBy(40.dp),
+        horizontalArrangement = Arrangement.spacedBy(48.dp),
     ) {
         Column(Modifier.width(500.dp).fillMaxHeight()) {
             DisplayPanel(model, state)
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(24.dp))
             Keys(model, state, playKey)
         }
         Column(Modifier.weight(1f).fillMaxHeight()) {
+            Tabs(model)
             if (model.showingFolders) Folders(model, state) else Queue(model, state)
         }
     }
@@ -79,12 +87,12 @@ fun DisplayPanel(model: AppModel, state: PlayerState, modifier: Modifier = Modif
     val current = state.current
     val eq = Audio.equalizer
     Column(
-        modifier.fillMaxWidth().clip(RoundedCornerShape(6.dp)).background(Tokens.display).padding(horizontal = 24.dp, vertical = 18.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier.fillMaxWidth().clip(RoundedCornerShape(6.dp)).background(Tokens.display).padding(horizontal = 24.dp, vertical = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Led(state.isPlaying)
-            Text(state.formatLabel.ifEmpty { current?.format.orEmpty() }, Type.displayMeta.copy(color = Tokens.displayMuted), Modifier.weight(1f))
+            Spacer(Modifier.weight(1f))
             // The equalizer is a readout on the display that opens its controls, as on the Mac.
             Readout(onClick = { model.overlay = Overlay.Equalizer }) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -111,16 +119,64 @@ fun DisplayPanel(model: AppModel, state: PlayerState, modifier: Modifier = Modif
                 ScrollingText(current?.folderLine.orEmpty(), Type.body.copy(color = Tokens.displayMuted))
             }
         }
-        Text(clock(state.position), Type.displayTime.copy(color = Tokens.displayInk))
+        // The time, and the quality badge in the room the time leaves (the top line is the EQ's).
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            // The time keeps its width; the badge takes what is left and ends in an ellipsis before it.
+            Text(clock(state.shownPosition), Type.displayTime.copy(color = Tokens.displayInk))
+            Box(Modifier.weight(1f).padding(start = 12.dp), contentAlignment = Alignment.CenterEnd) {
+                QualityBadge(state, Type.displayMeta.copy(color = Tokens.displayMuted, fontSize = Type.legend.fontSize), horizontal = 10.dp, compact = true)
+            }
+        }
         if (model.showSpectrum) {
             DisplaySpectrum(state.isPlaying)
             Spacer(Modifier.height(4.dp))
         }
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            Text(clock(state.position), Type.displayMeta.copy(color = Tokens.displayMuted))
-            PositionBar(if (state.duration > 0) (state.position / state.duration).toFloat() else 0f, Modifier.weight(1f))
-            Text(clock(state.duration), Type.displayMeta.copy(color = Tokens.displayMuted))
-        }
+        ScrubRow(model, state)
+    }
+}
+
+/**
+ * The time and the bar, which take the focus: OK holds the bar, then ← → move 10 s a press (faster
+ * held) and the track goes there when the key is let go; OK keeps it, Back goes back to where it was.
+ * Held, the elapsed time lights and the bar thickens.
+ */
+@Composable
+private fun ScrubRow(model: AppModel, state: PlayerState) {
+    val player = model.player
+    val interaction = remember { MutableInteractionSource() }
+    val focused by interaction.collectIsFocusedAsState()
+    val scrubbing = state.scrub != null
+    LaunchedEffect(focused) { if (!focused && player.scrubbing) player.endScrub(keep = true) }
+    Row(
+        Modifier
+            .bleed(8.dp)
+            .border(2.dp, if (focused) Tokens.focus else Color.Transparent, RoundedCornerShape(4.dp))
+            .onPreviewKeyEvent { e ->
+                val ok = e.key == Key.DirectionCenter || e.key == Key.Enter || e.key == Key.NumPadEnter
+                val side = when (e.key) { Key.DirectionLeft -> -1; Key.DirectionRight -> 1; else -> 0 }
+                when (e.type) {
+                    KeyEventType.KeyDown -> when {
+                        ok -> true
+                        player.scrubbing && side != 0 -> { player.scrubStep(side, e.nativeKeyEvent.repeatCount); true }
+                        else -> false
+                    }
+                    KeyEventType.KeyUp -> when {
+                        ok -> { if (player.scrubbing) player.endScrub(keep = true) else player.startScrub(); true }
+                        player.scrubbing && side != 0 -> { player.scrubSeek(); true }
+                        else -> false
+                    }
+                    else -> false
+                }
+            }
+            .focusable(interactionSource = interaction)
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        val shown = state.shownPosition
+        Text(clock(shown), Type.displayMeta.copy(color = if (scrubbing) Tokens.displayInk else Tokens.displayMuted))
+        PositionBar(if (state.duration > 0) (shown / state.duration).toFloat() else 0f, Modifier.weight(1f), height = if (scrubbing) 8.dp else 4.dp)
+        Text(clock(state.duration), Type.displayMeta.copy(color = Tokens.displayMuted))
     }
 }
 
@@ -143,11 +199,13 @@ fun presetName(key: String): String = when (key) {
 private fun Readout(onClick: () -> Unit, content: @Composable () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
+    // Bled out by its padding, so the readout's text ends where the display's content does.
     Box(
         Modifier
+            .bleed(8.dp)
             .border(2.dp, if (focused) Tokens.focus else Color.Transparent, RoundedCornerShape(4.dp))
             .remoteClick(interaction, onClick, null)
-            .padding(horizontal = 6.dp, vertical = 2.dp),
+            .padding(horizontal = 8.dp, vertical = 2.dp),
     ) { content() }
 }
 
@@ -180,14 +238,15 @@ private fun DisplaySpectrum(playing: Boolean) {
     }
 }
 
-/** mode | playback | view, each group with its legend. */
+/** mode | playback | view, each group with its legend; the mode's legend is the mode itself. */
 @Composable
 private fun Keys(model: AppModel, state: PlayerState, playKey: FocusRequester) {
     val player = model.player
+    val mode = state.mode
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
-        Group(stringResource(R.string.mode)) {
-            Key(Tone.Mode, 48.dp, { player.toggleShuffle() }, icon = Icons.shuffle, led = state.shuffle, description = stringResource(R.string.shuffle))
-            Key(Tone.Mode, 48.dp, { player.cycleRepeat() }, icon = if (state.repeat == Player.REPEAT_MODE_ONE) Icons.repeatOne else Icons.repeat, led = state.repeat != Player.REPEAT_MODE_OFF, description = stringResource(R.string.repeat))
+        // Wide enough for the longest mode's name, so the keys don't move when it changes.
+        Group(modeName(mode), Modifier.width(104.dp)) {
+            Key(Tone.Mode, 48.dp, { player.cycleMode() }, icon = modeIcon(mode), led = mode != PlayMode.Normal, description = stringResource(R.string.mode))
         }
         Group(stringResource(R.string.playback)) {
             Key(Tone.Transport, 56.dp, { player.previous() }, icon = Icons.previous, description = stringResource(R.string.previous))
@@ -198,7 +257,6 @@ private fun Keys(model: AppModel, state: PlayerState, playKey: FocusRequester) {
             Key(Tone.Transport, 56.dp, { player.next() }, icon = Icons.next, description = stringResource(R.string.next))
         }
         Group(stringResource(R.string.view)) {
-            Key(Tone.Mode, 48.dp, { model.showingFolders = !model.showingFolders }, icon = Icons.folders, led = model.showingFolders, description = stringResource(R.string.folders))
             Key(Tone.Mode, 48.dp, { model.ambient = true }, icon = Icons.ambient, description = stringResource(R.string.ambient))
             Key(Tone.Mode, 48.dp, { model.overlay = Overlay.Settings }, icon = Icons.settings, description = stringResource(R.string.settings))
         }
@@ -206,18 +264,62 @@ private fun Keys(model: AppModel, state: PlayerState, playKey: FocusRequester) {
 }
 
 @Composable
-private fun Group(legend: String, keys: @Composable () -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+private fun modeName(mode: PlayMode) = stringResource(
+    when (mode) {
+        PlayMode.Normal -> R.string.mode_normal
+        PlayMode.Shuffle -> R.string.mode_shuffle
+        PlayMode.RepeatAll -> R.string.mode_repeat_all
+        PlayMode.RepeatOne -> R.string.mode_repeat_one
+    },
+)
+
+private fun modeIcon(mode: PlayMode) = when (mode) {
+    PlayMode.Normal -> Icons.inOrder
+    PlayMode.Shuffle -> Icons.shuffle
+    PlayMode.RepeatAll -> Icons.repeat
+    PlayMode.RepeatOne -> Icons.repeatOne
+}
+
+@Composable
+private fun Group(legend: String, modifier: Modifier = Modifier, keys: @Composable () -> Unit) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.Bottom) { keys() }
         Legend(legend, Modifier.padding(start = 4.dp))
     }
 }
 
-/** A note on the header for a few seconds ("12 tracks added"), in place of the legend. */
+/** The right column's top: "queue" and "folders", each with its LED (lit: the one shown); OK on one shows it. Back from a list comes here. */
 @Composable
-private fun HeaderLegend(model: AppModel, legend: String, modifier: Modifier) {
-    val note = model.note
-    if (note != null) Text(note, Type.hint.copy(color = Tokens.ink), modifier) else Legend(legend, modifier)
+private fun Tabs(model: AppModel) {
+    val active = remember { FocusRequester() }
+    LaunchedEffect(model.focusTabs) {
+        if (model.focusTabs == 0) return@LaunchedEffect
+        runCatching { active.requestFocus() }
+    }
+    Row(Modifier.fillMaxWidth().height(64.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        val queue = !model.showingFolders
+        Tab(stringResource(R.string.queue), queue, if (queue) Modifier.focusRequester(active) else Modifier) { model.showingFolders = false }
+        Tab(stringResource(R.string.folders), !queue, if (!queue) Modifier.focusRequester(active) else Modifier) { model.showingFolders = true }
+    }
+}
+
+/** A tab: no key face, its LED and its name, and the focus ring. */
+@Composable
+private fun Tab(label: String, active: Boolean, modifier: Modifier, onClick: () -> Unit) {
+    val interaction = remember { MutableInteractionSource() }
+    val focused by interaction.collectIsFocusedAsState()
+    Row(
+        modifier
+            .border(2.dp, if (focused) Tokens.focus else Color.Transparent, RoundedCornerShape(6.dp))
+            .remoteClick(interaction, onClick, null)
+            // The LED in the rows' LED column: 16 of row padding plus half of its 24-point column.
+            .padding(start = 25.dp, end = 16.dp, top = 10.dp, bottom = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Led(active, size = 6.dp)
+        Text(label, Type.label.copy(color = if (active) Tokens.ink else Tokens.inkMuted, fontSize = Type.body.fontSize))
+    }
 }
 
 @Composable
@@ -234,17 +336,21 @@ private fun ColumnScope.Folders(model: AppModel, state: PlayerState) {
         withFrameNanos { }
         runCatching { row.requestFocus() }
     }
-    // The browser's keys on the header row, as on the Mac; the folder's name on its own line.
-    Row(Modifier.fillMaxWidth().height(80.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        if (model.path.isNotEmpty()) Key(Tone.Mode, 48.dp, { model.up() }, icon = Icons.back, description = stringResource(R.string.up))
-        HeaderLegend(model, stringResource(R.string.folders), Modifier.weight(1f))
-        if (tracks > 0) Key(Tone.Mode, 170.dp, { model.playFolder() }, text = stringResource(R.string.play_folder))
+    // The browser's keys, as on the Mac: up and Play Folder, a note between them for a few seconds
+    // ("12 tracks added"); the folder's name on its own line.
+    val note = model.note
+    if (model.path.isNotEmpty() || tracks > 0 || note != null) {
+        Row(Modifier.fillMaxWidth().height(64.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            if (model.path.isNotEmpty()) Key(Tone.Mode, 48.dp, { model.up() }, icon = Icons.back, description = stringResource(R.string.up))
+            Box(Modifier.weight(1f)) { if (note != null) Text(note, Type.hint.copy(color = Tokens.ink)) }
+            if (tracks > 0) Key(Tone.Mode, 170.dp, { model.playFolder() }, text = stringResource(R.string.play_folder))
+        }
     }
     if (model.path.isNotEmpty()) {
         ScrollingText(model.path.substringAfterLast('/'), Type.label.copy(color = Tokens.ink, fontSize = Type.body.fontSize), Modifier.padding(start = 16.dp, top = 4.dp))
     }
     Spacer(Modifier.height(8.dp))
-    Box(Modifier.weight(1f)) {
+    Box(Modifier.weight(1f).onFocusChanged { model.listFocused = it.hasFocus }) {
         when {
             model.error != null -> Text(model.error!!, Type.body.copy(color = Tokens.danger), maxLines = 3)
             model.loading && entries.isEmpty() -> Text(stringResource(R.string.loading), Type.body.copy(color = Tokens.inkMuted))
@@ -269,19 +375,19 @@ private fun ColumnScope.Folders(model: AppModel, state: PlayerState) {
 
 @Composable
 private fun ColumnScope.Queue(model: AppModel, state: PlayerState) {
-    val total = state.queue.sumOf { it.duration ?: 0.0 }
-    Row(Modifier.fillMaxWidth().height(80.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        Led(state.queue.isNotEmpty())
-        Text(stringResource(R.string.queue), Type.label.copy(color = Tokens.ink, fontSize = Type.body.fontSize))
-        if (state.queue.isNotEmpty()) {
-            Text(pluralStringResource(R.plurals.tracks, state.queue.size, state.queue.size) + " · " + minutes(total), Type.duration.copy(color = Tokens.inkMuted), Modifier.weight(1f))
-        }
+    // The queue's length on its own line, as the folder's name is in the folders.
+    if (state.queue.isNotEmpty()) {
+        val total = state.queue.sumOf { it.duration ?: 0.0 }
+        Text(
+            pluralStringResource(R.plurals.tracks, state.queue.size, state.queue.size) + " · " + minutes(total),
+            Type.duration.copy(color = Tokens.inkMuted), Modifier.padding(start = 16.dp, top = 4.dp),
+        )
     }
     Spacer(Modifier.height(8.dp))
     if (state.queue.isEmpty()) {
         Text(stringResource(R.string.empty_queue), Type.body.copy(color = Tokens.inkMuted))
     } else {
-        LazyColumn(Modifier.weight(1f)) {
+        LazyColumn(Modifier.weight(1f).onFocusChanged { model.listFocused = it.hasFocus }) {
             itemsIndexed(state.queue) { index, entry ->
                 ListRow(
                     entry.listName,

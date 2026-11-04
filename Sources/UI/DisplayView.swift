@@ -64,19 +64,18 @@ struct DisplayView: View {
                                 .layoutPriority(1)
                                 .transition(.opacity)
                         } else {
-                            Text(entry?.folderName ?? (model.sources.sources.isEmpty
+                            // Too long for the line, the name scrolls.
+                            ScrollingText(text: entry?.folderName ?? (model.sources.sources.isEmpty
                                 ? String(localized: "Adicionar uma pasta ou um servidor Jellyfin")
-                                : String(localized: "Escolher uma pasta para tocar")))
+                                : String(localized: "Escolher uma pasta para tocar")),
+                                tooltip: entry?.parentPath)
                                 .font(.dsCaption)
-                                .lineLimit(1)
-                                .truncationMode(.tail)
-                                .help(entry?.parentPath ?? "")
                                 .layoutPriority(1)
                                 .contentTransition(.opacity)
                                 .motion(Motion.state, value: entry?.parentPath)
                         }
                         Spacer(minLength: 0)
-                        // The output's name is short and says where the sound goes: the folder truncates first.
+                        // The output's name is short and says where the sound goes: it keeps its room, the folder scrolls.
                         OutputControl()
                             .layoutPriority(2)
                     }

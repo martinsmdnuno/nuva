@@ -45,7 +45,7 @@ Two families, embedded in the app (`Inter` and `IBM Plex Mono`, both OFL):
 
 **Font sets** (View ▸ Font): *Inter + IBM Plex Mono* (above, the default), *SF Pro + SF Mono* from the system, and three pairs chosen for the skins: *IBM Plex Sans + Plex Mono* (Rams), *DM Sans + DM Mono* (Graphite Orange) and *Share Tech + Share Tech Mono* (Phosphor; one weight, so light and medium fall to regular). Each skin names its default set and the user can override it. Only the family changes: every style keeps its size and weight, and the mono keeps tabular digits. SF Mono's lines are slightly shorter, so the display (and Compact mode) is a few points lower.
 
-Japanese names and other scripts fall back to the system font (Hiragino), which is fine. Never truncate with an ellipsis in the middle: truncate at the end, with the full name in the tooltip.
+Japanese names and other scripts fall back to the system font (Hiragino), which is fine. Never truncate with an ellipsis in the middle: truncate at the end, with the full name in the tooltip. On the display, the folder line scrolls instead (`ScrollingText`): it rests at the start for 2 s, slides at 30 pt/s until the end shows, rests and slides back; still when it fits, and truncated at the end with Reduce Motion.
 
 ## Keys
 

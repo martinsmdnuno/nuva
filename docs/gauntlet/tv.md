@@ -26,7 +26,7 @@ Look at every one of them in both languages. The code is in `android/app/src/mai
 ## Remote
 
 - **R1 Back.** Back closes the overlay that is open (and ambient mode), then goes up a folder, then asks before leaving the app (`tv-exit.png`); leaving keeps the music playing. Blocker if Back ever does nothing or leaves the app without asking from the main screen.
-- **R2 Focus lands.** Opening an overlay puts the focus on its first control; after a folder opens or closes, the focus is on a row of the list (the folder just left, going up); playing a folder puts it on the play key (`tv-player.png`).
+- **R2 Focus lands.** Opening an overlay puts the focus inside it, on its first row or key (the equalizer: its first preset, where Back from a fader also puts it, `tv-equalizer-back.png`); closing it puts the focus back on the main screen; after a folder opens or closes, the focus is on a row of the list (the folder just left, going up); playing a folder puts it on the play key (`tv-player.png`).
 - **R3 Holding OK** is the "more" gesture (add to the queue, the queue row's actions), and each list says so in its legend.
 
 ## Design system

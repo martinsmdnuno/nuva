@@ -169,7 +169,7 @@ Graphite Orange and Phosphor.
 </tr>
 </table>
 
-The same player for the living room, on an Android TV box or a TV with Android TV (8.1 or later). It plays your **Jellyfin** server by its real folders and streams the original files: FLAC, 24-bit included, through Android's own player and decoders. It has what the Mac app has where a TV allows: the display with the spectrum, the 10-band equalizer, the queue, repeat and shuffle, all six ambient faces with OLED protection, album artwork with the cover's glow, the skins and font sets. The remote does everything: hold OK to add to the queue, or to move and remove; Back asks before leaving. It reopens where you were.
+The same player for the living room, on an Android TV box or a TV with Android TV (8.1 or later). It plays your **Jellyfin** server by its real folders and streams the original files: FLAC, 24-bit included, through Android's own player and decoders. It has what the Mac app has where a TV allows: the display with the spectrum, the 10-band equalizer, the queue, repeat and shuffle, all six ambient faces with OLED protection, album artwork with the cover's glow, the skins and font sets. The remote does everything: queue and folders are two tabs at the top of the right column, one mode key moves through normal, shuffle, repeat all and repeat one, and OK on the position bar lets ← → move through the track, 10 seconds a press (↓ does it in ambient mode). Hold OK to add to the queue, or to move and remove; Back asks before leaving. A badge shows the format, bitrate, bit depth and sample rate. Covers come first from the image in the album's folder on the server, and without one a soft glow in the skin's light sits behind the ambient faces. It reopens where you were.
 
 To install it, open the **Downloader** app on the TV (free, in the Play Store) and type `nuva.martinsnuno.com/tv`. Or download [NuVa-AndroidTV.apk](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk) and copy it with a USB stick. Android asks once to allow apps from Downloader (or from the file manager).
 
@@ -200,6 +200,7 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 |---|:-:|:-:|:-:|
 | Folders as they are: a folder is an album, natural sort, never tags | ✓ | ✓ | ✓ |
 | The display names the artist's and album's folders, scrolling when they're too long | ✓ | ✓ | later |
+| Format, bitrate, bit depth and sample rate on the display | ✓ | ✓ | ✓ |
 | Folders on the computer, external disks and network shares | ✓ | — | ✓ |
 | Jellyfin by its real folders, streaming the original file | ✓ | ✓ | ✓ |
 | Audio CDs, named from MusicBrainz | ✓ | — | ✓ |
@@ -210,7 +211,10 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 | 10-band equalizer with presets | ✓ | ✓ | ✓ |
 | Spectrum on the display, in time with what you hear | ✓ | ✓ | ✓ |
 | Ambient mode: six full-screen faces, with OLED protection | ✓ | ✓ | ✓ |
+| A glow behind the ambient faces, from the cover or, without one, the skin's own light | later | ✓ | later |
+| Move through the track from ambient mode | later | ✓ | later |
 | Album artwork: the folder's image, then MusicBrainz by folder names | ✓ | ✓ | ✓ |
+| Jellyfin covers from the image file in the album's folder | later | ✓ | later |
 | Correct a wrong or missing cover | ✓ | later | ✓ |
 | Skins (Rams, Graphite Orange, Phosphor) and five font pairs | ✓ | ✓ | ✓ |
 | Compact mode, and a mini player when the window is closed | ✓ | — | ✓ |
@@ -328,7 +332,7 @@ Toca FLAC pelo motor de áudio de cada sistema (o da própria Apple, no Mac), en
 
 ### Na TV: NuVa para Android TV
 
-O mesmo leitor para a sala, numa box Android TV ou numa TV com Android TV (8.1 ou posterior). Toca o teu servidor **Jellyfin** pelas pastas reais e os ficheiros originais: FLAC, 24 bits incluídos, pelo leitor e pelos descodificadores do próprio Android. Tem o que a app do Mac tem onde uma TV deixa: o visor com o espectro, o equalizador de 10 bandas, a fila, repetir e aleatório, as seis faces do modo Ambiente com proteção OLED, as capas com o brilho do álbum, as skins e as fontes. O comando faz tudo: manter OK carregado junta à fila, ou move e tira; Voltar pergunta antes de sair. Volta a abrir onde estavas.
+O mesmo leitor para a sala, numa box Android TV ou numa TV com Android TV (8.1 ou posterior). Toca o teu servidor **Jellyfin** pelas pastas reais e os ficheiros originais: FLAC, 24 bits incluídos, pelo leitor e pelos descodificadores do próprio Android. Tem o que a app do Mac tem onde uma TV deixa: o visor com o espectro, o equalizador de 10 bandas, a fila, repetir e aleatório, as seis faces do modo Ambiente com proteção OLED, as capas com o brilho do álbum, as skins e as fontes. O comando faz tudo: a fila e as pastas são dois separadores no topo da coluna da direita, uma tecla de modo passa por normal, aleatório, repetir tudo e repetir faixa, e OK na barra de posição deixa ← → andar pela faixa, 10 segundos de cada vez (no modo Ambiente, com ↓). Manter OK carregado junta à fila, ou move e tira; Voltar pergunta antes de sair. Um selo mostra o formato, o bitrate, os bits e a frequência. As capas vêm primeiro da imagem na pasta do álbum, no servidor, e sem capa um brilho suave na luz da skin fica atrás das faces do Ambiente. Volta a abrir onde estavas.
 
 Para instalar, abre a app **Downloader** na TV (gratuita, na Play Store) e escreve `nuva.martinsnuno.com/tv`. Ou descarrega o [NuVa-AndroidTV.apk](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk) e copia-o com uma pen USB. O Android pede uma vez para permitir apps vindas do Downloader (ou do gestor de ficheiros).
 
@@ -345,6 +349,7 @@ Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnun
 |---|:-:|:-:|:-:|
 | Pastas como estão: uma pasta é um álbum, ordem natural, nunca tags | ✓ | ✓ | ✓ |
 | O visor mostra as pastas do artista e do álbum, a rolar quando não cabem | ✓ | ✓ | mais tarde |
+| Formato, bitrate, bits e frequência no visor | ✓ | ✓ | ✓ |
 | Pastas no computador, discos externos e partilhas de rede | ✓ | — | ✓ |
 | Jellyfin pelas pastas reais, com o ficheiro original | ✓ | ✓ | ✓ |
 | CDs áudio, com os nomes do MusicBrainz | ✓ | — | ✓ |
@@ -355,7 +360,10 @@ Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnun
 | Equalizador de 10 bandas com presets | ✓ | ✓ | ✓ |
 | Espectro no visor, a par com o que ouves | ✓ | ✓ | ✓ |
 | Modo Ambiente: seis faces em ecrã inteiro, com proteção OLED | ✓ | ✓ | ✓ |
+| Um brilho atrás das faces do ambiente, da capa ou, sem ela, da luz da skin | mais tarde | ✓ | mais tarde |
+| Andar pela faixa no modo ambiente | mais tarde | ✓ | mais tarde |
 | Capas: a imagem da pasta, depois o MusicBrainz pelos nomes das pastas | ✓ | ✓ | ✓ |
+| Capas do Jellyfin a partir da imagem na pasta do álbum | mais tarde | ✓ | mais tarde |
 | Corrigir uma capa errada ou em falta | ✓ | mais tarde | ✓ |
 | Skins (Rams, Graphite Orange, Phosphor) e cinco pares de fontes | ✓ | ✓ | ✓ |
 | Modo compacto, e um mini player com a janela fechada | ✓ | — | ✓ |

@@ -3,8 +3,6 @@
 // Usage, from the repository root:
 //   swift scripts/make-tv-images.swift <screenshots-folder> docs/screenshots
 // The folder holds queue, folders, equalizer, display, spectrum, needles, valves, orange and phosphor (.png).
-// The top-right readout of the needles, valves and display faces (the server's address) is painted over:
-// it would show a test server's.
 import AppKit
 
 let args = CommandLine.arguments
@@ -34,8 +32,7 @@ func canvas(_ size: CGSize, _ name: String, draw: () -> Void) {
 }
 
 /// A TV screen: the screenshot with rounded corners and a soft shadow, as the Mac images' windows.
-/// `hideReadout` covers an ambient face's top-right readout with the face's own background.
-func screen(_ image: NSImage, in rect: CGRect, radius: Double, hideReadout: Bool = false) {
+func screen(_ image: NSImage, in rect: CGRect, radius: Double) {
     let path = NSBezierPath(roundedRect: rect, xRadius: radius, yRadius: radius)
     NSGraphicsContext.saveGraphicsState()
     let shadow = NSShadow()
@@ -49,13 +46,6 @@ func screen(_ image: NSImage, in rect: CGRect, radius: Double, hideReadout: Bool
     NSGraphicsContext.saveGraphicsState()
     path.addClip()
     image.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 1, respectFlipped: true, hints: nil)
-    if hideReadout {
-        // A patch of empty background from just above the readout (NSImage rects start at the bottom).
-        let k = rect.width / 1920
-        image.draw(in: CGRect(x: rect.minX + 1300 * k, y: rect.minY + 240 * k, width: 460 * k, height: 76 * k),
-                   from: CGRect(x: 1300, y: 1080 - 236, width: 460, height: 76),
-                   operation: .copy, fraction: 1, respectFlipped: true, hints: nil)
-    }
     NSGraphicsContext.restoreGraphicsState()
 }
 
@@ -70,15 +60,15 @@ func single(_ name: String, _ file: String) {
 }
 
 /// Screens in a grid, 1600 wide.
-func grid(_ names: [String], columns: Int, _ file: String, hideReadout: Set<String> = []) {
+func grid(_ names: [String], columns: Int, _ file: String) {
     let images = names.map(load)
     let gap = 40.0
     let w = (1600 - 2 * margin - gap * Double(columns - 1)) / Double(columns), h = w * 9 / 16
     let rows = (images.count + columns - 1) / columns
     canvas(CGSize(width: 1600, height: 2 * margin + Double(rows) * h + Double(rows - 1) * gap), file) {
-        for (i, (name, img)) in zip(names, images).enumerated() {
+        for (i, img) in images.enumerated() {
             let x = margin + Double(i % columns) * (w + gap), y = margin + Double(i / columns) * (h + gap)
-            screen(img, in: CGRect(x: x, y: y, width: w, height: h), radius: 14, hideReadout: hideReadout.contains(name))
+            screen(img, in: CGRect(x: x, y: y, width: w, height: h), radius: 14)
         }
     }
 }
@@ -86,6 +76,5 @@ func grid(_ names: [String], columns: Int, _ file: String, hideReadout: Set<Stri
 single("queue", "tv.png")
 single("folders", "tv-folders.png")
 single("equalizer", "tv-equalizer.png")
-grid(["needles", "valves", "display", "spectrum"], columns: 2, "tv-ambient.png",
-     hideReadout: ["needles", "valves", "display"])
+grid(["needles", "valves", "display", "spectrum"], columns: 2, "tv-ambient.png")
 grid(["orange", "phosphor"], columns: 1, "tv-skins.png")

@@ -67,6 +67,16 @@ public static class Theme
         return brush;
     }
 
+    /// <summary>A token lifted by <paramref name="amount"/> (0–1) in each channel, as SwiftUI's brightness().</summary>
+    public static SolidColorBrush Brighter(Token token, double amount)
+    {
+        var hex = Hex(token);
+        byte Lift(uint channel) => (byte)Math.Min(255, Math.Round((channel & 0xFF) + 255 * amount));
+        var brush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(Lift(hex >> 16), Lift(hex >> 8), Lift(hex)));
+        brush.Freeze();
+        return brush;
+    }
+
     /// <summary>Brush for a fixed 0xRRGGBB value.</summary>
     public static SolidColorBrush Hex(uint hex, double opacity = 1)
     {

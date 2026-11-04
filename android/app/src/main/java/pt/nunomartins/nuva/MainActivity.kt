@@ -56,6 +56,8 @@ class MainActivity : ComponentActivity() {
             // it, then asks before leaving the app.
             BackHandler(enabled = model.signedIn) {
                 when {
+                    // Scrubbing, Back goes back to where the track was.
+                    model.player.scrubbing -> model.player.endScrub(keep = false)
                     model.ambient -> model.ambient = false
                     model.overlay != null -> model.overlay = null
                     model.showingFolders && model.path.isNotEmpty() -> model.up()
@@ -93,18 +95,34 @@ class MainActivity : ComponentActivity() {
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (!model.ambient || keyCode !in AMBIENT_KEYS) return super.onKeyDown(keyCode, event)
         if (restingKey) return true
+        val player = model.player
+        if (player.scrubbing) {
+            // ↓ took hold of the bar: ← → move through the track, OK or ↑ keep the place (Back goes back).
+            when (keyCode) {
+                KeyEvent.KEYCODE_DPAD_LEFT -> player.scrubStep(-1, event.repeatCount)
+                KeyEvent.KEYCODE_DPAD_RIGHT -> player.scrubStep(1, event.repeatCount)
+                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_UP -> player.endScrub(keep = true)
+            }
+            return true
+        }
         when (keyCode) {
-            // ← → change the face, OK plays or pauses, ↑ ↓ leave (as Esc on the Mac; Back too).
+            // ← → change the face, OK plays or pauses, ↓ holds the bar to move through the track,
+            // ↑ leaves (as Esc on the Mac; Back too).
             KeyEvent.KEYCODE_DPAD_LEFT -> AmbientState.changeFace(-1)
             KeyEvent.KEYCODE_DPAD_RIGHT -> AmbientState.changeFace(1)
-            KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> model.player.playPause()
-            KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN -> model.ambient = false
+            KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> player.playPause()
+            KeyEvent.KEYCODE_DPAD_DOWN -> player.startScrub()
+            KeyEvent.KEYCODE_DPAD_UP -> model.ambient = false
         }
         return true
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean =
-        (model.ambient && keyCode in AMBIENT_KEYS) || super.onKeyUp(keyCode, event)
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        if (!model.ambient || keyCode !in AMBIENT_KEYS) return super.onKeyUp(keyCode, event)
+        // A scrub key let go: the track goes to the place shown.
+        if (model.player.scrubbing && (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)) model.player.scrubSeek()
+        return true
+    }
 
     private var lastInput = System.currentTimeMillis()
     private var restingKey = false

@@ -6,6 +6,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +37,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -86,7 +92,7 @@ fun DisplayPanel(model: AppModel, state: PlayerState, modifier: Modifier = Modif
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Led(state.isPlaying)
-            Text(state.formatLabel.ifEmpty { current?.format.orEmpty() }, Type.displayMeta.copy(color = Tokens.displayMuted), Modifier.weight(1f))
+            Spacer(Modifier.weight(1f))
             // The equalizer is a readout on the display that opens its controls, as on the Mac.
             Readout(onClick = { model.overlay = Overlay.Equalizer }) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -113,16 +119,63 @@ fun DisplayPanel(model: AppModel, state: PlayerState, modifier: Modifier = Modif
                 ScrollingText(current?.folderLine.orEmpty(), Type.body.copy(color = Tokens.displayMuted))
             }
         }
-        Text(clock(state.position), Type.displayTime.copy(color = Tokens.displayInk))
+        // The time, and the quality badge in the room the time leaves (the top line is the EQ's).
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            // The time keeps its width; the badge takes what is left and ends in an ellipsis before it.
+            Text(clock(state.shownPosition), Type.displayTime.copy(color = Tokens.displayInk))
+            Box(Modifier.weight(1f).padding(start = 12.dp), contentAlignment = Alignment.CenterEnd) {
+                QualityBadge(state, Type.displayMeta.copy(color = Tokens.displayMuted, fontSize = Type.legend.fontSize), horizontal = 10.dp, compact = true)
+            }
+        }
         if (model.showSpectrum) {
             DisplaySpectrum(state.isPlaying)
             Spacer(Modifier.height(4.dp))
         }
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            Text(clock(state.position), Type.displayMeta.copy(color = Tokens.displayMuted))
-            PositionBar(if (state.duration > 0) (state.position / state.duration).toFloat() else 0f, Modifier.weight(1f))
-            Text(clock(state.duration), Type.displayMeta.copy(color = Tokens.displayMuted))
-        }
+        ScrubRow(model, state)
+    }
+}
+
+/**
+ * The time and the bar, which take the focus: OK holds the bar, then ← → move 10 s a press (faster
+ * held) and the track goes there when the key is let go; OK keeps it, Back goes back to where it was.
+ * Held, the elapsed time lights and the bar thickens.
+ */
+@Composable
+private fun ScrubRow(model: AppModel, state: PlayerState) {
+    val player = model.player
+    val interaction = remember { MutableInteractionSource() }
+    val focused by interaction.collectIsFocusedAsState()
+    val scrubbing = state.scrub != null
+    LaunchedEffect(focused) { if (!focused && player.scrubbing) player.endScrub(keep = true) }
+    Row(
+        Modifier
+            .border(2.dp, if (focused) Tokens.focus else Color.Transparent, RoundedCornerShape(4.dp))
+            .onPreviewKeyEvent { e ->
+                val ok = e.key == Key.DirectionCenter || e.key == Key.Enter || e.key == Key.NumPadEnter
+                val side = when (e.key) { Key.DirectionLeft -> -1; Key.DirectionRight -> 1; else -> 0 }
+                when (e.type) {
+                    KeyEventType.KeyDown -> when {
+                        ok -> true
+                        player.scrubbing && side != 0 -> { player.scrubStep(side, e.nativeKeyEvent.repeatCount); true }
+                        else -> false
+                    }
+                    KeyEventType.KeyUp -> when {
+                        ok -> { if (player.scrubbing) player.endScrub(keep = true) else player.startScrub(); true }
+                        player.scrubbing && side != 0 -> { player.scrubSeek(); true }
+                        else -> false
+                    }
+                    else -> false
+                }
+            }
+            .focusable(interactionSource = interaction)
+            .padding(horizontal = 6.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        val shown = state.shownPosition
+        Text(clock(shown), Type.displayMeta.copy(color = if (scrubbing) Tokens.displayInk else Tokens.displayMuted))
+        PositionBar(if (state.duration > 0) (shown / state.duration).toFloat() else 0f, Modifier.weight(1f), height = if (scrubbing) 8.dp else 4.dp)
+        Text(clock(state.duration), Type.displayMeta.copy(color = Tokens.displayMuted))
     }
 }
 

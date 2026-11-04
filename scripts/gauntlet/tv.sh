@@ -162,10 +162,16 @@ tour() {
   press DPAD_DOWN DPAD_CENTER
   shot player 5
 
-  # The equalizer from the display's "EQ" readout (the one control up from the keys): Rock (the
+  # The position bar, up from the keys: OK holds it, → twice goes on 20 s (the elapsed time lit, the
+  # bar thicker); Back goes back to where it was.
+  home; press DPAD_UP DPAD_CENTER DPAD_RIGHT DPAD_RIGHT
+  shot scrub 1
+  press BACK
+
+  # The equalizer from the display's "EQ" readout (up from the position bar): Rock (the
   # focus starts on the first preset), then OK on a fader to hold it and ↑ half a decibel (its LED lit);
   # OK lets go and ↑ goes back up to the presets, as everywhere else; Back closes.
-  home; press DPAD_UP DPAD_CENTER
+  home; press DPAD_UP DPAD_UP DPAD_CENTER
   sleep 1; press DPAD_DOWN DPAD_RIGHT DPAD_CENTER
   shot equalizer 1
   press DPAD_DOWN DPAD_CENTER DPAD_UP
@@ -185,6 +191,12 @@ tour() {
   local face
   for face in display clock spectrum meters needles valves; do
     shot ambient-$face 4
+    if [[ $face == display ]]; then
+      # ↓ holds the bar, → twice: 20 s on, with the keys' hint below; Back goes back.
+      press DPAD_DOWN DPAD_RIGHT DPAD_RIGHT
+      shot ambient-scrub 1
+      press BACK
+    fi
     press DPAD_RIGHT
   done
   press DPAD_UP

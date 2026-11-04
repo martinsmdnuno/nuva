@@ -5,6 +5,8 @@
     <string name="server">Endereço do servidor</string>
     <!-- The source on the ambient screen's top line, in place of the server's address. -->
     <string name="source_server">Servidor</string>
+    <!-- On the ambient screen while ↓ holds the position bar. -->
+    <string name="scrub_hint">← → 10 s · OK para ficar · voltar para cancelar</string>
     <string name="user">Utilizador</string>
     <string name="password">Palavra-passe</string>
     <string name="sign_in">Entrar</string>

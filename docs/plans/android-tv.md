@@ -24,6 +24,7 @@ A NuVa for an Android TV box, to play the author's FLAC library from Jellyfin on
 - **Keys**: mode | previous, play/pause, next | ambient, settings. One mode key moves through normal, shuffle, repeat all and repeat one, its name under it (the Mac keeps shuffle and repeat apart). Same three tones as `KeyButtonStyle`; focus is the `focus` ring.
 - **Queue and folders**: two tabs at the top of the right column, each with its LED; OK on one shows it, and Back from a list goes to them.
 - **Display**: format (FLAC 24/96 when known), title, folder, elapsed time in IBM Plex Mono Light, the position bar.
+- **Position and quality**: the position bar takes the focus; OK holds it, ← → move 10 s a press (faster held), the track goes there when the key is let go, OK keeps it and Back goes back. In ambient, ↓ holds it. Every face has the bar. The quality badge ("FLAC 905 kbps | 16-bit/44.1 kHz", compact on the player's display) takes the bitrate from the file's size over its length (Jellyfin's `MediaSources`), as the Mac and Windows do.
 - **Ambient**: the Display face full screen, entered with a key or after a minute without input while playing; any key leaves. OLED protection: a slow wander and the 55% rule for static parts. The other faces (Spectrum, Meters, Needles, Valves) need the audio's levels; they come in a later version with Media3's audio processor.
 - **Playback**: gapless through Media3's playlist, keeps playing with the screen off or in another app, Now Playing on the TV's media controls.
 

@@ -6,6 +6,8 @@
     <string name="server">Server address</string>
     <!-- The source on the ambient screen's top line, in place of the server's address. -->
     <string name="source_server">Server</string>
+    <!-- On the ambient screen while ↓ holds the position bar. -->
+    <string name="scrub_hint">← → 10 s · OK to keep · back to cancel</string>
     <string name="user">User</string>
     <string name="password">Password</string>
     <string name="sign_in">Sign In</string>

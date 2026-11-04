@@ -196,6 +196,8 @@ fun AmbientScreen(model: AppModel) {
             if (field != null) Glow(field, pulses = AmbientState.face == AmbientFace.Display, playing = state.isPlaying, opacity)
         }
         val (dx, dy) = drift(now, protects)
+        // While scrubbing, every face shows where the track will go on from.
+        val shown = state.scrub?.let { state.copy(position = it.target) } ?: state
         Box(
             Modifier
                 .align(Alignment.Center)
@@ -207,17 +209,18 @@ fun AmbientScreen(model: AppModel) {
         ) {
             val static = if (protects) 0.55f else 1f
             when (AmbientState.face) {
-                AmbientFace.Display -> DisplayFace(model, state, u, static)
-                AmbientFace.Clock -> ClockFace(state, u, now, protects, static)
-                AmbientFace.Spectrum -> SpectrumFace(model, state, u, static)
-                AmbientFace.Meters -> MetersFace(model, state, u)
-                AmbientFace.Needles -> NeedlesFace(model, state, u, static)
-                AmbientFace.Valves -> ValvesFace(model, state, u)
+                AmbientFace.Display -> DisplayFace(model, shown, u, static)
+                AmbientFace.Clock -> ClockFace(shown, u, now, protects, static)
+                AmbientFace.Spectrum -> SpectrumFace(shown, u, static)
+                AmbientFace.Meters -> MetersFace(shown, u, static)
+                AmbientFace.Needles -> NeedlesFace(shown, u, static)
+                AmbientFace.Valves -> ValvesFace(shown, u, static)
             }
         }
-        AnimatedVisibility(showName, Modifier.align(Alignment.BottomCenter).padding(bottom = u * 2), enter = fadeIn(), exit = fadeOut()) {
+        val scrubbing = state.scrub != null
+        AnimatedVisibility(showName || scrubbing, Modifier.align(Alignment.BottomCenter).padding(bottom = u * 2), enter = fadeIn(), exit = fadeOut()) {
             Text(
-                "←  ${stringResource(AmbientState.face.label).lowercase()}  →",
+                if (scrubbing) stringResource(R.string.scrub_hint) else "←  ${stringResource(AmbientState.face.label).lowercase()}  →",
                 Type.hint.copy(color = Tokens.inkMuted, fontSize = sp(u * 1.6f)),
                 Modifier.clip(RoundedCornerShape(6.dp)).background(Tokens.surface0).padding(horizontal = 20.dp, vertical = 10.dp),
             )
@@ -257,14 +260,22 @@ private fun sp(dp: Dp): TextUnit = with(LocalDensity.current) { dp.toSp() }
 private fun MetaLine(state: PlayerState, u: Dp, right: String) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(u * 1.4f)) {
         Led(state.isPlaying, size = u)
-        Text(state.formatLabel.ifEmpty { state.current?.format.orEmpty() }, Type.displayMeta.copy(color = Tokens.displayMuted, fontSize = sp(u * 1.7f)), Modifier.weight(1f))
+        Box(Modifier.weight(1f)) {
+            QualityBadge(state, Type.displayMeta.copy(color = Tokens.displayMuted, fontSize = sp(u * 1.5f)), u * 1.2f, u * 0.45f)
+        }
         Text(right, Type.displayMeta.copy(color = Tokens.displayMuted, fontSize = sp(u * 1.7f)))
     }
 }
 
 @Composable
 private fun Position(state: PlayerState, u: Dp, static: Float, modifier: Modifier = Modifier) {
-    PositionBar(if (state.duration > 0) (state.position / state.duration).toFloat() else 0f, modifier.alpha(static), height = maxOf(2.dp, u * 0.35f))
+    // Scrubbing, the bar is what is being moved: full brightness and a little thicker.
+    val scrubbing = state.scrub != null
+    PositionBar(
+        if (state.duration > 0) (state.position / state.duration).toFloat() else 0f,
+        modifier.alpha(if (scrubbing) 1f else static),
+        height = maxOf(2.dp, u * if (scrubbing) 0.6f else 0.35f),
+    )
 }
 
 /** The track at the foot of the animated faces: title and folders on the left, elapsed time on the right. */
@@ -333,7 +344,7 @@ private fun ClockFace(state: PlayerState, u: Dp, now: Long, blinks: Boolean, sta
 
 /** 28 bands from 20 Hz to 20 kHz as solid bars in display-ink, each with its held peak as a thin cap in led. */
 @Composable
-private fun SpectrumFace(model: AppModel, state: PlayerState, u: Dp, static: Float) {
+private fun SpectrumFace(state: PlayerState, u: Dp, static: Float) {
     val meter = remember { SpectrumMeter(SpectrumShared.FINE_BANDS, floor = -62f, ceiling = -12f, fall = 0.9f, attack = 0.025f, gravity = 2.4f) }
     Column(Modifier.fillMaxSize()) {
         MetaLine(state, u, "20 Hz – 20 kHz")
@@ -363,7 +374,7 @@ private fun SpectrumFace(model: AppModel, state: PlayerState, u: Dp, static: Flo
 
 /** Left and right as two ladders of segments: RMS lit in led, the held peak in display-ink, a dBFS scale below. */
 @Composable
-private fun MetersFace(model: AppModel, state: PlayerState, u: Dp) {
+private fun MetersFace(state: PlayerState, u: Dp, static: Float) {
     val meter = remember { SpectrumMeter(2, floor = -48f, ceiling = 0f, fall = 1.3f, attack = 0.02f, gravity = 1.8f) }
     val segments = 40
     val marks = listOf(-48, -36, -24, -18, -12, -6, -3, 0)
@@ -407,6 +418,7 @@ private fun MetersFace(model: AppModel, state: PlayerState, u: Dp) {
             }
         }
         Spacer(Modifier.weight(1f))
+        Position(state, u, static, Modifier.padding(bottom = u * 3))
         TrackFoot(state, u)
     }
 }
@@ -425,7 +437,7 @@ private fun position(vu: Float) = VUNeedle.deflection(vu.toDouble()).toFloat()
  * tapered needle with its shadow, and a peak light within 1 dB of full scale. 0 VU is -14 dBFS RMS.
  */
 @Composable
-private fun NeedlesFace(model: AppModel, state: PlayerState, u: Dp, static: Float) {
+private fun NeedlesFace(state: PlayerState, u: Dp, static: Float) {
     val meter = remember { NeedleMeter() }
     val measurer = rememberTextMeasurer()
     Column(Modifier.fillMaxSize()) {
@@ -439,6 +451,7 @@ private fun NeedlesFace(model: AppModel, state: PlayerState, u: Dp, static: Floa
             }
         }
         Spacer(Modifier.weight(1f))
+        Position(state, u, static, Modifier.padding(bottom = u * 3))
         TrackFoot(state, u)
     }
 }
@@ -520,7 +533,7 @@ private fun VuPanel(deflection: Float, clipping: Boolean, channel: Int, u: Dp, s
 
 /** Two valves in their cage, the filaments glowing with each channel (in led), warm while paused. */
 @Composable
-private fun ValvesFace(model: AppModel, state: PlayerState, u: Dp) {
+private fun ValvesFace(state: PlayerState, u: Dp, static: Float) {
     val meter = remember { SlowMeter(floor = -40f, ceiling = -8f, rise = 4f, fall = 1.5f) }
     val measurer = rememberTextMeasurer()
     Column(Modifier.fillMaxSize()) {
@@ -532,6 +545,7 @@ private fun ValvesFace(model: AppModel, state: PlayerState, u: Dp) {
             for (channel in 0..1) Valve(meter.levels[channel], state.current != null, channel, u, measurer, Modifier.fillMaxHeight().aspectRatio(0.62f))
         }
         Spacer(Modifier.weight(1f))
+        Position(state, u, static, Modifier.padding(bottom = u * 3))
         TrackFoot(state, u)
     }
 }

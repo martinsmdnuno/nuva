@@ -29,5 +29,5 @@ The root `CLAUDE.md` holds for this app too: its principles, the parity matrix a
 
 ## Release
 - The version comes from `MARKETING_VERSION` in `project.yml` (1.11 → versionCode 11100); never set it here.
-- `scripts/make-apk.sh` builds the signed release APK; `scripts/release.sh` runs it with the Mac's build, in the same GitHub release. The release key stays on the author's Mac (`~/.android/nuva-release.jks`, password in the Keychain item `nuva-android-release`), never in the repository.
+- `scripts/make-apk.sh` builds the signed release APK; `scripts/release.sh` runs it with the Mac's build, in the same GitHub release. The release key stays on the author's Mac (`~/.android/nuva-release.jks`, password in `~/.android/nuva-release.password`, both backed up outside the repository), never in the repository. The key was replaced in 1.14 (the old one's password was lost), so a 1.13 install must be removed once before 1.14 goes on.
 - When a feature lands or changes here, set its `tv` status in `docs/features.json` and run `swift scripts/content.swift`.

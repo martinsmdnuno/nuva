@@ -8,6 +8,7 @@
 - Android TV: updating is one step. When there's a new version, the menu shows "Update to X": the app downloads it from the GitHub release and Android asks to confirm; your settings, sign-in and queue stay. The first time, Android asks you to let NuVa install apps.
 - Android TV: the glow behind the player and the ambient faces is drawn at the screen's own resolution, with no blocks or bands on a 4K TV. Three soft lights in the cover's colours move over it with the music: one with the bass, one with the middle, one with the treble, faster as the music gets louder and slowly when it's quiet. They never go brighter than the cover's own colours, so the text stays easy to read.
 - Android TV: the "Show spectrum" setting is gone with the old display; the spectrum is still an ambient face.
+- Android TV: 1.14 is signed with a new key. If you have 1.13 on your TV, uninstall it once (Settings ▸ Apps ▸ NuVa ▸ Uninstall) and install 1.14 from nuva.martinsnuno.com/tv; you sign in to Jellyfin again. From 1.14 on, updates come from the menu.
 
 ## 1.13 — the TV, by hand
 

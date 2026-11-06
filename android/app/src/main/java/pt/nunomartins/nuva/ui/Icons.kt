@@ -69,6 +69,7 @@ object Icons {
         moveTo(9f, 6f); lineTo(9f, 18f)
         moveTo(5f, 9f); lineTo(7f, 9f); moveTo(5f, 12f); lineTo(7f, 12f)
     }
+    val menu = icon("menu", false) { moveTo(4f, 7f); lineTo(20f, 7f); moveTo(4f, 12f); lineTo(20f, 12f); moveTo(4f, 17f); lineTo(20f, 17f) }
     val back = icon("back", false) { moveTo(15f, 5f); lineTo(8f, 12f); lineTo(15f, 19f) }
     val folder = icon("folder", false) {
         moveTo(3f, 7f); lineTo(3f, 18f); lineTo(21f, 18f); lineTo(21f, 9f); lineTo(11f, 9f); lineTo(9f, 7f); close()

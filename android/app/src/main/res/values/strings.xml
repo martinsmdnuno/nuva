@@ -101,4 +101,5 @@
         <item quantity="one">%d track added</item>
         <item quantity="other">%d tracks added</item>
     </plurals>
+    <string name="menu">Menu</string>
 </resources>

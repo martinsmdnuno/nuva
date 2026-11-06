@@ -51,6 +51,21 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.offset
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.TextUnit
+import kotlinx.coroutines.delay
+import kotlin.math.roundToInt
 import pt.nunomartins.nuva.AppModel
 import pt.nunomartins.nuva.Overlay
 import pt.nunomartins.nuva.R
@@ -58,81 +73,171 @@ import pt.nunomartins.nuva.audio.Audio
 import pt.nunomartins.nuva.player.PlayMode
 import pt.nunomartins.nuva.player.PlayerState
 
-/** One device: the display and the keys on the left, the folders or the queue on the right. */
+/**
+ * The folders, the whole screen: the menu key at the top, the list, and at the foot, while something
+ * plays, the "now playing" bar (OK on it opens the player).
+ */
+@Composable
+fun BrowserScreen(model: AppModel) {
+    val state by model.player.state.collectAsStateWithLifecycle()
+    Column(Modifier.fillMaxSize().background(Tokens.surface0).padding(horizontal = 64.dp, vertical = 32.dp)) {
+        Row(Modifier.fillMaxWidth().height(56.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(R.string.app_name), Type.title.copy(color = Tokens.ink))
+            Spacer(Modifier.weight(1f))
+            Key(Tone.Mode, 56.dp, { model.overlay = Overlay.Menu }, icon = Icons.menu, description = stringResource(R.string.menu), height = 48.dp)
+        }
+        Folders(model, state)
+        if (state.current != null) NowPlayingBar(model, state)
+    }
+}
+
+/** The track playing, at the foot of the folders: LED, cover, title and folders, time. OK opens the player. */
+@Composable
+private fun NowPlayingBar(model: AppModel, state: PlayerState) {
+    val entry = state.current ?: return
+    val interaction = remember { MutableInteractionSource() }
+    val focused by interaction.collectIsFocusedAsState()
+    val shape = RoundedCornerShape(8.dp)
+    Row(
+        Modifier.padding(top = 16.dp).fillMaxWidth().height(76.dp)
+            .border(2.dp, if (focused) Tokens.focus else Color.Transparent, shape)
+            .padding(3.dp).clip(shape).background(Tokens.display)
+            .remoteClick(interaction, { model.nowPlaying = true }, null)
+            .padding(horizontal = 20.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Led(state.isPlaying)
+        val cover = model.cover
+        if (model.showArtwork && cover != null) {
+            Image(remember(cover) { cover.asImageBitmap() }, null, Modifier.size(48.dp).clip(RoundedCornerShape(3.dp)), contentScale = ContentScale.Crop)
+        }
+        Column(Modifier.weight(1f)) {
+            ScrollingText(entry.title, Type.label.copy(color = Tokens.displayInk, fontSize = Type.body.fontSize), moving = focused)
+            ScrollingText(entry.folderLine, Type.duration.copy(color = Tokens.displayMuted), moving = focused)
+        }
+        Text("${clock(state.shownPosition)} / ${clock(state.duration)}", Type.displayMeta.copy(color = Tokens.displayMuted))
+    }
+}
+
+/**
+ * The player, the whole screen, on the display's colour with the cover's glow moving behind. Top: back
+ * to the folders, LED, quality and the source. Middle: the cover, and beside it a column whose top is
+ * the cover's top (title, then artist and album, both sliding when too long) and whose foot is the
+ * cover's foot (the time), all on one left edge. Then the bar, and the keys: mode on the left,
+ * previous · play · next centred on the time, ambient and the menu on the right.
+ */
 @Composable
 fun PlayerScreen(model: AppModel) {
     val state by model.player.state.collectAsStateWithLifecycle()
+    val player = model.player
+    val entry = state.current
     val playKey = remember { FocusRequester() }
-
-    Row(
-        Modifier.fillMaxSize().background(Tokens.surface0).padding(horizontal = 48.dp, vertical = 36.dp),
-        horizontalArrangement = Arrangement.spacedBy(48.dp),
-    ) {
-        Column(Modifier.width(500.dp).fillMaxHeight()) {
-            DisplayPanel(model, state)
-            Spacer(Modifier.height(24.dp))
-            Keys(model, state, playKey)
-        }
-        Column(Modifier.weight(1f).fillMaxHeight()) {
-            Tabs(model)
-            if (model.showingFolders) Folders(model, state) else Queue(model, state)
+    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            now = System.currentTimeMillis()
+            delay(1000)
         }
     }
-    LaunchedEffect(model.played) { runCatching { playKey.requestFocus() } }
-}
+    val density = LocalDensity.current
+    fun sp(dp: Dp): TextUnit = with(density) { dp.toSp() }
 
-/** The device's screen: always dark, recessed, the time in the mono's light weight. */
-@Composable
-fun DisplayPanel(model: AppModel, state: PlayerState, modifier: Modifier = Modifier) {
-    val current = state.current
-    val eq = Audio.equalizer
-    Column(
-        modifier.fillMaxWidth().clip(RoundedCornerShape(6.dp)).background(Tokens.display).padding(horizontal = 24.dp, vertical = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Led(state.isPlaying)
+    BoxWithConstraints(Modifier.fillMaxSize().background(Tokens.display)) {
+        GlowBackground(model, state.isPlaying, strong = true, opacity = 1f, now = now)
+        val u = maxWidth / 100
+        val coverSize = maxHeight * 0.46f
+        // Where the time's centre is, so previous · play · next sit under it.
+        var timeCentre by remember { mutableFloatStateOf(Float.NaN) }
+        var keysLeft by remember { mutableFloatStateOf(0f) }
+        var transportWidth by remember { mutableIntStateOf(0) }
+        // The side groups' inner edges: previous · play · next never go over them.
+        var modeRight by remember { mutableFloatStateOf(0f) }
+        var endLeft by remember { mutableFloatStateOf(Float.NaN) }
+        val clearance = with(density) { 32.dp.toPx() }
+
+        Column(Modifier.fillMaxSize().padding(start = u * 8, end = u * 8, top = u * 3f, bottom = u * 3.5f)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(u * 1.4f)) {
+                Key(Tone.Mode, 56.dp, { model.nowPlaying = false }, icon = Icons.back, description = stringResource(R.string.folders), height = 44.dp)
+                Led(state.isPlaying, size = u * 0.8f)
+                Box(Modifier.weight(1f)) {
+                    QualityBadge(state, Type.displayMeta.copy(color = Tokens.displayMuted, fontSize = sp(u * 1.5f)), u * 1.2f, u * 0.45f)
+                }
+                Text(stringResource(R.string.source_server), Type.displayMeta.copy(color = Tokens.displayMuted, fontSize = sp(u * 1.7f)))
+            }
             Spacer(Modifier.weight(1f))
-            // The equalizer is a readout on the display that opens its controls, as on the Mac.
-            Readout(onClick = { model.overlay = Overlay.Equalizer }) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Led(eq.enabled, size = 6.dp)
-                    Text("EQ · ${presetName(eq.preset)}", Type.displayMeta.copy(color = Tokens.displayMuted))
+            Row(Modifier.fillMaxWidth().height(coverSize), horizontalArrangement = Arrangement.spacedBy(u * 5)) {
+                val cover = model.cover
+                if (model.showArtwork && cover != null) {
+                    Image(remember(cover) { cover.asImageBitmap() }, null, Modifier.size(coverSize).clip(RoundedCornerShape(4.dp)), contentScale = ContentScale.Crop)
+                }
+                Column(Modifier.weight(1f).fillMaxHeight()) {
+                    val failed = state.failedTitle
+                    ScrollingText(
+                        when {
+                            failed != null -> stringResource(R.string.couldnt_play, failed)
+                            entry != null -> entry.title
+                            else -> stringResource(R.string.nothing_playing)
+                        },
+                        Type.title.copy(
+                            color = if (failed != null) Tokens.danger else if (entry == null) Tokens.displayMuted else Tokens.displayInk,
+                            fontSize = sp(u * 4.6f), lineHeight = sp(u * 5.2f),
+                        ),
+                        // Up by the font's room above the capitals: the title's top is the cover's top.
+                        Modifier.offset(y = -u * 1.05f),
+                    )
+                    Spacer(Modifier.height(u * 1.2f))
+                    ScrollingText(
+                        entry?.folderLine ?: stringResource(R.string.choose_folder),
+                        Type.body.copy(color = Tokens.displayMuted, fontSize = sp(u * 2.4f), lineHeight = sp(u * 3f)),
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        clock(state.shownPosition),
+                        Type.displayTime.copy(color = Tokens.displayInk, fontSize = sp(u * 5.9f), lineHeight = sp(u * 5.9f)),
+                        // Down by the room under the digits: their foot is the cover's foot.
+                        Modifier.offset(y = u * 1.45f).onGloballyPositioned { timeCentre = it.boundsInRoot().center.x },
+                    )
+                }
+            }
+            Spacer(Modifier.weight(1f))
+            ScrubRow(model, state)
+            Spacer(Modifier.height(u * 1.6f))
+            Box(Modifier.fillMaxWidth().onGloballyPositioned { keysLeft = it.boundsInRoot().left }) {
+                Row(
+                    Modifier.align(Alignment.CenterStart).onGloballyPositioned { modeRight = it.boundsInRoot().right },
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp),
+                ) {
+                    Key(Tone.Mode, 56.dp, { player.cycleMode() }, icon = modeIcon(state.mode), description = stringResource(R.string.mode))
+                    Text(modeName(state.mode).lowercase(), Type.legend.copy(color = Tokens.displayMuted))
+                }
+                Row(
+                    Modifier.align(Alignment.CenterStart)
+                        .onSizeChanged { transportWidth = it.width }
+                        .offset {
+                            val lowest = modeRight - keysLeft + clearance
+                            val highest = if (endLeft.isNaN()) Float.MAX_VALUE else endLeft - keysLeft - transportWidth - clearance
+                            val wanted = if (timeCentre.isNaN()) lowest else timeCentre - keysLeft - transportWidth / 2f
+                            IntOffset(wanted.coerceAtMost(highest).coerceAtLeast(lowest).roundToInt(), 0)
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
+                ) {
+                    Key(Tone.Transport, 56.dp, { player.previous() }, icon = Icons.previous, description = stringResource(R.string.previous))
+                    Key(
+                        Tone.Play, 84.dp, { player.playPause() }, Modifier.focusRequester(playKey),
+                        icon = if (state.isPlaying) Icons.pause else Icons.play, description = stringResource(R.string.play_pause),
+                    )
+                    Key(Tone.Transport, 56.dp, { player.next() }, icon = Icons.next, description = stringResource(R.string.next))
+                }
+                Row(Modifier.align(Alignment.CenterEnd).onGloballyPositioned { endLeft = it.boundsInRoot().left }, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Key(Tone.Mode, 56.dp, { model.ambient = true }, icon = Icons.ambient, description = stringResource(R.string.ambient))
+                    Key(Tone.Mode, 56.dp, { model.overlay = Overlay.Menu }, icon = Icons.menu, description = stringResource(R.string.menu))
                 }
             }
         }
-        val failed = state.failedTitle
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-            val cover = model.cover
-            if (model.showArtwork && cover != null) {
-                Image(remember(cover) { cover.asImageBitmap() }, null, Modifier.size(64.dp).clip(RoundedCornerShape(3.dp)), contentScale = ContentScale.Crop)
-            }
-            Column(Modifier.weight(1f)) {
-                ScrollingText(
-                    when {
-                        failed != null -> stringResource(R.string.couldnt_play, failed)
-                        current != null -> current.title
-                        else -> stringResource(R.string.nothing_playing)
-                    },
-                    Type.title.copy(color = if (failed != null) Tokens.danger else Tokens.displayInk),
-                )
-                ScrollingText(current?.folderLine.orEmpty(), Type.body.copy(color = Tokens.displayMuted))
-            }
-        }
-        // The time, and the quality badge in the room the time leaves (the top line is the EQ's).
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            // The time keeps its width; the badge takes what is left and ends in an ellipsis before it.
-            Text(clock(state.shownPosition), Type.displayTime.copy(color = Tokens.displayInk))
-            Box(Modifier.weight(1f).padding(start = 12.dp), contentAlignment = Alignment.CenterEnd) {
-                QualityBadge(state, Type.displayMeta.copy(color = Tokens.displayMuted, fontSize = Type.legend.fontSize), horizontal = 10.dp, compact = true)
-            }
-        }
-        if (model.showSpectrum) {
-            DisplaySpectrum(state.isPlaying)
-            Spacer(Modifier.height(4.dp))
-        }
-        ScrubRow(model, state)
     }
+    LaunchedEffect(Unit) { runCatching { playKey.requestFocus() } }
 }
 
 /**
@@ -194,75 +299,6 @@ fun presetName(key: String): String = when (key) {
     else -> stringResource(R.string.preset_custom)
 }
 
-/** Something on the display that opens its controls: no key face, only the focus ring. */
-@Composable
-private fun Readout(onClick: () -> Unit, content: @Composable () -> Unit) {
-    val interaction = remember { MutableInteractionSource() }
-    val focused by interaction.collectIsFocusedAsState()
-    // Bled out by its padding, so the readout's text ends where the display's content does.
-    Box(
-        Modifier
-            .bleed(8.dp)
-            .border(2.dp, if (focused) Tokens.focus else Color.Transparent, RoundedCornerShape(4.dp))
-            .remoteClick(interaction, onClick, null)
-            .padding(horizontal = 8.dp, vertical = 2.dp),
-    ) { content() }
-}
-
-/** The equalizer's 10 bands as columns of LED segments, as on the Mac's display. */
-@Composable
-private fun DisplaySpectrum(playing: Boolean) {
-    val meter = remember { SpectrumMeter() }
-    val time = meterFrames(playing)
-    meter.update(time, if (playing) Audio.spectrum.levels(Audio.clock.now()) else null)
-    val led = Tokens.led
-    val ink = Tokens.displayInk
-    val track = Tokens.displayTrack
-    val segments = 12
-    Canvas(Modifier.fillMaxWidth().height(44.dp)) {
-        // Reading the frame's time makes this a new drawing each frame (the meter itself isn't observed).
-        if (time < 0) return@Canvas
-        val gap = 2.dp.toPx()
-        val columnGap = 6.dp.toPx()
-        val segment = (size.height - gap * (segments - 1)) / segments
-        val width = (size.width - columnGap * 9) / 10
-        for (c in 0 until 10) {
-            val lit = kotlin.math.round(meter.levels[c] * segments).toInt()
-            val peak = kotlin.math.round(meter.peaks[c] * segments).toInt() - 1
-            for (s in 0 until segments) {
-                val y = size.height - (s + 1) * (segment + gap) + gap
-                val color = if (s < lit) led else if (s == peak && peak >= lit) ink else track
-                drawRect(color, Offset(c * (width + columnGap), y), Size(width, segment))
-            }
-        }
-    }
-}
-
-/** mode | playback | view, each group with its legend; the mode's legend is the mode itself. */
-@Composable
-private fun Keys(model: AppModel, state: PlayerState, playKey: FocusRequester) {
-    val player = model.player
-    val mode = state.mode
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
-        // Wide enough for the longest mode's name, so the keys don't move when it changes.
-        Group(modeName(mode), Modifier.width(104.dp)) {
-            Key(Tone.Mode, 48.dp, { player.cycleMode() }, icon = modeIcon(mode), led = mode != PlayMode.Normal, description = stringResource(R.string.mode))
-        }
-        Group(stringResource(R.string.playback)) {
-            Key(Tone.Transport, 56.dp, { player.previous() }, icon = Icons.previous, description = stringResource(R.string.previous))
-            Key(
-                Tone.Play, 84.dp, { player.playPause() }, Modifier.focusRequester(playKey),
-                icon = if (state.isPlaying) Icons.pause else Icons.play, description = stringResource(R.string.play_pause),
-            )
-            Key(Tone.Transport, 56.dp, { player.next() }, icon = Icons.next, description = stringResource(R.string.next))
-        }
-        Group(stringResource(R.string.view)) {
-            Key(Tone.Mode, 48.dp, { model.ambient = true }, icon = Icons.ambient, description = stringResource(R.string.ambient))
-            Key(Tone.Mode, 48.dp, { model.overlay = Overlay.Settings }, icon = Icons.settings, description = stringResource(R.string.settings))
-        }
-    }
-}
-
 @Composable
 private fun modeName(mode: PlayMode) = stringResource(
     when (mode) {
@@ -278,48 +314,6 @@ private fun modeIcon(mode: PlayMode) = when (mode) {
     PlayMode.Shuffle -> Icons.shuffle
     PlayMode.RepeatAll -> Icons.repeat
     PlayMode.RepeatOne -> Icons.repeatOne
-}
-
-@Composable
-private fun Group(legend: String, modifier: Modifier = Modifier, keys: @Composable () -> Unit) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(2.dp), verticalAlignment = Alignment.Bottom) { keys() }
-        Legend(legend, Modifier.padding(start = 4.dp))
-    }
-}
-
-/** The right column's top: "queue" and "folders", each with its LED (lit: the one shown); OK on one shows it. Back from a list comes here. */
-@Composable
-private fun Tabs(model: AppModel) {
-    val active = remember { FocusRequester() }
-    LaunchedEffect(model.focusTabs) {
-        if (model.focusTabs == 0) return@LaunchedEffect
-        runCatching { active.requestFocus() }
-    }
-    Row(Modifier.fillMaxWidth().height(64.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        val queue = !model.showingFolders
-        Tab(stringResource(R.string.queue), queue, if (queue) Modifier.focusRequester(active) else Modifier) { model.showingFolders = false }
-        Tab(stringResource(R.string.folders), !queue, if (!queue) Modifier.focusRequester(active) else Modifier) { model.showingFolders = true }
-    }
-}
-
-/** A tab: no key face, its LED and its name, and the focus ring. */
-@Composable
-private fun Tab(label: String, active: Boolean, modifier: Modifier, onClick: () -> Unit) {
-    val interaction = remember { MutableInteractionSource() }
-    val focused by interaction.collectIsFocusedAsState()
-    Row(
-        modifier
-            .border(2.dp, if (focused) Tokens.focus else Color.Transparent, RoundedCornerShape(6.dp))
-            .remoteClick(interaction, onClick, null)
-            // The LED in the rows' LED column: 16 of row padding plus half of its 24-point column.
-            .padding(start = 25.dp, end = 16.dp, top = 10.dp, bottom = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        Led(active, size = 6.dp)
-        Text(label, Type.label.copy(color = if (active) Tokens.ink else Tokens.inkMuted, fontSize = Type.body.fontSize))
-    }
 }
 
 @Composable
@@ -350,7 +344,7 @@ private fun ColumnScope.Folders(model: AppModel, state: PlayerState) {
         ScrollingText(model.path.substringAfterLast('/'), Type.label.copy(color = Tokens.ink, fontSize = Type.body.fontSize), Modifier.padding(start = 16.dp, top = 4.dp))
     }
     Spacer(Modifier.height(8.dp))
-    Box(Modifier.weight(1f).onFocusChanged { model.listFocused = it.hasFocus }) {
+    Box(Modifier.weight(1f)) {
         when {
             model.error != null -> Text(model.error!!, Type.body.copy(color = Tokens.danger), maxLines = 3)
             model.loading && entries.isEmpty() -> Text(stringResource(R.string.loading), Type.body.copy(color = Tokens.inkMuted))
@@ -373,8 +367,9 @@ private fun ColumnScope.Folders(model: AppModel, state: PlayerState) {
     Legend(stringResource(R.string.hold_to_add), Modifier.padding(start = 16.dp, top = 8.dp))
 }
 
+/** The queue, in the menu's panel: the playing track has the focus. */
 @Composable
-private fun ColumnScope.Queue(model: AppModel, state: PlayerState) {
+fun ColumnScope.Queue(model: AppModel, state: PlayerState) {
     // The queue's length on its own line, as the folder's name is in the folders.
     if (state.queue.isNotEmpty()) {
         val total = state.queue.sumOf { it.duration ?: 0.0 }
@@ -387,12 +382,21 @@ private fun ColumnScope.Queue(model: AppModel, state: PlayerState) {
     if (state.queue.isEmpty()) {
         Text(stringResource(R.string.empty_queue), Type.body.copy(color = Tokens.inkMuted))
     } else {
-        LazyColumn(Modifier.weight(1f).onFocusChanged { model.listFocused = it.hasFocus }) {
+        val list = rememberLazyListState()
+        val playing = remember { FocusRequester() }
+        val start = state.index.coerceIn(0, state.queue.lastIndex)
+        LaunchedEffect(Unit) {
+            list.scrollToItem(start)
+            withFrameNanos { }
+            runCatching { playing.requestFocus() }
+        }
+        LazyColumn(Modifier.weight(1f), state = list) {
             itemsIndexed(state.queue) { index, entry ->
                 ListRow(
                     entry.listName,
                     entry.duration?.let(::minutes),
                     onClick = { model.player.jump(index) },
+                    modifier = if (index == start) Modifier.focusRequester(playing) else Modifier,
                     playing = index == state.index,
                     onLongClick = { model.overlay = Overlay.QueueActions(index) },
                 )

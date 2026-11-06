@@ -17,6 +17,7 @@ import kotlinx.coroutines.delay
 import pt.nunomartins.nuva.audio.Audio
 import pt.nunomartins.nuva.ui.AmbientScreen
 import pt.nunomartins.nuva.ui.AmbientState
+import pt.nunomartins.nuva.ui.BrowserScreen
 import pt.nunomartins.nuva.ui.Look
 import pt.nunomartins.nuva.ui.Overlays
 import pt.nunomartins.nuva.ui.PlayerScreen
@@ -52,16 +53,17 @@ class MainActivity : ComponentActivity() {
                 else window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             }
 
-            // Back: closes what is open, then goes up a folder, then from a list to the tabs above
-            // it, then asks before leaving the app.
+            // Back: closes what is open, then from the player to the folders, then up a folder,
+            // then asks before leaving the app.
             BackHandler(enabled = model.signedIn) {
                 when {
                     // Scrubbing, Back goes back to where the track was.
                     model.player.scrubbing -> model.player.endScrub(keep = false)
                     model.ambient -> model.ambient = false
+                    model.overlay is Overlay.QueueActions -> model.overlay = Overlay.Queue
                     model.overlay != null -> model.overlay = null
-                    model.showingFolders && model.path.isNotEmpty() -> model.up()
-                    model.listFocused -> model.focusTheTabs()
+                    model.nowPlaying -> model.nowPlaying = false
+                    model.path.isNotEmpty() -> model.up()
                     else -> model.overlay = Overlay.ConfirmExit
                 }
             }
@@ -71,7 +73,7 @@ class MainActivity : ComponentActivity() {
                     !model.signedIn -> SignInScreen(model)
                     model.ambient -> AmbientScreen(model)
                     else -> {
-                        PlayerScreen(model)
+                        if (model.nowPlaying) PlayerScreen(model) else BrowserScreen(model)
                         Overlays(model) { finish() }
                     }
                 }

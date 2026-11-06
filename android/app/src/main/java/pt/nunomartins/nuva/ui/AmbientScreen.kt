@@ -36,6 +36,7 @@ import pt.nunomartins.nuva.artwork.GlowMotion
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -207,25 +208,7 @@ fun AmbientScreen(model: AppModel) {
             ) { Led(state.isPlaying, size = u) }
             return@BoxWithConstraints
         }
-        // The cover's glow or, without one, the skin's own: there is always something moving behind the face.
-        val skinGlow = remember(Look.skin.id) { ArtworkGlow.skinField(Tokens.display.toArgb(), Tokens.displayMuted.toArgb(), Tokens.led.toArgb()) }
-        val glow = model.glow ?: skinGlow
-        // Drawn at the screen's own pixels (a little larger, for the drift), off the main thread;
-        // the old glow stays until the new one is ready.
-        val glowWidth = ceil(constraints.maxWidth * GLOW_SCALE).toInt()
-        val glowHeight = ceil(constraints.maxHeight * GLOW_SCALE).toInt()
-        val lightSize = (constraints.maxHeight * LIGHT_SIZE).toInt()
-        val rendered by produceState<GlowImages?>(null, glow, glowWidth, glowHeight) {
-            value = glow?.let {
-                withContext(Dispatchers.Default) {
-                    val images = ArtworkGlow.render(it, glowWidth, glowHeight, lightSize)
-                    GlowImages(images.base.asImageBitmap(), images.lights.map { light -> light.asImageBitmap() })
-                }
-            }
-        }
-        Crossfade(rendered, animationSpec = tween(1500), label = "glow") { images ->
-            if (images != null) Glow(images, strong = AmbientState.face == AmbientFace.Display, playing = state.isPlaying, opacity, now)
-        }
+        GlowBackground(model, state.isPlaying, strong = AmbientState.face == AmbientFace.Display, opacity, now)
         val (dx, dy) = drift(now, protects)
         // While scrubbing, every face shows where the track will go on from.
         val shown = state.scrub?.let { state.copy(position = it.target) } ?: state
@@ -259,6 +242,37 @@ fun AmbientScreen(model: AppModel) {
                 Type.hint.copy(color = Tokens.inkMuted, fontSize = sp(u * 1.6f)),
                 Modifier.clip(RoundedCornerShape(6.dp)).background(Tokens.surface0).padding(horizontal = 20.dp, vertical = 10.dp),
             )
+        }
+    }
+}
+
+/**
+ * The glow behind the ambient faces and the player: the cover's field or, without a cover, the skin's
+ * own, with its lights moving to the music. There is always something moving behind the content.
+ */
+@Composable
+fun GlowBackground(model: AppModel, playing: Boolean, strong: Boolean, opacity: Float, now: Long) {
+    var size by remember { mutableStateOf(IntSize.Zero) }
+    Box(Modifier.fillMaxSize().onSizeChanged { size = it }) {
+        if (size == IntSize.Zero) return@Box
+        // The cover's glow or, without one, the skin's own: there is always something moving behind the face.
+        val skinGlow = remember(Look.skin.id) { ArtworkGlow.skinField(Tokens.display.toArgb(), Tokens.displayMuted.toArgb(), Tokens.led.toArgb()) }
+        val glow = model.glow ?: skinGlow
+        // Drawn at the screen's own pixels (a little larger, for the drift), off the main thread;
+        // the old glow stays until the new one is ready.
+        val glowWidth = ceil(size.width * GLOW_SCALE).toInt()
+        val glowHeight = ceil(size.height * GLOW_SCALE).toInt()
+        val lightSize = (size.height * LIGHT_SIZE).toInt()
+        val rendered by produceState<GlowImages?>(null, glow, glowWidth, glowHeight) {
+            value = glow?.let {
+                withContext(Dispatchers.Default) {
+                    val images = ArtworkGlow.render(it, glowWidth, glowHeight, lightSize)
+                    GlowImages(images.base.asImageBitmap(), images.lights.map { light -> light.asImageBitmap() })
+                }
+            }
+        }
+        Crossfade(rendered, animationSpec = tween(1500), label = "glow") { images ->
+            if (images != null) Glow(images, strong = strong, playing = playing, opacity, now)
         }
     }
 }

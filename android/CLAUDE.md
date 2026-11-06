@@ -5,7 +5,7 @@ The root `CLAUDE.md` holds for this app too: its principles, the parity matrix a
 ## Principles, as they apply here
 1. **Folders, not metadata.** Jellyfin is browsed by each item's `Path`, as `JellyfinSource.swift` does on the Mac: the server's real folders, names as they are, natural sort. Never Jellyfin's artists or albums.
 2. **Native audio.** The platform's own engine: AndroidX Media3 (ExoPlayer) with Android's system decoders (FLAC from API 27, so `minSdk` 27). No VLC, no ffmpeg, no extension decoders. The stream is the original file (`/Audio/{id}/stream.<ext>?static=true`); 24-bit stays whole (`setEnableAudioFloatOutput`).
-3. **One screen.** The display on top, the keys, and below them the folders or the queue. No deep navigation.
+3. **Two screens, no deep navigation.** The folders, the whole screen, with a "now playing" bar at the foot; playing opens the player (cover, title, time, keys, the glow behind), and Back goes back to the folders. The queue, the equalizer and the settings open from the menu key (☰) as panels.
 4. **Remote first.** D-pad and OK for everything; play/pause, next and previous always work, also from other apps, through `PlaybackService` (a `MediaSessionService`).
 5. **Pluggable sources.** Jellyfin only (a TV box keeps no music). The player knows only entries and URLs.
 

@@ -36,6 +36,10 @@ sealed interface Overlay {
     data object Settings : Overlay
     data object Terms : Overlay
     data object ConfirmExit : Overlay
+    /** The player's menu: queue, equalizer and settings. */
+    data object Menu : Overlay
+    /** The queue, from the player's menu. */
+    data object Queue : Overlay
     /** Move, remove or clear, for the queue row at `index` (holding OK on it). */
     data class QueueActions(val index: Int) : Overlay
 }
@@ -66,7 +70,8 @@ class AppModel(app: Application) : AndroidViewModel(app) {
     var note by mutableStateOf<String?>(null)
         private set
     /** Folders or the queue on the right, as ⌘B swaps them on the Mac; the tabs choose. */
-    var showingFolders by mutableStateOf(true)
+    /** The player screen is showing (playing a folder opens it; Back goes to the folders). */
+    var nowPlaying by mutableStateOf(false)
     var ambient by mutableStateOf(false)
     var overlay by mutableStateOf<Overlay?>(null)
 
@@ -78,14 +83,6 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         private set
     var played by mutableIntStateOf(0)
         private set
-    /** Bumped when Back on a list sends the focus to the right column's tabs. */
-    var focusTabs by mutableIntStateOf(0)
-        private set
-    /** A row of the folders or the queue has the focus (Back then goes to the tabs). */
-    var listFocused = false
-
-    fun focusTheTabs() { focusTabs++ }
-
     // Options, as in the Mac's View menu.
     var showArtwork by mutableStateOf(prefs.getBoolean("artwork", false))
         private set
@@ -175,7 +172,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
     /** Goes up a level, with the focus on the folder just left. */
     fun up() = load(path.substringBeforeLast('/', ""), focus = path)
 
-    /** Plays the folder being browsed from `track` (or the top), and shows the queue. */
+    /** Plays the folder being browsed from `track` (or the top), and opens the player. */
     fun playFolder(track: Entry? = null) {
         val source = source ?: return
         val tracks = entries.filter { !it.isFolder }
@@ -184,7 +181,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
             try {
                 val urls = tracks.map { source.url(it) }
                 player.play(tracks, urls, track?.let { tracks.indexOf(it) }?.coerceAtLeast(0) ?: 0)
-                showingFolders = false
+                nowPlaying = true
                 played++
             } catch (e: SourceException) {
                 error = message(e)

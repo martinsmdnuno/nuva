@@ -64,7 +64,32 @@ fun Overlays(model: AppModel, onLeave: () -> Unit) {
         Overlay.Settings -> SettingsPanel(model)
         Overlay.Terms -> TermsPanel(model)
         Overlay.ConfirmExit -> ConfirmExit(model, onLeave)
+        Overlay.Menu -> MenuPanel(model)
+        Overlay.Queue -> QueuePanel(model)
         is Overlay.QueueActions -> QueueActions(model, overlay.index)
+    }
+}
+
+/** The player's menu: the queue, the equalizer and the settings, each opening its own panel. */
+@Composable
+private fun MenuPanel(model: AppModel) {
+    val first = remember { FocusRequester() }
+    Panel(440.dp) {
+        PanelTitle(stringResource(R.string.menu))
+        OptionRow(stringResource(R.string.queue).replaceFirstChar { it.uppercase() }, modifier = Modifier.focusRequester(first)) { model.overlay = Overlay.Queue }
+        OptionRow(stringResource(R.string.equalizer)) { model.overlay = Overlay.Equalizer }
+        OptionRow(stringResource(R.string.settings)) { model.overlay = Overlay.Settings }
+    }
+    LaunchedEffect(Unit) { runCatching { first.requestFocus() } }
+}
+
+/** The queue in a panel, from the menu: OK plays a track, holding OK moves or removes it. */
+@Composable
+private fun QueuePanel(model: AppModel) {
+    val state by model.player.state.collectAsStateWithLifecycle()
+    Panel(720.dp) {
+        PanelTitle(stringResource(R.string.queue).replaceFirstChar { it.uppercase() })
+        Column(Modifier.fillMaxWidth().height(400.dp)) { Queue(model, state) }
     }
 }
 
@@ -223,7 +248,6 @@ private fun SettingsPanel(model: AppModel) {
                 }
                 OptionRow(stringResource(R.string.show_artwork), origin?.takeIf { model.showArtwork }, led = model.showArtwork) { model.toggleShowArtwork() }
             }
-            item { OptionRow(stringResource(R.string.show_spectrum), led = model.showSpectrum) { model.toggleShowSpectrum() } }
             item { Legend(stringResource(R.string.section_ambient), Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp)) }
             item { OptionRow(stringResource(R.string.ambient_face), stringResource(AmbientState.face.label)) { AmbientState.choose(AmbientState.face.moved(1)) } }
             item { OptionRow(stringResource(R.string.oled), led = AmbientState.protectsOLED) { AmbientState.toggleOLED() } }
@@ -310,7 +334,7 @@ private fun QueueActions(model: AppModel, index: Int) {
     val entry = state.queue.getOrNull(index) ?: return
     val first = remember { FocusRequester() }
     val player = model.player
-    fun done() { model.overlay = null }
+    fun done() { model.overlay = Overlay.Queue }
     Panel(560.dp) {
         PanelTitle(entry.listName)
         OptionRow(stringResource(R.string.move_up), modifier = Modifier.focusRequester(first)) { player.move(index, index - 1); model.overlay = Overlay.QueueActions((index - 1).coerceAtLeast(0)) }

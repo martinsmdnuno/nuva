@@ -100,4 +100,5 @@
         <item quantity="one">%d faixa adicionada à fila</item>
         <item quantity="other">%d faixas adicionadas à fila</item>
     </plurals>
+    <string name="menu">Menu</string>
 </resources>

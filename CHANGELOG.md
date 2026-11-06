@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.14 — the TV, made for the TV
+
+- Android TV: two screens. The folders take the whole screen, with a "now playing" bar at the foot; playing a folder or a track opens the player, and Back (or its ‹ key) goes back to the folders. OK on the bar opens the player again.
+- Android TV: the player fills the screen. A large cover, and beside it the title (level with the cover's top), the artist and album (both slide when they're too long) and the time (level with its foot), on one left edge. Under them the position bar, and the keys: the mode and its name on the left, previous · play · next centred under the time, ambient and the menu on the right.
+- Android TV: the menu key (☰) opens the queue, the equalizer and the settings. The queue opens on the playing track; holding OK on a row moves or removes it, as before.
+- Android TV: updating is one step. When there's a new version, the menu shows "Update to X": the app downloads it from the GitHub release and Android asks to confirm; your settings, sign-in and queue stay. The first time, Android asks you to let NuVa install apps.
+- Android TV: the glow behind the player and the ambient faces is drawn at the screen's own resolution, with no blocks or bands on a 4K TV. Three soft lights in the cover's colours move over it with the music: one with the bass, one with the middle, one with the treble, faster as the music gets louder and slowly when it's quiet. They never go brighter than the cover's own colours, so the text stays easy to read.
+- Android TV: the "Show spectrum" setting is gone with the old display; the spectrum is still an ambient face.
+
 ## 1.13 — the TV, by hand
 
 - Android TV: queue and folders are two tabs at the top of the right column, each with its light; OK on one shows it, and Back from a list goes up to them. The folders key on the left is gone.

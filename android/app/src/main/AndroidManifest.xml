@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <!-- Menu ▸ Update to X: the new version goes to Android's installer, which asks to confirm. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <!-- A TV box: no touch screen, and Leanback is welcome but not required. -->
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
@@ -41,5 +43,7 @@
                 <action android:name="androidx.media3.session.MediaSessionService" />
             </intent-filter>
         </service>
+
+        <receiver android:name=".InstallAnswer" android:exported="false" />
     </application>
 </manifest>

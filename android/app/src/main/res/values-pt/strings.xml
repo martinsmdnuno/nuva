@@ -101,4 +101,8 @@
         <item quantity="other">%d faixas adicionadas à fila</item>
     </plurals>
     <string name="menu">Menu</string>
+    <string name="update_to">Atualizar para %1$s</string>
+    <string name="downloading">A descarregar… %1$d%%</string>
+    <string name="allow_install">Autoriza a NuVa a instalar apps e escolhe Atualizar outra vez</string>
+    <string name="update_download_failed">Não foi possível descarregar a atualização</string>
 </resources>

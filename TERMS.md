@@ -1,6 +1,6 @@
 # Terms and privacy
 
-*Last updated: 3 November 2026*
+*Last updated: 6 November 2026*
 
 ## Terms of use
 
@@ -21,7 +21,7 @@ NuVa only connects to the internet in these cases:
 - **MusicBrainz and the Cover Art Archive**, when you insert an audio CD that NuVa hasn't seen before: NuVa sends the disc's table of contents (its disc ID and track lengths), to find the album, artist and track names, which a CD doesn't carry. With **Show Artwork** on, it also fetches that album's cover. Names and covers are kept on your Mac, so a known disc doesn't go online again.
 - **GitHub**, at most once a day, to check whether there is a newer version of NuVa. Nothing is downloaded or installed automatically.
 
-**NuVa for Android TV** goes online in the same cases: your Jellyfin server, MusicBrainz and the Cover Art Archive (only with **Show Artwork** on), and GitHub at most once a day. It signs in to Jellyfin with your password once and keeps only the server's access token, never the password. Its settings, the queue and where you left off stay on the TV.
+**NuVa for Android TV** goes online in the same cases: your Jellyfin server, MusicBrainz and the Cover Art Archive (only with **Show Artwork** on), and GitHub at most once a day. When you choose **Update to X** in its menu, it downloads that version from the release on GitHub and hands it to Android's installer, which asks you to confirm; it never does this by itself. It signs in to Jellyfin with your password once and keeps only the server's access token, never the password. Its settings, the queue and where you left off stay on the TV.
 
 **NuVa for Windows** goes online in the same cases as on the Mac: your Jellyfin server, MusicBrainz and the Cover Art Archive (with **Show Artwork** on, and for an audio CD it hasn't seen before), and GitHub at most once a day. Your Jellyfin password is kept in Windows Credential Manager. Its settings stay in your user's AppData folder, and covers, CD names and a log of what the app did (for when something goes wrong; it is only sent if you send it) stay on your computer.
 
@@ -43,7 +43,7 @@ Questions and problems: [github.com/martinsmdnuno/nuva/issues](https://github.co
 
 # Termos e privacidade
 
-*Última atualização: 3 de novembro de 2026*
+*Última atualização: 6 de novembro de 2026*
 
 ## Termos de utilização
 
@@ -64,7 +64,7 @@ A NuVa só se liga à internet nestes casos:
 - **MusicBrainz e Cover Art Archive**, quando metes um CD áudio que a NuVa ainda não conhece: a NuVa envia o índice do disco (o seu disc ID e a duração das faixas), para encontrar os nomes do álbum, do artista e das faixas, que um CD não traz. Com **Mostrar capas** ligado, vai também buscar a capa desse álbum. Os nomes e as capas ficam guardados no teu Mac, por isso um disco conhecido não volta a ir à internet.
 - **GitHub**, no máximo uma vez por dia, para saber se há uma versão nova da NuVa. Nada é descarregado nem instalado automaticamente.
 
-A **NuVa para Android TV** vai à internet nos mesmos casos: o teu servidor Jellyfin, o MusicBrainz e o Cover Art Archive (só com **Mostrar capas** ligado) e o GitHub no máximo uma vez por dia. Entra no Jellyfin com a tua palavra-passe uma vez e guarda apenas a chave de acesso do servidor, nunca a palavra-passe. As definições, a fila e o ponto onde ficaste ficam na TV.
+A **NuVa para Android TV** vai à internet nos mesmos casos: o teu servidor Jellyfin, o MusicBrainz e o Cover Art Archive (só com **Mostrar capas** ligado) e o GitHub no máximo uma vez por dia. Quando escolhes **Atualizar para X** no menu, descarrega essa versão da release no GitHub e entrega-a ao instalador do Android, que te pede para confirmar; nunca o faz sozinha. Entra no Jellyfin com a tua palavra-passe uma vez e guarda apenas a chave de acesso do servidor, nunca a palavra-passe. As definições, a fila e o ponto onde ficaste ficam na TV.
 
 A **NuVa para Windows** vai à internet nos mesmos casos que no Mac: o teu servidor Jellyfin, o MusicBrainz e o Cover Art Archive (com **Mostrar capas** ligado, e para um CD áudio que ainda não conhece) e o GitHub no máximo uma vez por dia. A palavra-passe do Jellyfin fica no Gestor de Credenciais do Windows. As definições ficam na pasta AppData do teu utilizador, e as capas, os nomes dos CDs e um registo do que a app fez (para quando algo corre mal; só é enviado se tu o enviares) ficam no teu computador.
 

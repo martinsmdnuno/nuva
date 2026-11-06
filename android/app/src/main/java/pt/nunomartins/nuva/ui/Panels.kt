@@ -51,6 +51,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pt.nunomartins.nuva.AppModel
 import pt.nunomartins.nuva.Overlay
 import pt.nunomartins.nuva.R
+import pt.nunomartins.nuva.Updates
+import androidx.lifecycle.viewModelScope
 import pt.nunomartins.nuva.artwork.ArtworkOrigin
 import pt.nunomartins.nuva.audio.Audio
 import pt.nunomartins.nuva.audio.Equalizer
@@ -79,6 +81,19 @@ private fun MenuPanel(model: AppModel) {
         OptionRow(stringResource(R.string.queue).replaceFirstChar { it.uppercase() }, modifier = Modifier.focusRequester(first)) { model.overlay = Overlay.Queue }
         OptionRow(stringResource(R.string.equalizer)) { model.overlay = Overlay.Equalizer }
         OptionRow(stringResource(R.string.settings)) { model.overlay = Overlay.Settings }
+        // A newer version: one row to download and install it over this one.
+        val updates = model.updates
+        val available = updates.available
+        if (available != null) {
+            val context = LocalContext.current
+            val status = updates.downloading?.let { stringResource(R.string.downloading, (it * 100).toInt()) }
+            OptionRow(stringResource(R.string.update_to, available), status, led = true) { updates.install(context, model.viewModelScope) }
+            when (updates.problem) {
+                Updates.Problem.NeedsPermission -> Legend(stringResource(R.string.allow_install), Modifier.padding(start = 16.dp))
+                Updates.Problem.Failed -> Legend(stringResource(R.string.update_download_failed), Modifier.padding(start = 16.dp))
+                null -> Unit
+            }
+        }
     }
     LaunchedEffect(Unit) { runCatching { first.requestFocus() } }
 }

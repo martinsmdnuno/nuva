@@ -159,20 +159,3 @@ class NeedleMeter : StereoMeter {
         }
     }
 }
-
-/** The cover glow's breath: follows the bass's loudness, quick to swell (50 ms), slow to settle (450 ms). */
-class GlowPulse {
-    var level = 0.0
-        private set
-    private var last: Double? = null
-
-    fun update(now: Double, bands: FloatArray?): Double {
-        val dt = (now - (last ?: now)).coerceIn(0.0, 0.1)
-        last = now
-        val loudest = bands?.let { max(it[0], max(it[1], it[2])).toDouble() } ?: -120.0
-        val target = ((loudest + 42) / 30).coerceIn(0.0, 1.0)
-        val time = if (target > level) 0.05 else 0.45
-        level += (target - level) * (1 - exp(-dt / time))
-        return level
-    }
-}

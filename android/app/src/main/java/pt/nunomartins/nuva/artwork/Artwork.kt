@@ -272,12 +272,12 @@ class ArtworkResolver(
 /**
  * Ambient mode's glow from the cover: the cover reduced to a 4×4 grid of its own colours, each
  * darkened until the display's muted text keeps 4.5:1 on it, then blurred into a soft field that keeps
- * the cover's layout, falling towards the display's colour at the edges. The Mac app's `ArtworkGlow`.
+ * the cover's layout, falling towards the display's colour at the edges (see `GlowField`). The Mac app's `ArtworkGlow`.
  */
 object ArtworkGlow {
     private const val GRID = 4
 
-    fun field(cover: Bitmap, display: Int, muted: Int): Bitmap? {
+    fun field(cover: Bitmap, display: Int, muted: Int): GlowField? {
         val ceiling = (luminance(muted) + 0.05) / 4.5 - 0.05
         if (ceiling <= luminance(display) + 0.002) return null
         val small = Bitmap.createScaledBitmap(cover, GRID * 4, GRID * 4, true)
@@ -295,37 +295,42 @@ object ArtworkGlow {
         val safe = ceiling * 0.95
         val shaded = cells.map { shade(it, if (brightest > 0) luminance(it) / brightest else 0.0, safe) }
 
-        // A small field, blurred: the screen scales it up with smooth filtering.
-        val w = 64
-        val h = 40
-        val field = IntArray(w * h)
-        for (y in 0 until h) for (x in 0 until w) {
-            // Bilinear between cell centres, then a vignette towards the display colour.
-            val gx = (x + 0.5) / w * GRID - 0.5
-            val gy = (y + 0.5) / h * GRID - 0.5
-            val x0 = gx.toInt().coerceIn(0, GRID - 1); val x1 = (x0 + 1).coerceAtMost(GRID - 1)
-            val y0 = gy.toInt().coerceIn(0, GRID - 1); val y1 = (y0 + 1).coerceAtMost(GRID - 1)
-            val fx = (gx - x0).coerceIn(0.0, 1.0); val fy = (gy - y0).coerceIn(0.0, 1.0)
-            fun mix(channel: (Int) -> Int): Double {
-                val top = channel(shaded[y0 * GRID + x0]) * (1 - fx) + channel(shaded[y0 * GRID + x1]) * fx
-                val bottom = channel(shaded[y1 * GRID + x0]) * (1 - fx) + channel(shaded[y1 * GRID + x1]) * fx
-                return top * (1 - fy) + bottom * fy
-            }
-            val dx = (x + 0.5) / w - 0.5
-            val dy = ((y + 0.5) / h - 0.5) * h / w
-            val d = sqrt(dx * dx + dy * dy)
-            val edge = (((d - 0.22) / (0.62 - 0.22)).coerceIn(0.0, 1.0)) * 0.55
-            fun out(channel: (Int) -> Int) = (mix(channel) * (1 - edge) + channel(display) * edge).toInt().coerceIn(0, 255)
-            field[y * w + x] = Color.rgb(out(Color::red), out(Color::green), out(Color::blue))
-        }
-        return Bitmap.createBitmap(blur(blur(field, w, h), w, h), w, h, Bitmap.Config.ARGB_8888)
+        return GlowField(shaded.toIntArray(), display)
     }
+
+    /** The glow's images: the field (dimmed, so the lights have room) and one soft light per moving light. */
+    class Images(val base: Bitmap, val lights: List<Bitmap>)
+
+    /**
+     * The field at `width`×`height` pixels (the screen's own size, drawn one to one), and its lights,
+     * each `lightSize` across at half resolution (drawn twice as large).
+     */
+    fun render(field: GlowField, width: Int, height: Int, lightSize: Int): Images {
+        val base = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        field.render(width, height, BASE_DIM) { y, row -> base.setPixels(row, 0, width, 0, y, width, 1) }
+        val half = (lightSize / 2).coerceAtLeast(2)
+        val lights = field.lightColours(GlowMotion.PARTS).map { colour ->
+            // Premultiplied bytes as they are, so the dither on alpha and colour survives.
+            val bytes = java.nio.ByteBuffer.allocate(half * half * 4)
+            GlowField.renderLight(colour, half) { _, row ->
+                for (p in row) {
+                    bytes.put((p shr 16).toByte()); bytes.put((p shr 8).toByte()); bytes.put(p.toByte()); bytes.put((p ushr 24).toByte())
+                }
+            }
+            bytes.rewind()
+            Bitmap.createBitmap(half, half, Bitmap.Config.ARGB_8888).apply { copyPixelsFromBuffer(bytes) }
+        }
+        return Images(base, lights)
+    }
+
+    /** How far the field is moved towards the display's colour: the lights bring the contrast back with the music. */
+    const val BASE_DIM = 0.6f
 
     /**
      * The glow for an album without a cover: the skin's own light (its LED colour) as a soft spot left
-     * of centre, fading into the display, through the same shading and blur as a cover's field.
+     * of centre, fading into the display, through the same shading as a cover's field.
      */
-    fun skinField(display: Int, muted: Int, led: Int): Bitmap? {
+    fun skinField(display: Int, muted: Int, led: Int): GlowField? {
         val side = GRID * 4
         val pixels = IntArray(side * side) { i ->
             val x = (i % side + 0.5) / side
@@ -336,21 +341,6 @@ object ArtworkGlow {
             Color.rgb(mix(Color::red), mix(Color::green), mix(Color::blue))
         }
         return field(Bitmap.createBitmap(pixels, side, side, Bitmap.Config.ARGB_8888), display, muted)
-    }
-
-    /** A 5-tap box blur, horizontal then vertical. */
-    private fun blur(px: IntArray, w: Int, h: Int): IntArray {
-        fun pass(src: IntArray, horizontal: Boolean): IntArray = IntArray(src.size) { i ->
-            val x = i % w
-            val y = i / w
-            var r = 0; var g = 0; var b = 0
-            for (k in -2..2) {
-                val j = if (horizontal) y * w + (x + k).coerceIn(0, w - 1) else (y + k).coerceIn(0, h - 1) * w + x
-                r += Color.red(src[j]); g += Color.green(src[j]); b += Color.blue(src[j])
-            }
-            Color.rgb(r / 5, g / 5, b / 5)
-        }
-        return pass(pass(px, true), false)
     }
 
     /** The colour's hue, a little more saturated, at a luminance from 40% of `ceiling` (darkest parts) to all of it. */

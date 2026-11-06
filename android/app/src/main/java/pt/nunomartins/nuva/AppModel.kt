@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import pt.nunomartins.nuva.artwork.ArtworkGlow
+import pt.nunomartins.nuva.artwork.GlowField
 import pt.nunomartins.nuva.artwork.ArtworkOrigin
 import pt.nunomartins.nuva.artwork.ArtworkResolver
 import pt.nunomartins.nuva.artwork.CoverArtArchive
@@ -97,7 +98,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
     /** The playing album's cover (with artwork on), and its glow for ambient mode. */
     var cover by mutableStateOf<Bitmap?>(null)
         private set
-    var glow by mutableStateOf<Bitmap?>(null)
+    var glow by mutableStateOf<GlowField?>(null)
         private set
     /** Where the playing album's cover came from, or why there is none (null: not looked up). */
     var artworkOrigin by mutableStateOf<ArtworkOrigin?>(null)

@@ -32,10 +32,16 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import pt.nunomartins.nuva.artwork.ArtworkGlow
+import pt.nunomartins.nuva.artwork.GlowMotion
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,7 +71,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import pt.nunomartins.nuva.AppModel
 import pt.nunomartins.nuva.R
 import pt.nunomartins.nuva.audio.Audio
@@ -75,7 +83,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.PI
+import kotlin.math.ceil
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 /** What the ambient screen shows; ← → cycle through them. The Mac app's `AmbientFace`. */
@@ -200,8 +210,21 @@ fun AmbientScreen(model: AppModel) {
         // The cover's glow or, without one, the skin's own: there is always something moving behind the face.
         val skinGlow = remember(Look.skin.id) { ArtworkGlow.skinField(Tokens.display.toArgb(), Tokens.displayMuted.toArgb(), Tokens.led.toArgb()) }
         val glow = model.glow ?: skinGlow
-        Crossfade(glow, animationSpec = tween(1500), label = "glow") { field ->
-            if (field != null) Glow(field, strong = AmbientState.face == AmbientFace.Display, playing = state.isPlaying, opacity, now)
+        // Drawn at the screen's own pixels (a little larger, for the drift), off the main thread;
+        // the old glow stays until the new one is ready.
+        val glowWidth = ceil(constraints.maxWidth * GLOW_SCALE).toInt()
+        val glowHeight = ceil(constraints.maxHeight * GLOW_SCALE).toInt()
+        val lightSize = (constraints.maxHeight * LIGHT_SIZE).toInt()
+        val rendered by produceState<GlowImages?>(null, glow, glowWidth, glowHeight) {
+            value = glow?.let {
+                withContext(Dispatchers.Default) {
+                    val images = ArtworkGlow.render(it, glowWidth, glowHeight, lightSize)
+                    GlowImages(images.base.asImageBitmap(), images.lights.map { light -> light.asImageBitmap() })
+                }
+            }
+        }
+        Crossfade(rendered, animationSpec = tween(1500), label = "glow") { images ->
+            if (images != null) Glow(images, strong = AmbientState.face == AmbientFace.Display, playing = state.isPlaying, opacity, now)
         }
         val (dx, dy) = drift(now, protects)
         // While scrubbing, every face shows where the track will go on from.
@@ -251,32 +274,55 @@ private fun drift(now: Long, protects: Boolean): Pair<Float, Float> {
     return (wave(3187.0, 1279.0, 0.0) * 0.08).toFloat() to (wave(4253.0, 1531.0, 1.7) * 0.08).toFloat()
 }
 
+/** The glow's images, ready to draw: the field, and one light per part of the spectrum. */
+private class GlowImages(val base: ImageBitmap, val lights: List<ImageBitmap>)
+
 /**
- * The glow behind the faces: the cover's field, or the skin's. It breathes with the bass (between 70%
- * and full on the Display face, between 85% and full on the others) and drifts slowly, a few percent of
- * the screen over minutes, playing or not: the screen never holds still behind the face.
+ * The glow behind the faces: the cover's field, or the skin's, and over it three soft lights in the
+ * cover's colours that travel over the screen with the music (`GlowMotion`): each one brightens with
+ * its part of the spectrum, and they move faster as the music gets louder, slowly when it is quiet or
+ * paused, so the screen never holds still. The lights only lighten, and never past the cover's own
+ * colours, so the text keeps its contrast. The field breathes with the bass (between 70% and full on the
+ * Display face, between 85% and full on the others) and drifts a few percent of the screen over minutes.
  */
 @Composable
-private fun Glow(field: android.graphics.Bitmap, strong: Boolean, playing: Boolean, opacity: Float, now: Long) {
-    val image = remember(field) { field.asImageBitmap() }
-    val pulse = remember { pt.nunomartins.nuva.ui.GlowPulse() }
-    val time = meterFrames(playing)
-    val beat = pulse.update(time, if (playing) Audio.spectrum.levels(Audio.clock.now()) else null).toFloat()
+private fun Glow(images: GlowImages, strong: Boolean, playing: Boolean, opacity: Float, now: Long) {
+    val motion = remember { GlowMotion() }
+    meterFrames(playing) // keeps the spectrum measured while the glow shows
+    // Its own frames, playing or not: paused, the lights still crawl smoothly.
+    var nanos by remember { mutableLongStateOf(System.nanoTime()) }
+    LaunchedEffect(Unit) { while (true) withFrameNanos { nanos = it } }
+    val lights = motion.update(nanos / 1e9, if (playing) Audio.spectrum.levels(Audio.clock.now()) else null)
+    val beat = motion.bass.toFloat()
     val level = if (strong) 0.7f + 0.3f * beat else 0.85f + 0.15f * beat
     val t = now / 1000.0
-    Image(
-        image, null,
-        Modifier.fillMaxSize()
-            .graphicsLayer {
-                scaleX = 1.12f
-                scaleY = 1.12f
-                translationX = size.width * 0.04f * sin(2 * PI * t / 617).toFloat()
-                translationY = size.height * 0.04f * sin(2 * PI * t / 853 + 1.3).toFloat()
-            }
-            .alpha(level * opacity),
-        contentScale = ContentScale.FillBounds, filterQuality = FilterQuality.High,
-    )
+    Canvas(Modifier.fillMaxSize()) {
+        // One image pixel on one screen pixel: centred, drifting in whole pixels, never resampled.
+        val dx = size.width * 0.04f * sin(2 * PI * t / 617).toFloat()
+        val dy = size.height * 0.04f * sin(2 * PI * t / 853 + 1.3).toFloat()
+        val left = ((size.width - images.base.width) / 2 + dx).roundToInt()
+        val top = ((size.height - images.base.height) / 2 + dy).roundToInt()
+        drawImage(images.base, topLeft = Offset(left.toFloat(), top.toFloat()), alpha = level * opacity)
+        images.lights.forEachIndexed { i, light ->
+            val l = lights.getOrNull(i) ?: return@forEachIndexed
+            val side = light.width * 2
+            drawImage(
+                light,
+                dstOffset = IntOffset((l.x * size.width - side / 2f).roundToInt(), (l.y * size.height - side / 2f).roundToInt()),
+                dstSize = IntSize(side, side),
+                alpha = l.strength * opacity,
+                blendMode = BlendMode.Lighten,
+                filterQuality = FilterQuality.Low,
+            )
+        }
+    }
 }
+
+/** A light's diameter, as a share of the screen's height. */
+private const val LIGHT_SIZE = 1.3f
+
+/** How much larger than the screen the glow is drawn, so its drift never shows an edge. */
+private const val GLOW_SCALE = 1.12f
 
 /** The playing album's cover for the faces (with artwork on), or null. */
 private val LocalCover = compositionLocalOf<ImageBitmap?> { null }

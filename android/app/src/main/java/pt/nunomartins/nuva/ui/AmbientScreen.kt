@@ -41,7 +41,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -263,12 +262,12 @@ fun GlowBackground(model: AppModel, playing: Boolean, strong: Boolean, opacity: 
         val glowWidth = ceil(size.width * GLOW_SCALE).toInt()
         val glowHeight = ceil(size.height * GLOW_SCALE).toInt()
         val lightSize = (size.height * LIGHT_SIZE).toInt()
-        val rendered by produceState<GlowImages?>(null, glow, glowWidth, glowHeight) {
-            value = glow?.let {
-                withContext(Dispatchers.Default) {
-                    val images = ArtworkGlow.render(it, glowWidth, glowHeight, lightSize)
-                    GlowImages(images.base.asImageBitmap(), images.lights.map { light -> light.asImageBitmap() })
-                }
+        var rendered by remember { mutableStateOf<GlowImages?>(null) }
+        LaunchedEffect(glow, glowWidth, glowHeight) {
+            val field = glow
+            rendered = if (field == null) null else {
+                val images = withContext(Dispatchers.Default) { ArtworkGlow.render(field, glowWidth, glowHeight, lightSize) }
+                GlowImages(images.base.asImageBitmap(), images.lights.map { light -> light.asImageBitmap() })
             }
         }
         Crossfade(rendered, animationSpec = tween(1500), label = "glow") { images ->

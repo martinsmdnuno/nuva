@@ -166,6 +166,10 @@ framed([(snapshot("equalizador-chumbo"), .popover)], name: "equalizer.png")
 framed([(snapshot("barra-chumbo"), .popover)], name: "menubar.png")
 framed([(snapshot("player-graphite-orange"), .window(dark: true)), (snapshot("player-phosphor"), .window(dark: true))],
        name: "skins.png")
+// The four livelier skins, each in its own font set.
+framed([(snapshot("player-rave"), .window(dark: true)), (snapshot("player-neon-tokyo"), .window(dark: true)),
+        (snapshot("player-tropicalia"), .window(dark: true)), (snapshot("player-velvet"), .window(dark: true))],
+       name: "skins-vivid.png")
 // The embedded font pairs, each in its skin: Plex in Rams, DM in Graphite Orange, Share Tech in Phosphor.
 framed([(snapshot("player-plex-chumbo"), .window(dark: true)), (snapshot("player-dm-graphite-orange"), .window(dark: true)),
         (snapshot("player-sharetech-phosphor"), .window(dark: true))],

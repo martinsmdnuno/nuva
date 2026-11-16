@@ -2,7 +2,7 @@
 // (`adb exec-out screencap -p > <name>.png` on a TV or the Android TV emulator).
 // Usage, from the repository root:
 //   swift scripts/make-tv-images.swift <screenshots-folder> docs/screenshots
-// The folder holds queue, folders, equalizer, display, spectrum, needles, valves, orange and phosphor (.png).
+// The folder holds queue, folders, equalizer, display, spectrum, needles, valves, orange, phosphor, rave, neon-tokyo, tropicalia and velvet (.png).
 import AppKit
 
 let args = CommandLine.arguments
@@ -78,3 +78,4 @@ single("folders", "tv-folders.png")
 single("equalizer", "tv-equalizer.png")
 grid(["needles", "valves", "display", "spectrum"], columns: 2, "tv-ambient.png")
 grid(["orange", "phosphor"], columns: 1, "tv-skins.png")
+grid(["rave", "neon-tokyo", "tropicalia", "velvet"], columns: 2, "tv-skins-vivid.png")

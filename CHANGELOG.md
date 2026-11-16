@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.15 — skins with a temperament
+
+- Four new skins, on the Mac and Android TV: **Rave** (neon magenta, cyan and lime on violet-black), **Neon Tokyo** (electric blue and sodium orange, in Share Tech), **Tropicália** (coral, hot pink and mango on burgundy, in DM Sans) and **Velvet** (night blue, amber and lilac, in IBM Plex Sans). View › Skin, ⌥⌘4 to ⌥⌘7.
+- Each skin now has its own temperament: how the glow behind the player and ambient mode moves with the music. Rave's flares on every kick and falls dark between beats; Neon Tokyo's is strong and steady; Velvet's takes seconds to rise and fall, like a fire. Rams, Graphite Orange and Phosphor move as before. The glow never gets bright enough to make the text hard to read.
+- Android TV: without a cover, the new skins' glow is three lights in the skin's own colours, one each for the bass, the middle and the treble.
+- Android TV: while music plays the TV never sleeps nor starts its screensaver, on any screen (until now only in ambient mode). It lets go five minutes after the music stops, so a gap between tracks doesn't put the screen out.
+
 ## 1.14 — the TV, made for the TV
 
 - Android TV: two screens. The folders take the whole screen, with a "now playing" bar at the foot; playing a folder or a track opens the player, and Back (or its ‹ key) goes back to the folders. OK on the bar opens the player again.

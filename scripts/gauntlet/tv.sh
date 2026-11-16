@@ -211,24 +211,20 @@ tour() {
   done
   press DPAD_UP
 
-  # Settings; OK on the skin moves to the next one: Graphite Orange, then Phosphor.
   # The mode key twice: shuffle, then repeat all, its name under it.
   key 0; press DPAD_CENTER DPAD_CENTER
   shot mode 1
   press DPAD_CENTER DPAD_CENTER
 
-  key 5; press DPAD_CENTER
+  # Settings, from the menu key (☰): Queue, Equalizer, Settings. Every skin in turn, and back to Rams.
+  key 5; press DPAD_CENTER DPAD_DOWN DPAD_DOWN DPAD_CENTER
   shot settings 1.5
   local skin
-  for skin in graphite-orange phosphor; do
+  for skin in graphite-orange phosphor rave neon-tokyo tropicalia velvet rams; do
+    # OK on the skin row (the first) moves to the next skin; Back closes Settings, to the player.
     press DPAD_CENTER BACK
-    shot player-$skin 1.5
-    # The folders from the tabs: → into the queue, Back to its tab, → to Folders, OK. OK on the
-    # album's first track plays it and brings the queue back.
-    key 5; press DPAD_RIGHT BACK DPAD_RIGHT DPAD_CENTER
-    shot folders-$skin 1.5
-    press DPAD_CENTER
-    key 5; press DPAD_CENTER
+    shot player-$skin 2
+    key 5; press DPAD_CENTER DPAD_DOWN DPAD_DOWN DPAD_CENTER
   done
   press BACK
 

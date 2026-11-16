@@ -105,6 +105,8 @@
       "mac": "yes", "tv": "planned", "windows": "yes" },
     { "id": "skins", "en": "Skins (Rams, Graphite Orange, Phosphor) and five font pairs", "pt": "Skins (Rams, Graphite Orange, Phosphor) e cinco pares de fontes",
       "mac": "yes", "tv": "yes", "windows": "yes" },
+    { "id": "skins-temperament", "en": "Four livelier skins (Rave, Neon Tokyo, Tropicália, Velvet), each with its own glow temperament, from a flare on every kick to a slow fire", "pt": "Quatro skins mais vivas (Rave, Neon Tokyo, Tropicália, Velvet), cada uma com o seu temperamento de brilho, de um clarão a cada batida a um lume lento",
+      "mac": "yes", "tv": "yes", "windows": "planned" },
     { "id": "compact", "en": "Compact mode, and a mini player when the window is closed", "pt": "Modo compacto, e um mini player com a janela fechada",
       "mac": "yes", "tv": "n/a", "windows": "yes",
       "why": { "tv": "A TV app is one full screen." } },

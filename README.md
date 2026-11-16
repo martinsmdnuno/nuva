@@ -66,7 +66,9 @@ NuVa borrows from Dieter Rams and classic Braun hi-fi: one flat panel, keys that
 
 <p align="center"><img src="docs/screenshots/skins.png" width="760" alt="NuVa in the Graphite Orange and Phosphor skins"></p>
 
-The look above is the **Rams** skin. **Graphite Orange** is always dark, with a single bright orange accent on the play key, the lights and the playing track. **Phosphor** is a nod to the shareware players of the late nineties: a black screen with green text and a blue-grey chassis. Switch in **View › Skin** (⌥⌘1 to ⌥⌘3) or from the mini player. Skins change colours only: the keys, the layout and the shortcuts stay where your hands expect them. **View › Font** picks the type, in five pairs: Inter + IBM Plex Mono, Apple's SF Pro + SF Mono, and three chosen for the skins: **IBM Plex Sans** for Rams, **DM Sans** for Graphite Orange and **Share Tech**, a digital readout, for Phosphor.
+<p align="center"><img src="docs/screenshots/skins-vivid.png" width="760" alt="NuVa in the Rave, Neon Tokyo, Tropicália and Velvet skins"></p>
+
+The look above is the **Rams** skin. **Graphite Orange** is always dark, with a single bright orange accent on the play key, the lights and the playing track. **Phosphor** is a nod to the shareware players of the late nineties: a black screen with green text and a blue-grey chassis. Four livelier skins each give the glow behind ambient mode its own temperament: **Rave**, neon magenta, cyan and lime, whose glow flares on every kick and falls dark between beats; **Neon Tokyo**, electric blue and sodium orange in Share Tech, strong and steady; **Tropicália**, coral, hot pink and mango on burgundy; and **Velvet**, night blue, amber and lilac, whose glow takes seconds to rise and fall, like a fire. Switch in **View › Skin** (⌥⌘1 to ⌥⌘7) or from the mini player. Skins change colours and how the glow moves, never the keys, the layout or the shortcuts: they stay where your hands expect them. **View › Font** picks the type, in five pairs: Inter + IBM Plex Mono, Apple's SF Pro + SF Mono, and three chosen for the skins: **IBM Plex Sans** for Rams, **DM Sans** for Graphite Orange and **Share Tech**, a digital readout, for Phosphor.
 
 <p align="center"><img src="docs/screenshots/fonts.png" width="760" alt="IBM Plex Sans in Rams, DM Sans in Graphite Orange and Share Tech in Phosphor"></p>
 
@@ -167,9 +169,16 @@ Six faces, ← → to change.
 Graphite Orange and Phosphor.
 </td>
 </tr>
+<tr>
+<td colspan="2" valign="top" align="center">
+<img src="docs/screenshots/tv-skins-vivid.png" alt="NuVa on Android TV in the Rave, Neon Tokyo, Tropicália and Velvet skins, each with its own coloured glow behind the player"><br>
+<b>Four livelier skins</b><br>
+Rave, Neon Tokyo, Tropicália and Velvet, each glowing in its own colours and at its own pace.
+</td>
+</tr>
 </table>
 
-The same player for the living room, on an Android TV box or a TV with Android TV (8.1 or later). It plays your **Jellyfin** server by its real folders and streams the original files: FLAC, 24-bit included, through Android's own player and decoders. It has what the Mac app has where a TV allows: the display with the spectrum, the 10-band equalizer, the queue, repeat and shuffle, all six ambient faces with OLED protection, album artwork with the cover's glow, the skins and font sets. The remote does everything: queue and folders are two tabs at the top of the right column, one mode key moves through normal, shuffle, repeat all and repeat one, and OK on the position bar lets ← → move through the track, 10 seconds a press (↓ does it in ambient mode). Hold OK to add to the queue, or to move and remove; Back asks before leaving. A badge shows the format, bitrate, bit depth and sample rate. Covers come first from the image in the album's folder on the server, and without one a soft glow in the skin's light sits behind the ambient faces. It reopens where you were.
+The same player for the living room, on an Android TV box or a TV with Android TV (8.1 or later). It plays your **Jellyfin** server by its real folders and streams the original files: FLAC, 24-bit included, through Android's own player and decoders. It has what the Mac app has where a TV allows: the display with the spectrum, the 10-band equalizer, the queue, repeat and shuffle, all six ambient faces with OLED protection, album artwork with the cover's glow, all seven skins (Rave's glow pulses with the beat across the whole room) and font sets. While music plays the TV never sleeps nor starts its screensaver. The remote does everything: queue and folders are two tabs at the top of the right column, one mode key moves through normal, shuffle, repeat all and repeat one, and OK on the position bar lets ← → move through the track, 10 seconds a press (↓ does it in ambient mode). Hold OK to add to the queue, or to move and remove; Back asks before leaving. A badge shows the format, bitrate, bit depth and sample rate. Covers come first from the image in the album's folder on the server, and without one a soft glow in the skin's light sits behind the ambient faces. It reopens where you were.
 
 To install it, open the **Downloader** app on the TV (free, in the Play Store) and type `nuva.martinsnuno.com/tv`. Or download [NuVa-AndroidTV.apk](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk) and copy it with a USB stick. Android asks once to allow apps from Downloader (or from the file manager).
 
@@ -217,6 +226,7 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 | Jellyfin covers from the image file in the album's folder | later | ✓ | later |
 | Correct a wrong or missing cover | ✓ | later | ✓ |
 | Skins (Rams, Graphite Orange, Phosphor) and five font pairs | ✓ | ✓ | ✓ |
+| Four livelier skins (Rave, Neon Tokyo, Tropicália, Velvet), each with its own glow temperament, from a flare on every kick to a slow fire | ✓ | ✓ | later |
 | Compact mode, and a mini player when the window is closed | ✓ | — | ✓ |
 | A keyboard shortcut for everything | ✓ | — | ✓ |
 | Everything from a TV remote | — | ✓ | — |
@@ -366,6 +376,7 @@ Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnun
 | Capas do Jellyfin a partir da imagem na pasta do álbum | mais tarde | ✓ | mais tarde |
 | Corrigir uma capa errada ou em falta | ✓ | mais tarde | ✓ |
 | Skins (Rams, Graphite Orange, Phosphor) e cinco pares de fontes | ✓ | ✓ | ✓ |
+| Quatro skins mais vivas (Rave, Neon Tokyo, Tropicália, Velvet), cada uma com o seu temperamento de brilho, de um clarão a cada batida a um lume lento | ✓ | ✓ | mais tarde |
 | Modo compacto, e um mini player com a janela fechada | ✓ | — | ✓ |
 | Um atalho de teclado para tudo | ✓ | — | ✓ |
 | Tudo com o comando da TV | — | ✓ | — |

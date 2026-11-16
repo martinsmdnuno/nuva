@@ -5,7 +5,7 @@
 - Formats: FLAC (including 24-bit hi-res), ALAC, WAV, AIFF, MP3 and AAC/M4A, played through Apple's AVFoundation (the engine behind QuickTime). No VLC, no ffmpeg, no bundled codecs.
 - Sources: folders on the Mac, external disks, NAS shares mounted over SMB, audio CDs (named from MusicBrainz), and Jellyfin servers browsed by their real folders, streaming the original file. Plex and UPnP/DLNA are not supported yet.
 - Output: AirPlay 2 (WiiM streamers, HomePod, Apple TV, AirPlay speakers) from the output readout on the display.
-- Features: queue, repeat, shuffle, 10-band equalizer with presets, spectrum meter, media keys, Control Center and Now Playing, keyboard shortcuts for everything, a menu bar mini player, optional album artwork (folder image first, then MusicBrainz and the Cover Art Archive), skins (Rams, Graphite Orange, Phosphor), five font pairs, English and Portuguese.
+- Features: queue, repeat, shuffle, 10-band equalizer with presets, spectrum meter, media keys, Control Center and Now Playing, keyboard shortcuts for everything, a menu bar mini player, optional album artwork (folder image first, then MusicBrainz and the Cover Art Archive), skins (Rams, Graphite Orange, Phosphor, and four livelier ones whose glow has its own temperament: Rave, Neon Tokyo, Tropicália, Velvet), five font pairs, English and Portuguese.
 - Ambient mode (⌘4): a full-screen display with VU meters, valves, a 28-band spectrum, level meters, a clock, or the track on a glow from the album cover, drawn at up to 120 Hz, with OLED protection.
 - Android TV: NuVa for Android TV (8.1 or later) plays Jellyfin servers by folder, FLAC included (24-bit kept whole), through Android's Media3 and system decoders, with the same display, equalizer, queue, skins and ambient faces. Install it with the Downloader app at nuva.martinsnuno.com/tv, or download NuVa-AndroidTV.apk from the GitHub release.
 - Windows: NuVa for Windows (10 version 2004, or 11) plays folders on the PC, external disks, network shares, audio CDs and Jellyfin servers by folder, FLAC included, through Windows' own Media Foundation decoders, with the same equalizer, spectrum, queue, skins and ambient faces, a mini player in the tray and a shortcut for everything. Windows has no AirPlay; it plays to any output device. Download NuVa-Windows.zip from the GitHub release, unzip it and open NuVa.exe; Windows asks once, under More info, to run it anyway.
@@ -36,6 +36,7 @@
 | Jellyfin covers from the image file in the album's folder | later | ✓ | later |
 | Correct a wrong or missing cover | ✓ | later | ✓ |
 | Skins (Rams, Graphite Orange, Phosphor) and five font pairs | ✓ | ✓ | ✓ |
+| Four livelier skins (Rave, Neon Tokyo, Tropicália, Velvet), each with its own glow temperament, from a flare on every kick to a slow fire | ✓ | ✓ | later |
 | Compact mode, and a mini player when the window is closed | ✓ | — | ✓ |
 | A keyboard shortcut for everything | ✓ | — | ✓ |
 | Everything from a TV remote | — | ✓ | — |

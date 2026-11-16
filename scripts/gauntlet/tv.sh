@@ -52,12 +52,41 @@ shot() {
   echo "  tv-$1.png"
 }
 
-# Wherever the focus is after an overlay closes, it ends on the leftmost key (mode):
-# a row goes left to the display or the keys, the display goes down to the keys, the keys go left.
-home() { press DPAD_LEFT DPAD_DOWN DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT; }
+# The player's keys row: 0 mode, 1 previous, 2 play, 3 next, 4 ambient, 5 the menu (☰).
+# home ends on mode from wherever the focus is (or isn't, after an overlay or ambient mode closes): a
+# moment for the screen to settle and take its focus, then down to the keys (from the back key at the
+# top, the bar, or the keys themselves) and left to the first.
+home() { sleep 1; press DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT DPAD_LEFT; }
 
-# The keys from mode: 0 mode, 1 previous, 2 play, 3 next, 4 ambient, 5 settings.
-key() { home; local i; for (( i = 0; i < $1; i++ )); do press DPAD_RIGHT; done; }
+# The focused control's left edge, in the screen's pixels (from the accessibility tree).
+focus_left() {
+  $adb exec-out uiautomator dump /dev/tty 2>/dev/null | tr '>' '\n' | grep -m 1 'focused="true"' |
+    sed -E 's/.*bounds="\[([0-9]+),.*/\1/'
+}
+
+# A key of the row, checked before anything presses it: a press lost on a busy emulator would
+# otherwise leave the focus on the back key at the top, and OK there goes to the folders. Mode,
+# ambient and the menu key stay put (previous · play · next move with the cover), so those are the
+# ones checked, and the route is walked again, up to three times, until the focus is there.
+key() {
+  local try i left
+  for try in 1 2 3; do
+    home
+    for (( i = 0; i < $1; i++ )); do press DPAD_RIGHT; done
+    left=$(focus_left)
+    case $1 in
+      0) (( left > 0 && left < 400 )) && return ;;
+      4) (( left > 1400 && left < 1600 )) && return ;;
+      5) (( left >= 1600 )) && return ;;
+      *) return ;;
+    esac
+  done
+  echo "  key $1: the focus is at x=${left:-none}"
+  return 1
+}
+
+# The menu (☰): 0 Queue, 1 Equalizer, 2 Settings; OK on the row opens its panel, the focus on its first row.
+menu() { key 5 || return 1; press DPAD_CENTER; sleep 0.5; local i; for (( i = 0; i < $1; i++ )); do press DPAD_DOWN; done; press DPAD_CENTER; sleep 0.5; }
 
 snapshot_cleanup() {
   [[ -n $standin ]] && kill $standin 2>/dev/null
@@ -158,18 +187,18 @@ tour() {
   sleep 1; press DPAD_CENTER
   shot folders-album 2
 
-  # The second track: the queue comes back, playing.
+  # The second track: the player opens, playing, the focus on the play key.
   press DPAD_DOWN DPAD_CENTER
   shot player 5
 
   # Ambient without a cover (artwork is off at first): the skin's own glow behind the face.
-  key 4; press DPAD_CENTER
+  key 4 || return 1; press DPAD_CENTER
   shot ambient-skin-glow 4
   press DPAD_UP
 
   # Artwork on (Settings, its third row): Rumours has a cover.png in its folder on the stand-in, a
   # made-up one; the folder's image comes before any online lookup, so nothing is asked of MusicBrainz.
-  key 5; press DPAD_CENTER DPAD_DOWN DPAD_DOWN DPAD_CENTER BACK
+  menu 2 || return 1; press DPAD_DOWN DPAD_DOWN DPAD_CENTER BACK
   sleep 3
 
   # The position bar, up from the keys: OK holds it, → twice goes on 20 s (the elapsed time lit, the
@@ -178,11 +207,10 @@ tour() {
   shot scrub 1
   press BACK
 
-  # The equalizer from the display's "EQ" readout (up from the position bar): Rock (the
-  # focus starts on the first preset), then OK on a fader to hold it and ↑ half a decibel (its LED lit);
-  # OK lets go and ↑ goes back up to the presets, as everywhere else; Back closes.
-  home; press DPAD_UP DPAD_UP DPAD_CENTER
-  sleep 1; press DPAD_DOWN DPAD_RIGHT DPAD_CENTER
+  # The equalizer, from the menu: Rock (the focus starts on the first preset), then OK on a fader to
+  # hold it and ↑ half a decibel (its LED lit); OK lets go and ↑ goes back up to the presets, as
+  # everywhere else; Back closes.
+  menu 1 || return 1; press DPAD_DOWN DPAD_RIGHT DPAD_CENTER
   shot equalizer 1
   press DPAD_DOWN DPAD_CENTER DPAD_UP
   shot equalizer-bands 1
@@ -190,14 +218,15 @@ tour() {
   shot equalizer-back 1
   press BACK
 
-  # Holding OK on a queue row: move, remove, clear.
-  key 5; press DPAD_RIGHT
+  # The queue, from the menu (the focus on the playing track); holding OK on it: move, remove, clear.
+  # Back goes back to the queue, and again to the player.
+  menu 0 || return 1
   $adb shell input keyevent --longpress DPAD_CENTER
   shot queue-actions 1.5
-  press BACK
+  press BACK BACK
 
   # Ambient: every face, → from one to the next (each shows its name for a moment first).
-  key 4; press DPAD_CENTER
+  key 4 || return 1; press DPAD_CENTER
   local face
   for face in display clock spectrum meters needles valves; do
     shot ambient-$face 4
@@ -212,24 +241,28 @@ tour() {
   press DPAD_UP
 
   # The mode key twice: shuffle, then repeat all, its name under it.
-  key 0; press DPAD_CENTER DPAD_CENTER
+  key 0 || return 1; press DPAD_CENTER DPAD_CENTER
   shot mode 1
   press DPAD_CENTER DPAD_CENTER
 
-  # Settings, from the menu key (☰): Queue, Equalizer, Settings. Every skin in turn, and back to Rams.
-  key 5; press DPAD_CENTER DPAD_DOWN DPAD_DOWN DPAD_CENTER
+  # Settings, from the menu. Then artwork off (its third row), so each skin shows its own glow; every
+  # skin in turn, and back to Rams: OK on the skin row (the first, with the focus) moves to the next
+  # skin; Back closes Settings, to the player.
+  menu 2 || return 1
   shot settings 1.5
+  press DPAD_DOWN DPAD_DOWN DPAD_CENTER DPAD_UP DPAD_UP
   local skin
   for skin in graphite-orange phosphor rave neon-tokyo tropicalia velvet rams; do
-    # OK on the skin row (the first) moves to the next skin; Back closes Settings, to the player.
     press DPAD_CENTER BACK
     shot player-$skin 2
-    key 5; press DPAD_CENTER DPAD_DOWN DPAD_DOWN DPAD_CENTER
+    menu 2 || return 1
   done
   press BACK
 
-  # Back on the main screen asks before leaving.
-  press BACK
+  # Back goes from the player to the album's folder, up to the artist, up to the library's top, and
+  # there asks before leaving.
+  press BACK BACK BACK
+  sleep 1; press BACK
   shot exit 1.5
   press BACK
 }

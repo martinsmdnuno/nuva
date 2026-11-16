@@ -114,7 +114,7 @@ struct SkinTests {
     }
 
     @Test func darkSkinLayersAreDistinct() {
-        for skin in [Skin.graphiteOrange, .phosphor] {
+        for skin in Skin.all where skin.appearance == .alwaysDark {
             #expect(ratio(skin, .surface1, .surface0, dark) >= 1.2)
             #expect(ratio(skin, .surface2, .surface0, dark) >= 1.4)
             #expect(ratio(skin, .keyMode, .surface0, dark) >= 3)
@@ -157,13 +157,40 @@ struct SkinTests {
     }
 
     @Test func darkSkinsHaveOneAccent() {
-        for skin in [Skin.graphiteOrange, .phosphor] {
+        for skin in Skin.all where skin.appearance == .alwaysDark {
             #expect(skin.appearance == .alwaysDark)
             let accent = skin.palette![.keyPlay]!
             #expect(skin.palette![.led] == accent && skin.palette![.signal] == accent)
             // The accent stays in its three roles.
             let others = skin.palette!.filter { ![.keyPlay, .led, .signal].contains($0.key) }
             #expect(!others.values.contains(accent))
+        }
+    }
+
+    @Test func newSkinsKeepTheirIdsAndShortcutSlots() {
+        for (index, id) in ["rave", "neon-tokyo", "tropicalia", "velvet"].enumerated() {
+            #expect(Skin.with(id: id).id == id)
+            #expect(Skin.all.firstIndex(of: Skin.with(id: id)) == 3 + index)  // ⌥⌘4 to ⌥⌘7
+        }
+    }
+
+    /// Rave flares and falls with each kick; Velvet takes seconds; Rams sits between.
+    @Test func temperamentsSetHowTheGlowMoves() {
+        func afterKick(_ skin: Skin) -> (peak: Double, after: Double) {
+            let pulse = GlowPulse(temperament: skin.glow)
+            let start = Date()
+            var peak = 0.0, level = 0.0
+            for frame in 1...6 { peak = pulse.update(at: start.addingTimeInterval(Double(frame) / 120), bands: [-12, -12, -12]) }
+            for frame in 7...42 { level = pulse.update(at: start.addingTimeInterval(Double(frame) / 120), bands: nil) }
+            return (peak, level)
+        }
+        let rave = afterKick(.rave), rams = afterKick(.rams), velvet = afterKick(.velvet)
+        #expect(rave.peak > rams.peak && rams.peak > velvet.peak)
+        #expect(rave.after < rams.after)  // 300 ms later Rave is nearly dark again
+        #expect(Skin.rave.glow.breath < Skin.rams.glow.breath && Skin.rams.glow.breath < Skin.velvet.glow.breath)
+        for skin in Skin.all {
+            #expect(skin.glow.attack.count == 3 && skin.glow.release.count == 3, "\(skin.id)")
+            #expect((0...1).contains(skin.glow.breath) && (0...1).contains(skin.glow.idle), "\(skin.id)")
         }
     }
 

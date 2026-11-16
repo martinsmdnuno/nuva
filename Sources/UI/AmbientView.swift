@@ -37,6 +37,8 @@ struct AmbientView: View {
                         if let glow {
                             // The Display face's glow breathes with the bass.
                             AmbientGlow(field: glow, pulses: shownFace == .display && !reduceMotion)
+                                // A new skin brings its own temperament.
+                                .id(SkinStore.shared.current.id)
                                 .opacity(opacity(now: now))
                                 .transition(.opacity)
                         }

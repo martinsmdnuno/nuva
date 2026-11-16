@@ -160,11 +160,17 @@ enum ArtworkGlow {
     @MainActor private static var last: (image: NSImage, skin: String, field: Field?)?
 }
 
-/// The glow's breath with the music: it follows the bass's loudness, quick to swell (50 ms) and
-/// slow to settle (450 ms), like a lamp on a dimmer that someone is playing with.
+/// The glow's breath with the music: it follows the bass's loudness, quick to swell and slower to
+/// settle, like a lamp on a dimmer that someone is playing with. How quick and how slow is the skin's
+/// temperament: 50 and 450 ms in Rams, a flare on every kick in Rave, seconds in Velvet.
 final class GlowPulse {
     private(set) var level = 0.0
     private var last: Date?
+    let temperament: GlowTemperament
+
+    init(temperament: GlowTemperament = TokenGlow.lead) {
+        self.temperament = temperament
+    }
 
     /// `bass`: the equalizer's bands in dBFS (the lowest three are used), or nil when nothing plays.
     func update(at date: Date, bands: [Float]?) -> Double {
@@ -172,20 +178,25 @@ final class GlowPulse {
         last = date
         let loudest = bands.map { Double($0.prefix(3).max() ?? -120) } ?? -120
         let target = min(max((loudest + 42) / 30, 0), 1)
-        let time = target > level ? 0.05 : 0.45
+        let time = target > level ? temperament.attack[0] : temperament.release[0]
         level += (target - level) * (1 - exp(-dt / time))
         return level
     }
+
+    /// The field's opacity at `level`: from the skin's breath (its lowest) to full.
+    func opacity(_ level: Double) -> Double {
+        temperament.breath + (1 - temperament.breath) * level
+    }
 }
 
-/// The cover's field behind the ambient faces. On the Display face it breathes with the bass,
-/// between 70% and full, so it never passes the contrast the field was made for.
+/// The cover's field behind the ambient faces. On the Display face it breathes with the bass, from
+/// the skin's breath (70% in Rams) to full, so it never passes the contrast the field was made for.
 struct AmbientGlow: View {
     let field: ArtworkGlow.Field
     let pulses: Bool
     @Environment(AppModel.self) private var model
     @Environment(\.isSnapshot) private var isSnapshot
-    @State private var pulse = GlowPulse()
+    @State private var pulse = GlowPulse(temperament: SkinStore.shared.current.glow)
 
     var body: some View {
         let image = Image(decorative: field.image, scale: 1).resizable().interpolation(.high)
@@ -194,7 +205,7 @@ struct AmbientGlow: View {
             let spectrum = player.equalizer.spectrum
             TimelineView(.animation(minimumInterval: nil, paused: !player.isPlaying)) { context in
                 let bands = player.isPlaying ? spectrum.levels(at: player.avPlayer.currentTime().seconds) : nil
-                image.opacity(0.7 + 0.3 * pulse.update(at: context.date, bands: bands))
+                image.opacity(pulse.opacity(pulse.update(at: context.date, bands: bands)))
             }
             .onAppear { spectrum.watch(true) }
             .onDisappear { spectrum.watch(false) }

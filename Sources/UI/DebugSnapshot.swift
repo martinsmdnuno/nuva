@@ -47,7 +47,7 @@ enum DebugSnapshot {
             ("ambiente-capa", AnyView(AmbientView(face: .display).frame(width: 1280, height: 800)), artworkModel),
         ]
         // Every view in Rams; the main ones again with SF Pro + SF Mono ("-sf") and in each
-        // always-dark skin (Graphite, Phosphor: one file per view).
+        // always-dark skin (Graphite, Phosphor, Rave, Neon Tokyo, Tropicália, Velvet: one file per view).
         let main: Set<String> = ["player", "navegador", "largo", "compacto", "barra", "equalizador", "capa-errada", "ambiente-ecra", "ambiente-relogio", "ambiente-espectro", "ambiente-medidores", "ambiente-ponteiros", "ambiente-valvulas", "ambiente-capa"]
         let bothThemes = [(ColorScheme.dark, "chumbo"), (.light, "aluminio")]
         let runs: [(Skin, FontSet, String, Set<String>?, [(ColorScheme, String)])] = [
@@ -55,6 +55,10 @@ enum DebugSnapshot {
             (.rams, .system, "-sf", main, bothThemes),
             (.graphiteOrange, .system, "", main, [(.dark, Skin.graphiteOrange.id)]),
             (.phosphor, .inter, "", main, [(.dark, Skin.phosphor.id)]),
+            (.rave, .inter, "", main, [(.dark, Skin.rave.id)]),
+            (.neonTokyo, .shareTech, "", main, [(.dark, Skin.neonTokyo.id)]),
+            (.tropicalia, .dm, "", main, [(.dark, Skin.tropicalia.id)]),
+            (.velvet, .plex, "", main, [(.dark, Skin.velvet.id)]),
             // Each embedded pair in the skin it was chosen for.
             (.rams, .plex, "-plex", ["player"], bothThemes),
             (.graphiteOrange, .dm, "-dm", ["player"], [(.dark, Skin.graphiteOrange.id)]),

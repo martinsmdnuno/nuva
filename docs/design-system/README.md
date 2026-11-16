@@ -33,7 +33,9 @@ Lead grey with a single accent.
 
 Themes: **Lead** (`chumbo`) is the main one. **Aluminium** (`aluminio`) is the light theme and follows the system appearance. Together they are the **Rams** skin (called Nuno up to 1.4). Every text pair passes 4.5:1 in both themes, and keys, LEDs and focus 3:1 (checked in `Tests/SkinTests.swift`).
 
-Other skins change token values only, never roles or layout: **Graphite Orange** (`skins/graphite.md`; its green twin was retired in 1.10.1) and **Phosphor** (`skins/phosphor.md`), all always dark. View ▸ Skin, ⌥⌘1 to ⌥⌘3.
+Other skins change token values only, never roles or layout: **Graphite Orange** (`skins/graphite.md`; its green twin was retired in 1.10.1), **Phosphor** (`skins/phosphor.md`), **Rave** (`skins/rave.md`), **Neon Tokyo** (`skins/neon-tokyo.md`), **Tropicália** (`skins/tropicalia.md`) and **Velvet** (`skins/velvet.md`), all always dark. View ▸ Skin, ⌥⌘1 to ⌥⌘7.
+
+**Temperament:** besides its colours, a skin sets how the glow behind the player and the ambient faces moves with the music (`glow` in `tokens.json`, written to every platform by `scripts/tokens.swift`). Per part of the spectrum (bass, middle, treble) the seconds a light takes to swell (`attack`) and to settle (`release`); a light's strength in silence (`idle`); the field's lowest brightness as it breathes with the bass on the Display face (`breath`); how fast the lights travel (`speed`); and the skin's own glow colours for an album without a cover (`lights`, three, or null for the LED colour). Rams, Graphite Orange and Phosphor share the original one. A temperament never changes what is drawn or where, and never takes the glow past the contrast the display's muted text needs (4.5:1): a brighter glow comes from a lighter `display-muted`, not from breaking the rule.
 
 ## Type
 

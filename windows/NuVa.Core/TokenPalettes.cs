@@ -127,4 +127,141 @@ public static class TokenPalettes
         [Token.Danger] = 0xFF6B6B,
         [Token.Focus] = 0xF2C744,
     };
+
+    public static readonly IReadOnlyDictionary<Token, uint> Rave = new Dictionary<Token, uint>
+    {
+        [Token.Surface0] = 0x0E0B1A,
+        [Token.Surface1] = 0x251E3E,
+        [Token.Surface2] = 0x33275E,
+        [Token.Display] = 0x050409,
+        [Token.DisplayInk] = 0xF6F2FF,
+        [Token.DisplayMuted] = 0xC4BDE6,
+        [Token.DisplayTrack] = 0x251E3D,
+        [Token.DisplayEdge] = 0x020104,
+        [Token.Ink] = 0xF4F0FF,
+        [Token.InkMuted] = 0xADA6CC,
+        [Token.Line] = 0x2A2440,
+        [Token.KeyFace] = 0xC9C3E0,
+        [Token.KeyMode] = 0x6A5CA6,
+        [Token.KeyPlay] = 0xFF4ADB,
+        [Token.KeyInk] = 0x0E0B1A,
+        [Token.KeyModeInk] = 0xFFFFFF,
+        [Token.KeyPlayPressed] = 0xD93FBA,
+        [Token.KeyFacePressed] = 0xABA6BE,
+        [Token.KeyModePressed] = 0x5A4E8D,
+        [Token.Track] = 0x352D52,
+        [Token.Fill] = 0xC9C3E0,
+        [Token.Led] = 0xFF4ADB,
+        [Token.LedOff] = 0x2A2440,
+        [Token.Signal] = 0xFF4ADB,
+        [Token.Danger] = 0xFF7A6B,
+        [Token.Focus] = 0x00E5FF,
+    };
+
+    public static readonly IReadOnlyDictionary<Token, uint> NeonTokyo = new Dictionary<Token, uint>
+    {
+        [Token.Surface0] = 0x0A0F1E,
+        [Token.Surface1] = 0x17213D,
+        [Token.Surface2] = 0x203677,
+        [Token.Display] = 0x04060D,
+        [Token.DisplayInk] = 0xE6F0FF,
+        [Token.DisplayMuted] = 0x9AB0DA,
+        [Token.DisplayTrack] = 0x18223D,
+        [Token.DisplayEdge] = 0x020308,
+        [Token.Ink] = 0xE6F0FF,
+        [Token.InkMuted] = 0x9EAFD2,
+        [Token.Line] = 0x1E2946,
+        [Token.KeyFace] = 0xC2CDE6,
+        [Token.KeyMode] = 0x4A66B0,
+        [Token.KeyPlay] = 0xFF8A1F,
+        [Token.KeyInk] = 0x0A0F1E,
+        [Token.KeyModeInk] = 0xFFFFFF,
+        [Token.KeyPlayPressed] = 0xD9751A,
+        [Token.KeyFacePressed] = 0xA5AEC4,
+        [Token.KeyModePressed] = 0x3F5796,
+        [Token.Track] = 0x2A3658,
+        [Token.Fill] = 0xC2CDE6,
+        [Token.Led] = 0xFF8A1F,
+        [Token.LedOff] = 0x1E2946,
+        [Token.Signal] = 0xFF8A1F,
+        [Token.Danger] = 0xFF6F8A,
+        [Token.Focus] = 0x5FD4FF,
+    };
+
+    public static readonly IReadOnlyDictionary<Token, uint> Tropicalia = new Dictionary<Token, uint>
+    {
+        [Token.Surface0] = 0x1E0D14,
+        [Token.Surface1] = 0x3A1F2B,
+        [Token.Surface2] = 0x4E2337,
+        [Token.Display] = 0x12060B,
+        [Token.DisplayInk] = 0xFFF1E6,
+        [Token.DisplayMuted] = 0xDDAEA0,
+        [Token.DisplayTrack] = 0x34171F,
+        [Token.DisplayEdge] = 0x080204,
+        [Token.Ink] = 0xFFF1E6,
+        [Token.InkMuted] = 0xD6ACA1,
+        [Token.Line] = 0x3A1E27,
+        [Token.KeyFace] = 0xEAD3C6,
+        [Token.KeyMode] = 0x9A5169,
+        [Token.KeyPlay] = 0xFF6B4A,
+        [Token.KeyInk] = 0x1E0D14,
+        [Token.KeyModeInk] = 0xFFFFFF,
+        [Token.KeyPlayPressed] = 0xD95B3F,
+        [Token.KeyFacePressed] = 0xC7B3A8,
+        [Token.KeyModePressed] = 0x834559,
+        [Token.Track] = 0x4A2A34,
+        [Token.Fill] = 0xEAD3C6,
+        [Token.Led] = 0xFF6B4A,
+        [Token.LedOff] = 0x3A1E27,
+        [Token.Signal] = 0xFF6B4A,
+        [Token.Danger] = 0xFF86B0,
+        [Token.Focus] = 0xFFC93C,
+    };
+
+    public static readonly IReadOnlyDictionary<Token, uint> Velvet = new Dictionary<Token, uint>
+    {
+        [Token.Surface0] = 0x0F1124,
+        [Token.Surface1] = 0x23274B,
+        [Token.Surface2] = 0x302D60,
+        [Token.Display] = 0x070816,
+        [Token.DisplayInk] = 0xECE6F5,
+        [Token.DisplayMuted] = 0xA9A3C6,
+        [Token.DisplayTrack] = 0x1C1F3A,
+        [Token.DisplayEdge] = 0x03030A,
+        [Token.Ink] = 0xECE6F5,
+        [Token.InkMuted] = 0xABA5C6,
+        [Token.Line] = 0x23264A,
+        [Token.KeyFace] = 0xCFC8DE,
+        [Token.KeyMode] = 0x6862A2,
+        [Token.KeyPlay] = 0xE6A65A,
+        [Token.KeyInk] = 0x0F1124,
+        [Token.KeyModeInk] = 0xFFFFFF,
+        [Token.KeyPlayPressed] = 0xC48D4C,
+        [Token.KeyFacePressed] = 0xB0AABD,
+        [Token.KeyModePressed] = 0x58538A,
+        [Token.Track] = 0x2E3156,
+        [Token.Fill] = 0xCFC8DE,
+        [Token.Led] = 0xE6A65A,
+        [Token.LedOff] = 0x23264A,
+        [Token.Signal] = 0xE6A65A,
+        [Token.Danger] = 0xFF7A85,
+        [Token.Focus] = 0x9FB8FF,
+    };
+}
+
+/// <summary>A skin's temperament: how the glow moves with the music (tokens.json's glow). Per part of the
+/// spectrum (bass, middle, treble): seconds to swell and to settle. Lights: the skin's own glow colours
+/// as 0xRRGGBB, or null for its LED colour.</summary>
+public sealed record GlowTemperament(uint[]? Lights, double[] Attack, double[] Release, double Idle, double Breath, double Speed);
+
+/// <summary>Every skin's temperament, from tokens.json's glow. Rams has Lead's.</summary>
+public static class TokenGlow
+{
+    public static readonly GlowTemperament Lead = new(null, new[] { 0.05, 0.08, 0.06 }, new[] { 0.45, 0.6, 0.5 }, 0.3, 0.7, 1.0);
+    public static readonly GlowTemperament GraphiteOrange = new(null, new[] { 0.05, 0.08, 0.06 }, new[] { 0.45, 0.6, 0.5 }, 0.3, 0.7, 1.0);
+    public static readonly GlowTemperament Phosphor = new(null, new[] { 0.05, 0.08, 0.06 }, new[] { 0.45, 0.6, 0.5 }, 0.3, 0.7, 1.0);
+    public static readonly GlowTemperament Rave = new(new uint[] { 0xFF2BD6, 0x00E5FF, 0xB6FF3B }, new[] { 0.015, 0.03, 0.02 }, new[] { 0.16, 0.25, 0.15 }, 0.06, 0.35, 2.2);
+    public static readonly GlowTemperament NeonTokyo = new(new uint[] { 0x2D6BFF, 0xFF8A1F, 0x5FD4FF }, new[] { 0.04, 0.06, 0.05 }, new[] { 0.4, 0.5, 0.45 }, 0.2, 0.55, 1.3);
+    public static readonly GlowTemperament Tropicalia = new(new uint[] { 0xFF6B4A, 0xFF3D8B, 0xFFC93C }, new[] { 0.06, 0.08, 0.06 }, new[] { 0.55, 0.7, 0.6 }, 0.3, 0.65, 1.0);
+    public static readonly GlowTemperament Velvet = new(new uint[] { 0xE6A65A, 0x8A6FD1, 0x3C4FA8 }, new[] { 0.9, 1.0, 1.1 }, new[] { 2.6, 3.0, 2.8 }, 0.4, 0.8, 0.35);
 }

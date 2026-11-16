@@ -89,4 +89,160 @@ enum TokenPalette {
         .danger: 0xFF6B6B,
         .focus: 0xF2C744,
     ]
+
+    static let rave: [ColorToken: UInt32] = [
+        .surface0: 0x0E0B1A,
+        .surface1: 0x251E3E,
+        .surface2: 0x33275E,
+        .display: 0x050409,
+        .displayInk: 0xF6F2FF,
+        .displayMuted: 0xC4BDE6,
+        .displayTrack: 0x251E3D,
+        .displayEdge: 0x020104,
+        .ink: 0xF4F0FF,
+        .inkMuted: 0xADA6CC,
+        .line: 0x2A2440,
+        .keyFace: 0xC9C3E0,
+        .keyMode: 0x6A5CA6,
+        .keyPlay: 0xFF4ADB,
+        .keyInk: 0x0E0B1A,
+        .keyModeInk: 0xFFFFFF,
+        .keyPlayPressed: 0xD93FBA,
+        .keyFacePressed: 0xABA6BE,
+        .keyModePressed: 0x5A4E8D,
+        .track: 0x352D52,
+        .fill: 0xC9C3E0,
+        .led: 0xFF4ADB,
+        .ledOff: 0x2A2440,
+        .signal: 0xFF4ADB,
+        .danger: 0xFF7A6B,
+        .focus: 0x00E5FF,
+    ]
+
+    static let neonTokyo: [ColorToken: UInt32] = [
+        .surface0: 0x0A0F1E,
+        .surface1: 0x17213D,
+        .surface2: 0x203677,
+        .display: 0x04060D,
+        .displayInk: 0xE6F0FF,
+        .displayMuted: 0x9AB0DA,
+        .displayTrack: 0x18223D,
+        .displayEdge: 0x020308,
+        .ink: 0xE6F0FF,
+        .inkMuted: 0x9EAFD2,
+        .line: 0x1E2946,
+        .keyFace: 0xC2CDE6,
+        .keyMode: 0x4A66B0,
+        .keyPlay: 0xFF8A1F,
+        .keyInk: 0x0A0F1E,
+        .keyModeInk: 0xFFFFFF,
+        .keyPlayPressed: 0xD9751A,
+        .keyFacePressed: 0xA5AEC4,
+        .keyModePressed: 0x3F5796,
+        .track: 0x2A3658,
+        .fill: 0xC2CDE6,
+        .led: 0xFF8A1F,
+        .ledOff: 0x1E2946,
+        .signal: 0xFF8A1F,
+        .danger: 0xFF6F8A,
+        .focus: 0x5FD4FF,
+    ]
+
+    static let tropicalia: [ColorToken: UInt32] = [
+        .surface0: 0x1E0D14,
+        .surface1: 0x3A1F2B,
+        .surface2: 0x4E2337,
+        .display: 0x12060B,
+        .displayInk: 0xFFF1E6,
+        .displayMuted: 0xDDAEA0,
+        .displayTrack: 0x34171F,
+        .displayEdge: 0x080204,
+        .ink: 0xFFF1E6,
+        .inkMuted: 0xD6ACA1,
+        .line: 0x3A1E27,
+        .keyFace: 0xEAD3C6,
+        .keyMode: 0x9A5169,
+        .keyPlay: 0xFF6B4A,
+        .keyInk: 0x1E0D14,
+        .keyModeInk: 0xFFFFFF,
+        .keyPlayPressed: 0xD95B3F,
+        .keyFacePressed: 0xC7B3A8,
+        .keyModePressed: 0x834559,
+        .track: 0x4A2A34,
+        .fill: 0xEAD3C6,
+        .led: 0xFF6B4A,
+        .ledOff: 0x3A1E27,
+        .signal: 0xFF6B4A,
+        .danger: 0xFF86B0,
+        .focus: 0xFFC93C,
+    ]
+
+    static let velvet: [ColorToken: UInt32] = [
+        .surface0: 0x0F1124,
+        .surface1: 0x23274B,
+        .surface2: 0x302D60,
+        .display: 0x070816,
+        .displayInk: 0xECE6F5,
+        .displayMuted: 0xA9A3C6,
+        .displayTrack: 0x1C1F3A,
+        .displayEdge: 0x03030A,
+        .ink: 0xECE6F5,
+        .inkMuted: 0xABA5C6,
+        .line: 0x23264A,
+        .keyFace: 0xCFC8DE,
+        .keyMode: 0x6862A2,
+        .keyPlay: 0xE6A65A,
+        .keyInk: 0x0F1124,
+        .keyModeInk: 0xFFFFFF,
+        .keyPlayPressed: 0xC48D4C,
+        .keyFacePressed: 0xB0AABD,
+        .keyModePressed: 0x58538A,
+        .track: 0x2E3156,
+        .fill: 0xCFC8DE,
+        .led: 0xE6A65A,
+        .ledOff: 0x23264A,
+        .signal: 0xE6A65A,
+        .danger: 0xFF7A85,
+        .focus: 0x9FB8FF,
+    ]
+}
+
+/// A skin's temperament: how the glow behind the player and the ambient faces moves with the music.
+/// Per part of the spectrum (bass, middle, treble): seconds to swell and to settle.
+struct GlowTemperament: Sendable, Equatable {
+    /// The skin's own glow colours for an album without a cover, as 0xRRGGBB; nil: its LED colour.
+    let lights: [UInt32]?
+    let attack: [Double]
+    let release: [Double]
+    /// A light's strength with nothing in its part.
+    let idle: Double
+    /// The field's lowest brightness on the Display face as it breathes with the bass.
+    let breath: Double
+    /// How fast the lights travel, times the default.
+    let speed: Double
+}
+
+/// Every skin's temperament, from tokens.json's glow. Rams has Lead's.
+enum TokenGlow {
+    static let lead = GlowTemperament(
+        lights: nil, attack: [0.05, 0.08, 0.06], release: [0.45, 0.6, 0.5],
+        idle: 0.3, breath: 0.7, speed: 1.0)
+    static let graphiteOrange = GlowTemperament(
+        lights: nil, attack: [0.05, 0.08, 0.06], release: [0.45, 0.6, 0.5],
+        idle: 0.3, breath: 0.7, speed: 1.0)
+    static let phosphor = GlowTemperament(
+        lights: nil, attack: [0.05, 0.08, 0.06], release: [0.45, 0.6, 0.5],
+        idle: 0.3, breath: 0.7, speed: 1.0)
+    static let rave = GlowTemperament(
+        lights: [0xFF2BD6, 0x00E5FF, 0xB6FF3B], attack: [0.015, 0.03, 0.02], release: [0.16, 0.25, 0.15],
+        idle: 0.06, breath: 0.35, speed: 2.2)
+    static let neonTokyo = GlowTemperament(
+        lights: [0x2D6BFF, 0xFF8A1F, 0x5FD4FF], attack: [0.04, 0.06, 0.05], release: [0.4, 0.5, 0.45],
+        idle: 0.2, breath: 0.55, speed: 1.3)
+    static let tropicalia = GlowTemperament(
+        lights: [0xFF6B4A, 0xFF3D8B, 0xFFC93C], attack: [0.06, 0.08, 0.06], release: [0.55, 0.7, 0.6],
+        idle: 0.3, breath: 0.65, speed: 1.0)
+    static let velvet = GlowTemperament(
+        lights: [0xE6A65A, 0x8A6FD1, 0x3C4FA8], attack: [0.9, 1.0, 1.1], release: [2.6, 3.0, 2.8],
+        idle: 0.4, breath: 0.8, speed: 0.35)
 }

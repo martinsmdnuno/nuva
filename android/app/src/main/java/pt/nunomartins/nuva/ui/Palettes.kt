@@ -3,7 +3,7 @@ package pt.nunomartins.nuva.ui
 
 import androidx.compose.ui.graphics.Color
 
-/** A skin's value for every token of docs/design-system/tokens.json. Skins change colours only. */
+/** A skin's value for every token of docs/design-system/tokens.json. Skins change colours (and the glow's temperament, below), never the layout. */
 data class Palette(
     val surface0: Color,
     val surface1: Color,
@@ -151,5 +151,169 @@ object Palettes {
         signal = rgb(0x00D02A),
         danger = rgb(0xFF6B6B),
         focus = rgb(0xF2C744),
+    )
+
+    val rave = Palette(
+        surface0 = rgb(0x0E0B1A),
+        surface1 = rgb(0x251E3E),
+        surface2 = rgb(0x33275E),
+        display = rgb(0x050409),
+        displayInk = rgb(0xF6F2FF),
+        displayMuted = rgb(0xC4BDE6),
+        displayTrack = rgb(0x251E3D),
+        displayEdge = rgb(0x020104),
+        ink = rgb(0xF4F0FF),
+        inkMuted = rgb(0xADA6CC),
+        line = rgb(0x2A2440),
+        keyFace = rgb(0xC9C3E0),
+        keyMode = rgb(0x6A5CA6),
+        keyPlay = rgb(0xFF4ADB),
+        keyInk = rgb(0x0E0B1A),
+        keyModeInk = rgb(0xFFFFFF),
+        keyPlayPressed = rgb(0xD93FBA),
+        keyFacePressed = rgb(0xABA6BE),
+        keyModePressed = rgb(0x5A4E8D),
+        track = rgb(0x352D52),
+        fill = rgb(0xC9C3E0),
+        led = rgb(0xFF4ADB),
+        ledOff = rgb(0x2A2440),
+        signal = rgb(0xFF4ADB),
+        danger = rgb(0xFF7A6B),
+        focus = rgb(0x00E5FF),
+    )
+
+    val neonTokyo = Palette(
+        surface0 = rgb(0x0A0F1E),
+        surface1 = rgb(0x17213D),
+        surface2 = rgb(0x203677),
+        display = rgb(0x04060D),
+        displayInk = rgb(0xE6F0FF),
+        displayMuted = rgb(0x9AB0DA),
+        displayTrack = rgb(0x18223D),
+        displayEdge = rgb(0x020308),
+        ink = rgb(0xE6F0FF),
+        inkMuted = rgb(0x9EAFD2),
+        line = rgb(0x1E2946),
+        keyFace = rgb(0xC2CDE6),
+        keyMode = rgb(0x4A66B0),
+        keyPlay = rgb(0xFF8A1F),
+        keyInk = rgb(0x0A0F1E),
+        keyModeInk = rgb(0xFFFFFF),
+        keyPlayPressed = rgb(0xD9751A),
+        keyFacePressed = rgb(0xA5AEC4),
+        keyModePressed = rgb(0x3F5796),
+        track = rgb(0x2A3658),
+        fill = rgb(0xC2CDE6),
+        led = rgb(0xFF8A1F),
+        ledOff = rgb(0x1E2946),
+        signal = rgb(0xFF8A1F),
+        danger = rgb(0xFF6F8A),
+        focus = rgb(0x5FD4FF),
+    )
+
+    val tropicalia = Palette(
+        surface0 = rgb(0x1E0D14),
+        surface1 = rgb(0x3A1F2B),
+        surface2 = rgb(0x4E2337),
+        display = rgb(0x12060B),
+        displayInk = rgb(0xFFF1E6),
+        displayMuted = rgb(0xDDAEA0),
+        displayTrack = rgb(0x34171F),
+        displayEdge = rgb(0x080204),
+        ink = rgb(0xFFF1E6),
+        inkMuted = rgb(0xD6ACA1),
+        line = rgb(0x3A1E27),
+        keyFace = rgb(0xEAD3C6),
+        keyMode = rgb(0x9A5169),
+        keyPlay = rgb(0xFF6B4A),
+        keyInk = rgb(0x1E0D14),
+        keyModeInk = rgb(0xFFFFFF),
+        keyPlayPressed = rgb(0xD95B3F),
+        keyFacePressed = rgb(0xC7B3A8),
+        keyModePressed = rgb(0x834559),
+        track = rgb(0x4A2A34),
+        fill = rgb(0xEAD3C6),
+        led = rgb(0xFF6B4A),
+        ledOff = rgb(0x3A1E27),
+        signal = rgb(0xFF6B4A),
+        danger = rgb(0xFF86B0),
+        focus = rgb(0xFFC93C),
+    )
+
+    val velvet = Palette(
+        surface0 = rgb(0x0F1124),
+        surface1 = rgb(0x23274B),
+        surface2 = rgb(0x302D60),
+        display = rgb(0x070816),
+        displayInk = rgb(0xECE6F5),
+        displayMuted = rgb(0xA9A3C6),
+        displayTrack = rgb(0x1C1F3A),
+        displayEdge = rgb(0x03030A),
+        ink = rgb(0xECE6F5),
+        inkMuted = rgb(0xABA5C6),
+        line = rgb(0x23264A),
+        keyFace = rgb(0xCFC8DE),
+        keyMode = rgb(0x6862A2),
+        keyPlay = rgb(0xE6A65A),
+        keyInk = rgb(0x0F1124),
+        keyModeInk = rgb(0xFFFFFF),
+        keyPlayPressed = rgb(0xC48D4C),
+        keyFacePressed = rgb(0xB0AABD),
+        keyModePressed = rgb(0x58538A),
+        track = rgb(0x2E3156),
+        fill = rgb(0xCFC8DE),
+        led = rgb(0xE6A65A),
+        ledOff = rgb(0x23264A),
+        signal = rgb(0xE6A65A),
+        danger = rgb(0xFF7A85),
+        focus = rgb(0x9FB8FF),
+    )
+}
+
+/**
+ * A skin's temperament: how the glow behind the player and the ambient faces moves with the music.
+ * Per part of the spectrum (bass, middle, treble): seconds to swell and to settle. `lights` are the
+ * skin's own glow colours for an album without a cover, as 0xRRGGBB (null: its LED colour); `idle` a
+ * light's strength with nothing in its part; `breath` the field's lowest brightness on the Display
+ * face; `speed` how fast the lights travel, times the default.
+ */
+data class Temperament(
+    val lights: List<Int>?,
+    val attack: List<Double>,
+    val release: List<Double>,
+    val idle: Double,
+    val breath: Double,
+    val speed: Double,
+)
+
+/** Every skin's temperament, from tokens.json's glow. Rams has Lead's. */
+object Temperaments {
+    val lead = Temperament(
+        lights = null, attack = listOf(0.05, 0.08, 0.06), release = listOf(0.45, 0.6, 0.5),
+        idle = 0.3, breath = 0.7, speed = 1.0,
+    )
+    val graphiteOrange = Temperament(
+        lights = null, attack = listOf(0.05, 0.08, 0.06), release = listOf(0.45, 0.6, 0.5),
+        idle = 0.3, breath = 0.7, speed = 1.0,
+    )
+    val phosphor = Temperament(
+        lights = null, attack = listOf(0.05, 0.08, 0.06), release = listOf(0.45, 0.6, 0.5),
+        idle = 0.3, breath = 0.7, speed = 1.0,
+    )
+    val rave = Temperament(
+        lights = listOf(0xFF2BD6, 0x00E5FF, 0xB6FF3B), attack = listOf(0.015, 0.03, 0.02), release = listOf(0.16, 0.25, 0.15),
+        idle = 0.06, breath = 0.35, speed = 2.2,
+    )
+    val neonTokyo = Temperament(
+        lights = listOf(0x2D6BFF, 0xFF8A1F, 0x5FD4FF), attack = listOf(0.04, 0.06, 0.05), release = listOf(0.4, 0.5, 0.45),
+        idle = 0.2, breath = 0.55, speed = 1.3,
+    )
+    val tropicalia = Temperament(
+        lights = listOf(0xFF6B4A, 0xFF3D8B, 0xFFC93C), attack = listOf(0.06, 0.08, 0.06), release = listOf(0.55, 0.7, 0.6),
+        idle = 0.3, breath = 0.65, speed = 1.0,
+    )
+    val velvet = Temperament(
+        lights = listOf(0xE6A65A, 0x8A6FD1, 0x3C4FA8), attack = listOf(0.9, 1.0, 1.1), release = listOf(2.6, 3.0, 2.8),
+        idle = 0.4, breath = 0.8, speed = 0.35,
     )
 }

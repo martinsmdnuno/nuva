@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
@@ -41,15 +43,21 @@ class MainActivity : ComponentActivity() {
                     model.player.refresh()
                     val now = model.player.state.value
                     model.tick(now)
+                    val clock = System.currentTimeMillis()
+                    if (now.isPlaying) lastPlaying = clock
+                    awake = clock - lastPlaying < AWAKE_AFTER_STOP
                     if (now.isPlaying && model.autoAmbient && model.signedIn && !model.ambient && model.overlay == null &&
                         System.currentTimeMillis() - lastInput > IDLE
                     ) model.ambient = true
                     delay(250)
                 }
             }
-            LaunchedEffect(model.ambient, state.isPlaying) {
-                // Keeps the screen awake in ambient mode while music plays, like the Mac.
-                if (model.ambient && state.isPlaying) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            LaunchedEffect(awake) {
+                // While music plays the TV never sleeps nor starts its screensaver, on any screen: the
+                // player and ambient mode are made to stay on (the glow and the OLED protection keep
+                // it from burning in). It lets go a few minutes after the music stops, never at once:
+                // a gap between tracks would otherwise put the screen out, its timeout long passed.
+                if (awake) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                 else window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             }
 
@@ -127,10 +135,14 @@ class MainActivity : ComponentActivity() {
     }
 
     private var lastInput = System.currentTimeMillis()
+    private var lastPlaying = 0L
+    private var awake by mutableStateOf(false)
     private var restingKey = false
 
     private companion object {
         const val IDLE = 60_000L
+        /** How long the screen stays awake after the music stops. */
+        const val AWAKE_AFTER_STOP = 300_000L
         val AMBIENT_KEYS = setOf(
             KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT,
             KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER,

@@ -255,7 +255,10 @@ fun GlowBackground(model: AppModel, playing: Boolean, strong: Boolean, opacity: 
     Box(Modifier.fillMaxSize().onSizeChanged { size = it }) {
         if (size == IntSize.Zero) return@Box
         // The cover's glow or, without one, the skin's own: there is always something moving behind the face.
-        val skinGlow = remember(Look.skin.id) { ArtworkGlow.skinField(Tokens.display.toArgb(), Tokens.displayMuted.toArgb(), Tokens.led.toArgb()) }
+        val skinGlow = remember(Look.skin.id) {
+            val lights = Look.skin.glow.lights?.map { it or 0xFF000000.toInt() } ?: listOf(Tokens.led.toArgb())
+            ArtworkGlow.skinField(Tokens.display.toArgb(), Tokens.displayMuted.toArgb(), lights)
+        }
         val glow = model.glow ?: skinGlow
         // Drawn at the screen's own pixels (a little larger, for the drift), off the main thread;
         // the old glow stays until the new one is ready.
@@ -295,19 +298,23 @@ private class GlowImages(val base: ImageBitmap, val lights: List<ImageBitmap>)
  * cover's colours that travel over the screen with the music (`GlowMotion`): each one brightens with
  * its part of the spectrum, and they move faster as the music gets louder, slowly when it is quiet or
  * paused, so the screen never holds still. The lights only lighten, and never past the cover's own
- * colours, so the text keeps its contrast. The field breathes with the bass (between 70% and full on the
- * Display face, between 85% and full on the others) and drifts a few percent of the screen over minutes.
+ * colours, so the text keeps its contrast. The field breathes with the bass (from the skin's breath, 70%
+ * in Rams, to full on the Display face, half as deep on the others) and drifts a few percent of the screen
+ * over minutes. How fast all of it moves is the skin's temperament.
  */
 @Composable
 private fun Glow(images: GlowImages, strong: Boolean, playing: Boolean, opacity: Float, now: Long) {
-    val motion = remember { GlowMotion() }
+    val temperament = Look.skin.glow
+    val motion = remember(temperament) { GlowMotion(temperament) }
     meterFrames(playing) // keeps the spectrum measured while the glow shows
     // Its own frames, playing or not: paused, the lights still crawl smoothly.
     var nanos by remember { mutableLongStateOf(System.nanoTime()) }
     LaunchedEffect(Unit) { while (true) withFrameNanos { nanos = it } }
     val lights = motion.update(nanos / 1e9, if (playing) Audio.spectrum.levels(Audio.clock.now()) else null)
     val beat = motion.bass.toFloat()
-    val level = if (strong) 0.7f + 0.3f * beat else 0.85f + 0.15f * beat
+    val breath = temperament.breath.toFloat()
+    val floor = if (strong) breath else (1 + breath) / 2
+    val level = floor + (1 - floor) * beat
     val t = now / 1000.0
     Canvas(Modifier.fillMaxSize()) {
         // One image pixel on one screen pixel: centred, drifting in whole pixels, never resampled.

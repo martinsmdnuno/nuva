@@ -327,17 +327,22 @@ object ArtworkGlow {
     const val BASE_DIM = 0.6f
 
     /**
-     * The glow for an album without a cover: the skin's own light (its LED colour) as a soft spot left
-     * of centre, fading into the display, through the same shading as a cover's field.
+     * The glow for an album without a cover: the skin's own lights as soft spots fading into the
+     * display, through the same shading as a cover's field. One light (the LED colour) sits left of
+     * centre; three (a skin's glow colours) spread over the screen, so the moving lights take all three.
      */
-    fun skinField(display: Int, muted: Int, led: Int): GlowField? {
+    fun skinField(display: Int, muted: Int, lights: List<Int>): GlowField? {
         val side = GRID * 4
+        val spots = if (lights.size == 1) listOf(0.38 to 0.45) else listOf(0.22 to 0.3, 0.78 to 0.35, 0.5 to 0.8)
+        val reach = if (lights.size == 1) 0.75 else 0.5
         val pixels = IntArray(side * side) { i ->
             val x = (i % side + 0.5) / side
             val y = (i / side + 0.5) / side
-            val d = sqrt((x - 0.38) * (x - 0.38) + (y - 0.45) * (y - 0.45))
-            val k = (1 - d / 0.75).coerceIn(0.0, 1.0)
-            fun mix(channel: (Int) -> Int) = (channel(led) * k + channel(display) * (1 - k)).toInt().coerceIn(0, 255)
+            // The nearest light wins, so each keeps its own colour.
+            val (light, k) = lights.zip(spots).map { (colour, at) ->
+                colour to (1 - sqrt((x - at.first) * (x - at.first) + (y - at.second) * (y - at.second)) / reach).coerceIn(0.0, 1.0)
+            }.maxBy { it.second }
+            fun mix(channel: (Int) -> Int) = (channel(light) * k + channel(display) * (1 - k)).toInt().coerceIn(0, 255)
             Color.rgb(mix(Color::red), mix(Color::green), mix(Color::blue))
         }
         return field(Bitmap.createBitmap(pixels, side, side, Bitmap.Config.ARGB_8888), display, muted)

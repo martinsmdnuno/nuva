@@ -3,14 +3,17 @@ package pt.nunomartins.nuva.artwork
 import kotlin.math.exp
 import kotlin.math.max
 import kotlin.math.sin
+import pt.nunomartins.nuva.ui.Temperament
+import pt.nunomartins.nuva.ui.Temperaments
 
 /**
  * How the glow's lights move with the music. Three lights, one per part of the spectrum: bass,
  * middle and treble. Each one's brightness follows its part (quick to swell, slower to settle), and
  * all of them travel on slow, never-repeating paths over the screen whose speed follows the music's
- * overall loudness: crawling when quiet or paused, sweeping when loud. Plain Kotlin, tested without Android.
+ * overall loudness: crawling when quiet or paused, sweeping when loud. How quick, how slow and how dark
+ * in between is the skin's temperament (tokens.json's glow). Plain Kotlin, tested without Android.
  */
-class GlowMotion {
+class GlowMotion(private val temperament: Temperament = Temperaments.lead) {
     /** A light: its centre as a fraction of the screen, and its strength (0–1). */
     data class Light(val x: Float, val y: Float, val strength: Float)
 
@@ -28,26 +31,24 @@ class GlowMotion {
         last = now
         for (part in 0 until PARTS) {
             val target = bands?.let { level(it, part) } ?: 0.0
-            val time = if (target > parts[part]) ATTACK[part] else RELEASE[part]
+            val time = if (target > parts[part]) temperament.attack[part] else temperament.release[part]
             parts[part] += (target - parts[part]) * (1 - exp(-dt / time))
         }
         val loud = parts.max()
         energy += (loud - energy) * (1 - exp(-dt / if (loud > energy) 1.5 else 3.0))
-        phase += dt * (CALM_SPEED + LOUD_SPEED * energy)
+        phase += dt * (CALM_SPEED + LOUD_SPEED * energy) * temperament.speed
         return List(PARTS) { i ->
             val p = PATHS[i]
             Light(
                 x = (0.5 + p[0] * sin(p[1] * phase + p[2])).toFloat(),
                 y = (0.5 + p[3] * sin(p[4] * phase + p[5])).toFloat(),
-                strength = (IDLE + (1 - IDLE) * parts[i]).toFloat(),
+                strength = (temperament.idle + (1 - temperament.idle) * parts[i]).toFloat(),
             )
         }
     }
 
     companion object {
         const val PARTS = 3
-        /** A light's strength with nothing in its part: the screen never goes flat. */
-        const val IDLE = 0.3
         /** Path speed in radians per second, quiet and at full loudness. */
         const val CALM_SPEED = 0.05
         const val LOUD_SPEED = 0.45
@@ -56,8 +57,6 @@ class GlowMotion {
         private val BANDS = arrayOf(0..2, 3..6, 7..9)
         private val FLOOR = doubleArrayOf(-42.0, -48.0, -54.0)
         private const val RANGE = 30.0
-        private val ATTACK = doubleArrayOf(0.05, 0.08, 0.06)
-        private val RELEASE = doubleArrayOf(0.45, 0.6, 0.5)
 
         /** Each light's path: x amplitude, frequency, phase; y amplitude, frequency, phase. */
         private val PATHS = arrayOf(

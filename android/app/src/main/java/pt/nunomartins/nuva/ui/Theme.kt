@@ -13,23 +13,37 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import pt.nunomartins.nuva.R
 
-/** The Mac app's skins. On a TV, Rams is its Lead theme: the room is dark and the display always is. */
-enum class Skin(val id: String, val label: String, val palette: Palette, val fontSet: FontSet) {
+/**
+ * The Mac app's skins: colours, a default font set and the glow's temperament. On a TV, Rams is its Lead
+ * theme: the room is dark and the display always is.
+ */
+enum class Skin(val id: String, val label: String, val palette: Palette, val fontSet: FontSet, val glow: Temperament) {
     Rams(
         "rams", "Rams",
         Palettes.lead,
         FontSet.Inter,
+        Temperaments.lead,
     ),
     GraphiteOrange(
         "graphite-orange", "Graphite Orange",
         Palettes.graphiteOrange,
         FontSet.System,
+        Temperaments.graphiteOrange,
     ),
     Phosphor(
         "phosphor", "Phosphor",
         Palettes.phosphor,
         FontSet.Inter,
+        Temperaments.phosphor,
     ),
+    /** Neon on near-black, and the liveliest glow: it flares on every kick and falls away at once. */
+    Rave("rave", "Rave", Palettes.rave, FontSet.Inter, Temperaments.rave),
+    /** Electric blue and sodium orange, like a sign at night; a strong glow, steadier than Rave's. */
+    NeonTokyo("neon-tokyo", "Neon Tokyo", Palettes.neonTokyo, FontSet.ShareTech, Temperaments.neonTokyo),
+    /** Coral, hot pink and mango on deep burgundy. */
+    Tropicalia("tropicalia", "Tropicália", Palettes.tropicalia, FontSet.Dm, Temperaments.tropicalia),
+    /** Night blue, warm amber and lilac; the slowest glow, rising and falling over seconds. */
+    Velvet("velvet", "Velvet", Palettes.velvet, FontSet.Plex, Temperaments.velvet),
 }
 
 @OptIn(ExperimentalTextApi::class)

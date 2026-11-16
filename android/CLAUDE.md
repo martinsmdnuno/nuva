@@ -16,7 +16,7 @@ The root `CLAUDE.md` holds for this app too: its principles, the parity matrix a
 - A Mac change to shared logic (EQ, spectrum, artwork rules, Jellyfin parsing) is ported here in the same spirit, with the matching unit test.
 
 ## Design
-- Same design system as the Mac (`docs/design-system/`): read it before UI work. Lead only; the skins change colours only.
+- Same design system as the Mac (`docs/design-system/`): read it before UI work. Lead only; the skins change colours, the default font set and the glow's temperament (`Temperament`, from `tokens.json`'s `glow`), never the layout.
 - Sizes for 10-foot viewing: twice the Mac's points, in dp, on a 960×540 dp canvas. Focus is the `focus` ring.
 - Fonts bundled (OFL); SF becomes Roboto in the font sets.
 - Text in English (`res/values/strings.xml`, the default) and European Portuguese (`res/values-pt/strings.xml`). Every new string goes in both (`scripts/strings.swift` checks it); text that isn't translated, like the app's name, is `translatable="false"`.

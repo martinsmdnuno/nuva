@@ -59,6 +59,14 @@ final class AppModel {
         return artwork.artwork(for: entry)
     }
 
+    /// Artwork is on and there is none to show: nothing playing, or a folder known to have no cover
+    /// (not one still being looked up). Ambient mode then glows in the skin's own light.
+    var lacksArtwork: Bool {
+        guard showsArtwork else { return false }
+        guard let entry = player.current?.entry else { return true }
+        return artwork.isResolved(entry) && currentLoadedArtwork == nil
+    }
+
     /// "Wrong artwork…" applies to online or user artwork, and to a finished lookup that found none.
     /// An image in the folder is the user's own and always wins.
     var canFixArtwork: Bool {

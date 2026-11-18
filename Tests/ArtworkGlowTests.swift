@@ -71,4 +71,34 @@ struct ArtworkGlowTests {
         for frame in 13...24 { level = pulse.update(at: start.addingTimeInterval(Double(frame) / 120), bands: nil) }
         #expect(level > 0.6)  // 100 ms of silence: still glowing
     }
+
+    /// Without a cover the field is made of the skin's own lights, under the same contrast ceiling.
+    @Test func skinLightsMakeAFieldUnderTheCeiling() throws {
+        let display = NSColor(srgbRed: 0.05, green: 0.05, blue: 0.06, alpha: 1)
+        let muted = NSColor(srgbRed: 0.6, green: 0.6, blue: 0.62, alpha: 1)
+        let ceiling = ArtworkGlow.ceiling(for: muted)
+        let lights = [0xFF2BD6, 0x00E5FF, 0xB6FF3B].map { hex in
+            NSColor(srgbRed: CGFloat((hex >> 16) & 0xFF) / 255, green: CGFloat((hex >> 8) & 0xFF) / 255, blue: CGFloat(hex & 0xFF) / 255, alpha: 1)
+        }
+        let field = try #require(ArtworkGlow.field(lights: lights, ceiling: ceiling, display: display))
+        let rep = NSBitmapImageRep(cgImage: field)
+        var brightest = 0.0
+        var hues: Set<Int> = []
+        for y in stride(from: 0, to: rep.pixelsHigh, by: 8) {
+            for x in stride(from: 0, to: rep.pixelsWide, by: 8) {
+                // The image is sRGB; the rep reports its pixels in another space, so read the values as sRGB.
+                guard let raw = rep.colorAt(x: x, y: y) else { continue }
+                let c = NSColor(srgbRed: raw.redComponent, green: raw.greenComponent, blue: raw.blueComponent, alpha: 1)
+                brightest = max(brightest, ArtworkGlow.luminance(c))
+                if c.saturationComponent > 0.3 { hues.insert(Int(c.hueComponent * 6)) }
+            }
+        }
+        #expect((ArtworkGlow.luminance(muted) + 0.05) / (brightest + 0.05) >= 4.5)
+        #expect(brightest > ArtworkGlow.luminance(display))
+        // More than one of the lights shows.
+        #expect(hues.count >= 2)
+        // One colour alone (a skin with only its LED) still makes a field.
+        #expect(ArtworkGlow.field(lights: [lights[0]], ceiling: ceiling, display: display) != nil)
+        #expect(ArtworkGlow.field(lights: [], ceiling: ceiling, display: display) == nil)
+    }
 }

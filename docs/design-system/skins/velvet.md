@@ -11,7 +11,7 @@ For listening late: night blue, warm amber and lilac, with IBM Plex Sans. The ca
 
 Bass 0.9/2.6 s, middle 1.0/3.0 s, treble 1.1/2.8 s. Idle 40%. Breath 80%: the field barely dims. Speed 0.35×. Lights: amber #E6A65A (bass), lilac #8A6FD1 (middle), deep blue #3C4FA8 (treble).
 
-On the Mac the temperament sets how the cover's field breathes on the Display face; on Android TV it also moves the three lights and, without a cover, colours the skin's own glow. Windows has it planned.
+On the Mac the temperament sets how the field breathes on the Display face and, without a cover, its lights colour the field; on Android TV it also moves the three lights. Windows has it planned.
 
 ## Tokens
 

@@ -5,7 +5,8 @@ import SwiftUI
 
 /// Ambient mode's glow from the album cover: the cover reduced to a 4×4 grid of its own colours,
 /// each darkened until the display's muted text keeps 4.5:1 on it, then blurred into a soft field
-/// that keeps the cover's layout (a warm top, a blue corner…). Only with artwork on.
+/// that keeps the cover's layout (a warm top, a blue corner…). Only with artwork on. An album
+/// without a cover gets the same field in the skin's own light (its glow's lights, else its LED).
 enum ArtworkGlow {
     /// The field for one cover, rendered once; equal when it comes from the same cover.
     struct Field: Equatable {
@@ -79,7 +80,38 @@ enum ArtworkGlow {
         // A little under the ceiling, for the dither's half step.
         let safe = ceiling * 0.95
         let shaded = colors.map { shade($0, relative: brightest > 0 ? luminance($0) / brightest : 0, ceiling: safe) }
+        return field(shaded: shaded, display: display)
+    }
 
+    /// Where the skin's lights sit when there is no cover: the bass low on the left, the middle
+    /// across, the treble high on the right. Row by row from the top.
+    static let lightLayout = [
+        1, 1, 2, 2,
+        1, 1, 2, 2,
+        0, 0, 1, 2,
+        0, 0, 0, 1,
+    ]
+    /// How bright each cell is next to the brightest, so one colour alone still has a shape.
+    static let lightLevels = [
+        0.5, 0.7, 0.9, 0.6,
+        0.6, 0.8, 1.0, 0.7,
+        0.8, 0.6, 0.7, 0.5,
+        1.0, 0.8, 0.6, 0.4,
+    ]
+
+    /// The field without a cover: the skin's `lights` (one, two or three colours) under the same ceiling.
+    static func field(lights: [NSColor], ceiling: Double, display: NSColor) -> CGImage? {
+        guard !lights.isEmpty else { return nil }
+        let safe = ceiling * 0.95
+        let shaded = zip(lightLayout, lightLevels).map { light, level in
+            shade(lights[light % lights.count], relative: level, ceiling: safe)
+        }
+        return field(shaded: shaded, display: display)
+    }
+
+    /// Blurs a `grid`×`grid` of colours, already under the ceiling, into the field.
+    private static func field(shaded: [NSColor], display: NSColor) -> CGImage? {
+        guard shaded.count == grid * grid else { return nil }
         var bytes = [UInt8]()
         for color in shaded {
             let c = color.usingColorSpace(.sRGB) ?? color
@@ -155,6 +187,30 @@ enum ArtworkGlow {
         last = (image, skin.id, field)
         return field
     }
+
+    /// The field for an album without a cover, in the current skin's own light.
+    @MainActor static func skinField() -> Field? {
+        let skin = SkinStore.active.withLock { $0 }
+        if let lastSkin, lastSkin.skin == skin.id { return lastSkin.field }
+        guard let dark = NSAppearance(named: .darkAqua) else { return nil }
+        let display = skin.color(.display, for: dark)
+        let ceiling = Self.ceiling(for: skin.color(.displayMuted, for: dark))
+        let lights = skin.glow.lights?.map { hex in
+            NSColor(
+                srgbRed: CGFloat((hex >> 16) & 0xFF) / 255, green: CGFloat((hex >> 8) & 0xFF) / 255,
+                blue: CGFloat(hex & 0xFF) / 255, alpha: 1)
+        } ?? [skin.color(.led, for: dark)]
+        let key = SkinFieldKey()
+        let field = ceiling > luminance(display) + 0.002
+            ? Self.field(lights: lights, ceiling: ceiling, display: display).map { Field(image: $0, id: ObjectIdentifier(key)) }
+            : nil
+        lastSkin = (skin.id, key, field)
+        return field
+    }
+
+    /// Stands for a skin's field where a cover's image would, so two fields can be told apart.
+    private final class SkinFieldKey {}
+    @MainActor private static var lastSkin: (skin: String, key: SkinFieldKey, field: Field?)?
 
     /// The last cover rendered: the ambient view asks every second.
     @MainActor private static var last: (image: NSImage, skin: String, field: Field?)?

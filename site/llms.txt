@@ -30,10 +30,10 @@
 | 10-band equalizer with presets | ✓ | ✓ | ✓ |
 | Spectrum on the display, in time with what you hear | ✓ | ✓ | ✓ |
 | Ambient mode: six full-screen faces, with OLED protection | ✓ | ✓ | ✓ |
-| A glow behind the ambient faces, from the cover or, without one, the skin's own light | later | ✓ | later |
-| Move through the track from ambient mode | later | ✓ | later |
+| A glow behind the ambient faces, from the cover or, without one, the skin's own light | ✓ | ✓ | later |
+| Move through the track from ambient mode | ✓ | ✓ | later |
 | Album artwork: the folder's image, then MusicBrainz by folder names | ✓ | ✓ | ✓ |
-| Jellyfin covers from the image file in the album's folder | later | ✓ | later |
+| Jellyfin covers from the image file in the album's folder | ✓ | ✓ | later |
 | Correct a wrong or missing cover | ✓ | later | ✓ |
 | Skins (Rams, Graphite Orange, Phosphor) and five font pairs | ✓ | ✓ | ✓ |
 | Four livelier skins (Rave, Neon Tokyo, Tropicália, Velvet), each with its own glow temperament, from a flare on every kick to a slow fire | ✓ | ✓ | later |

@@ -220,10 +220,10 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 | 10-band equalizer with presets | ✓ | ✓ | ✓ |
 | Spectrum on the display, in time with what you hear | ✓ | ✓ | ✓ |
 | Ambient mode: six full-screen faces, with OLED protection | ✓ | ✓ | ✓ |
-| A glow behind the ambient faces, from the cover or, without one, the skin's own light | later | ✓ | later |
-| Move through the track from ambient mode | later | ✓ | later |
+| A glow behind the ambient faces, from the cover or, without one, the skin's own light | ✓ | ✓ | later |
+| Move through the track from ambient mode | ✓ | ✓ | later |
 | Album artwork: the folder's image, then MusicBrainz by folder names | ✓ | ✓ | ✓ |
-| Jellyfin covers from the image file in the album's folder | later | ✓ | later |
+| Jellyfin covers from the image file in the album's folder | ✓ | ✓ | later |
 | Correct a wrong or missing cover | ✓ | later | ✓ |
 | Skins (Rams, Graphite Orange, Phosphor) and five font pairs | ✓ | ✓ | ✓ |
 | Four livelier skins (Rave, Neon Tokyo, Tropicália, Velvet), each with its own glow temperament, from a flare on every kick to a slow fire | ✓ | ✓ | later |
@@ -370,10 +370,10 @@ Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnun
 | Equalizador de 10 bandas com presets | ✓ | ✓ | ✓ |
 | Espectro no visor, a par com o que ouves | ✓ | ✓ | ✓ |
 | Modo Ambiente: seis faces em ecrã inteiro, com proteção OLED | ✓ | ✓ | ✓ |
-| Um brilho atrás das faces do ambiente, da capa ou, sem ela, da luz da skin | mais tarde | ✓ | mais tarde |
-| Andar pela faixa no modo ambiente | mais tarde | ✓ | mais tarde |
+| Um brilho atrás das faces do ambiente, da capa ou, sem ela, da luz da skin | ✓ | ✓ | mais tarde |
+| Andar pela faixa no modo ambiente | ✓ | ✓ | mais tarde |
 | Capas: a imagem da pasta, depois o MusicBrainz pelos nomes das pastas | ✓ | ✓ | ✓ |
-| Capas do Jellyfin a partir da imagem na pasta do álbum | mais tarde | ✓ | mais tarde |
+| Capas do Jellyfin a partir da imagem na pasta do álbum | ✓ | ✓ | mais tarde |
 | Corrigir uma capa errada ou em falta | ✓ | mais tarde | ✓ |
 | Skins (Rams, Graphite Orange, Phosphor) e cinco pares de fontes | ✓ | ✓ | ✓ |
 | Quatro skins mais vivas (Rave, Neon Tokyo, Tropicália, Velvet), cada uma com o seu temperamento de brilho, de um clarão a cada batida a um lume lento | ✓ | ✓ | mais tarde |

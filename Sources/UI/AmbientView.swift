@@ -28,7 +28,9 @@ struct AmbientView: View {
             TimelineView(.periodic(from: .now, by: 1)) { context in
                 let now = isSnapshot ? Self.snapshotDate : context.date
                 // With artwork on, the cover's hue lights the screen from behind (not while resting).
+                // An album without a cover is lit by the skin's own light instead.
                 let glow = model.currentArtwork.flatMap(ArtworkGlow.field(for:))
+                    ?? (model.lacksArtwork ? ArtworkGlow.skinField() : nil)
                 let shownFace = face ?? ambient.face
                 ZStack {
                     if !isSnapshot, ambient.isResting(at: now) {

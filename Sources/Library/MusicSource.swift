@@ -1,8 +1,8 @@
 import Foundation
 
 /// A folder or a track inside a source. The path is relative to the source root.
-struct Entry: Identifiable, Hashable, Sendable {
-    enum Kind: Sendable { case folder, track }
+struct Entry: Identifiable, Hashable, Sendable, Codable {
+    enum Kind: String, Sendable, Codable { case folder, track }
 
     let sourceID: UUID
     let path: String
@@ -130,6 +130,7 @@ enum SourceError: LocalizedError {
     case loginFailed
     case noMusicLibrary
     case unexpectedResponse
+    case passwordNotSaved
 
     var errorDescription: String? {
         switch self {
@@ -138,6 +139,7 @@ enum SourceError: LocalizedError {
         case .loginFailed: String(localized: "Utilizador ou palavra-passe errados")
         case .noMusicLibrary: String(localized: "Sem biblioteca de música neste utilizador")
         case .unexpectedResponse: String(localized: "Resposta inesperada. Confirmar o endereço do servidor")
+        case .passwordNotSaved: String(localized: "Não foi possível guardar a palavra-passe no Porta-chaves")
         }
     }
 }

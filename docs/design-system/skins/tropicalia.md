@@ -11,7 +11,7 @@ After the Brazilian movement's record sleeves: coral, hot pink and mango on deep
 
 Bass 60/550 ms, middle 80/700 ms, treble 60/600 ms. Idle 30%. Breath 65%. Speed 1×. Lights: coral #FF6B4A (bass), hot pink #FF3D8B (middle), mango #FFC93C (treble).
 
-On the Mac the temperament sets how the cover's field breathes on the Display face; on Android TV it also moves the three lights and, without a cover, colours the skin's own glow. Windows has it planned.
+On the Mac the temperament sets how the field breathes on the Display face and, without a cover, its lights colour the field; on Android TV it also moves the three lights. Windows has it planned.
 
 ## Tokens
 

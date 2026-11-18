@@ -167,7 +167,7 @@ enum DebugSnapshot {
         }
         let model = AppModel(defaults: defaults)
         model.windowMode = .browser
-        guard let source = model.sources.addLocal(root) else { return model }
+        guard let source = try? model.sources.addLocal(root) else { return model }
         model.browser.open(BrowserLocation(sourceID: source.id, path: "Fleetwood Mac"))
         // Lets the listing and summaries finish before drawing.
         RunLoop.main.run(until: Date().addingTimeInterval(0.5))

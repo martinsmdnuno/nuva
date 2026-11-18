@@ -11,7 +11,7 @@ A sign on a wet street at night: electric blue and sodium orange on a navy-black
 
 Bass 40/400 ms, middle 60/500 ms, treble 50/450 ms. Idle 20%. Breath 55%. Speed 1.3×. Lights: electric blue #2D6BFF (bass), sodium orange #FF8A1F (middle), sky blue #5FD4FF (treble).
 
-On the Mac the temperament sets how the cover's field breathes on the Display face; on Android TV it also moves the three lights and, without a cover, colours the skin's own glow. Windows has it planned.
+On the Mac the temperament sets how the field breathes on the Display face and, without a cover, its lights colour the field; on Android TV it also moves the three lights. Windows has it planned.
 
 ## Tokens
 

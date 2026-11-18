@@ -82,6 +82,7 @@ struct JellyfinLoginView: View {
             do {
                 let source = try await model.sources.addJellyfin(
                     server: server, username: username.trimmingCharacters(in: .whitespaces), password: password)
+                model.count("source.add.jellyfin")
                 model.browser.open(BrowserLocation(sourceID: source.id, path: ""))
                 dismiss()
             } catch {

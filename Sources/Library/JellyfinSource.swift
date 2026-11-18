@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 
 /// Source on a Jellyfin server. Browses the server's disk folders (each item's `Path`),
@@ -11,6 +12,8 @@ actor JellyfinSource: MusicSource {
     private let deviceID: String
     private let password: @Sendable () -> String?
     private let urlSession: URLSession
+    /// Where the folders' images fetched from the server are kept (the app's caches, never the music).
+    private let artworkCache: URL
 
     struct Session: Sendable {
         let token: String
@@ -61,8 +64,10 @@ actor JellyfinSource: MusicSource {
 
     init(
         id: UUID, name: String, server: URL, username: String, deviceID: String,
-        password: @escaping @Sendable () -> String?, urlSession: URLSession = .shared
+        password: @escaping @Sendable () -> String?, urlSession: URLSession = .shared,
+        artworkCache: URL = URL.cachesDirectory.appendingPathComponent("NuVa/Jellyfin", isDirectory: true)
     ) {
+        self.artworkCache = artworkCache.appendingPathComponent(id.uuidString, isDirectory: true)
         self.id = id
         self.name = name
         self.server = server
@@ -119,6 +124,64 @@ actor JellyfinSource: MusicSource {
             URLQueryItem(name: "static", value: "true"),
             URLQueryItem(name: "api_key", value: token),
         ])
+    }
+
+    // MARK: Artwork
+
+    /// One of a server item's images: its type ("Primary"), the file it was read from, its index.
+    struct FolderImage: Decodable, Sendable {
+        let type: String
+        let path: String?
+        let index: Int?
+
+        enum CodingKeys: String, CodingKey { case type = "ImageType", path = "Path", index = "ImageIndex" }
+    }
+
+    /// The image whose file sits in `folder` itself (the server's path, `/` or `\`) and is named as
+    /// artwork (cover.jpg, folder.png…). Never one Jellyfin took from the tags or downloaded.
+    static func folderImage(among images: [FolderImage], in folder: String) -> FolderImage? {
+        var dir = folder.replacingOccurrences(of: "\\", with: "/")
+        while dir.hasSuffix("/") { dir.removeLast() }
+        var byName: [String: FolderImage] = [:]
+        for image in images {
+            guard let path = image.path?.replacingOccurrences(of: "\\", with: "/"),
+                  (path as NSString).deletingLastPathComponent == dir else { continue }
+            byName[(path as NSString).lastPathComponent] = image
+        }
+        return Artwork.pick(from: Array(byName.keys)).flatMap { byName[$0] }
+    }
+
+    /// The image file the user put in the folder on the server, fetched into the app's caches.
+    /// Offline, the copy fetched before is used; a folder that no longer has an image loses its copy.
+    func artwork(inFolder path: String) async -> URL? {
+        let hash = SHA256.hash(data: Data(path.utf8)).map { String(format: "%02x", $0) }.joined()
+        let file = artworkCache.appendingPathComponent(String(hash.prefix(32)) + ".img")
+        let fm = FileManager.default
+        do {
+            guard let data = try await folderArtwork(path) else {
+                try? fm.removeItem(at: file)
+                return nil
+            }
+            try fm.createDirectory(at: artworkCache, withIntermediateDirectories: true)
+            try data.write(to: file, options: .atomic)
+            return file
+        } catch {
+            Log.shared.error(.artwork, "jellyfin-folder-image-failed", error)
+            return fm.fileExists(atPath: file.path) ? file : nil
+        }
+    }
+
+    private func folderArtwork(_ path: String) async throws -> Data? {
+        if !rootLoaded { try await loadRoot() }
+        guard let (rel, node) = try? await anchor(for: path), rel == path, let abs = node.abs else { return nil }
+        let listing = try await data("Items/\(node.id)/Images", [])
+        guard let images = try? JSONDecoder().decode([FolderImage].self, from: listing),
+              let image = Self.folderImage(among: images, in: abs) else { return nil }
+        let index = image.index.map { "/\($0)" } ?? ""
+        let bytes = try await data("Items/\(node.id)/Images/\(image.type)\(index)", [
+            URLQueryItem(name: "maxWidth", value: "800"), URLQueryItem(name: "quality", value: "90"),
+        ])
+        return bytes.isEmpty ? nil : bytes
     }
 
     // MARK: Folder tree
@@ -214,19 +277,27 @@ actor JellyfinSource: MusicSource {
         return result
     }
 
-    private func get(_ path: String, _ query: [URLQueryItem], retry: Bool = true) async throws -> [Item] {
+    private func get(_ path: String, _ query: [URLQueryItem]) async throws -> [Item] {
+        let data = try await data(path, query)
+        guard let decoded = try? JSONDecoder().decode(Items.self, from: data) else { throw SourceError.unexpectedResponse }
+        return decoded.items
+    }
+
+    /// A signed GET. A 401 signs in again once.
+    private func data(_ path: String, _ query: [URLQueryItem], retry: Bool = true) async throws -> Data {
         let session = try await currentSession()
-        var request = URLRequest(url: server.appending(path: path).appending(queryItems: query))
+        var url = server.appending(path: path)
+        if !query.isEmpty { url.append(queryItems: query) }
+        var request = URLRequest(url: url)
         request.setValue(Self.authorization(deviceID: deviceID, token: session.token), forHTTPHeaderField: "Authorization")
         let (data, status) = try await Self.send(request, urlSession)
         if status == 401, retry {
             // Token revoked or expired: sign in again with the saved password.
             self.session = nil
-            return try await get(path, query, retry: false)
+            return try await self.data(path, query, retry: false)
         }
         guard (200..<300).contains(status) else { throw HTTPError.status(status) }
-        guard let decoded = try? JSONDecoder().decode(Items.self, from: data) else { throw SourceError.unexpectedResponse }
-        return decoded.items
+        return data
     }
 
     private func currentSession() async throws -> Session {

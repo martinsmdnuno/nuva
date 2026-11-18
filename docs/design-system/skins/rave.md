@@ -11,7 +11,7 @@ A club at night: neon magenta, cyan and lime on a violet-black chassis, and the 
 
 Bass light: 15 ms to swell, 160 ms to settle; middle 30/250 ms; treble 20/150 ms. Idle 6% (dark between beats, so each one stands out). Breath 35%: the field swings from a third to full on every kick, which reads as a flash. Speed 2.2×. Lights: magenta #FF2BD6 (bass), cyan #00E5FF (middle), lime #B6FF3B (treble).
 
-On the Mac the temperament sets how the cover's field breathes on the Display face; on Android TV it also moves the three lights and, without a cover, colours the skin's own glow. Windows has it planned.
+On the Mac the temperament sets how the field breathes on the Display face and, without a cover, its lights colour the field; on Android TV it also moves the three lights. Windows has it planned.
 
 ## Tokens
 

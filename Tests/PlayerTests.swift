@@ -186,4 +186,21 @@ struct PlayerTests {
         #expect(player.current == nil)
         try await wait { !player.isPlaying }
     }
+
+    /// A session put back plays from where it was, not from the start of the track.
+    @Test func restoredSessionPlaysFromItsPosition() async throws {
+        let (dir, entries) = try makeFlacs(2, seconds: 3)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let player = makePlayer(dir)
+
+        player.restore(entries, current: 1, position: 1.5, duration: 3)
+        #expect(!player.isPlaying)
+        #expect(player.current?.entry == entries[1])
+
+        player.togglePlayPause()
+        try await wait { player.isPlaying }
+        #expect(player.currentTime >= 1.5)
+        #expect(player.current?.entry == entries[1])
+        player.pause()
+    }
 }

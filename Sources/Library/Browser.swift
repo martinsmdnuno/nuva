@@ -7,6 +7,15 @@ struct BrowserLocation: Hashable, Sendable {
     let path: String
 }
 
+/// The tracks under a folder, and what couldn't be listed on the way.
+struct FolderTracks: Sendable {
+    var tracks: [Entry] = []
+    /// Folders that failed to list (the folder itself or one below it).
+    var unreadable = 0
+    /// The first failure, for the message.
+    var error: (any Error)?
+}
+
 /// Folder browser state.
 @MainActor
 @Observable
@@ -52,6 +61,7 @@ final class Browser {
                 guard token == loadToken else { return }
                 entries = items
             } catch {
+                Log.shared.error(.source, "list-failed", error, detail: location.path)
                 guard token == loadToken else { return }
                 errorMessage = error.localizedDescription
             }
@@ -89,16 +99,34 @@ final class Browser {
 
     /// Tracks in a folder and its subfolders, in natural order (CD 01 before CD 02).
     func tracks(in folder: BrowserLocation) async -> [Entry] {
-        guard let source = sources.source(folder.sourceID) else { return [] }
-        return await Self.collect(source, folder.path)
+        await collect(in: folder).tracks
     }
 
-    private nonisolated static func collect(_ source: any MusicSource, _ path: String) async -> [Entry] {
-        guard let items = try? await source.list(path) else { return [] }
-        var result = items.filter { $0.kind == .track }
-        for sub in items where sub.kind == .folder {
-            result += await collect(source, sub.path)
+    /// The same tracks, with the folders that couldn't be listed counted instead of left out in silence.
+    func collect(in folder: BrowserLocation) async -> FolderTracks {
+        var found = FolderTracks()
+        guard let source = sources.source(folder.sourceID) else {
+            found.unreadable = 1
+            found.error = SourceError.missingFolder((folder.path as NSString).lastPathComponent)
+            return found
         }
-        return result
+        await Self.collect(source, folder.path, into: &found)
+        return found
+    }
+
+    private nonisolated static func collect(_ source: any MusicSource, _ path: String, into found: inout FolderTracks) async {
+        let items: [Entry]
+        do {
+            items = try await source.list(path)
+        } catch {
+            Log.shared.error(.source, "list-failed", error, detail: path)
+            found.unreadable += 1
+            if found.error == nil { found.error = error }
+            return
+        }
+        found.tracks += items.filter { $0.kind == .track }
+        for sub in items where sub.kind == .folder {
+            await collect(source, sub.path, into: &found)
+        }
     }
 }

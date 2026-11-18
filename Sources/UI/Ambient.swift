@@ -129,6 +129,7 @@ final class Ambient {
         window.onExitFullScreen = { [weak self] in self?.finish() }
         self.window = window
         isOpen = true
+        model.count("ambient")
 
         keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             let key = (code: event.keyCode, flags: event.modifierFlags, window: event.windowNumber)
@@ -209,7 +210,7 @@ final class Ambient {
         isOpen = false
     }
 
-    /// Esc and ⌘4 leave, ← → change the face, Space plays or pauses.
+    /// Esc and ⌘4 leave, ← → change the face, Space plays or pauses, ⇧⌘← ⇧⌘→ move 10 s through the track.
     /// Runs before the menus, so it also works with the main window closed (no menu bar).
     private func handle(_ keyCode: UInt16, _ flags: NSEvent.ModifierFlags, player: PlayerController) -> Bool {
         let modifiers = flags.intersection(.deviceIndependentFlagsMask)
@@ -231,6 +232,10 @@ final class Ambient {
             player.next()
         case (123, let m) where m.subtracting([.numericPad, .function]) == .command:  // ⌘←
             player.previous()
+        case (124, let m) where m.subtracting([.numericPad, .function]) == [.command, .shift]:  // ⇧⌘→
+            if player.current != nil { player.skip(by: 10) }
+        case (123, let m) where m.subtracting([.numericPad, .function]) == [.command, .shift]:  // ⇧⌘←
+            if player.current != nil { player.skip(by: -10) }
         case (126, let m) where m.subtracting([.numericPad, .function]) == .command:  // ⌘↑
             player.changeVolume(by: 0.05)
         case (125, let m) where m.subtracting([.numericPad, .function]) == .command:  // ⌘↓

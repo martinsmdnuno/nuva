@@ -45,7 +45,11 @@ final class ArtworkStore {
         guard loading.insert(key).inserted else { return }
         Task {
             let found = await find(entry)
-            let image = await Task.detached(priority: .utility) { found.flatMap { Self.downsample($0.url) } }.value
+            // Boxed: NSImage isn't Sendable in the macOS 15 SDK (Xcode 16). The image is made off the
+            // main actor and only used here afterwards.
+            let image = await Task.detached(priority: .utility) {
+                Made(image: found.flatMap { Self.downsample($0.url) })
+            }.value.image
             if let image, let found {
                 images[key] = .some(Loaded(image: image, origin: found.origin))
             } else {
@@ -53,6 +57,11 @@ final class ArtworkStore {
             }
             loading.remove(key)
         }
+    }
+
+    /// An image handed from the task that made it to the main actor.
+    private struct Made: @unchecked Sendable {
+        let image: NSImage?
     }
 
     /// Decodes at most `maxPixels` on the longest side, so a 3000 px JPEG doesn't stay in memory.

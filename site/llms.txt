@@ -5,11 +5,11 @@
 - Formats: FLAC (including 24-bit hi-res), ALAC, WAV, AIFF, MP3 and AAC/M4A, played through Apple's AVFoundation (the engine behind QuickTime). No VLC, no ffmpeg, no bundled codecs.
 - Sources: folders on the Mac, external disks, NAS shares mounted over SMB, audio CDs (named from MusicBrainz), and Jellyfin servers browsed by their real folders, streaming the original file. Plex and UPnP/DLNA are not supported yet.
 - Output: AirPlay 2 (WiiM streamers, HomePod, Apple TV, AirPlay speakers) from the output readout on the display.
-- Features: queue, repeat, shuffle, 10-band equalizer with presets, spectrum meter, media keys, Control Center and Now Playing, keyboard shortcuts for everything, a menu bar mini player, optional album artwork (folder image first, then MusicBrainz and the Cover Art Archive), skins (Rams, Graphite Orange, Phosphor, and four livelier ones whose glow has its own temperament: Rave, Neon Tokyo, Tropicália, Velvet), five font pairs, English and Portuguese.
-- Ambient mode (⌘4): a full-screen display with VU meters, valves, a 28-band spectrum, level meters, a clock, or the track on a glow from the album cover, drawn at up to 120 Hz, with OLED protection.
+- Features: queue, repeat, shuffle, 10-band equalizer with presets, spectrum meter, media keys, Control Center and Now Playing, keyboard shortcuts for everything, a menu bar mini player, optional album artwork (folder image first, then MusicBrainz and the Cover Art Archive), skins (Rams, Graphite Orange, Phosphor, and four livelier ones whose glow has its own temperament: Rave, Neon Tokyo, Tropicália, Velvet), five font pairs, English and Portuguese. It reopens where you left off (queue, track, position, volume, repeat and shuffle).
+- Ambient mode (⌘4): a full-screen display with VU meters, valves, a 28-band spectrum, level meters, a clock, or the track on a glow from the album cover (or, without a cover, from the skin's own lights), drawn at up to 120 Hz, with OLED protection.
 - Android TV: NuVa for Android TV (8.1 or later) plays Jellyfin servers by folder, FLAC included (24-bit kept whole), through Android's Media3 and system decoders, with the same display, equalizer, queue, skins and ambient faces. Install it with the Downloader app at nuva.martinsnuno.com/tv, or download NuVa-AndroidTV.apk from the GitHub release.
 - Windows: NuVa for Windows (10 version 2004, or 11) plays folders on the PC, external disks, network shares, audio CDs and Jellyfin servers by folder, FLAC included, through Windows' own Media Foundation decoders, with the same equalizer, spectrum, queue, skins and ambient faces, a mini player in the tray and a shortcut for everything. Windows has no AirPlay; it plays to any output device. Download NuVa-Windows.zip from the GitHub release, unzip it and open NuVa.exe; Windows asks once, under More info, to run it anyway.
-- Privacy: no account, no analytics, no ads.
+- Privacy: no account, no tracking, no ads. On the Mac, NuVa asks once whether it may send its author anonymous counts of which features are used and which kinds of failure happen; off unless the user says yes, with no identifier and no folder, file or server names. An error log stays on the Mac.
 - Install: download NuVa.dmg, drag NuVa to Applications; it isn't signed with a paid Apple certificate, so the first launch needs System Settings › Privacy & Security › Open Anyway.
 
 <!-- nuva:platforms -->
@@ -30,10 +30,10 @@
 | 10-band equalizer with presets | ✓ | ✓ | ✓ |
 | Spectrum on the display, in time with what you hear | ✓ | ✓ | ✓ |
 | Ambient mode: six full-screen faces, with OLED protection | ✓ | ✓ | ✓ |
-| A glow behind the ambient faces, from the cover or, without one, the skin's own light | later | ✓ | later |
-| Move through the track from ambient mode | later | ✓ | later |
+| A glow behind the ambient faces, from the cover or, without one, the skin's own light | ✓ | ✓ | later |
+| Move through the track from ambient mode | ✓ | ✓ | later |
 | Album artwork: the folder's image, then MusicBrainz by folder names | ✓ | ✓ | ✓ |
-| Jellyfin covers from the image file in the album's folder | later | ✓ | later |
+| Jellyfin covers from the image file in the album's folder | ✓ | ✓ | later |
 | Correct a wrong or missing cover | ✓ | later | ✓ |
 | Skins (Rams, Graphite Orange, Phosphor) and five font pairs | ✓ | ✓ | ✓ |
 | Four livelier skins (Rave, Neon Tokyo, Tropicália, Velvet), each with its own glow temperament, from a flare on every kick to a slow fire | ✓ | ✓ | later |
@@ -41,12 +41,14 @@
 | A keyboard shortcut for everything | ✓ | — | ✓ |
 | Everything from a TV remote | — | ✓ | — |
 | Media keys and the system's Now Playing controls | ✓ | ✓ | ✓ |
-| Reopens where you left off | later | ✓ | later |
+| Reopens where you left off | ✓ | ✓ | later |
 | A track that fails is tried again, then skipped, and the display says so | ✓ | later | ✓ |
 | Screen reader: every key, control and row is read | ✓ | later | later |
 | English and Portuguese, following the system | ✓ | ✓ | ✓ |
 | Says when there's a new version; never downloads by itself | ✓ | ✓ | ✓ |
-| No account, no analytics | ✓ | ✓ | ✓ |
+| An error log kept on the device, opened from the menu | ✓ | later | later |
+| Anonymous use and failure counts for the author, only with your yes | ✓ | later | later |
+| No account, no tracking | ✓ | ✓ | ✓ |
 
 *Later*: on its way. —: doesn't apply on that platform.
 <!-- /nuva:platforms -->

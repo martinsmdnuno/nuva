@@ -63,7 +63,7 @@
         {"@type": "Question", "name": "Can NuVa play to a WiiM or another AirPlay speaker?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. NuVa supports AirPlay 2: click the output name on its display and choose a WiiM streamer, a HomePod, an Apple TV or any AirPlay speaker."}},
         {"@type": "Question", "name": "Does NuVa read tags or reorganise my library?", "acceptedAnswer": {"@type": "Answer", "text": "No. A folder is an album and a file is a track. NuVa shows folder and file names exactly as they are and sorts tracks naturally by file name, so track 2 comes before track 10."}},
         {"@type": "Question", "name": "Can I play music from a NAS?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Connect to the share in Finder (SMB) and add the folder in NuVa; it comes back by itself when the share is mounted again. You can also use a Jellyfin server on the NAS. Plex and UPnP/DLNA servers aren't supported yet."}},
-        {"@type": "Question", "name": "Is NuVa free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. NuVa is free and open source under the MIT license, with no account, no ads and no analytics."}},
+        {"@type": "Question", "name": "Is NuVa free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. NuVa is free and open source under the MIT license, with no account, no ads and no tracking."}},
         {"@type": "Question", "name": "Why does macOS say it can't check NuVa?", "acceptedAnswer": {"@type": "Answer", "text": "NuVa isn't signed with a paid Apple developer certificate. After dragging it to Applications and opening it once, go to System Settings › Privacy & Security and click Open Anyway next to the NuVa message. You only do this once."}},
         {"@type": "Question", "name": "Is there NuVa for Android TV?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. NuVa for Android TV runs on an Android TV box or a TV with Android TV 8.1 or later and plays a Jellyfin server by its folders, FLAC included, with the equalizer, the spectrum and the ambient faces. Install it with the Downloader app: type nuva.martinsnuno.com/tv."}},
         {"@type": "Question", "name": "Is there NuVa for Windows?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. NuVa for Windows runs on Windows 10 (2004) or 11 and plays folders, network shares, Jellyfin and audio CDs, FLAC through Windows' own decoders, with the equalizer, the spectrum and the ambient faces; it has no AirPlay. Download NuVa-Windows.zip, unzip it and open NuVa.exe; Windows asks once, under More info, to run it anyway."}},
@@ -212,11 +212,15 @@
         </div>
         <div data-for="tv">
           <h3>Free, no ads</h3>
-          <p>Free and open source under the MIT license, with no ads and no analytics. Your music stays on your server.</p>
+          <p>Free and open source under the MIT license, with no ads and no tracking. Your music stays on your server.</p>
         </div>
         <div data-for="mac">
           <h3>A NAS, a disk or a CD</h3>
           <p>Folders on your Mac, an external disk or a NAS over SMB. Put in an audio CD and NuVa names the album and its tracks from MusicBrainz.</p>
+        </div>
+        <div data-for="mac">
+          <h3>Reopens where you left off</h3>
+          <p>Open NuVa again and the queue, the track and the place in it are where you left them, with the same volume, repeat and shuffle.</p>
         </div>
         <div data-for="mac">
           <h3>Keyboard first</h3>
@@ -248,7 +252,7 @@
         <p class="label">ambient mode</p>
         <h2>A hi-fi display for the room</h2>
         <p class="muted" data-for="tv">Press the display key and the whole TV becomes NuVa's display, to leave the music playing as part of the room. ← and → change the face, ↓ moves through the track, ↑ or Back brings the player back. The album's cover is on every face, with its colours glowing behind; without one, a soft glow in the skin's own light.</p>
-        <p class="muted" data-for="mac">Press ⌘4 and the whole screen becomes NuVa's display, to leave the music playing as part of the room. Drawn at your screen's own rate, up to 120 Hz, and in time with what you hear, AirPlay included.</p>
+        <p class="muted" data-for="mac">Press ⌘4 and the whole screen becomes NuVa's display, to leave the music playing as part of the room. Drawn at your screen's own rate, up to 120 Hz, and in time with what you hear, AirPlay included. ⇧⌘← and ⇧⌘→ move through the track; an album without a cover glows in the skin's own light.</p>
         <p class="muted" data-for="windows">Press Ctrl+4 or F11 and the whole screen becomes NuVa's display, to leave the music playing as part of the room. Drawn at your screen's own rate, and in time with what you hear.</p>
         <ul>
           <li>Backlit VU meters whose needles move like real ones</li>
@@ -348,7 +352,7 @@
       </details>
       <details>
         <summary>Is NuVa free?</summary>
-        <p>Yes. NuVa is free and open source under the MIT license, with no account, no ads and no analytics.</p>
+        <p>Yes. NuVa is free and open source under the MIT license, with no account, no ads and no tracking.</p>
       </details>
       <details>
         <summary>Why does macOS say it can't check NuVa?</summary>

@@ -5,7 +5,9 @@ import Security
 enum Keychain {
     private static let service = "pt.nunomartins.nuva"
 
-    static func setPassword(_ password: String, for account: String) {
+    /// Whether the password was saved.
+    @discardableResult
+    static func setPassword(_ password: String, for account: String) -> Bool {
         deletePassword(for: account)
         let item: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -13,7 +15,7 @@ enum Keychain {
             kSecAttrAccount as String: account,
             kSecValueData as String: Data(password.utf8),
         ]
-        SecItemAdd(item as CFDictionary, nil)
+        return SecItemAdd(item as CFDictionary, nil) == errSecSuccess
     }
 
     static func password(for account: String) -> String? {

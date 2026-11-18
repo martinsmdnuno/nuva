@@ -17,6 +17,11 @@ struct NuVaApp: App {
         Window("NuVa", id: "main") {
             ContentView()
                 .environment(model)
+                // Once, after the window is up: may NuVa report use and failures?
+                .task {
+                    try? await Task.sleep(for: .seconds(2))
+                    model.askAboutReports()
+                }
         }
         .windowResizability(.contentSize)
         .commands { NuVaCommands(model: model) }
@@ -55,6 +60,8 @@ struct NuVaCommands: Commands {
         CommandGroup(after: .appInfo) {
             Button("Procurar atualizações…") { UpdateChecker.shared.checkNow() }
             Button("Termos e privacidade") { openWindow(id: "terms") }
+            Button("Mostrar registo de erros") { Log.shared.reveal() }
+            Toggle("Enviar uso e falhas anónimos", isOn: Binding(get: { model.sendsReports }, set: { model.sendsReports = $0 }))
         }
         CommandGroup(replacing: .newItem) {
             Button("Adicionar pasta…") { model.addFolder() }

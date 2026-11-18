@@ -129,6 +129,7 @@ final class Ambient {
         window.onExitFullScreen = { [weak self] in self?.finish() }
         self.window = window
         isOpen = true
+        model.count("ambient")
 
         keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             let key = (code: event.keyCode, flags: event.modifierFlags, window: event.windowNumber)

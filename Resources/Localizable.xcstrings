@@ -113,6 +113,22 @@
         }
       }
     },
+    "A NuVa pode enviar ao autor, cerca de uma vez por dia, contagens anónimas: que funções são usadas e que tipos de falha acontecem. Nunca nomes de pastas, ficheiros ou servidores, nem nada que te identifique. Podes mudar de ideias no menu NuVa; os detalhes estão em Termos e privacidade.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NuVa can send its author, about once a day, anonymous counts: which features are used and which kinds of failure happen. Never the names of folders, files or servers, and nothing that identifies you. You can change your mind in the NuVa menu; the details are in Terms and Privacy."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A NuVa pode enviar ao autor, cerca de uma vez por dia, contagens anónimas: que funções são usadas e que tipos de falha acontecem. Nunca nomes de pastas, ficheiros ou servidores, nem nada que te identifique. Podes mudar de ideias no menu NuVa; os detalhes estão em Termos e privacidade."
+          }
+        }
+      }
+    },
     "A NuVa procura a capa pelo nome das pastas. Corrige o artista ou o álbum e procura outra vez, ou escolhe uma imagem.": {
       "localizations": {
         "en": {
@@ -365,6 +381,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "AirPlay"
+          }
+        }
+      }
+    },
+    "Ajudar a melhorar a NuVa?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Help make NuVa better?"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajudar a melhorar a NuVa?"
           }
         }
       }
@@ -813,6 +845,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Entrar"
+          }
+        }
+      }
+    },
+    "Enviar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enviar"
+          }
+        }
+      }
+    },
+    "Enviar uso e falhas anónimos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send Anonymous Use and Failures"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enviar uso e falhas anónimos"
           }
         }
       }
@@ -1485,6 +1549,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Não encontrei esta capa. Confirma os nomes ou escolhe uma imagem."
+          }
+        }
+      }
+    },
+    "Não enviar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Don't Send"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não enviar"
           }
         }
       }

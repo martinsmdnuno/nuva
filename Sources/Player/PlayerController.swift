@@ -74,6 +74,9 @@ final class PlayerController {
     /// Called after a seek (for Now Playing).
     @ObservationIgnored var onSeek: (() -> Void)?
 
+    /// Called when a track starts, picked or reached on its own (for the use counts).
+    @ObservationIgnored var onTrackStarted: ((Entry) -> Void)?
+
     /// Called once when a track fails, before trying it again: a server source can sign in afresh.
     @ObservationIgnored var onStreamFailure: (@Sendable (Entry) async -> Void)?
 
@@ -259,6 +262,7 @@ final class PlayerController {
             }
             player.insert(avItem, after: nil)
             if autoplay { player.play() }
+            onTrackStarted?(item.entry)
             loadFormat(avItem)
             refreshUpcoming()
         }
@@ -465,7 +469,9 @@ final class PlayerController {
         currentID = item.queueID
         currentTime = 0
         duration = 0
-        formatLabel = queue.first { $0.id == item.queueID }?.entry.format ?? ""
+        let entry = queue.first { $0.id == item.queueID }?.entry
+        formatLabel = entry?.format ?? ""
+        if let entry { onTrackStarted?(entry) }
         loadFormat(item)
         refreshUpcoming()
     }

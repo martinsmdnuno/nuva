@@ -12,7 +12,7 @@ final class Log: Sendable {
     }
 
     static let shared = Log(directory: URL.applicationSupportDirectory
-        .appendingPathComponent("NuVa/Logs", isDirectory: true))
+        .appendingPathComponent("NuVa/Logs", isDirectory: true), reports: .shared)
 
     /// The file is started again past this size; the one before it is kept as `nuva.old.log`.
     static let maxBytes = 256 * 1024
@@ -22,7 +22,11 @@ final class Log: Sendable {
     private let queue = DispatchQueue(label: "pt.nunomartins.nuva.log", qos: .utility)
     private let system = Logger(subsystem: "pt.nunomartins.nuva", category: "errors")
 
-    init(directory: URL) {
+    /// Counts each failure's kind (its code, never its detail) for the user who agreed to report them.
+    private let reports: Reports?
+
+    init(directory: URL, reports: Reports? = nil) {
+        self.reports = reports
         file = directory.appendingPathComponent("nuva.log")
         old = directory.appendingPathComponent("nuva.old.log")
     }
@@ -31,7 +35,9 @@ final class Log: Sendable {
     func error(_ area: Area, _ code: String, _ error: Error? = nil, detail: String? = nil) {
         let reason = error.map(Self.code(for:))
         let text = [detail, error?.localizedDescription].compactMap { $0 }.joined(separator: ": ")
-        let line = Self.line(area: area, code: [code, reason].compactMap { $0 }.joined(separator: " "), detail: text)
+        let kind = [code, reason].compactMap { $0 }.joined(separator: " ")
+        let line = Self.line(area: area, code: kind, detail: text)
+        reports?.failure(area: area.rawValue, code: kind)
         system.error("\(line, privacy: .private)")
         queue.async { [file, old] in Self.append(line, to: file, old: old) }
     }

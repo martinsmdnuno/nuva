@@ -60,6 +60,16 @@ final class AppModel {
         return currentLoadedArtwork?.origin != .folder
     }
 
+    /// Something the user asked for that didn't happen (a folder that wouldn't open), with the reason.
+    struct Notice: Equatable {
+        let message: String
+        let detail: String?
+    }
+
+    /// On the display for a few seconds, where a failed track's message goes.
+    private(set) var notice: Notice?
+    @ObservationIgnored private var noticeToken = 0
+
     /// Folder whose artwork is being fixed (sheet open).
     var fixingArtwork: Entry?
     /// The equalizer panel, open from the display or Controls ▸ Equalizer… (⌥⌘E).
@@ -126,11 +136,39 @@ final class AppModel {
         }
     }
 
+    /// Shows a failure on the display for a few seconds.
+    func report(_ message: String, detail: String? = nil) {
+        notice = Notice(message: message, detail: detail)
+        noticeToken += 1
+        let token = noticeToken
+        Task {
+            try? await Task.sleep(for: .seconds(8))
+            if token == noticeToken { notice = nil }
+        }
+    }
+
+    /// Says what a folder didn't give: nothing at all, or less than it holds.
+    private func report(_ found: FolderTracks) {
+        if found.tracks.isEmpty {
+            if let error = found.error {
+                report(String(localized: "Não foi possível abrir a pasta"), detail: error.localizedDescription)
+            } else {
+                report(String(localized: "Sem música nesta pasta"))
+            }
+        } else if found.unreadable > 0 {
+            report(String(localized: "Algumas pastas não abriram"), detail: found.error?.localizedDescription)
+        }
+    }
+
     /// Adds a Local source and opens it in the browser.
     func addFolder() {
         windowMode = .browser
-        guard let source = sources.addLocal() else { return }
-        browser.open(BrowserLocation(sourceID: source.id, path: ""))
+        do {
+            guard let source = try sources.addLocal() else { return }
+            browser.open(BrowserLocation(sourceID: source.id, path: ""))
+        } catch {
+            report(String(localized: "Não foi possível adicionar a pasta"), detail: error.localizedDescription)
+        }
     }
 
     /// Opens the sheet to add a Jellyfin server.
@@ -141,7 +179,9 @@ final class AppModel {
 
     /// Plays a folder (with subfolders), starting at a track if given.
     func playFolder(_ folder: BrowserLocation, startingAt track: Entry? = nil) async {
-        let tracks = await browser.tracks(in: folder)
+        let found = await browser.collect(in: folder)
+        report(found)
+        let tracks = found.tracks
         guard !tracks.isEmpty else { return }
         player.setQueue(tracks, startAt: track.flatMap { t in tracks.firstIndex { $0.id == t.id } } ?? 0)
         // The folders give way to the queue, now holding what was chosen.
@@ -154,7 +194,9 @@ final class AppModel {
         case .track:
             player.append([entry])
         case .folder:
-            player.append(await browser.tracks(in: BrowserLocation(sourceID: entry.sourceID, path: entry.path)))
+            let found = await browser.collect(in: BrowserLocation(sourceID: entry.sourceID, path: entry.path))
+            report(found)
+            player.append(found.tracks)
         }
     }
 

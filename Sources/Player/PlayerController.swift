@@ -114,9 +114,9 @@ final class PlayerController {
         ) { [weak self] note in
             // A stream that breaks mid-track (network gone).
             let id = (note.object as? QueuePlayerItem)?.queueID
-            let detail = (note.userInfo?[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? Error)?.localizedDescription
+            let error = note.userInfo?[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? Error
             MainActor.assumeIsolated {
-                if let id { self?.failed(id, detail: detail) }
+                if let id { self?.failed(id, error: error) }
             }
         }
         timeObserver = player.addPeriodicTimeObserver(
@@ -215,14 +215,15 @@ final class PlayerController {
         start(id)
     }
 
-    private func start(_ id: QueueItem.ID) {
+    /// `position`: where to pick the track up again, when it broke off part way (the network went).
+    private func start(_ id: QueueItem.ID, at position: Double = 0) {
         guard let item = queue.first(where: { $0.id == id }) else { return }
         playToken += 1
         let token = playToken
         upcomingToken += 1
         currentID = id
         currentAVItem = nil
-        currentTime = 0
+        currentTime = position
         duration = 0
         formatLabel = item.entry.format
         autoplay = true
@@ -236,10 +237,14 @@ final class PlayerController {
             switch made {
             case .success(let made): avItem = made
             case .failure(let error):
-                failed(id, detail: error.localizedDescription)
+                failed(id, error: error)
                 return
             }
             currentAVItem = avItem
+            if position > 0 {
+                await avItem.seek(to: CMTime(seconds: position, preferredTimescale: 600), toleranceBefore: .zero, toleranceAfter: .zero)
+                guard token == playToken else { return }
+            }
             player.insert(avItem, after: nil)
             if autoplay { player.play() }
             loadFormat(avItem)
@@ -352,17 +357,20 @@ final class PlayerController {
     /// A track failed to resolve, open or keep playing. The first time it is tried again (after
     /// the source had its chance to sign in afresh); the second time it is skipped, with a message
     /// on the display. If nothing in the queue plays, playback stops on the failed track.
-    private func failed(_ id: QueueItem.ID, detail: String?) {
+    private func failed(_ id: QueueItem.ID, error: Error?) {
         guard let item = queue.first(where: { $0.id == id }), !failedIDs.contains(id) else { return }
         let isCurrent = id == currentID
         if !retriedIDs.contains(id) {
             retriedIDs.insert(id)
+            Log.shared.error(.player, "track-retried", error, detail: item.entry.path)
             let token = playToken
+            // A track that was already playing picks up where it broke off, not from the start.
+            let position = isCurrent ? currentTime : 0
             Task {
                 await onStreamFailure?(item.entry)
                 if isCurrent {
                     guard token == playToken, currentID == id else { return }
-                    start(id)
+                    start(id, at: position)
                 } else {
                     refreshUpcoming()
                 }
@@ -370,12 +378,13 @@ final class PlayerController {
             return
         }
         failedIDs.insert(id)
+        Log.shared.error(.player, "track-skipped", error, detail: item.entry.path)
         guard isCurrent else {
             refreshUpcoming()
             return
         }
         errorMessage = String(localized: "Não foi possível tocar \(item.entry.title)")
-        errorDetail = detail
+        errorDetail = error?.localizedDescription
         if autoplay, let next = playable(after: id, wrap: repeatMode != .off) {
             start(next)
         } else {
@@ -401,7 +410,7 @@ final class PlayerController {
             guard token == upcomingToken, player.currentItem === currentAVItem else { return }
             switch made {
             case .success(let avItem): player.insert(avItem, after: currentAVItem)
-            case .failure(let error): failed(id, detail: error.localizedDescription)
+            case .failure(let error): failed(id, error: error)
             }
         }
     }
@@ -413,8 +422,8 @@ final class PlayerController {
             let id = item.id
             avItem.statusObservation = avItem.observe(\.status) { [weak self] observed, _ in
                 guard observed.status == .failed else { return }
-                let detail = observed.error?.localizedDescription
-                Task { @MainActor in self?.failed(id, detail: detail) }
+                let error = observed.error
+                Task { @MainActor in self?.failed(id, error: error) }
             }
             await equalizer.attach(to: avItem)
             return .success(avItem)

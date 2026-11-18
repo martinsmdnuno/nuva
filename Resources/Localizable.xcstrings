@@ -417,6 +417,22 @@
         }
       }
     },
+    "Algumas pastas não abriram": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some folders didn't open"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Algumas pastas não abriram"
+          }
+        }
+      }
+    },
     "Ambiente": {
       "localizations": {
         "en": {
@@ -1313,6 +1329,22 @@
         }
       }
     },
+    "Mostrar registo de erros": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show Error Log"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar registo de erros"
+          }
+        }
+      }
+    },
     "Mostrar tempo restante": {
       "localizations": {
         "en": {
@@ -1453,6 +1485,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "Não encontrei esta capa. Confirma os nomes ou escolhe uma imagem."
+          }
+        }
+      }
+    },
+    "Não foi possível abrir a pasta": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't open the folder"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível abrir a pasta"
+          }
+        }
+      }
+    },
+    "Não foi possível adicionar a pasta": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't add the folder"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível adicionar a pasta"
+          }
+        }
+      }
+    },
+    "Não foi possível guardar a palavra-passe no Porta-chaves": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't save the password in the Keychain"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível guardar a palavra-passe no Porta-chaves"
           }
         }
       }

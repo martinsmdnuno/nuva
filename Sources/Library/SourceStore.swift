@@ -58,8 +58,9 @@ final class SourceStore {
     }
 
     /// Opens the NSOpenPanel and adds the chosen folder as a Local source.
+    /// Nil when the panel is cancelled; throws when macOS won't give lasting access to the folder.
     @discardableResult
-    func addLocal() -> (any MusicSource)? {
+    func addLocal() throws -> (any MusicSource)? {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
@@ -67,18 +68,23 @@ final class SourceStore {
         panel.prompt = String(localized: "Adicionar fonte")
         panel.message = String(localized: "Escolher a pasta da música")
         guard panel.runModal() == .OK, let url = panel.url else { return nil }
-        return addLocal(url)
+        return try addLocal(url)
     }
 
     @discardableResult
-    func addLocal(_ url: URL) -> (any MusicSource)? {
+    func addLocal(_ url: URL) throws -> any MusicSource {
         if let existing = sources.compactMap({ $0 as? LocalSource }).first(where: { $0.root == url }) {
             return existing
         }
-        guard let bookmark = try? LocalSource.bookmark(for: url) else { return nil }
-        let record = Record(id: UUID(), name: url.lastPathComponent, kind: .local, bookmark: bookmark)
-        guard let source = try? LocalSource(id: record.id, name: record.name, bookmark: bookmark) else {
-            return nil
+        let record: Record
+        let source: LocalSource
+        do {
+            let bookmark = try LocalSource.bookmark(for: url)
+            record = Record(id: UUID(), name: url.lastPathComponent, kind: .local, bookmark: bookmark)
+            source = try LocalSource(id: record.id, name: record.name, bookmark: bookmark)
+        } catch {
+            Log.shared.error(.source, "add-folder-failed", error, detail: url.lastPathComponent)
+            throw error
         }
         records.append(record)
         sources.append(source)
@@ -92,7 +98,11 @@ final class SourceStore {
         let record = Record(
             id: UUID(), name: "Jellyfin · \(server.host() ?? server.absoluteString)", kind: .jellyfin,
             server: server, username: username)
-        Keychain.setPassword(password, for: record.id.uuidString)
+        // Without the password the source would stop working at the next launch: don't add it.
+        guard Keychain.setPassword(password, for: record.id.uuidString) else {
+            Log.shared.error(.jellyfin, "keychain-save-failed")
+            throw SourceError.passwordNotSaved
+        }
         let source = jellyfin(record, server: server, username: username)
         records.append(record)
         sources.append(source)
@@ -135,9 +145,13 @@ final class SourceStore {
     }
 
     private func load() {
-        guard let data = defaults.data(forKey: Self.key),
-              let saved = try? JSONDecoder().decode([Record].self, from: data) else { return }
-        records = saved
+        guard let data = defaults.data(forKey: Self.key) else { return }
+        do {
+            records = try JSONDecoder().decode([Record].self, from: data)
+        } catch {
+            Log.shared.error(.source, "saved-sources-unreadable", error)
+            return
+        }
         var changed = false
         for (i, record) in records.enumerated() {
             switch record.kind {
@@ -151,6 +165,7 @@ final class SourceStore {
                     }
                     sources.append(source)
                 } catch {
+                    Log.shared.error(.source, "saved-folder-missing", error, detail: record.name)
                     failed[record.id] = SourceError.missingFolder(record.name).localizedDescription
                 }
             case .jellyfin:

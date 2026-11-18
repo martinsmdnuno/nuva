@@ -55,6 +55,7 @@ struct NuVaCommands: Commands {
         CommandGroup(after: .appInfo) {
             Button("Procurar atualizações…") { UpdateChecker.shared.checkNow() }
             Button("Termos e privacidade") { openWindow(id: "terms") }
+            Button("Mostrar registo de erros") { Log.shared.reveal() }
         }
         CommandGroup(replacing: .newItem) {
             Button("Adicionar pasta…") { model.addFolder() }

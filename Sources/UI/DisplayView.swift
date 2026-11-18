@@ -52,7 +52,8 @@ struct DisplayView: View {
 
                     HStack(spacing: Space.s2) {
                         // A failed track takes the folder's line, in danger, until something plays.
-                        if let error = player.errorMessage {
+                        // So does something the user asked for that didn't happen, for a few seconds.
+                        if let error = player.errorMessage ?? model.notice?.message {
                             Text(error)
                                 .font(.dsCaption)
                                 .foregroundStyle(Color.danger)
@@ -60,7 +61,7 @@ struct DisplayView: View {
                                 .environment(\.colorScheme, .dark)
                                 .lineLimit(1)
                                 .truncationMode(.tail)
-                                .help(player.errorDetail ?? error)
+                                .help((player.errorMessage != nil ? player.errorDetail : model.notice?.detail) ?? error)
                                 .layoutPriority(1)
                                 .transition(.opacity)
                         } else {

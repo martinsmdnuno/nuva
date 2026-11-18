@@ -231,7 +231,7 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 | A keyboard shortcut for everything | ✓ | — | ✓ |
 | Everything from a TV remote | — | ✓ | — |
 | Media keys and the system's Now Playing controls | ✓ | ✓ | ✓ |
-| Reopens where you left off | later | ✓ | later |
+| Reopens where you left off | ✓ | ✓ | later |
 | A track that fails is tried again, then skipped, and the display says so | ✓ | later | ✓ |
 | Screen reader: every key, control and row is read | ✓ | later | later |
 | English and Portuguese, following the system | ✓ | ✓ | ✓ |
@@ -381,7 +381,7 @@ Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnun
 | Um atalho de teclado para tudo | ✓ | — | ✓ |
 | Tudo com o comando da TV | — | ✓ | — |
 | Teclas multimédia e os controlos de reprodução do sistema | ✓ | ✓ | ✓ |
-| Volta a abrir onde ficaste | mais tarde | ✓ | mais tarde |
+| Volta a abrir onde ficaste | ✓ | ✓ | mais tarde |
 | Uma faixa que falha é tentada outra vez e saltada, e o visor diz qual | ✓ | mais tarde | ✓ |
 | Leitor de ecrã: lê cada tecla, controlo e linha | ✓ | mais tarde | mais tarde |
 | Português e inglês, conforme o sistema | ✓ | ✓ | ✓ |

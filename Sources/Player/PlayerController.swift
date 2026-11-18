@@ -7,7 +7,7 @@ struct QueueItem: Identifiable, Hashable, Sendable {
     let entry: Entry
 }
 
-enum RepeatMode: Sendable {
+enum RepeatMode: String, Sendable {
     case off, all, one
 
     var next: RepeatMode {
@@ -197,6 +197,18 @@ final class PlayerController {
         refreshUpcoming()
     }
 
+    /// Puts back the last session's queue, stopped on its track at its position: play picks it up there.
+    func restore(_ entries: [Entry], current: Int?, position: Double, duration: Double) {
+        guard queue.isEmpty, !entries.isEmpty else { return }
+        queue = entries.map { QueueItem(entry: $0) }
+        currentID = current.flatMap { queue.indices.contains($0) ? queue[$0].id : nil }
+        rebuildOrder()
+        guard let item = self.current else { return }
+        currentTime = max(0, position)
+        self.duration = max(0, duration)
+        formatLabel = item.entry.format
+    }
+
     func clear() {
         queue = []
         order = []
@@ -259,7 +271,9 @@ final class PlayerController {
             autoplay = true
             player.play()
         } else if let currentID {
-            play(currentID)
+            // Nothing loaded (a restored session, the end of the queue): from where the display says.
+            failedIDs.remove(currentID)
+            start(currentID, at: currentTime)
         } else if let first = order.first(where: { !failedIDs.contains($0) }) ?? order.first {
             play(first)
         }

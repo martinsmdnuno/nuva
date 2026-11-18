@@ -57,6 +57,11 @@ final class SourceStore {
         sources.first { $0.id == id }
     }
 
+    /// Whether a source is saved, open or not (a disk that isn't mounted yet still counts). Never a CD.
+    func remembers(_ id: UUID) -> Bool {
+        records.contains { $0.id == id }
+    }
+
     /// Opens the NSOpenPanel and adds the chosen folder as a Local source.
     /// Nil when the panel is cancelled; throws when macOS won't give lasting access to the folder.
     @discardableResult

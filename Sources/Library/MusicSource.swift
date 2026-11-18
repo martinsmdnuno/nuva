@@ -1,8 +1,8 @@
 import Foundation
 
 /// A folder or a track inside a source. The path is relative to the source root.
-struct Entry: Identifiable, Hashable, Sendable {
-    enum Kind: Sendable { case folder, track }
+struct Entry: Identifiable, Hashable, Sendable, Codable {
+    enum Kind: String, Sendable, Codable { case folder, track }
 
     let sourceID: UUID
     let path: String

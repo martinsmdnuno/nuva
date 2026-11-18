@@ -41,7 +41,7 @@
 | A keyboard shortcut for everything | ✓ | — | ✓ |
 | Everything from a TV remote | — | ✓ | — |
 | Media keys and the system's Now Playing controls | ✓ | ✓ | ✓ |
-| Reopens where you left off | later | ✓ | later |
+| Reopens where you left off | ✓ | ✓ | later |
 | A track that fails is tried again, then skipped, and the display says so | ✓ | later | ✓ |
 | Screen reader: every key, control and row is read | ✓ | later | later |
 | English and Portuguese, following the system | ✓ | ✓ | ✓ |

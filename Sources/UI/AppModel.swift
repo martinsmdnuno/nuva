@@ -77,6 +77,7 @@ final class AppModel {
 
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private var nowPlaying: NowPlaying?
+    @ObservationIgnored private var memory: PlayerMemory?
     @ObservationIgnored private let drive = DiscDrive()
     @ObservationIgnored private let discLookup = DiscLookup.standard
     /// Volumes of discs being read (lookup under way), so a mount seen twice plays once.
@@ -99,6 +100,10 @@ final class AppModel {
         self.windowMode = WindowMode(rawValue: defaults.string(forKey: "windowMode") ?? "") ?? .player
         self.showsArtwork = defaults.bool(forKey: "showsArtwork")
         self.showsSpectrum = defaults.object(forKey: "showsSpectrum") as? Bool ?? true
+        // Before Now Playing, so it starts with the track of the last session.
+        if systemIntegration {
+            memory = PlayerMemory(player: player, defaults: defaults) { sources.remembers($0) }
+        }
         if systemIntegration { nowPlaying = NowPlaying(player: player, artwork: { [unowned self] in currentArtwork }) }
         if sources.sources.count == 1, let only = sources.sources.first {
             browser.open(BrowserLocation(sourceID: only.id, path: ""))

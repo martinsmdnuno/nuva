@@ -119,7 +119,7 @@
     { "id": "now-playing", "en": "Media keys and the system's Now Playing controls", "pt": "Teclas multimédia e os controlos de reprodução do sistema",
       "mac": "yes", "tv": "yes", "windows": "yes" },
     { "id": "resume", "en": "Reopens where you left off", "pt": "Volta a abrir onde ficaste",
-      "mac": "planned", "tv": "yes", "windows": "planned" },
+      "mac": "yes", "tv": "yes", "windows": "planned" },
     { "id": "keeps-going", "en": "A track that fails is tried again, then skipped, and the display says so", "pt": "Uma faixa que falha é tentada outra vez e saltada, e o visor diz qual",
       "mac": "yes", "tv": "planned", "windows": "yes" },
     { "id": "screen-reader", "en": "Screen reader: every key, control and row is read", "pt": "Leitor de ecrã: lê cada tecla, controlo e linha",

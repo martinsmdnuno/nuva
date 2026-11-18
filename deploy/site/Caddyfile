@@ -29,6 +29,12 @@
 		reverse_proxy feedback:8080
 	}
 
+	# What the apps report when the person using them agreed to it (reports.py).
+	@reports path /api/usage /api/errors
+	handle @reports {
+		reverse_proxy reports:8081
+	}
+
 	handle {
 		root * /srv
 		# Pages are checked on every visit, so a new page always brings its new CSS and JS;

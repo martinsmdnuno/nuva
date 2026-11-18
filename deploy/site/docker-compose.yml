@@ -3,8 +3,10 @@
 # web      serves ../../site as it is in the checkout, so `git pull` publishes;
 #          it also passes /api/feedback to the feedback service.
 # feedback receives the form and sends it by email (secrets in .env, never committed).
+# reports  receives what the apps report when their user agreed (use and failures, as
+#          counts) and mails a digest; the counts live in the `reports` volume.
 #
-# No `ports:`: both join the external `web` network and the edge reaches
+# No `ports:`: they join the external `web` network and the edge reaches
 # `nuva-web:80` by name.
 
 name: nuva-site
@@ -35,6 +37,22 @@ services:
       - ./feedback.py:/app/feedback.py:ro
     networks:
       - internal
+
+  reports:
+    image: python:3.13-alpine
+    restart: unless-stopped
+    command: ["python", "-u", "/app/reports.py"]
+    env_file: .env
+    expose:
+      - "8081"
+    volumes:
+      - ./reports.py:/app/reports.py:ro
+      - reports:/data
+    networks:
+      - internal
+
+volumes:
+  reports:
 
 networks:
   web:

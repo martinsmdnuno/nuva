@@ -128,7 +128,11 @@
       "mac": "yes", "tv": "yes", "windows": "yes" },
     { "id": "updates", "en": "Says when there's a new version; never downloads by itself", "pt": "Avisa quando há versão nova; nunca descarrega sozinha",
       "mac": "yes", "tv": "yes", "windows": "yes" },
-    { "id": "privacy", "en": "No account, no analytics", "pt": "Sem conta, sem analytics",
+    { "id": "error-log", "en": "An error log kept on the device, opened from the menu", "pt": "Um registo de erros guardado no aparelho, que se abre pelo menu",
+      "mac": "yes", "tv": "planned", "windows": "planned" },
+    { "id": "reports", "en": "Anonymous use and failure counts for the author, only with your yes", "pt": "Contagens anónimas de uso e de falhas para o autor, só com o teu sim",
+      "mac": "yes", "tv": "planned", "windows": "planned" },
+    { "id": "privacy", "en": "No account, no tracking", "pt": "Sem conta, sem rastreio",
       "mac": "yes", "tv": "yes", "windows": "yes" }
   ]
 }

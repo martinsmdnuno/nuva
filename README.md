@@ -85,7 +85,7 @@ The look above is the **Rams** skin. **Graphite Orange** is always dark, with a 
 - **Needles**: two backlit VU meters under glass. The needles move like real ones: a damped spring that takes 300 ms to settle, overshoots a hair and rests on its pin.
 - **Valves**: two valves in their cage, whose filaments glow with each channel.
 
-They all move with what you hear, AirPlay included, drawn at your screen's own rate (120 Hz on a ProMotion Mac or a 120 Hz TV). With artwork on, the screen takes on the album's colours: a soft, blurred glow made from the cover itself, behind the face; on the Display face it breathes with the bass. Esc or ⌘4 leaves. It can go on another screen or a TV (**View › Ambient Options**), and keeps the screen awake while music plays. **OLED Protection**, on by default, looks after OLED screens: the picture drifts slowly, static parts are dimmer, the face changes every 20 minutes, and after an hour untouched only a small light is left.
+They all move with what you hear, AirPlay included, drawn at your screen's own rate (120 Hz on a ProMotion Mac or a 120 Hz TV). With artwork on, the screen takes on the album's colours: a soft, blurred glow made from the cover itself, behind the face; on the Display face it breathes with the bass. An album without a cover glows in the skin's own lights instead. ⇧⌘← and ⇧⌘→ move 10 seconds through the track. Esc or ⌘4 leaves. It can go on another screen or a TV (**View › Ambient Options**), and keeps the screen awake while music plays. **OLED Protection**, on by default, looks after OLED screens: the picture drifts slowly, static parts are dimmer, the face changes every 20 minutes, and after an hour untouched only a small light is left.
 
 ## Album artwork, if you want it
 
@@ -93,7 +93,7 @@ They all move with what you hear, AirPlay included, drawn at your screen's own r
 
 Turn on **View › Show Artwork** (⌥⌘A) and NuVa shows the album cover in a small square on the display, in the mini player and in Control Center. Off by default.
 
-- If the folder has an image (`cover`, `folder`, `front`, `album` or `capa`, as JPEG or PNG), that's the one. Your file always wins.
+- If the folder has an image (`cover`, `folder`, `front`, `album` or `capa`, as JPEG or PNG), that's the one. Your file always wins. On a Jellyfin server it's the same rule: the image file in the album's folder, never a picture Jellyfin took from the tags.
 - If not, NuVa reads the artist and album from the folder names (`Fleetwood Mac/Rumours (1977)`) and fetches the cover from [MusicBrainz](https://musicbrainz.org) and the [Cover Art Archive](https://coverartarchive.org). Only confident matches count: no cover is better than a wrong one. Never from tags.
 - Wrong or missing? Click the cover, or **View › Wrong or Missing Artwork…**: correct the artist or album and search again, or choose an image. NuVa keeps covers to itself and never writes into your folders.
 
@@ -199,8 +199,10 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 - Media keys, Control Center, the lock screen and AirPods controls.
 - Keyboard first: every action has a shortcut. VoiceOver reads the keys, the sliders and every row.
 - Keeps going: a damaged file or a server that went offline is tried once more, then skipped, and the display says which track couldn't play. A disk or NAS that wasn't connected comes back when it's mounted.
+- Reopens where you left off: the queue, the track and the place in it, the volume, repeat and shuffle, waiting for you to press play.
+- When a folder can't be opened or has no music, the display says so. What went wrong is written to a log that stays on your Mac (**NuVa › Show Error Log**).
 - English and Portuguese, following your system language.
-- No account, no analytics. It only goes online for your Jellyfin server, album covers (when artwork is on), the names of an audio CD and a daily check for new versions, which never downloads anything. See [Terms and privacy](TERMS.md), also in **NuVa › Terms and Privacy**.
+- No account, no tracking. It only goes online for your Jellyfin server, album covers (when artwork is on), the names of an audio CD and a daily check for new versions, which never downloads anything. NuVa asks once whether it may send its author anonymous counts of which features are used and which kinds of failure happen; the answer is no until you say yes, it never includes the name of a folder, file or server, and you can change it in **NuVa › Send Anonymous Use and Failures**. See [Terms and privacy](TERMS.md), also in **NuVa › Terms and Privacy**.
 
 ## Which app does what
 
@@ -236,7 +238,9 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 | Screen reader: every key, control and row is read | ✓ | later | later |
 | English and Portuguese, following the system | ✓ | ✓ | ✓ |
 | Says when there's a new version; never downloads by itself | ✓ | ✓ | ✓ |
-| No account, no analytics | ✓ | ✓ | ✓ |
+| An error log kept on the device, opened from the menu | ✓ | later | later |
+| Anonymous use and failure counts for the author, only with your yes | ✓ | later | later |
+| No account, no tracking | ✓ | ✓ | ✓ |
 
 *Later*: on its way. —: doesn't apply on that platform.
 <!-- /nuva:platforms -->
@@ -277,7 +281,7 @@ On Windows, every shortcut is the same with **Ctrl** for ⌘ and **Ctrl+Shift** 
 | ⌥⌘E | Equalizer |
 | ⌘B | Swap the queue and the folders |
 | ⌘1 · ⌘2 · ⌘3 | Queue · folders · compact |
-| ⌘4 | Ambient (full screen; ← → faces, Esc leaves) |
+| ⌘4 | Ambient (full screen; ← → faces, ⇧⌘← ⇧⌘→ 10 seconds, Esc leaves) |
 | ⌥⌘1 · ⌥⌘2 … | Skin (also in View ▸ Skin) |
 | ⌥⌘A | Show or hide folder artwork |
 | ⌥⌘V | Show or hide the spectrum meter |
@@ -330,14 +334,17 @@ Toca FLAC pelo motor de áudio de cada sistema (o da própria Apple, no Mac), en
 - **Jellyfin sem confusão.** Navega pelas pastas reais do servidor e toca os ficheiros originais.
 - **Uma janela pequena.** As pastas aparecem no lugar da fila (⌘B troca as duas) e há um modo compacto. A janela estica na vertical para veres o álbum inteiro, e na horizontal para nomes compridos. No visor, por baixo do título, as pastas do artista e do álbum ("Fleetwood Mac · Rumours"), que rolam quando não cabem, como num visor de hi-fi.
 - **Skins:** Rams (claro ou escuro, como o sistema), Graphite Orange e Phosphor (sempre escuras), em Visualização › Skin. Cinco pares de fontes em Visualização › Fonte: Inter + IBM Plex Mono, SF Pro + SF Mono, IBM Plex Sans (para a Rams), DM Sans (para a Graphite Orange) e Share Tech (para a Phosphor).
-- **Modo Ambiente** (⌘4): o ecrã inteiro passa a ser o mostrador da NuVa, na skin atual. Seis faces, ← → trocam: a faixa e o tempo em grande, um relógio, o espectro de 28 bandas, os medidores esquerdo e direito, dois VU de ponteiro que se mexem como os verdadeiros e duas válvulas que acendem com cada canal, a 120 Hz nos ecrãs que o têm. Com as capas ligadas, o ecrã ganha as cores do álbum, num brilho desfocado feito da própria capa; na face do ecrã, respira com os graves. Esc sai. Pode ir para outro ecrã ou uma TV. Protege ecrãs OLED: a imagem desloca-se devagar, o que é fixo fica mais escuro, a face muda a cada 20 minutos e, ao fim de uma hora sem mexer, só fica uma pequena luz.
-- **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A). Usa a imagem da pasta (`cover`, `folder`, `front`, `album` ou `capa`); se não houver, procura no MusicBrainz pelo nome das pastas. Nunca das tags. Capa errada ou em falta: carrega na capa e corrige o artista ou o álbum, ou escolhe uma imagem. Desligado por defeito.
+- **Modo Ambiente** (⌘4): o ecrã inteiro passa a ser o mostrador da NuVa, na skin atual. Seis faces, ← → trocam: a faixa e o tempo em grande, um relógio, o espectro de 28 bandas, os medidores esquerdo e direito, dois VU de ponteiro que se mexem como os verdadeiros e duas válvulas que acendem com cada canal, a 120 Hz nos ecrãs que o têm. Com as capas ligadas, o ecrã ganha as cores do álbum, num brilho desfocado feito da própria capa; na face do ecrã, respira com os graves. Um álbum sem capa brilha com as luzes da própria skin. ⇧⌘← e ⇧⌘→ andam 10 segundos pela faixa. Esc sai. Pode ir para outro ecrã ou uma TV. Protege ecrãs OLED: a imagem desloca-se devagar, o que é fixo fica mais escuro, a face muda a cada 20 minutos e, ao fim de uma hora sem mexer, só fica uma pequena luz.
+- **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A). Usa a imagem da pasta (`cover`, `folder`, `front`, `album` ou `capa`); se não houver, procura no MusicBrainz pelo nome das pastas. Nunca das tags. No Jellyfin a regra é a mesma: a imagem que está na pasta do álbum, nunca uma que o Jellyfin tirou das tags. Capa errada ou em falta: carrega na capa e corrige o artista ou o álbum, ou escolhe uma imagem. Desligado por defeito.
 - **CDs áudio, como um leitor de CDs.** Mete um disco no leitor e a NuVa toca-o logo. Os nomes do álbum e das faixas vêm do MusicBrainz, pelo índice do disco (um CD não traz nomes). Ejetar com ⌘E. Para abrir a NuVa sempre que entra um CD: Definições do Sistema › CDs e DVDs › Ao inserir um CD de música › Abrir outra aplicação… › NuVa.
 - **Avisa quando há versão nova** (verifica no GitHub uma vez por dia, sem descarregar nada). [Termos e privacidade](TERMS.md) em NuVa › Termos e privacidade.
 - **Teclas como num deck:** aleatório e repetir à esquerda, tocar ao centro, botão de volume à direita.
 - **Equalizador de 10 bandas** (carrega em "EQ" no visor ou ⌥⌘E) e **espectro no visor**: colunas de segmentos âmbar, uma por banda, que seguem o que estás a ouvir, também em AirPlay (Visualização › Mostrar espectro, ⌥⌘V).
 - Media keys, Centro de Controlo e mini player na barra de menus. Tudo tem atalho de teclado, e o VoiceOver lê as teclas, os controlos e cada linha.
 - **Não pára por qualquer coisa:** um ficheiro danificado ou um servidor que foi abaixo é tentado mais uma vez e depois saltado, e o visor diz que faixa não tocou. Um disco ou NAS que não estava ligado volta quando é montado.
+- **Volta a abrir onde ficaste:** a fila, a faixa e o ponto onde ia, o volume, o repetir e o aleatório, à espera que carregues em tocar.
+- Quando uma pasta não abre ou não tem música, o visor diz. O que correu mal fica escrito num registo que não sai do teu Mac (NuVa › Mostrar registo de erros).
+- **Sem conta, sem rastreio.** A NuVa pergunta uma vez se pode enviar ao autor contagens anónimas das funções usadas e dos tipos de falha; a resposta é não até dizeres que sim, nunca leva o nome de uma pasta, ficheiro ou servidor, e podes mudá-la em NuVa › Enviar uso e falhas anónimos.
 - Em português e inglês, conforme a língua do sistema. macOS 14 ou posterior, Apple silicon e Intel.
 
 ### Na TV: NuVa para Android TV
@@ -386,7 +393,9 @@ Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnun
 | Leitor de ecrã: lê cada tecla, controlo e linha | ✓ | mais tarde | mais tarde |
 | Português e inglês, conforme o sistema | ✓ | ✓ | ✓ |
 | Avisa quando há versão nova; nunca descarrega sozinha | ✓ | ✓ | ✓ |
-| Sem conta, sem analytics | ✓ | ✓ | ✓ |
+| Um registo de erros guardado no aparelho, que se abre pelo menu | ✓ | mais tarde | mais tarde |
+| Contagens anónimas de uso e de falhas para o autor, só com o teu sim | ✓ | mais tarde | mais tarde |
+| Sem conta, sem rastreio | ✓ | ✓ | ✓ |
 
 *Mais tarde*: a caminho. —: não se aplica nessa plataforma.
 <!-- /nuva:platforms-pt -->

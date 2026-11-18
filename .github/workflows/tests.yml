@@ -1,0 +1,27 @@
+# Runs the Mac app's tests and the site's report service's tests on every pull request.
+name: Tests
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  mac:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate the Xcode project
+        run: |
+          brew install xcodegen
+          xcodegen generate
+      - name: Test
+        run: xcodebuild -project NuVa.xcodeproj -scheme NuVa -destination 'platform=macOS' test
+  reports:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test the report service
+        run: python3 -m unittest deploy/site/test_reports.py

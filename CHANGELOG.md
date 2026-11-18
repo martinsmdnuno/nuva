@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.16 — it remembers, and it says what went wrong
+
+- Mac: NuVa reopens where you left off: the queue, the track and the place in it, the volume, repeat and shuffle. It opens stopped; play carries on from there.
+- Mac: failures that were silent now say so. A folder that can't be opened, a folder with no music, a subfolder that didn't open, a folder that couldn't be added and a Jellyfin password the Keychain didn't keep all show on the display or in the sign-in sheet.
+- Mac: a stream that breaks in the middle of a track is picked up where it broke, instead of from the start.
+- Mac: an error log, kept on your Mac only: **NuVa › Show Error Log**. Each line names the kind of failure; it is there for you to read or to send with a bug report.
+- Mac: NuVa asks once whether it may send its author anonymous counts: which features are used and which kinds of failure and crash happen, about once a day, to nuva.martinsnuno.com. Off unless you say yes; no identifier, and never the name of a folder, file or server. Change your answer in **NuVa › Send Anonymous Use and Failures**; a no deletes what was counted. Crashes come from macOS itself (MetricKit). The terms and the site's privacy notice say exactly what is sent. Android TV and Windows send nothing.
+- Mac: Jellyfin covers come first from the image file in the album's folder on the server (cover, folder, front, album or capa); an image Jellyfin took from the tags never counts. The cover is kept for when the server is out of reach.
+- Mac: in ambient mode, ⇧⌘← and ⇧⌘→ move 10 seconds through the track.
+- Mac: with artwork on, an album without a cover gets a glow in the skin's own lights behind the ambient faces, breathing with the bass on the Display face.
+- The Mac app's tests and the site's report service's tests now run on every pull request.
+
 ## 1.15 — skins with a temperament
 
 - Four new skins, on the Mac and Android TV: **Rave** (neon magenta, cyan and lime on violet-black), **Neon Tokyo** (electric blue and sodium orange, in Share Tech), **Tropicália** (coral, hot pink and mango on burgundy, in DM Sans) and **Velvet** (night blue, amber and lilac, in IBM Plex Sans). View › Skin, ⌥⌘4 to ⌥⌘7.

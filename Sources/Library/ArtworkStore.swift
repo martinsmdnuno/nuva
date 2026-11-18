@@ -45,7 +45,10 @@ final class ArtworkStore {
         guard loading.insert(key).inserted else { return }
         Task {
             let found = await find(entry)
-            let image = await Task.detached(priority: .utility) { found.flatMap { Self.downsample($0.url) } }.value
+            // The type is spelled out: Xcode 16's compiler infers NSObject here.
+            let image: NSImage? = await Task.detached(priority: .utility) { () -> NSImage? in
+                found.flatMap { Self.downsample($0.url) }
+            }.value
             if let image, let found {
                 images[key] = .some(Loaded(image: image, origin: found.origin))
             } else {

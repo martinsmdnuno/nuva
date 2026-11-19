@@ -6,6 +6,7 @@
 - Mac: NuVa puts the device back at the rate it had when it quits, or when you turn the setting off. A rate you chose yourself in the meantime is left alone.
 - Mac: the display says when macOS is converting the sample rate: `96 → 48 kHz` beside the output's name, and in words in its tooltip. When track and device agree it shows the one rate, as before.
 - Mac: AirPlay and Bluetooth are not touched: their rate isn't NuVa's to set.
+- Mac: on macOS 27 the display kept naming the Mac's own output after an AirPlay speaker was chosen from it. It names the speaker again.
 
 ## 1.16 — it remembers, and it says what went wrong
 

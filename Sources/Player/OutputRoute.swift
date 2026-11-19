@@ -111,7 +111,7 @@ final class OutputRoute {
     func localDevice() -> CoreAudioDevice? {
         guard let player, !player.isExternalPlaybackActive, let device = device(of: player), !device.isAirPlay
         else { return nil }
-        if let routed = Self.routedDeviceNames(), !routed.isEmpty, !routed.contains(device.name) { return nil }
+        if let routed = Self.routedDeviceNames(of: player), !routed.isEmpty, !routed.contains(device.name) { return nil }
         return device
     }
 
@@ -123,7 +123,7 @@ final class OutputRoute {
         guard let player else { return }
         let external = player.isExternalPlaybackActive
         let device = device(of: player)
-        let routed = Self.routedDeviceNames()
+        let routed = Self.routedDeviceNames(of: player)
 
         let new: Route
         var local: CoreAudioDevice?
@@ -170,19 +170,33 @@ final class OutputRoute {
         log.notice("saída: \(self.label, privacy: .public) external=\(external) uid=\(player.audioOutputDeviceUniqueID ?? "nil", privacy: .public) transport=\(device?.transport ?? "?", privacy: .public)")
     }
 
-    /// Names of the destinations of the app's shared AVOutputContext (private API on macOS,
-    /// public on iOS). nil if the class or methods don't exist.
-    private static func routedDeviceNames() -> [String]? {
-        guard let cls = NSClassFromString("AVOutputContext") as? NSObject.Type else { return nil }
+    /// Names of the AirPlay destinations the player is sending to, from its AVOutputContext
+    /// (private API on macOS, public on iOS); empty when the sound stays on this Mac, nil if the
+    /// classes or methods don't exist. The route picker sets the player's own context
+    /// (`AVPlayer.outputContext`): seen on macOS 27, where the app's shared context stays empty
+    /// with a WiiM chosen. The shared one is still asked, for the systems where it is the one used.
+    private static func routedDeviceNames(of player: AVPlayer) -> [String]? {
+        var contexts: [NSObject] = []
+        if player.responds(to: NSSelectorFromString("outputContext")),
+           let own = player.value(forKey: "outputContext") as? NSObject {
+            contexts.append(own)
+        }
         let shared = NSSelectorFromString("defaultSharedOutputContext")
-        guard cls.responds(to: shared),
-              let context = cls.perform(shared)?.takeUnretainedValue() as? NSObject else { return nil }
+        if let cls = NSClassFromString("AVOutputContext") as? NSObject.Type, cls.responds(to: shared),
+           let context = cls.perform(shared)?.takeUnretainedValue() as? NSObject {
+            contexts.append(context)
+        }
+        guard !contexts.isEmpty else { return nil }
+        return contexts.lazy.compactMap(names(in:)).first { !$0.isEmpty } ?? []
+    }
+
+    private static func names(in context: NSObject) -> [String]? {
         if context.responds(to: NSSelectorFromString("outputDevices")),
            let devices = context.value(forKey: "outputDevices") as? [NSObject] {
             return devices.compactMap { $0.value(forKey: "name") as? String }
         }
         if context.responds(to: NSSelectorFromString("deviceName")) {
-            return (context.value(forKey: "deviceName") as? String).map { [$0] }
+            return (context.value(forKey: "deviceName") as? String).map { [$0] } ?? []
         }
         return nil
     }

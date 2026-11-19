@@ -1,0 +1,61 @@
+# Plan: the output follows the track's sample rate
+
+Status: step 1 written (the device reads and write, and a Debug-only trial behind `--match-rate`); its two questions are still to be answered by hand on real hardware.
+Input: the library is FLAC, much of it above 44.1 kHz. NuVa reads the output device's sample rate for the display (`CoreAudioDevice` in `Sources/Player/OutputRoute.swift`) but never sets it, so a 96 kHz file on a DAC left at 48 kHz is resampled by macOS and nothing says so. The idea comes from other Mac players that switch the DAC per track (Vespertine, Audirvana, Colibri); only the idea, no code.
+
+## What changes for the user
+
+1. When a track starts on a wired output, NuVa sets that device to the track's sample rate, if the device offers it.
+2. The output readout on the display says what is really happening: `→ DAC · 96 kHz` when track and device agree, `→ DAC · 96 → 48 kHz` when macOS is resampling. The tooltip says it in words.
+
+No "bit-perfect" badge. With `AVQueuePlayer`, the equalizer tap and the player's volume in the path, NuVa cannot prove the samples are untouched, so it only states what it can read back from Core Audio.
+
+## Principles
+
+- **Native audio** holds: `AudioObjectSetPropertyData` on `kAudioDevicePropertyNominalSampleRate`, the same call Audio MIDI Setup makes. No exclusive (hog) mode, no integer mode, no third-party code.
+- **One small window** holds: no new view. One menu item and a few characters on a line the display already has.
+- **Folders, not metadata** holds: the rate comes from the audio stream's format, never from tags.
+
+## Decisions
+
+1. **The track's rate comes from the asset**, not from the file: the audio track's format description (`AVAssetTrack.load(.formatDescriptions)` → `AudioStreamBasicDescription.mSampleRate`). It works the same for Local, Jellyfin and CD, where `AudioFormat.label(for:)` only opens `file://` URLs.
+2. **Which rate.** The device's own list (`kAudioDevicePropertyAvailableNominalSampleRates`, which are ranges). The track's rate if offered; else the highest offered multiple of it (44.1 → 88.2 → 176.4); else the nearest higher rate; else leave the device alone. A pure function, `OutputRate.choose(track:available:)`, so it is tested without hardware.
+3. **Which outputs.** Only a Core Audio device that is not AirPlay (`airp`) and not Bluetooth (`blue`, `blea`), and only when the app's AirPlay picker is not routing elsewhere (`routedDeviceNames()`). Over AirPlay and Bluetooth the readout stays as it is today.
+4. **When.** In `PlayerController.currentItemChanged()`, and when the output device changes while a track plays. Tracks of one folder share a rate, so an album never switches mid-way; a switch happens between albums of different rates.
+5. **NuVa puts the rate back.** It remembers the rate each device had before the first change and restores it on quit. It does not restore on pause, and it does not fight: if another app or the user changes the rate mid-track, NuVa shows the new truth and sets again only at the next track.
+6. **A switch, on by default:** Controls ▸ Match Output to Track (PT "Ajustar a saída à faixa"). Off, NuVa never writes to the device and only the readout part remains. On by default (decided 2026-11-19): it is the point of the feature, and decision 5 puts the device back.
+7. **A failure is quiet but written down.** If the device refuses, playback continues resampled, the readout shows `96 → 48 kHz`, and the log gets a line with code `output-rate` (no device name, as the log's rule says).
+
+## Not in this plan
+
+- Bit depth of the device (`kAudioStreamPropertyPhysicalFormat`): a possible second phase, reading first, setting later.
+- Exclusive mode, integer mode, DSD, a loopback test.
+- Gapless across a rate change: the device reconfigures, so a short silence there is expected.
+
+## Parity (`docs/features.json`)
+
+New row `output-rate`: "The output device follows the track's sample rate, and the display says when the system resamples".
+- `mac`: `yes`.
+- `tv`: `n/a`. Android TV's mixer owns the output rate; an app cannot set it.
+- `windows`: to decide in step 4. AudioGraph plays in shared mode at the device's mix format, which only the user sets in Sound settings; likely `n/a` for setting, with the readout (`96 → 48 kHz`) as `planned`.
+
+## Steps (one commit each, `xcodebuild` after each)
+
+1. **Spike, no UI.** `CoreAudioDevice`: available rates, set rate, a listener for rate changes. Confirm by hand that the sandboxed app may set the rate (no entitlement is expected to be needed, but this is unverified) and hear what `AVQueuePlayer` does when the rate changes under it. If the first notes are clipped: pause, set, wait for the listener, play.
+2. **`OutputRate`** (`Sources/Player/OutputRate.swift`): `choose(track:available:)`, the per-device memory of the original rate, restore on quit. Tests in `Tests/OutputRateTests.swift`: exact match, multiples, nearest higher, nothing offered, AirPlay and Bluetooth skipped.
+3. **Wire it.** Track rate from the asset in `PlayerController`; set on track change and on device change; the menu item and its remembered setting; log code `output-rate`; a fixed `Reports` event word for "rate set".
+4. **Readout.** `OutputRoute` learns the track's rate and writes `96 → 48 kHz` and the tooltip; replace the 1 s poll of the rate with the listener from step 1. Strings in PT and EN. Decide the Windows row.
+5. **Content.** `docs/features.json`, `swift scripts/content.swift`, README and site prose (EN + PT), a snapshot showing the readout, `CHANGELOG.md`, `CLAUDE.md` scope, `scripts/check-content.sh`. `TERMS.md` does not change: no network call.
+
+## To check by hand
+
+- A USB DAC: 44.1, 48, 96 and 192 kHz files in a row; the DAC's own display agrees with NuVa's.
+- Built-in speakers and wired headphones; plugging headphones in mid-track.
+- AirPlay to the WiiM and Bluetooth headphones: untouched.
+- Another app playing sound while NuVa switches the rate.
+- Quit NuVa: the device is back at the rate it had.
+- Jellyfin and CD tracks get their rate too.
+
+## Open for the author
+
+- Restore on quit only, or also when the queue ends.

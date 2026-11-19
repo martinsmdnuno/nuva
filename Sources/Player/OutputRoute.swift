@@ -186,3 +186,66 @@ struct CoreAudioDevice {
         return AudioObjectGetPropertyData(object, &addr, 0, nil, &size, &value) == noErr
     }
 }
+
+// MARK: - Sample rate
+
+extension CoreAudioDevice {
+    /// The rates the device offers, as Core Audio gives them: ranges (a single rate is a range of one).
+    func availableSampleRates() -> [ClosedRange<Double>] {
+        var addr = Self.rateAddress(kAudioDevicePropertyAvailableNominalSampleRates)
+        var size = UInt32(0)
+        guard AudioObjectGetPropertyDataSize(id, &addr, 0, nil, &size) == noErr, size > 0 else { return [] }
+        let stride = MemoryLayout<AudioValueRange>.stride
+        var ranges = [AudioValueRange](repeating: AudioValueRange(), count: Int(size) / stride)
+        guard AudioObjectGetPropertyData(id, &addr, 0, nil, &size, &ranges) == noErr else { return [] }
+        return ranges.prefix(Int(size) / stride)
+            .filter { $0.mMinimum > 0 && $0.mMinimum <= $0.mMaximum }
+            .map { $0.mMinimum...$0.mMaximum }
+    }
+
+    /// The device's rate now (`sampleRate` is the rate when this value was made).
+    func currentSampleRate() -> Double? {
+        var rate = Float64(0)
+        return Self.get(id, kAudioDevicePropertyNominalSampleRate, &rate) && rate > 0 ? rate : nil
+    }
+
+    /// Asks the device for a rate, as Audio MIDI Setup does. The change is not immediate: the
+    /// device reports it later, through `observeSampleRate`.
+    @discardableResult
+    func setSampleRate(_ rate: Double) -> OSStatus {
+        var addr = Self.rateAddress(kAudioDevicePropertyNominalSampleRate)
+        var value = Float64(rate)
+        return AudioObjectSetPropertyData(id, &addr, 0, nil, UInt32(MemoryLayout<Float64>.size), &value)
+    }
+
+    /// Calls `handler` (on the main queue) with the new rate each time the device changes it,
+    /// whoever asked. Lasts as long as the returned object.
+    func observeSampleRate(_ handler: @escaping @Sendable (Double) -> Void) -> SampleRateObservation {
+        SampleRateObservation(device: id, handler: handler)
+    }
+
+    fileprivate static func rateAddress(_ selector: AudioObjectPropertySelector) -> AudioObjectPropertyAddress {
+        AudioObjectPropertyAddress(
+            mSelector: selector, mScope: kAudioObjectPropertyScopeGlobal, mElement: kAudioObjectPropertyElementMain)
+    }
+}
+
+/// A Core Audio listener on one device's sample rate, removed when this object goes away.
+final class SampleRateObservation: @unchecked Sendable {
+    private let device: AudioObjectID
+    private let block: AudioObjectPropertyListenerBlock
+
+    fileprivate init(device: AudioObjectID, handler: @escaping @Sendable (Double) -> Void) {
+        self.device = device
+        block = { _, _ in
+            if let rate = CoreAudioDevice(id: device)?.currentSampleRate() { handler(rate) }
+        }
+        var addr = CoreAudioDevice.rateAddress(kAudioDevicePropertyNominalSampleRate)
+        AudioObjectAddPropertyListenerBlock(device, &addr, .main, block)
+    }
+
+    deinit {
+        var addr = CoreAudioDevice.rateAddress(kAudioDevicePropertyNominalSampleRate)
+        AudioObjectRemovePropertyListenerBlock(device, &addr, .main, block)
+    }
+}

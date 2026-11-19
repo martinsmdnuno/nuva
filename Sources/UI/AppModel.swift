@@ -106,6 +106,10 @@ final class AppModel {
     @ObservationIgnored private let reports: Reports?
     @ObservationIgnored private var crashes: CrashWatcher?
     @ObservationIgnored private let drive = DiscDrive()
+    #if DEBUG
+    /// The sample rate trial (`--match-rate`), step 1 of docs/plans/dac-sample-rate.md.
+    @ObservationIgnored private var rateSpike: OutputRateSpike?
+    #endif
     @ObservationIgnored private let discLookup = DiscLookup.standard
     /// Volumes of discs being read (lookup under way), so a mount seen twice plays once.
     @ObservationIgnored private var inserting: Set<URL> = []
@@ -124,6 +128,11 @@ final class AppModel {
         self.durations = TrackDurations(resolve: resolve)
         self.browser = Browser(sources: sources)
         self.output = OutputRoute(player: systemIntegration ? self.player.avPlayer : nil)
+        #if DEBUG
+        if systemIntegration, !underTest, OutputRateSpike.isRequested {
+            self.rateSpike = OutputRateSpike(player: self.player.avPlayer)
+        }
+        #endif
         let resolver = ArtworkResolver(sources: sources)
         self.artwork = ArtworkStore { entry in await resolver.resolve(entry) }
         self.artworkResolver = resolver

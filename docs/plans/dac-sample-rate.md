@@ -1,6 +1,6 @@
 # Plan: the output follows the track's sample rate
 
-Status: steps 1 to 4 written. The Mac app sets a wired output to each track's rate (Controls ▸ Match Output to Track, on by default), puts it back on quit, and the display says `96 → 48 kHz` when macOS converts. Not yet heard on a real DAC: whether the sandboxed app may set the rate, and whether a track's first notes are clipped when the rate changes, are still to be checked by hand. The content (step 5) is not done.
+Status: written, steps 1 to 5, for 1.17. Not yet heard on a real DAC: whether the sandboxed app may set the rate, and whether a track's first notes are clipped when the rate changes, are still to be checked by hand (the list at the end) before it is released.
 Input: the library is FLAC, much of it above 44.1 kHz. NuVa reads the output device's sample rate for the display (`CoreAudioDevice` in `Sources/Player/OutputRoute.swift`) but never sets it, so a 96 kHz file on a DAC left at 48 kHz is resampled by macOS and nothing says so. The idea comes from other Mac players that switch the DAC per track (Vespertine, Audirvana, Colibri); only the idea, no code.
 
 ## What changes for the user
@@ -45,7 +45,7 @@ New row `output-rate`: "The output device follows the track's sample rate, and t
 2. **`OutputRate`** (`Sources/Player/OutputRate.swift`): `choose(track:available:)`, the per-device memory of the original rate, restore on quit. Tests in `Tests/OutputRateTests.swift`: exact match, multiples, nearest higher, nothing offered, AirPlay and Bluetooth skipped.
 3. **Wire it.** Track rate from the asset in `PlayerController`; set on track change and on device change; the menu item and its remembered setting; log code `output-rate`; a fixed `Reports` event word for "rate set".
 4. **Readout.** `OutputRoute` learns the track's rate and writes `96 → 48 kHz` and the tooltip; the listener from step 1 tells of a rate change at once (the poll stays: it is what catches the AirPlay picker). Strings in PT and EN. Decide the Windows row.
-5. **Content.** `docs/features.json`, `swift scripts/content.swift`, README and site prose (EN + PT), a snapshot showing the readout, `CHANGELOG.md`, `CLAUDE.md` scope, `scripts/check-content.sh`. `TERMS.md` does not change: no network call.
+5. **Content.** `docs/features.json`, `swift scripts/content.swift`, README and site prose (EN + PT), `CHANGELOG.md`, `CLAUDE.md` scope, `scripts/check-content.sh`. `TERMS.md` does not change: no network call. No screenshot changes: the README's and the site's all show AirPlay, whose readout is as it was.
 
 ## To check by hand
 

@@ -194,6 +194,7 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 - Folders on your Mac, on an external disk or on a mounted network share (SMB), and audio CDs.
 - Queue: play a folder, add more, drag to reorder, delete to remove.
 - Repeat (all or one), shuffle, seek, and a volume knob you can drag, scroll or turn with ⌘↑ ⌘↓.
+- On a DAC, wired headphones or the Mac's own speakers, the output follows each track's sample rate: a 96 kHz file plays at 96 kHz when the device offers it, instead of being converted by macOS. When macOS is converting, the display says so (`96 → 48 kHz`). NuVa puts the device back as it was when it quits; turn it off in **Controls › Match Output to Track**. AirPlay and Bluetooth are left alone.
 - A 10-band equalizer with presets, and a spectrum meter on the display that follows what you hear, also over AirPlay (**View › Show Spectrum**, ⌥⌘V).
 - Optional album artwork: the image in the folder, or found online from the folder names. Never from tags.
 - Media keys, Control Center, the lock screen and AirPods controls.
@@ -216,6 +217,7 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 | Jellyfin by its real folders, streaming the original file | ✓ | ✓ | ✓ |
 | Audio CDs, named from MusicBrainz | ✓ | — | ✓ |
 | FLAC, 24-bit included, through the system's own audio engine | ✓ | ✓ | ✓ |
+| A wired output follows each track's sample rate, and the display says when the system converts it | ✓ | — | — |
 | AirPlay 2 to a WiiM, HomePod or Apple TV | ✓ | — | — |
 | Queue: play a folder, add, reorder, remove | ✓ | ✓ | ✓ |
 | Repeat, shuffle, seek and 10-second skips | ✓ | ✓ | ✓ |
@@ -339,6 +341,7 @@ Toca FLAC pelo motor de áudio de cada sistema (o da própria Apple, no Mac), en
 - **CDs áudio, como um leitor de CDs.** Mete um disco no leitor e a NuVa toca-o logo. Os nomes do álbum e das faixas vêm do MusicBrainz, pelo índice do disco (um CD não traz nomes). Ejetar com ⌘E. Para abrir a NuVa sempre que entra um CD: Definições do Sistema › CDs e DVDs › Ao inserir um CD de música › Abrir outra aplicação… › NuVa.
 - **Avisa quando há versão nova** (verifica no GitHub uma vez por dia, sem descarregar nada). [Termos e privacidade](TERMS.md) em NuVa › Termos e privacidade.
 - **Teclas como num deck:** aleatório e repetir à esquerda, tocar ao centro, botão de volume à direita.
+- **A saída acompanha a faixa.** Num DAC, em auscultadores com fio ou nas colunas do Mac, a saída fica na frequência de cada faixa: um ficheiro a 96 kHz toca a 96 kHz quando o dispositivo a oferece, em vez de ser convertido pelo macOS. Quando o macOS está a converter, o visor diz (`96 → 48 kHz`). Ao sair, a NuVa deixa o dispositivo como estava; desliga-se em Controlos › Ajustar a saída à faixa. AirPlay e Bluetooth ficam como estão.
 - **Equalizador de 10 bandas** (carrega em "EQ" no visor ou ⌥⌘E) e **espectro no visor**: colunas de segmentos âmbar, uma por banda, que seguem o que estás a ouvir, também em AirPlay (Visualização › Mostrar espectro, ⌥⌘V).
 - Media keys, Centro de Controlo e mini player na barra de menus. Tudo tem atalho de teclado, e o VoiceOver lê as teclas, os controlos e cada linha.
 - **Não pára por qualquer coisa:** um ficheiro danificado ou um servidor que foi abaixo é tentado mais uma vez e depois saltado, e o visor diz que faixa não tocou. Um disco ou NAS que não estava ligado volta quando é montado.
@@ -371,6 +374,7 @@ Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnun
 | Jellyfin pelas pastas reais, com o ficheiro original | ✓ | ✓ | ✓ |
 | CDs áudio, com os nomes do MusicBrainz | ✓ | — | ✓ |
 | FLAC, 24 bits incluídos, pelo motor de áudio do próprio sistema | ✓ | ✓ | ✓ |
+| Uma saída por cabo acompanha a frequência de cada faixa, e o visor diz quando o sistema a converte | ✓ | — | — |
 | AirPlay 2 para um WiiM, HomePod ou Apple TV | ✓ | — | — |
 | Fila: tocar uma pasta, juntar, reordenar, tirar | ✓ | ✓ | ✓ |
 | Repetir, aleatório, posição e saltos de 10 segundos | ✓ | ✓ | ✓ |

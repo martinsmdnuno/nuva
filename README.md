@@ -50,7 +50,7 @@ FLAC, ALAC, WAV and AIFF play through AVFoundation, the same engine as QuickTime
 <td width="33%" valign="top">
 
 **📡 AirPlay 2 built in**<br>
-Send the music to a WiiM, a HomePod, an Apple TV or any AirPlay speaker: click where the display says the sound is going.
+Send the music to a WiiM, a HomePod, an Apple TV or any AirPlay speaker: click where the display says the sound is going. An AirPlay speaker can miss the first half second of the track you start by hand, while the stream opens; the tracks that follow it in the same format arrive whole.
 
 </td>
 </tr>
@@ -330,7 +330,7 @@ Toca FLAC pelo motor de áudio de cada sistema (o da própria Apple, no Mac), en
 
 - **As tuas pastas, intocadas.** Sem importar, sem tags. Ordem natural: a faixa 2 vem antes da 10.
 - **Soa como deve.** FLAC, ALAC, WAV e AIFF pelo AVFoundation, o mesmo motor do QuickTime.
-- **AirPlay 2.** WiiM, HomePod, Apple TV ou qualquer coluna AirPlay: carrega na saída que aparece no visor.
+- **AirPlay 2.** WiiM, HomePod, Apple TV ou qualquer coluna AirPlay: carrega na saída que aparece no visor. Uma coluna AirPlay pode perder o primeiro meio segundo da faixa que pões a tocar à mão, enquanto o stream abre; as faixas seguintes do mesmo formato chegam inteiras.
 - **Jellyfin sem confusão.** Navega pelas pastas reais do servidor e toca os ficheiros originais.
 - **Uma janela pequena.** As pastas aparecem no lugar da fila (⌘B troca as duas) e há um modo compacto. A janela estica na vertical para veres o álbum inteiro, e na horizontal para nomes compridos. No visor, por baixo do título, as pastas do artista e do álbum ("Fleetwood Mac · Rumours"), que rolam quando não cabem, como num visor de hi-fi.
 - **Skins:** Rams (claro ou escuro, como o sistema), Graphite Orange e Phosphor (sempre escuras), em Visualização › Skin. Cinco pares de fontes em Visualização › Fonte: Inter + IBM Plex Mono, SF Pro + SF Mono, IBM Plex Sans (para a Rams), DM Sans (para a Graphite Orange) e Share Tech (para a Phosphor).

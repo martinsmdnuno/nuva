@@ -138,7 +138,8 @@ final class AppModel {
         self.player.onStreamFailure = { entry in await sources.streamFailed(for: entry) }
         self.durations = TrackDurations(resolve: resolve)
         self.browser = Browser(sources: sources)
-        self.output = OutputRoute(player: systemIntegration ? self.player.avPlayer : nil)
+        let player = self.player
+        self.output = OutputRoute(player: systemIntegration ? player.avPlayer : nil) { player.trackSampleRate }
         let resolver = ArtworkResolver(sources: sources)
         self.artwork = ArtworkStore { entry in await resolver.resolve(entry) }
         self.artworkResolver = resolver

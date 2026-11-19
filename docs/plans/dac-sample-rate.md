@@ -1,6 +1,6 @@
 # Plan: the output follows the track's sample rate
 
-Status: steps 1 to 3 written. The Mac app sets a wired output to each track's rate (Controls ▸ Match Output to Track, on by default) and puts it back on quit. Not yet heard on a real DAC: whether the sandboxed app may set the rate, and whether a track's first notes are clipped when the rate changes, are still to be checked by hand. The readout (step 4) and the content (step 5) are not done.
+Status: steps 1 to 4 written. The Mac app sets a wired output to each track's rate (Controls ▸ Match Output to Track, on by default), puts it back on quit, and the display says `96 → 48 kHz` when macOS converts. Not yet heard on a real DAC: whether the sandboxed app may set the rate, and whether a track's first notes are clipped when the rate changes, are still to be checked by hand. The content (step 5) is not done.
 Input: the library is FLAC, much of it above 44.1 kHz. NuVa reads the output device's sample rate for the display (`CoreAudioDevice` in `Sources/Player/OutputRoute.swift`) but never sets it, so a 96 kHz file on a DAC left at 48 kHz is resampled by macOS and nothing says so. The idea comes from other Mac players that switch the DAC per track (Vespertine, Audirvana, Colibri); only the idea, no code.
 
 ## What changes for the user
@@ -37,14 +37,14 @@ No "bit-perfect" badge. With `AVQueuePlayer`, the equalizer tap and the player's
 New row `output-rate`: "The output device follows the track's sample rate, and the display says when the system resamples".
 - `mac`: `yes`.
 - `tv`: `n/a`. Android TV's mixer owns the output rate; an app cannot set it.
-- `windows`: to decide in step 4. AudioGraph plays in shared mode at the device's mix format, which only the user sets in Sound settings; likely `n/a` for setting, with the readout (`96 → 48 kHz`) as `planned`.
+- `windows`: `n/a` (decided in step 4). AudioGraph plays in shared mode at the device's format, which is the user's to set in Windows' Sound settings; an app changes it only by taking the device for itself, which NuVa does not do.
 
 ## Steps (one commit each, `xcodebuild` after each)
 
 1. **Spike, no UI.** `CoreAudioDevice`: available rates, set rate, a listener for rate changes. Confirm by hand that the sandboxed app may set the rate (no entitlement is expected to be needed, but this is unverified) and hear what `AVQueuePlayer` does when the rate changes under it. If the first notes are clipped: pause, set, wait for the listener, play.
 2. **`OutputRate`** (`Sources/Player/OutputRate.swift`): `choose(track:available:)`, the per-device memory of the original rate, restore on quit. Tests in `Tests/OutputRateTests.swift`: exact match, multiples, nearest higher, nothing offered, AirPlay and Bluetooth skipped.
 3. **Wire it.** Track rate from the asset in `PlayerController`; set on track change and on device change; the menu item and its remembered setting; log code `output-rate`; a fixed `Reports` event word for "rate set".
-4. **Readout.** `OutputRoute` learns the track's rate and writes `96 → 48 kHz` and the tooltip; replace the 1 s poll of the rate with the listener from step 1. Strings in PT and EN. Decide the Windows row.
+4. **Readout.** `OutputRoute` learns the track's rate and writes `96 → 48 kHz` and the tooltip; the listener from step 1 tells of a rate change at once (the poll stays: it is what catches the AirPlay picker). Strings in PT and EN. Decide the Windows row.
 5. **Content.** `docs/features.json`, `swift scripts/content.swift`, README and site prose (EN + PT), a snapshot showing the readout, `CHANGELOG.md`, `CLAUDE.md` scope, `scripts/check-content.sh`. `TERMS.md` does not change: no network call.
 
 ## To check by hand

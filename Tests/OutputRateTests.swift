@@ -115,6 +115,22 @@ struct OutputRateRulesTests {
     }
 }
 
+/// What the display says about the output's rate.
+struct OutputReadoutTests {
+    @Test func showsTheDevicesRateAlone() {
+        #expect(OutputRoute.rateText(device: 48_000, track: nil) == "48 kHz")
+        #expect(OutputRoute.rateText(device: 44_100, track: 44_100) == "44.1 kHz")
+        #expect(OutputRoute.rateText(device: 0, track: 96_000) == "")
+    }
+
+    @Test func showsTheConversionWhenTheRatesDiffer() {
+        #expect(OutputRoute.rateText(device: 48_000, track: 96_000) == "96 → 48 kHz")
+        #expect(OutputRoute.rateText(device: 88_200, track: 44_100) == "44.1 → 88.2 kHz")
+        #expect(OutputRoute.converts(device: 48_000, track: 96_000))
+        #expect(!OutputRoute.converts(device: 96_000, track: 96_000))
+    }
+}
+
 private final class FakeDevice: RateSettable {
     let uid: String? = "fake"
     let followsTracks: Bool

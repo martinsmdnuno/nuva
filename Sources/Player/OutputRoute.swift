@@ -3,31 +3,73 @@ import CoreAudio
 import Observation
 import os
 
-/// Where the sound is going: device name and actual output sample rate.
+/// Where the sound is going: device name and actual output sample rate, and the track's own rate
+/// beside it when macOS is converting one into the other ("96 → 48 kHz").
 /// Over AirPlay macOS doesn't expose the stream format, so there's only a name.
 @MainActor
 @Observable
 final class OutputRoute {
-    /// Short text for the display: "→ Colunas (MacBook Neo) · 48 kHz", "→ AirPlay Sala".
-    private(set) var label = ""
+    /// Short text for the display: "→ Colunas · 48 kHz", "→ DAC · 96 → 48 kHz", "→ AirPlay Sala".
+    var label: String {
+        #if DEBUG
+        if let debugLabel { return debugLabel }
+        #endif
+        switch route {
+        case .none: return ""
+        case .airPlay(let label, _): return label
+        case .device(_, let short, _, let rate):
+            let text = Self.rateText(device: rate, track: trackRate())
+            return text.isEmpty ? "→ \(short)" : "→ \(short) · \(text)"
+        }
+    }
+
     /// Tooltip with the details.
-    private(set) var detail = ""
+    var detail: String {
+        switch route {
+        case .none: return ""
+        case .airPlay(_, let detail): return detail
+        case .device(let name, _, let bluetooth, let rate):
+            let own = rate > 0 ? " · \(AudioFormat.kHz(rate)) kHz" : ""
+            let output = String(localized: "Saída: \(name)\(bluetooth ? " (Bluetooth)" : "")\(own)")
+            guard rate > 0, let track = trackRate() else { return output }
+            let conversion = Self.converts(device: rate, track: track)
+                ? String(localized: "O macOS converte a faixa de \(AudioFormat.kHz(track)) para \(AudioFormat.kHz(rate)) kHz")
+                : String(localized: "A saída está na frequência da faixa")
+            return "\(output)\n\(conversion)"
+        }
+    }
 
     /// The label without its arrow, where an icon or the context already says "output".
     var name: String { label.replacingOccurrences(of: "→ ", with: "") }
 
+    /// Called when the sound moves to another Core Audio device, or to or from AirPlay.
+    @ObservationIgnored var onDeviceChange: (() -> Void)?
+
+    private enum Route: Equatable {
+        case none
+        case airPlay(label: String, detail: String)
+        case device(name: String, short: String, bluetooth: Bool, rate: Double)
+    }
+
+    private var route = Route.none
+    #if DEBUG
+    private var debugLabel: String?
+    #endif
+
     @ObservationIgnored private let player: AVPlayer?
+    /// The playing track's sample rate, read each time the text is asked for.
+    @ObservationIgnored private let trackRate: () -> Double?
     @ObservationIgnored private var timer: Timer?
     @ObservationIgnored private var playback: NSKeyValueObservation?
     @ObservationIgnored private var pollsFast = false
     @ObservationIgnored private var localUID: String?
-
-    /// Called when the sound moves to another Core Audio device, or to or from AirPlay.
-    @ObservationIgnored var onDeviceChange: (() -> Void)?
+    /// Tells of a change of the local device's rate at once, whoever made it.
+    @ObservationIgnored private var rateObservation: SampleRateObservation?
     @ObservationIgnored private let log = Logger(subsystem: "pt.nunomartins.nuva", category: "output")
 
-    init(player: AVPlayer?) {
+    init(player: AVPlayer?, trackRate: @escaping () -> Double? = { nil }) {
         self.player = player
+        self.trackRate = trackRate
         guard player != nil else { return }
         refresh()
         schedule(fast: false)
@@ -35,6 +77,18 @@ final class OutputRoute {
             let playing = player.timeControlStatus != .paused
             Task { @MainActor in self?.schedule(fast: playing) }
         }
+    }
+
+    /// The device's rate, with the track's before it when they differ: "48 kHz", "96 → 48 kHz".
+    nonisolated static func rateText(device: Double, track: Double?) -> String {
+        guard device > 0 else { return "" }
+        guard let track, converts(device: device, track: track) else { return "\(AudioFormat.kHz(device)) kHz" }
+        return "\(AudioFormat.kHz(track)) → \(AudioFormat.kHz(device)) kHz"
+    }
+
+    /// Whether macOS resamples a track of this rate for a device at that one.
+    nonisolated static func converts(device: Double, track: Double) -> Bool {
+        device > 0 && track > 0 && abs(device - track) >= 0.5
     }
 
     /// Polls the route (a few CoreAudio reads; also catches the AirPlay picker): every second while
@@ -55,53 +109,57 @@ final class OutputRoute {
     /// The Core Audio device the sound really goes to: nil over AirPlay (the app's picker or the
     /// system's) and when there is no player (tests, snapshots).
     func localDevice() -> CoreAudioDevice? {
-        guard let player, !player.isExternalPlaybackActive,
-              let device = player.audioOutputDeviceUniqueID.flatMap(CoreAudioDevice.init(uid:)) ?? CoreAudioDevice.defaultOutput(),
-              !device.isAirPlay else { return nil }
+        guard let player, !player.isExternalPlaybackActive, let device = device(of: player), !device.isAirPlay
+        else { return nil }
         if let routed = Self.routedDeviceNames(), !routed.isEmpty, !routed.contains(device.name) { return nil }
         return device
     }
 
+    private func device(of player: AVPlayer) -> CoreAudioDevice? {
+        player.audioOutputDeviceUniqueID.flatMap(CoreAudioDevice.init(uid:)) ?? CoreAudioDevice.defaultOutput()
+    }
+
     private func refresh() {
         guard let player else { return }
-        let nowLocal = localDevice()?.uid
-        if nowLocal != localUID {
-            localUID = nowLocal
-            onDeviceChange?()
-        }
         let external = player.isExternalPlaybackActive
-        let uid = player.audioOutputDeviceUniqueID
-        let device = uid.flatMap(CoreAudioDevice.init(uid:)) ?? CoreAudioDevice.defaultOutput()
-
+        let device = device(of: player)
         let routed = Self.routedDeviceNames()
-        let newLabel: String
-        let newDetail: String
+
+        let new: Route
+        var local: CoreAudioDevice?
         if let routed, !routed.isEmpty, !routed.contains(where: { $0 == device?.name }) {
             // The app's AirPlay picker: the destination lives in AVOutputContext, not CoreAudio.
-            newLabel = "→ AirPlay \(routed.joined(separator: " + "))"
-            newDetail = String(localized: "Saída AirPlay: \(routed.joined(separator: ", ")). O formato do stream não é exposto pelo macOS")
+            new = .airPlay(
+                label: "→ AirPlay \(routed.joined(separator: " + "))",
+                detail: String(localized: "Saída AirPlay: \(routed.joined(separator: ", ")). O formato do stream não é exposto pelo macOS"))
         } else if external {
-            newLabel = "→ AirPlay"
-            newDetail = String(localized: "Saída AirPlay. O formato do stream não é exposto pelo macOS")
+            new = .airPlay(label: "→ AirPlay", detail: String(localized: "Saída AirPlay. O formato do stream não é exposto pelo macOS"))
         } else if let device {
             if device.isAirPlay {
-                newLabel = "→ AirPlay \(device.shortName)"
-                newDetail = String(localized: "Saída AirPlay: \(device.name). O formato do stream não é exposto pelo macOS")
+                new = .airPlay(
+                    label: "→ AirPlay \(device.shortName)",
+                    detail: String(localized: "Saída AirPlay: \(device.name). O formato do stream não é exposto pelo macOS"))
             } else {
-                let rate = device.sampleRate > 0 ? " · \(AudioFormat.kHz(device.sampleRate)) kHz" : ""
-                newLabel = "→ \(device.shortName)\(rate)"
-                newDetail = String(localized: "Saída: \(device.name)\(device.isBluetooth ? " (Bluetooth)" : "")\(rate)")
+                new = .device(name: device.name, short: device.shortName, bluetooth: device.isBluetooth, rate: device.sampleRate)
+                local = device
             }
         } else {
-            newLabel = ""
-            newDetail = ""
+            new = .none
         }
 
-        guard newLabel != label else { return }
-        label = newLabel
-        detail = newDetail
+        let uid = local?.uid
+        if uid != localUID {
+            localUID = uid
+            rateObservation = local?.observeSampleRate { [weak self] _ in
+                MainActor.assumeIsolated { self?.refresh() }
+            }
+            onDeviceChange?()
+        }
+
+        guard new != route else { return }
+        route = new
         #if DEBUG
-        let dump = "\(Date()) label=\(newLabel) routed=\(routed ?? ["nil"]) external=\(external) uid=\(uid ?? "nil") default=\(device?.name ?? "nil")/\(device?.transport ?? "")\n"
+        let dump = "\(Date()) label=\(label) routed=\(routed ?? ["nil"]) external=\(external) uid=\(player.audioOutputDeviceUniqueID ?? "nil") default=\(device?.name ?? "nil")/\(device?.transport ?? "")\n"
         let file = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("output.log")
         if let h = try? FileHandle(forWritingTo: file) {
             h.seekToEndOfFile(); h.write(Data(dump.utf8)); try? h.close()
@@ -109,7 +167,7 @@ final class OutputRoute {
             try? dump.write(to: file, atomically: true, encoding: .utf8)
         }
         #endif
-        log.notice("saída: \(newLabel, privacy: .public) external=\(external) uid=\(uid ?? "nil", privacy: .public) transport=\(device?.transport ?? "?", privacy: .public)")
+        log.notice("saída: \(self.label, privacy: .public) external=\(external) uid=\(player.audioOutputDeviceUniqueID ?? "nil", privacy: .public) transport=\(device?.transport ?? "?", privacy: .public)")
     }
 
     /// Names of the destinations of the app's shared AVOutputContext (private API on macOS,
@@ -130,7 +188,7 @@ final class OutputRoute {
     }
 
     #if DEBUG
-    func debugSet(_ label: String) { self.label = label }
+    func debugSet(_ label: String) { debugLabel = label }
     #endif
 }
 

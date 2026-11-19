@@ -59,6 +59,15 @@ struct OutputRateRulesTests {
     @Test func choosesTheNearestHigherThenTheHighest() {
         #expect(OutputRate.choose(track: 32_000, available: [44_100, 48_000].map { $0...$0 }) == 44_100)
         #expect(OutputRate.choose(track: 192_000, available: [44_100, 48_000].map { $0...$0 }) == 48_000)
+        #expect(OutputRate.choose(track: 352_800, available: [48_000, 96_000].map { $0...$0 }) == 96_000)
+    }
+
+    /// A Mac's headphone jack stops at 96 kHz: a 176.4 kHz track halves cleanly to 88.2.
+    @Test func aboveTheDevicePrefersAWholeDivisor() {
+        let jack: [ClosedRange<Double>] = [44_100, 48_000, 88_200, 96_000].map { $0...$0 }
+        #expect(OutputRate.choose(track: 176_400, available: jack) == 88_200)
+        #expect(OutputRate.choose(track: 192_000, available: jack) == 96_000)
+        #expect(OutputRate.choose(track: 352_800, available: jack) == 88_200)
     }
 
     @Test func choosesNothingWithoutRates() {

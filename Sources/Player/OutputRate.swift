@@ -69,7 +69,8 @@ final class OutputRate {
 
     /// The rate to ask a device for, given the ranges it offers; nil if it offers none.
     /// In order: the track's own rate; its lowest whole multiple (44.1 → 88.2); the nearest
-    /// rate above it; the highest rate there is.
+    /// rate above it; and for a track above all the device has, the highest rate that divides
+    /// it whole (176.4 → 88.2, not 96), else the highest there is.
     nonisolated static func choose(track: Double, available: [ClosedRange<Double>]) -> Double? {
         guard track > 0, let top = available.map(\.upperBound).max() else { return nil }
         func offered(_ rate: Double) -> Bool {
@@ -81,7 +82,13 @@ final class OutputRate {
             if offered(multiple) { return multiple }
             multiple += track
         }
-        return available.map(\.lowerBound).filter { $0 > track }.min() ?? top
+        if let higher = available.map(\.lowerBound).filter({ $0 > track }).min() { return higher }
+        var divisor = 2.0
+        while track / divisor >= 8_000 {
+            if offered(track / divisor) { return track / divisor }
+            divisor += 1
+        }
+        return top
     }
 
     /// Rates are whole numbers of Hz; anything closer than this is the same rate.

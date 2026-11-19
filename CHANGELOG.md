@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.17 — one track runs into the next
+
+- Mac: tracks of the same format now follow each other with no pause. Until now the sound started afresh on every track: about half a second of silence between tracks on any output, and over AirPlay the first moments of each track were lost as well. A track in another format (another sample rate, say) still starts afresh.
+- Mac: over AirPlay on macOS 27 the spectrum and the ambient meters stood still, because AirPlay is now handed minutes of sound ahead of the speakers. They follow what you hear again.
+
 ## 1.16 — it remembers, and it says what went wrong
 
 - Mac: NuVa reopens where you left off: the queue, the track and the place in it, the volume, repeat and shuffle. It opens stopped; play carries on from there.

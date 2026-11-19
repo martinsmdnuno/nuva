@@ -1,29 +1,30 @@
 import AVFoundation
+import MediaToolbox
 import Testing
 @testable import NuVa
 
 @MainActor
 struct PlayerTests {
-    /// Generates short 44.1 kHz FLACs in a temporary folder.
-    private func makeFlacs(_ count: Int, seconds: Double) throws -> (URL, [Entry]) {
+    /// Generates short FLACs (44.1 kHz unless told otherwise) in a temporary folder.
+    private func makeFlacs(_ count: Int, seconds: Double, rate: Double = 44100) throws -> (URL, [Entry]) {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        let format = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 2)!
+        let format = AVAudioFormat(standardFormatWithSampleRate: rate, channels: 2)!
         let sourceID = UUID()
         var entries: [Entry] = []
         for i in 1...count {
             let name = String(format: "%02d - Tom %d.flac", i, i)
             let settings: [String: Any] = [
-                AVFormatIDKey: kAudioFormatFLAC, AVSampleRateKey: 44100,
+                AVFormatIDKey: kAudioFormatFLAC, AVSampleRateKey: rate,
                 AVNumberOfChannelsKey: 2, AVEncoderBitDepthHintKey: 16,
             ]
             let file = try AVAudioFile(forWriting: dir.appendingPathComponent(name), settings: settings)
-            let frames = AVAudioFrameCount(seconds * 44100)
+            let frames = AVAudioFrameCount(seconds * rate)
             let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frames)!
             buffer.frameLength = frames
             for ch in 0..<2 {
                 for f in 0..<Int(frames) {
-                    buffer.floatChannelData![ch][f] = Float(sin(Double(f) * 2 * .pi * 220 * Double(i) / 44100)) * 0.1
+                    buffer.floatChannelData![ch][f] = Float(sin(Double(f) * 2 * .pi * 220 * Double(i) / rate)) * 0.1
                 }
             }
             try file.write(from: buffer)
@@ -66,6 +67,56 @@ struct PlayerTests {
         try await wait { player.current?.entry == entries[1] }
         try await wait { !player.isPlaying }
         #expect(player.current?.entry == entries[1])
+    }
+
+    /// A tap per track makes the player start each track's sound afresh: a pause between tracks,
+    /// and over AirPlay the first moments of each one lost. Same format, same tap.
+    @Test func tracksOfOneFormatShareTheTap() async throws {
+        let (dir, entries) = try makeFlacs(2, seconds: 0.2)
+        let (hiDir, hiEntries) = try makeFlacs(1, seconds: 0.2, rate: 96000)
+        defer {
+            try? FileManager.default.removeItem(at: dir)
+            try? FileManager.default.removeItem(at: hiDir)
+        }
+        let equalizer = Equalizer(defaults: UserDefaults(suiteName: UUID().uuidString)!)
+        let first = AVPlayerItem(url: dir.appendingPathComponent(entries[0].name))
+        let second = AVPlayerItem(url: dir.appendingPathComponent(entries[1].name))
+        let hiRes = AVPlayerItem(url: hiDir.appendingPathComponent(hiEntries[0].name))
+        let back = AVPlayerItem(url: dir.appendingPathComponent(entries[0].name))
+        await equalizer.attach(to: first)
+        await equalizer.attach(to: second)
+        await equalizer.attach(to: hiRes)
+        await equalizer.attach(to: back)
+
+        let taps = [first, second, hiRes, back].map(Equalizer.tap(of:))
+        #expect(taps.allSatisfy { $0 != nil })
+        #expect(taps[0] === taps[1])
+        // A tap is prepared for one format: another format, another tap, and none is taken up again.
+        #expect(taps[2] !== taps[1])
+        #expect(taps[3] !== taps[2] && taps[3] !== taps[0])
+    }
+
+    /// The queue moves on to the next track with no pause: three 1.5 s tracks take 3 s from the
+    /// start of the second to the end of the third.
+    @Test func tracksFollowWithoutAPause() async throws {
+        let (dir, entries) = try makeFlacs(3, seconds: 1.5)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let player = makePlayer(dir)
+
+        player.setQueue(entries)
+        var changes: [Date] = []
+        var seen = player.current?.entry
+        let deadline = Date().addingTimeInterval(10)
+        while changes.count < 2, Date() < deadline {
+            if player.current?.entry != seen {
+                seen = player.current?.entry
+                changes.append(Date())
+            }
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        try #require(changes.count == 2)
+        // The second track, from its start to the third's: its own length, give or take the polling.
+        #expect(abs(changes[1].timeIntervalSince(changes[0]) - 1.5) < 0.12)
     }
 
     @Test func repeatAllWrapsAround() async throws {

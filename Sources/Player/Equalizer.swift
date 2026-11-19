@@ -94,15 +94,52 @@ final class Equalizer {
         defaults.set(presetName, forKey: "eq.preset")
     }
 
+    /// The tap of the last track attached, and that track's format.
+    @ObservationIgnored private var lastTap: (format: TapFormat, tap: MTAudioProcessingTap)?
+
     /// Attaches the equalizer to the item's audio track, before playing.
+    ///
+    /// Tracks of the same format, one after the other, share one tap: with a tap of its own the
+    /// player starts each track's sound afresh, which leaves a pause of about half a second between
+    /// tracks and, over AirPlay, loses the first moments of each one. A track of another format gets
+    /// a new tap (the player starts afresh for it anyway), because a tap is prepared for one format.
     func attach(to item: AVPlayerItem) async {
-        guard let track = try? await item.asset.loadTracks(withMediaType: .audio).first,
-              let tap = EQTap.make(shared, spectrum: spectrum) else { return }
+        guard let track = try? await item.asset.loadTracks(withMediaType: .audio).first else { return }
+        let format = await TapFormat(track)
+        let tap: MTAudioProcessingTap
+        if let format, let lastTap, lastTap.format == format {
+            tap = lastTap.tap
+        } else {
+            guard let made = EQTap.make(shared, spectrum: spectrum) else { return }
+            tap = made
+            lastTap = format.map { ($0, made) }
+        }
         let parameters = AVMutableAudioMixInputParameters(track: track)
         parameters.audioTapProcessor = tap
         let mix = AVMutableAudioMix()
         mix.inputParameters = [parameters]
         item.audioMix = mix
+    }
+
+    /// The tap an item's sound goes through, if it has one.
+    static func tap(of item: AVPlayerItem) -> MTAudioProcessingTap? {
+        item.audioMix?.inputParameters.first?.audioTapProcessor
+    }
+}
+
+/// What a tap is prepared for: tracks that agree on it can share one.
+struct TapFormat: Equatable, Sendable {
+    let sampleRate: Double
+    let channels: UInt32
+    let bits: UInt32
+
+    /// nil when the track doesn't say (it then gets a tap of its own).
+    init?(_ track: AVAssetTrack) async {
+        guard let description = try? await track.load(.formatDescriptions).first,
+              let format = description.audioStreamBasicDescription, format.mSampleRate > 0 else { return nil }
+        sampleRate = format.mSampleRate
+        channels = format.mChannelsPerFrame
+        bits = format.mBitsPerChannel
     }
 }
 
@@ -198,7 +235,7 @@ final class EQTap: @unchecked Sendable {
         let buffers = UnsafeMutableAudioBufferListPointer(list)
         filter(buffers)
         if let analyzer, range.isValid, spectrum.isWatched {
-            analyzer.process(buffers, frames: frames, end: range.end.seconds, into: spectrum)
+            analyzer.process(buffers, frames: frames, end: spectrum.trackTime(range), into: spectrum)
         }
     }
 

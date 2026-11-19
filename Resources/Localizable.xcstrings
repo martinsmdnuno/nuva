@@ -401,6 +401,22 @@
         }
       }
     },
+    "Ajustar a saída à faixa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Match Output to Track"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustar a saída à faixa"
+          }
+        }
+      }
+    },
     "Aleatório": {
       "localizations": {
         "en": {

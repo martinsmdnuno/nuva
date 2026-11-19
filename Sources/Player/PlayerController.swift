@@ -25,6 +25,8 @@ private final class QueuePlayerItem: AVPlayerItem {
     let url: URL
     /// Reports a failure to load (undecodable file, server refused the stream).
     var statusObservation: NSKeyValueObservation?
+    /// The audio stream's own rate, read when the item is made; nil if the asset wouldn't say.
+    var sampleRate: Double?
 
     init(url: URL, queueID: QueueItem.ID) {
         self.queueID = queueID
@@ -46,6 +48,8 @@ final class PlayerController {
     private(set) var currentTime: Double = 0
     private(set) var duration: Double = 0
     private(set) var formatLabel = ""
+    /// Sample rate of the current track's audio stream (any source), nil until it is known.
+    private(set) var trackSampleRate: Double?
     /// "Couldn't play <title>", shown on the display until a track plays.
     private(set) var errorMessage: String?
     /// The system's reason, for the tooltip.
@@ -76,6 +80,10 @@ final class PlayerController {
 
     /// Called when a track starts, picked or reached on its own (for the use counts).
     @ObservationIgnored var onTrackStarted: ((Entry) -> Void)?
+
+    /// Called with a track's sample rate as it becomes the current one, before it starts when it
+    /// was picked by hand (so the output can be set to it).
+    @ObservationIgnored var onTrackRate: ((Double) -> Void)?
 
     /// Called once when a track fails, before trying it again: a server source can sign in afresh.
     @ObservationIgnored var onStreamFailure: (@Sendable (Entry) async -> Void)?
@@ -241,6 +249,7 @@ final class PlayerController {
         currentTime = position
         duration = 0
         formatLabel = item.entry.format
+        trackSampleRate = nil
         autoplay = true
         isLoading = true
         player.removeAllItems()
@@ -260,6 +269,7 @@ final class PlayerController {
                 await avItem.seek(to: CMTime(seconds: position, preferredTimescale: 600), toleranceBefore: .zero, toleranceAfter: .zero)
                 guard token == playToken else { return }
             }
+            announceRate(of: avItem)
             player.insert(avItem, after: nil)
             if autoplay { player.play() }
             onTrackStarted?(item.entry)
@@ -333,6 +343,7 @@ final class PlayerController {
         currentTime = 0
         duration = 0
         formatLabel = ""
+        trackSampleRate = nil
     }
 
     private func rebuildOrder() {
@@ -444,10 +455,24 @@ final class PlayerController {
                 Task { @MainActor in self?.failed(id, error: error) }
             }
             await equalizer.attach(to: avItem)
+            avItem.sampleRate = await Self.sampleRate(of: avItem.asset)
             return .success(avItem)
         } catch {
             return .failure(error)
         }
+    }
+
+    private func announceRate(of item: QueuePlayerItem) {
+        trackSampleRate = item.sampleRate
+        if let rate = item.sampleRate { onTrackRate?(rate) }
+    }
+
+    /// The rate of the asset's audio stream, the same way for a file, a server's stream and a CD.
+    private static func sampleRate(of asset: AVAsset) async -> Double? {
+        guard let track = try? await asset.loadTracks(withMediaType: .audio).first,
+              let description = try? await track.load(.formatDescriptions).first,
+              let rate = description.audioStreamBasicDescription?.mSampleRate, rate > 0 else { return nil }
+        return rate
     }
 
     private func loadFormat(_ item: QueuePlayerItem) {
@@ -471,6 +496,7 @@ final class PlayerController {
         duration = 0
         let entry = queue.first { $0.id == item.queueID }?.entry
         formatLabel = entry?.format ?? ""
+        announceRate(of: item)
         if let entry { onTrackStarted?(entry) }
         loadFormat(item)
         refreshUpcoming()

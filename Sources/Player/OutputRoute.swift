@@ -20,6 +20,10 @@ final class OutputRoute {
     @ObservationIgnored private var timer: Timer?
     @ObservationIgnored private var playback: NSKeyValueObservation?
     @ObservationIgnored private var pollsFast = false
+    @ObservationIgnored private var localUID: String?
+
+    /// Called when the sound moves to another Core Audio device, or to or from AirPlay.
+    @ObservationIgnored var onDeviceChange: (() -> Void)?
     @ObservationIgnored private let log = Logger(subsystem: "pt.nunomartins.nuva", category: "output")
 
     init(player: AVPlayer?) {
@@ -48,8 +52,23 @@ final class OutputRoute {
         self.timer = timer
     }
 
+    /// The Core Audio device the sound really goes to: nil over AirPlay (the app's picker or the
+    /// system's) and when there is no player (tests, snapshots).
+    func localDevice() -> CoreAudioDevice? {
+        guard let player, !player.isExternalPlaybackActive,
+              let device = player.audioOutputDeviceUniqueID.flatMap(CoreAudioDevice.init(uid:)) ?? CoreAudioDevice.defaultOutput(),
+              !device.isAirPlay else { return nil }
+        if let routed = Self.routedDeviceNames(), !routed.isEmpty, !routed.contains(device.name) { return nil }
+        return device
+    }
+
     private func refresh() {
         guard let player else { return }
+        let nowLocal = localDevice()?.uid
+        if nowLocal != localUID {
+            localUID = nowLocal
+            onDeviceChange?()
+        }
         let external = player.isExternalPlaybackActive
         let uid = player.audioOutputDeviceUniqueID
         let device = uid.flatMap(CoreAudioDevice.init(uid:)) ?? CoreAudioDevice.defaultOutput()

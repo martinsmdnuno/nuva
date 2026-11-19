@@ -1,6 +1,6 @@
 # Plan: the output follows the track's sample rate
 
-Status: steps 1 and 2 written (the device reads and write, `OutputRate` with its rules and memory, and a Debug-only trial behind `--match-rate`); step 1's two questions are still to be answered by hand on real hardware.
+Status: steps 1 to 3 written. The Mac app sets a wired output to each track's rate (Controls ▸ Match Output to Track, on by default) and puts it back on quit. Not yet heard on a real DAC: whether the sandboxed app may set the rate, and whether a track's first notes are clipped when the rate changes, are still to be checked by hand. The readout (step 4) and the content (step 5) are not done.
 Input: the library is FLAC, much of it above 44.1 kHz. NuVa reads the output device's sample rate for the display (`CoreAudioDevice` in `Sources/Player/OutputRoute.swift`) but never sets it, so a 96 kHz file on a DAC left at 48 kHz is resampled by macOS and nothing says so. The idea comes from other Mac players that switch the DAC per track (Vespertine, Audirvana, Colibri); only the idea, no code.
 
 ## What changes for the user

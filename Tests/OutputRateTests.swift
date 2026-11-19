@@ -16,6 +16,7 @@ struct OutputRateTests {
     /// Writes to the hardware, so it runs only when asked:
     /// `TEST_RUNNER_NUVA_RATE_TRIAL=1 xcodebuild … test -only-testing:NuVaTests/OutputRateTests`.
     /// It answers one question of the plan: may the sandboxed app change the device's rate?
+    /// (The test host is the sandboxed app.)
     @Test(.enabled(if: ProcessInfo.processInfo.environment["NUVA_RATE_TRIAL"] == "1"))
     func sandboxedAppMaySetTheRate() async throws {
         let device = try #require(CoreAudioDevice.defaultOutput())

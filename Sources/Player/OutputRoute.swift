@@ -128,6 +128,9 @@ struct CoreAudioDevice {
         return short.isEmpty ? name : short
     }
 
+    /// Stable across replugging, unlike `id`.
+    var uid: String? { Self.string(id, kAudioDevicePropertyDeviceUID) }
+
     var isAirPlay: Bool { transport == "airp" }
     var isBluetooth: Bool { transport == "blue" || transport == "blea" }
 
@@ -166,9 +169,11 @@ struct CoreAudioDevice {
         self.transport = String(bytes: [24, 16, 8, 0].map { UInt8((transport >> $0) & 0xff) }, encoding: .ascii) ?? ""
     }
 
-    private static func name(_ object: AudioObjectID) -> String? {
+    private static func name(_ object: AudioObjectID) -> String? { string(object, kAudioObjectPropertyName) }
+
+    private static func string(_ object: AudioObjectID, _ selector: AudioObjectPropertySelector) -> String? {
         var addr = AudioObjectPropertyAddress(
-            mSelector: kAudioObjectPropertyName, mScope: kAudioObjectPropertyScopeGlobal,
+            mSelector: selector, mScope: kAudioObjectPropertyScopeGlobal,
             mElement: kAudioObjectPropertyElementMain)
         var name: Unmanaged<CFString>?
         var size = UInt32(MemoryLayout<Unmanaged<CFString>?>.size)

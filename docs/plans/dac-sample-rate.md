@@ -1,6 +1,6 @@
 # Plan: the output follows the track's sample rate
 
-Status: step 1 written (the device reads and write, and a Debug-only trial behind `--match-rate`); its two questions are still to be answered by hand on real hardware.
+Status: steps 1 and 2 written (the device reads and write, `OutputRate` with its rules and memory, and a Debug-only trial behind `--match-rate`); step 1's two questions are still to be answered by hand on real hardware.
 Input: the library is FLAC, much of it above 44.1 kHz. NuVa reads the output device's sample rate for the display (`CoreAudioDevice` in `Sources/Player/OutputRoute.swift`) but never sets it, so a 96 kHz file on a DAC left at 48 kHz is resampled by macOS and nothing says so. The idea comes from other Mac players that switch the DAC per track (Vespertine, Audirvana, Colibri); only the idea, no code.
 
 ## What changes for the user
@@ -19,10 +19,10 @@ No "bit-perfect" badge. With `AVQueuePlayer`, the equalizer tap and the player's
 ## Decisions
 
 1. **The track's rate comes from the asset**, not from the file: the audio track's format description (`AVAssetTrack.load(.formatDescriptions)` → `AudioStreamBasicDescription.mSampleRate`). It works the same for Local, Jellyfin and CD, where `AudioFormat.label(for:)` only opens `file://` URLs.
-2. **Which rate.** The device's own list (`kAudioDevicePropertyAvailableNominalSampleRates`, which are ranges). The track's rate if offered; else the highest offered multiple of it (44.1 → 88.2 → 176.4); else the nearest higher rate; else leave the device alone. A pure function, `OutputRate.choose(track:available:)`, so it is tested without hardware.
+2. **Which rate.** The device's own list (`kAudioDevicePropertyAvailableNominalSampleRates`, which are ranges). The track's rate if offered; else its lowest offered whole multiple (44.1 → 88.2: as exact as a higher one, with less work); else the nearest higher rate; else the highest rate there is (a 96 kHz track on a 48 kHz device should not stay at 44.1). A pure function, `OutputRate.choose(track:available:)`, so it is tested without hardware.
 3. **Which outputs.** Only a Core Audio device that is not AirPlay (`airp`) and not Bluetooth (`blue`, `blea`), and only when the app's AirPlay picker is not routing elsewhere (`routedDeviceNames()`). Over AirPlay and Bluetooth the readout stays as it is today.
 4. **When.** In `PlayerController.currentItemChanged()`, and when the output device changes while a track plays. Tracks of one folder share a rate, so an album never switches mid-way; a switch happens between albums of different rates.
-5. **NuVa puts the rate back.** It remembers the rate each device had before the first change and restores it on quit. It does not restore on pause, and it does not fight: if another app or the user changes the rate mid-track, NuVa shows the new truth and sets again only at the next track.
+5. **NuVa puts the rate back.** It remembers the rate each device had before the first change and restores it on quit. It does not restore on pause, and it does not fight: if another app or the user changes the rate mid-track, NuVa shows the new truth and sets again only at the next track. On quit it restores only a device still at the rate NuVa last asked for, so a rate the user chose meanwhile stays.
 6. **A switch, on by default:** Controls ▸ Match Output to Track (PT "Ajustar a saída à faixa"). Off, NuVa never writes to the device and only the readout part remains. On by default (decided 2026-11-19): it is the point of the feature, and decision 5 puts the device back.
 7. **A failure is quiet but written down.** If the device refuses, playback continues resampled, the readout shows `96 → 48 kHz`, and the log gets a line with code `output-rate` (no device name, as the log's rule says).
 

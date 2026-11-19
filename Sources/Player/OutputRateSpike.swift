@@ -6,9 +6,9 @@ import os
 
 /// Step 1 of docs/plans/dac-sample-rate.md: a trial with no interface, in Debug builds only and
 /// only when launched with `--match-rate`. On each new track it sets a wired output to the track's
-/// sample rate when the device offers exactly that rate, and writes what happened (the status of
-/// the call, how long the device took, what the player was doing) to `rate.log` in the app's
-/// temporary folder. On quit it puts each device back. To be replaced by `OutputRate` in step 2.
+/// sample rate through `OutputRate`, and writes what happened (the outcome, how long the device
+/// took, what the player was doing) to `rate.log` in the app's temporary folder. On quit it puts
+/// each device back. Step 3 wires `OutputRate` into the player and removes this.
 @MainActor
 final class OutputRateSpike {
     static var isRequested: Bool { CommandLine.arguments.contains("--match-rate") }
@@ -18,8 +18,7 @@ final class OutputRateSpike {
     private var rateObservation: SampleRateObservation?
     private var quitObserver: NSObjectProtocol?
     private weak var lastItem: AVPlayerItem?
-    /// The rate each device had before the first change, to restore on quit.
-    private var original: [AudioObjectID: Double] = [:]
+    private let rate = OutputRate()
     private var askedAt: Date?
     private let log = Logger(subsystem: "pt.nunomartins.nuva", category: "output")
 
@@ -54,23 +53,14 @@ final class OutputRateSpike {
         let uid = player.audioOutputDeviceUniqueID
         guard let device = uid.flatMap(CoreAudioDevice.init(uid:)) ?? CoreAudioDevice.defaultOutput()
         else { return note("no output device") }
-        let offered = device.availableSampleRates()
-        let now = device.currentSampleRate() ?? 0
-        let summary = "track=\(trackRate) device=\(now) transport=\(device.transport) offered=\(offered)"
-        guard !device.isAirPlay, !device.isBluetooth, !player.isExternalPlaybackActive
-        else { return note("left alone (AirPlay or Bluetooth) \(summary)") }
-        guard now != trackRate else { return note("already matches \(summary)") }
-        guard offered.contains(where: { $0.contains(trackRate) })
-        else { return note("rate not offered \(summary)") }
-
-        if original[device.id] == nil { original[device.id] = now }
-        let asked = Date()
-        askedAt = asked
+        let summary = "track=\(trackRate) device=\(device.currentSampleRate() ?? 0) transport=\(device.transport) offered=\(device.availableSampleRates())"
+        guard !player.isExternalPlaybackActive else { return note("left alone (AirPlay) \(summary)") }
+        askedAt = Date()
         rateObservation = device.observeSampleRate { [weak self] rate in
             MainActor.assumeIsolated { self?.changed(to: rate) }
         }
-        let status = device.setSampleRate(trackRate)
-        note("set status=\(status) playerStatus=\(player.timeControlStatus.rawValue) \(summary)")
+        let outcome = rate.match(track: trackRate, on: device)
+        note("\(outcome) playerStatus=\(player.timeControlStatus.rawValue) \(summary)")
     }
 
     private func changed(to rate: Double) {
@@ -80,11 +70,8 @@ final class OutputRateSpike {
 
     private func restore() {
         rateObservation = nil
-        for (id, rate) in original {
-            let status = CoreAudioDevice(id: id)?.setSampleRate(rate)
-            note("restore \(rate) status=\(status.map(String.init) ?? "device gone")")
-        }
-        original = [:]
+        rate.restore()
+        note("restored")
     }
 
     private func note(_ text: String) {

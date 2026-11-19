@@ -1,6 +1,6 @@
 # Plan: the output follows the track's sample rate
 
-Status: written, steps 1 to 5, for 1.17. Not yet heard on a real DAC: whether the sandboxed app may set the rate, and whether a track's first notes are clipped when the rate changes, are still to be checked by hand (the list at the end) before it is released.
+Status: written, steps 1 to 5, for 1.17. Heard once by hand (below): the sandboxed app sets the rate, a track's start is not clipped, and the device is put back on quit. Still to check before release: a USB DAC, AirPlay and Bluetooth left alone, the `96 → 48 kHz` readout on a real device, and Jellyfin tracks.
 Input: the library is FLAC, much of it above 44.1 kHz. NuVa reads the output device's sample rate for the display (`CoreAudioDevice` in `Sources/Player/OutputRoute.swift`) but never sets it, so a 96 kHz file on a DAC left at 48 kHz is resampled by macOS and nothing says so. The idea comes from other Mac players that switch the DAC per track (Vespertine, Audirvana, Colibri); only the idea, no code.
 
 ## What changes for the user
@@ -47,14 +47,21 @@ New row `output-rate`: "The output device follows the track's sample rate, and t
 4. **Readout.** `OutputRoute` learns the track's rate and writes `96 → 48 kHz` and the tooltip; the listener from step 1 tells of a rate change at once (the poll stays: it is what catches the AirPlay picker). Strings in PT and EN. Decide the Windows row.
 5. **Content.** `docs/features.json`, `swift scripts/content.swift`, README and site prose (EN + PT), `CHANGELOG.md`, `CLAUDE.md` scope, `scripts/check-content.sh`. `TERMS.md` does not change: no network call. No screenshot changes: the README's and the site's all show AirPlay, whose readout is as it was.
 
-## To check by hand
+## Checked by hand
 
-- A USB DAC: 44.1, 48, 96 and 192 kHz files in a row; the DAC's own display agrees with NuVa's.
-- Built-in speakers and wired headphones; plugging headphones in mid-track.
+2026-11-19, a MacBook Neo's headphone jack with wired Sony WH-1000XM4 headphones, on a Debug build of step 5, playing seven 10-second test tracks whose rate changes at every track (44.1, 96, 48, 192, 88.2, 176.4, 44.1 kHz; each starts with four beeps at its first sample):
+
+- The sandboxed app may set the device's rate: it changed with the tracks. No entitlement was added.
+- All four beeps were heard on every track, so the simple way stays: the rate is set while the player runs, with no pause around it.
+- On quit the device went back to the rate it had.
+
+## Still to check by hand
+
+- A USB DAC, which may answer more slowly than the Mac's own output: the DAC's display agrees with NuVa's, and the window does not stall (the request is made on the main thread).
+- The readout on a device that doesn't reach the track's rate: `192 → 96 kHz`.
 - AirPlay to the WiiM and Bluetooth headphones: untouched.
 - Another app playing sound while NuVa switches the rate.
-- Quit NuVa: the device is back at the rate it had.
-- Jellyfin and CD tracks get their rate too.
+- Jellyfin and CD tracks get their rate too, and a change of rate between two albums that come over the network starts clean.
 
 ## Open for the author
 

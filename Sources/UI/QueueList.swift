@@ -202,6 +202,9 @@ struct QueueHeader: View {
                     .buttonStyle(.key(.mode))
                     .keyFocus()
                     .help(isOpen ? String(localized: "Mostrar fila ⌘B") : String(localized: "Mostrar pastas ⌘B"))
+                    // VoiceOver: what the key shows, and the LED's state.
+                    .accessibilityLabel(String(localized: "Pastas"))
+                    .accessibilityValue(isOpen ? String(localized: "ligado") : String(localized: "desligado"))
                     .keyLED(isOpen)
                 if !isOpen {
                     // Centred on the key's face.

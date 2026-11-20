@@ -29,6 +29,7 @@ struct MenuBarPlayer: View {
                     .keyFocus()
                     .fixedSize()
                     .help("Ambiente e skin")
+                    .accessibilityLabel(Text("Ambiente e skin"))
                 Button("Abrir NuVa") { openMain() }
                     .buttonStyle(.keyText)
                     .keyFocus()
@@ -56,5 +57,6 @@ struct MenuBarPlayer: View {
             .buttonStyle(.key(tone))
             .keyFocus()
             .help(help)
+            .accessibilityLabel(help)
     }
 }

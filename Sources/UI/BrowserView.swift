@@ -245,6 +245,7 @@ struct BrowserControls: View {
                     .buttonStyle(.key(.mode))
                     .keyFocus()
                     .help("Subir ←")
+                    .accessibilityLabel(ControlBar.spoken(String(localized: "Subir ←")))
             }
             if let source = browser.source {
                 Image(systemName: source.kind.symbol)
@@ -272,6 +273,7 @@ struct BrowserControls: View {
                     .buttonStyle(.key(.mode))
                     .keyFocus()
                     .help(String(localized: "Ejetar CD ⌘E"))
+                    .accessibilityLabel(ControlBar.spoken(String(localized: "Ejetar CD ⌘E")))
             }
         }
         .frame(height: Size.key)

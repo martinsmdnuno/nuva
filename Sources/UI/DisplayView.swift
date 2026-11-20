@@ -113,6 +113,9 @@ struct DisplayView: View {
                     .contentShape(Rectangle())
                     .onTapGesture { showsRemaining.toggle() }
                     .help(showsRemaining ? String(localized: "Mostrar duração") : String(localized: "Mostrar tempo restante"))
+                    // VoiceOver: this readout is also a control.
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityHint(showsRemaining ? String(localized: "Mostrar duração") : String(localized: "Mostrar tempo restante"))
             }
             .font(.dsDisplayMeta)
             .monospacedDigit()

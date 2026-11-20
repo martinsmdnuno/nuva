@@ -252,6 +252,8 @@ final class PlayerController {
         trackSampleRate = nil
         autoplay = true
         isLoading = true
+        equalizer.spectrum.setDuration(0)
+        equalizer.spectrum.startAfresh()
         player.removeAllItems()
         Task {
             let made = await makeItem(item)
@@ -323,6 +325,7 @@ final class PlayerController {
     func seek(to seconds: Double) {
         let target = max(0, duration > 0 ? min(seconds, duration) : seconds)
         currentTime = target
+        equalizer.spectrum.startAfresh()
         player.seek(to: CMTime(seconds: target, preferredTimescale: 600), toleranceBefore: .zero, toleranceAfter: .zero)
         onSeek?()
     }
@@ -489,7 +492,13 @@ final class PlayerController {
             return
         }
         guard item !== currentAVItem else { return }
-        // The AVQueuePlayer advanced on its own to the preloaded track.
+        // The AVQueuePlayer advanced on its own to the preloaded track. On the same tap the sound
+        // ran on without a pause; with a tap of its own (another format) it started afresh.
+        if let previous = currentAVItem, let tap = Equalizer.tap(of: previous), tap === Equalizer.tap(of: item) {
+            equalizer.spectrum.movedOn(after: previous.duration.seconds)
+        } else {
+            equalizer.spectrum.startAfresh()
+        }
         currentAVItem = item
         currentID = item.queueID
         currentTime = 0
@@ -525,6 +534,7 @@ final class PlayerController {
         }
         if let d = player.currentItem?.duration.seconds, d.isFinite, d > 0 {
             duration = d
+            equalizer.spectrum.setDuration(d)
         }
     }
 }

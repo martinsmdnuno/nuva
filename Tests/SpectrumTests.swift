@@ -181,4 +181,49 @@ struct SpectrumTests {
         #expect(abs(stereo[2] + 20) < 0.5)
         #expect(stereo[1] < -100)
     }
+
+    private func range(_ start: Double, _ end: Double) -> CMTimeRange {
+        CMTimeRange(start: CMTime(seconds: start, preferredTimescale: 44100), end: CMTime(seconds: end, preferredTimescale: 44100))
+    }
+
+    private func write(_ shared: SpectrumShared, level: Float, at time: Double) {
+        let levels = [Float](repeating: level, count: SpectrumShared.bands)
+        levels.withUnsafeBufferPointer { shared.write(time: time, levels: $0) }
+    }
+
+    /// Tracks that share a tap, counted per track: a track's last seconds count down to the next one's start.
+    @Test func lastSecondsOfATrackKeepItsTime() {
+        let shared = SpectrumShared()
+        #expect(abs(shared.trackTime(range(1, 1.1)) - 1.1) < 0.001)
+        // Not known yet how long the track is: left negative, which the meters ignore.
+        #expect(shared.trackTime(range(-3, -2.9)) < 0)
+        shared.setDuration(200)
+        #expect(abs(shared.trackTime(range(-3, -2.9)) - 197.1) < 0.001)
+        write(shared, level: -10, at: shared.trackTime(range(-3, -2.9)))
+        #expect(shared.levels(at: 197.1)?.first == -10)
+
+        // The next track, from its start: asked for in its own time, also after the player moved on.
+        shared.movedOn(after: 200)
+        write(shared, level: -20, at: shared.trackTime(range(1, 1.1)))
+        #expect(shared.levels(at: 1.1)?.first == -20)
+    }
+
+    /// Tracks that share a tap, counted in one go (AirPlay): the second starts where the first ended.
+    @Test func tracksCountedInOneGoAreAskedInTheirOwnTime() {
+        let shared = SpectrumShared()
+        shared.setDuration(200)
+        // Handed over ahead of the speakers: the end of the first track and the start of the second.
+        write(shared, level: -10, at: shared.trackTime(range(199.4, 199.5)))
+        write(shared, level: -20, at: shared.trackTime(range(200.9, 201)))
+        #expect(shared.levels(at: 199.5)?.first == -10)
+        #expect(shared.levels(at: 1) == nil)
+
+        shared.movedOn(after: 200)
+        #expect(shared.levels(at: 1)?.first == -20)
+
+        // A seek starts the count afresh, in the track's own time.
+        shared.startAfresh()
+        write(shared, level: -30, at: shared.trackTime(range(49.9, 50)))
+        #expect(shared.levels(at: 50)?.first == -30)
+    }
 }

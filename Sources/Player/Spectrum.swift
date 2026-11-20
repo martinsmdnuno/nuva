@@ -12,8 +12,12 @@ final class SpectrumShared: Sendable {
     nonisolated static let fineCentres: [Double] = (0..<fineBands).map { i in
         20 * pow(1000, (Double(i) + 0.5) / Double(fineBands))
     }
-    /// About 4 s of measurements at 120 a second, more than AirPlay's buffer.
-    nonisolated static let capacity = 512
+    /// Four minutes of measurements at 120 a second. AirPlay is handed the sound far ahead of the
+    /// speakers (over two minutes of it, as measured on macOS 27), and the meters ask for the
+    /// moment being played. About 5 MB.
+    nonisolated static let capacity = 240 * slotsPerSecond
+    /// A measurement is kept in the slot of its time, so finding one doesn't mean searching them all.
+    nonisolated static let slotsPerSecond = 120
 
     private struct State {
         var times: [Double]
@@ -21,9 +25,15 @@ final class SpectrumShared: Sendable {
         var fine: [Float]
         /// Per measurement: RMS left, RMS right, peak left, peak right, in dBFS.
         var stereo: [SIMD4<Float>]
-        var next = 0
         /// Meters on screen. With none, the tap doesn't measure.
         var watchers = 0
+        /// Length of the track being played, in seconds, or 0 while it isn't known.
+        var duration = 0.0
+        /// Length of the tracks played through, one into the next, since the sound last started
+        /// afresh (a track picked, a seek).
+        var consumed = 0.0
+        /// How the player counts time for a tap that tracks share (see `trackTime`).
+        var countsPerTrack = false
     }
 
     private let state: OSAllocatedUnfairLock<State>
@@ -42,6 +52,49 @@ final class SpectrumShared: Sendable {
         state.withLock { $0.watchers = max(0, $0.watchers + (on ? 1 : -1)) }
     }
 
+    // Tracks of one format share a tap, so that one runs into the next without a pause. The
+    // player then tells the tap the time in one of two ways, depending on the output:
+    // - one count through all of them (AirPlay, which is handed the sound many seconds ahead):
+    //   the second track starts where the first ended;
+    // - a count per track, whose last seconds count down to the next track's start (-3 … 0).
+    // Measurements are kept under the first kind of time when that is what the tap gets, and the
+    // meters' question, asked in the current track's time, is moved by the tracks played through.
+
+    /// The player tells how long the current track is.
+    func setDuration(_ seconds: Double) {
+        state.withLock { $0.duration = seconds.isFinite ? max(0, seconds) : 0 }
+    }
+
+    /// The sound starts afresh: a track was picked, a seek, a track with a tap of its own.
+    func startAfresh() {
+        state.withLock {
+            $0.consumed = 0
+            $0.countsPerTrack = false
+        }
+    }
+
+    /// The player moved on, without a pause, to the next track on the same tap, after `seconds` of the last one.
+    func movedOn(after seconds: Double) {
+        state.withLock { if seconds.isFinite, seconds > 0 { $0.consumed += seconds } }
+    }
+
+    /// Audio thread: the time to keep a tap buffer's measurements under, at the buffer's end.
+    func trackTime(_ range: CMTimeRange) -> Double {
+        let start = range.start.seconds, end = range.end.seconds
+        return state.withLock { s in
+            // A count that goes back without the sound starting afresh is a count per track.
+            if start < -0.1 || (s.consumed > 0 && start < s.consumed - 0.1) { s.countsPerTrack = true }
+            guard s.countsPerTrack, start < 0 else { return end }
+            // Counting down to the next track: still the current one's last seconds.
+            return s.duration > 0 ? s.duration + end : end
+        }
+    }
+
+    /// Where the measurements of the current track's `time` are kept.
+    private static func kept(_ s: State, _ time: Double) -> Double {
+        s.countsPerTrack ? time : time + s.consumed
+    }
+
     /// Audio thread: band levels in dBFS measured around `time` (seconds in the track).
     /// `stereo`: RMS left, RMS right, peak left, peak right, in dBFS (a mono source repeats its channel).
     func write(
@@ -49,13 +102,14 @@ final class SpectrumShared: Sendable {
         fine: UnsafeBufferPointer<Float>? = nil
     ) {
         // Unchecked: the pointer is only read inside the lock, on the calling thread.
+        // A time before the track's start isn't a moment the meters will ask for.
+        guard time >= 0, time.isFinite else { return }
         state.withLockUnchecked { s in
-            let i = s.next
+            let i = Self.slot(time)
             s.times[i] = time
             for b in 0..<Self.bands { s.levels[i * Self.bands + b] = levels[b] }
             s.stereo[i] = stereo
             for b in 0..<Self.fineBands { s.fine[i * Self.fineBands + b] = fine?[b] ?? -120 }
-            s.next = (i + 1) % Self.capacity
         }
     }
 
@@ -63,21 +117,21 @@ final class SpectrumShared: Sendable {
     /// `tolerance` (paused, seeking). Blending them keeps the meters moving smoothly between measurements.
     func levels(at time: Double, tolerance: Double = 0.15) -> [Float]? {
         state.withLock { s in
-            Self.bracket(in: s, at: time, tolerance: tolerance).map { Self.blend(s.levels, width: Self.bands, $0) }
+            Self.bracket(in: s, at: Self.kept(s, time), tolerance: tolerance).map { Self.blend(s.levels, width: Self.bands, $0) }
         }
     }
 
     /// The 28 fine bands in dBFS at `time`.
     func fineLevels(at time: Double, tolerance: Double = 0.15) -> [Float]? {
         state.withLock { s in
-            Self.bracket(in: s, at: time, tolerance: tolerance).map { Self.blend(s.fine, width: Self.fineBands, $0) }
+            Self.bracket(in: s, at: Self.kept(s, time), tolerance: tolerance).map { Self.blend(s.fine, width: Self.fineBands, $0) }
         }
     }
 
     /// Left and right levels (RMS, RMS, peak, peak in dBFS) at `time`.
     func stereo(at time: Double, tolerance: Double = 0.15) -> SIMD4<Float>? {
         state.withLock { s in
-            Self.bracket(in: s, at: time, tolerance: tolerance).map { b in
+            Self.bracket(in: s, at: Self.kept(s, time), tolerance: tolerance).map { b in
                 s.stereo[b.before] + (s.stereo[b.after] - s.stereo[b.before]) * b.weight
             }
         }
@@ -88,7 +142,14 @@ final class SpectrumShared: Sendable {
     private static func bracket(in s: State, at time: Double, tolerance: Double) -> (before: Int, after: Int, weight: Float)? {
         var before: Int?, after: Int?
         var early = -Double.infinity, late = Double.infinity
-        for (i, t) in s.times.enumerated() where t >= 0 && abs(t - time) <= tolerance {
+        // Only the slots of the times within `tolerance` (all of them, for a tolerance that wide).
+        let first = Int(((time - tolerance) * Double(slotsPerSecond)).rounded(.down))
+        let last = Int(((time + tolerance) * Double(slotsPerSecond)).rounded(.up))
+        guard time.isFinite, last >= 0 else { return nil }
+        for k in max(0, first)...min(last, max(0, first) + capacity - 1) {
+            let i = k % capacity
+            let t = s.times[i]
+            guard t >= 0, abs(t - time) <= tolerance else { continue }
             if t <= time, t > early { before = i; early = t }
             if t >= time, t < late { after = i; late = t }
         }
@@ -98,6 +159,10 @@ final class SpectrumShared: Sendable {
         case let (nil, a?): return (a, a, 0)
         case (nil, nil): return nil
         }
+    }
+
+    private static func slot(_ time: Double) -> Int {
+        Int((time * Double(slotsPerSecond)).rounded()) % capacity
     }
 
     private static func blend(_ values: [Float], width: Int, _ b: (before: Int, after: Int, weight: Float)) -> [Float] {

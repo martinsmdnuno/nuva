@@ -6,5 +6,6 @@ struct AccessibilityTests {
         #expect(ControlBar.spoken("Anterior ⌘←") == "Anterior")
         #expect(ControlBar.spoken("Aleatório ligado ⌥⌘S") == "Aleatório ligado")
         #expect(ControlBar.spoken("Repetir uma") == "Repetir uma")
+        #expect(ControlBar.spoken("Subir ←") == "Subir")
     }
 }

@@ -10,7 +10,9 @@ struct NuVaApp: App {
         #if DEBUG
         DebugSnapshot.runIfRequested()
         #endif
-        _model = State(initialValue: AppModel(systemIntegration: true))
+        let model = AppModel(systemIntegration: true)
+        _model = State(initialValue: model)
+        AppDelegate.model = model
     }
 
     var body: some Scene {
@@ -43,6 +45,39 @@ struct NuVaApp: App {
 
 /// Closing the window doesn't quit the app: the music keeps playing and NuVa stays in the menu bar.
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    /// The app's model, for what reaches the delegate and not a view: the Finder and the Dock.
+    @MainActor static weak var model: AppModel?
+
+    /// "Open With", a double-click on a file NuVa is the default for, or a drop on the Dock icon.
+    func application(_ application: NSApplication, open urls: [URL]) {
+        guard let model = Self.model else { return }
+        Task { await model.open(urls) }
+    }
+
+    /// Right-click on the Dock icon: what is playing, and the three keys.
+    func applicationDockMenu(_ sender: NSApplication) -> NSMenu? {
+        guard let player = Self.model?.player, !player.queue.isEmpty else { return nil }
+        let menu = NSMenu()
+        if let entry = player.current?.entry {
+            menu.addItem(withTitle: entry.title, action: nil, keyEquivalent: "")
+            if !entry.folderLine.isEmpty { menu.addItem(withTitle: entry.folderLine, action: nil, keyEquivalent: "") }
+            menu.addItem(.separator())
+        }
+        let keys: [(String, Selector)] = [
+            (player.isPlaying ? String(localized: "Pausa") : String(localized: "Tocar"), #selector(dockPlayPause)),
+            (String(localized: "Seguinte"), #selector(dockNext)),
+            (String(localized: "Anterior"), #selector(dockPrevious)),
+        ]
+        for (title, action) in keys {
+            menu.addItem(withTitle: title, action: action, keyEquivalent: "").target = self
+        }
+        return menu
+    }
+
+    @MainActor @objc private func dockPlayPause() { Self.model?.player.togglePlayPause() }
+    @MainActor @objc private func dockNext() { Self.model?.player.next() }
+    @MainActor @objc private func dockPrevious() { Self.model?.player.previous() }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         SkinStore.shared.applyAppearance()
         UpdateChecker.shared.checkAtLaunch()
@@ -57,6 +92,9 @@ struct NuVaCommands: Commands {
     @Environment(\.openWindow) private var openWindow
 
     var body: some Commands {
+        CommandGroup(replacing: .appInfo) {
+            Button("Acerca da NuVa") { AboutPanel.show() }
+        }
         CommandGroup(after: .appInfo) {
             Button("Procurar atualizações…") { UpdateChecker.shared.checkNow() }
             Button("Termos e privacidade") { openWindow(id: "terms") }
@@ -138,6 +176,9 @@ struct NuVaCommands: Commands {
                 NotificationCenter.default.post(name: .revealCurrentTrack, object: nil)
             }
             .keyboardShortcut("l")
+            Button("Mostrar faixa no Finder") { model.reveal(model.player.current?.entry) }
+                .keyboardShortcut("r", modifiers: [.command, .shift])
+                .disabled(!model.canReveal(model.player.current?.entry))
             Button("Limpar fila") { model.player.clear() }
                 .keyboardShortcut(.delete, modifiers: [.command, .option])
                 .disabled(model.player.queue.isEmpty)

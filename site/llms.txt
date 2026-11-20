@@ -23,6 +23,7 @@
 | Folders on the computer, external disks and network shares | ✓ | — | ✓ |
 | Jellyfin by its real folders, streaming the original file | ✓ | ✓ | ✓ |
 | Audio CDs, named from MusicBrainz | ✓ | — | ✓ |
+| Opens a folder or a track from the file manager (Open With, a drop on the app) and shows a track in it | ✓ | — | later |
 | FLAC, 24-bit included, through the system's own audio engine | ✓ | ✓ | ✓ |
 | A wired output follows each track's sample rate, and the display says when the system converts it | ✓ | — | — |
 | AirPlay 2 to a WiiM, HomePod or Apple TV | ✓ | — | — |

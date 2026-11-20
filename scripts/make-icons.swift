@@ -1,5 +1,6 @@
 // Generates the NuVa icon from the same measurements: PNG (CoreGraphics) and SVG.
 // Usage: swift scripts/make-icons.swift <output-folder> [variant: folder|device|display|key] [--all]
+// --all also writes VolumeIcon.icns, the icon of the mounted disk image (kept in docs/brand/, used by make-dmg.sh).
 // Run from the repository root: the logo uses Resources/Fonts/IBMPlexMono-Medium.ttf.
 // Colours from docs/design-system/tokens.json (Lead theme).
 import AppKit
@@ -36,6 +37,30 @@ func folderGlyph() -> [Shape] {
         .rect(x: 43, y: 38, w: 14, h: 40, r: 3, fill: C.displayInk),
         .rect(x: 66, y: 56, w: 14, h: 22, r: 3, fill: C.displayInk),
     ]
+}
+
+/// The mounted disk image: a drive in Aluminium with the display, the three bars and the LED where a
+/// drive has its light. Not the app icon, so the volume and the app inside it don't look the same.
+/// Colours from the Aluminium theme; the display is dark in both themes.
+func volumeShapes(small: Bool) -> [Shape] {
+    let alu = (body: "#E4E3E0", line: "#CFCDC8", edge: "#7E7C77", display: "#1A1C1E", led: "#AE7410")
+    var s: [Shape] = [
+        .rect(x: 174, y: 96, w: 676, h: 816, r: 84, fill: alu.body, stroke: alu.edge, sw: 6),
+        .rect(x: 244, y: 166, w: 536, h: 428, r: 40, fill: alu.display),
+        .rect(x: 333, y: 405, w: 80, h: 119, r: 15, fill: C.displayInk),
+        .rect(x: 472, y: 305, w: 80, h: 219, r: 15, fill: C.displayInk),
+        .rect(x: 611, y: 435, w: 80, h: 89, r: 15, fill: C.displayInk),
+    ]
+    if small {
+        // At 16 and 32 px only the LED is left under the display, larger.
+        s.append(.circle(cx: 728, cy: 760, r: 52, fill: alu.led))
+    } else {
+        s += [
+            .rect(x: 244, y: 776, w: 280, h: 24, r: 12, fill: alu.line),
+            .circle(cx: 746, cy: 788, r: 34, fill: alu.led),
+        ]
+    }
+    return s
 }
 
 /// Folder scale in the icon body: 77% of the width, like system icons.
@@ -310,6 +335,22 @@ if args.contains("--all") {
                                       "properties": ["template-rendering-intent": "template"]]
     try! JSONSerialization.data(withJSONObject: barContents, options: [.prettyPrinted, .sortedKeys])
         .write(to: barSet.appendingPathComponent("Contents.json"))
+    // Volume icon of the disk image: an iconset, then iconutil.
+    let volSet = out.appendingPathComponent("VolumeIcon.iconset")
+    try? FileManager.default.createDirectory(at: volSet, withIntermediateDirectories: true)
+    for pt in [16, 32, 128, 256, 512] {
+        for scale in [1, 2] {
+            let px = pt * scale
+            png(px, name: "VolumeIcon.iconset/icon_\(pt)x\(pt)\(scale == 2 ? "@2x" : "").png", art: volumeShapes(small: px <= 32))
+        }
+    }
+    let iconutil = Process()
+    iconutil.executableURL = URL(fileURLWithPath: "/usr/bin/iconutil")
+    iconutil.arguments = ["-c", "icns", volSet.path, "-o", out.appendingPathComponent("VolumeIcon.icns").path]
+    try! iconutil.run()
+    iconutil.waitUntilExit()
+    try? FileManager.default.removeItem(at: volSet)
+    png(512, name: "volume-icon-512.png", art: volumeShapes(small: false))
     // Favicons
     png(32, name: "favicon-32.png", shadow: false)
     png(180, name: "apple-touch-icon.png", shadow: false)

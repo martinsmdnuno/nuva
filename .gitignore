@@ -11,3 +11,6 @@ deploy/site/.env
 
 # Local release settings (the site deploy command)
 scripts/release.local
+
+# Written by XcodeGen from project.yml
+App/Info.plist

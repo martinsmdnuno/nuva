@@ -67,9 +67,9 @@ struct ControlBar: View {
             .keyLED(led)
     }
 
-    /// A tooltip without its shortcut: "Anterior ⌘←" → "Anterior".
+    /// A tooltip without its shortcut: "Anterior ⌘←" → "Anterior", "Subir ←" → "Subir".
     nonisolated static func spoken(_ help: String) -> String {
-        let symbols = CharacterSet(charactersIn: "⌘⌥⇧⌃")
+        let symbols = CharacterSet(charactersIn: "⌘⌥⇧⌃←→↑↓")
         return help.split(separator: " ")
             .filter { $0.unicodeScalars.allSatisfy { !symbols.contains($0) } }
             .joined(separator: " ")

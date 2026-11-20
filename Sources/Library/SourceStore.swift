@@ -53,8 +53,32 @@ final class SourceStore {
         return id.map { failed[$0] == nil && source($0) != nil } ?? changed
     }
 
+    /// Files opened from the Finder that are in no source. Not in `sources`: never listed, never saved.
+    let opened = OpenedFiles()
+
     func source(_ id: UUID) -> (any MusicSource)? {
-        sources.first { $0.id == id }
+        id == opened.id ? opened : sources.first { $0.id == id }
+    }
+
+    /// The Local source that holds a file or folder on disk, and its path in it ("" is the source's
+    /// own folder). The deepest source wins when one is inside another.
+    func locate(_ url: URL) -> (source: LocalSource, path: String)? {
+        let target = url.standardizedFileURL.path
+        var best: (source: LocalSource, path: String)?
+        var depth = -1
+        for source in sources.compactMap({ $0 as? LocalSource }) {
+            let root = source.root.standardizedFileURL.path
+            guard root.count > depth else { continue }
+            if target == root {
+                best = (source, "")
+            } else if target.hasPrefix(root.hasSuffix("/") ? root : root + "/") {
+                best = (source, String(target.dropFirst(root.hasSuffix("/") ? root.count : root.count + 1)))
+            } else {
+                continue
+            }
+            depth = root.count
+        }
+        return best
     }
 
     /// Whether a source is saved, open or not (a disk that isn't mounted yet still counts). Never a CD.

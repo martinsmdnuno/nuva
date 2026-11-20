@@ -35,6 +35,13 @@ struct ContentView: View {
         // In compact mode the height follows the content, no resize.
         .fixedSize(horizontal: false, vertical: compact)
         .background(Color.surface0)
+        // Folders and files dragged from the Finder play, as they do when dropped on the Dock icon.
+        .dropDestination(for: URL.self) { urls, _ in
+            let files = urls.filter(\.isFileURL)
+            guard !files.isEmpty else { return false }
+            Task { await model.open(files) }
+            return true
+        }
         .onGeometryChange(for: CGSize.self, of: \.size) { size in
             if size.width >= Self.minWidth { windowWidth = Double(size.width) }
             if model.windowMode != .compact, size.height >= Self.minHeight { listHeight = Double(size.height) }

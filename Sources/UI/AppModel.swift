@@ -152,13 +152,15 @@ final class AppModel {
         if systemIntegration {
             memory = PlayerMemory(player: player, defaults: defaults) { sources.remembers($0) }
         }
-        player.onTrackStarted = { [unowned self] entry in
-            let kind = self.sources.source(entry.sourceID)?.kind.rawValue ?? "unknown"
+        // Weak: a track can start loading in a model that is gone by the time it answers (tests).
+        player.onTrackStarted = { [weak self] entry in
+            guard let self else { return }
+            let kind = sources.source(entry.sourceID)?.kind.rawValue ?? "unknown"
             count("played.\(kind).\(entry.format.lowercased())")
         }
         // Only the real app has an output to set: `output` has no device in tests and snapshots.
-        player.onTrackRate = { [unowned self] _ in matchOutputRate() }
-        output.onDeviceChange = { [unowned self] in if player.isPlaying { matchOutputRate() } }
+        player.onTrackRate = { [weak self] _ in self?.matchOutputRate() }
+        output.onDeviceChange = { [weak self] in if player.isPlaying { self?.matchOutputRate() } }
         if systemIntegration, !underTest {
             NotificationCenter.default.addObserver(
                 forName: NSApplication.willTerminateNotification, object: nil, queue: .main
@@ -306,6 +308,63 @@ final class AppModel {
         } catch {
             report(String(localized: "Não foi possível adicionar a pasta"), detail: error.localizedDescription)
         }
+    }
+
+    /// Music from the Finder: "Open With", a drop on the Dock icon or on the window. It replaces the
+    /// queue and plays, as Play Folder does. A folder outside every source is added as a Local
+    /// source first, like Add Folder. One track inside a source plays with the rest of its folder
+    /// queued; a track outside every source plays alone, since macOS hands over that file only.
+    func open(_ urls: [URL]) async {
+        let urls = urls.filter(\.isFileURL)
+            .sorted { $0.path.localizedStandardCompare($1.path) == .orderedAscending }
+        guard !urls.isEmpty else { return }
+        count("open.finder")
+        func isFolder(_ url: URL) -> Bool { (try? url.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false }
+
+        if urls.count == 1, !isFolder(urls[0]), Playable.isPlayable(urls[0].lastPathComponent),
+           let (source, path) = sources.locate(urls[0]) {
+            let track = Entry(sourceID: source.id, path: path, name: urls[0].lastPathComponent, kind: .track)
+            await playFolder(BrowserLocation(sourceID: source.id, path: track.parentPath), startingAt: track)
+            return
+        }
+
+        var tracks: [Entry] = []
+        var reported = false
+        for url in urls {
+            if isFolder(url) {
+                let location: BrowserLocation
+                if let (source, path) = sources.locate(url) {
+                    location = BrowserLocation(sourceID: source.id, path: path)
+                } else {
+                    do {
+                        location = BrowserLocation(sourceID: try sources.addLocal(url).id, path: "")
+                        count("source.add.local")
+                    } catch {
+                        report(String(localized: "Não foi possível adicionar a pasta"), detail: error.localizedDescription)
+                        reported = true
+                        continue
+                    }
+                }
+                let found = await browser.collect(in: location)
+                if found.tracks.isEmpty || found.unreadable > 0 {
+                    report(found)
+                    reported = true
+                }
+                tracks += found.tracks
+            } else if Playable.isPlayable(url.lastPathComponent) {
+                if let (source, path) = sources.locate(url) {
+                    tracks.append(Entry(sourceID: source.id, path: path, name: url.lastPathComponent, kind: .track))
+                } else {
+                    tracks.append(sources.opened.add(url))
+                }
+            }
+        }
+        guard !tracks.isEmpty else {
+            if !reported { report(String(localized: "A NuVa não toca este tipo de ficheiro")) }
+            return
+        }
+        player.setQueue(tracks)
+        if windowMode == .browser { windowMode = .player }
     }
 
     /// Opens the sheet to add a Jellyfin server.

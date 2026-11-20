@@ -40,6 +40,31 @@ targets:
       configs:
         Release:
           CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
+    # Only what the build settings above can't say: the kinds of thing the Finder may hand to NuVa
+    # ("Open With", a drop on the Dock icon). Alternate, so NuVa never takes a file type for itself.
+    info:
+      path: App/Info.plist
+      properties:
+        # XcodeGen would otherwise write 1.0 and 1 here, over the build settings.
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Folder
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes: [public.folder]
+          - CFBundleTypeName: Audio
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes:
+              - org.xiph.flac
+              - public.mp3
+              - com.apple.m4a-audio
+              - public.mpeg-4-audio
+              - public.aac-audio
+              - com.microsoft.waveform-audio
+              - public.aiff-audio
+              - public.aifc-audio
     entitlements:
       path: App/NuVa.entitlements
       properties:

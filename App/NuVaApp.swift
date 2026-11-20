@@ -10,7 +10,9 @@ struct NuVaApp: App {
         #if DEBUG
         DebugSnapshot.runIfRequested()
         #endif
-        _model = State(initialValue: AppModel(systemIntegration: true))
+        let model = AppModel(systemIntegration: true)
+        _model = State(initialValue: model)
+        AppDelegate.open = { urls in Task { await model.open(urls) } }
     }
 
     var body: some Scene {
@@ -43,6 +45,14 @@ struct NuVaApp: App {
 
 /// Closing the window doesn't quit the app: the music keeps playing and NuVa stays in the menu bar.
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    /// Plays what the Finder hands over; set by the app once the model exists.
+    @MainActor static var open: (([URL]) -> Void)?
+
+    /// "Open With", a double-click on a file NuVa is the default for, or a drop on the Dock icon.
+    func application(_ application: NSApplication, open urls: [URL]) {
+        Self.open?(urls)
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         SkinStore.shared.applyAppearance()
         UpdateChecker.shared.checkAtLaunch()

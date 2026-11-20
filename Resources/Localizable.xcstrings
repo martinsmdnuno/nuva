@@ -113,6 +113,22 @@
         }
       }
     },
+    "A NuVa não toca este tipo de ficheiro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NuVa doesn't play this kind of file"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A NuVa não toca este tipo de ficheiro"
+          }
+        }
+      }
+    },
     "A NuVa pode enviar ao autor, cerca de uma vez por dia, contagens anónimas: que funções são usadas e que tipos de falha acontecem. Nunca nomes de pastas, ficheiros ou servidores, nem nada que te identifique. Podes mudar de ideias no menu NuVa; os detalhes estão em Termos e privacidade.": {
       "localizations": {
         "en": {

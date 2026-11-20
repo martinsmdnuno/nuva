@@ -51,6 +51,20 @@ final class AppModel {
         didSet { defaults.set(showsSpectrum, forKey: "showsSpectrum") }
     }
 
+    /// Controls ▸ Match Output to Track: a wired output is set to each track's sample rate, and
+    /// put back when this is turned off or NuVa quits. On by default.
+    var matchesOutputRate: Bool {
+        didSet {
+            guard matchesOutputRate != oldValue else { return }
+            defaults.set(matchesOutputRate, forKey: "matchesOutputRate")
+            if matchesOutputRate {
+                matchOutputRate()
+            } else {
+                outputRate.restore()
+            }
+        }
+    }
+
     /// Artwork of the current track's folder, when artwork is on.
     var currentArtwork: NSImage? { currentLoadedArtwork?.image }
 
@@ -100,6 +114,7 @@ final class AppModel {
     }
 
     @ObservationIgnored private let defaults: UserDefaults
+    @ObservationIgnored private let outputRate = OutputRate()
     @ObservationIgnored private var nowPlaying: NowPlaying?
     @ObservationIgnored private var memory: PlayerMemory?
     /// Only the real app reports: nil in tests and snapshots.
@@ -123,7 +138,8 @@ final class AppModel {
         self.player.onStreamFailure = { entry in await sources.streamFailed(for: entry) }
         self.durations = TrackDurations(resolve: resolve)
         self.browser = Browser(sources: sources)
-        self.output = OutputRoute(player: systemIntegration ? self.player.avPlayer : nil)
+        let player = self.player
+        self.output = OutputRoute(player: systemIntegration ? player.avPlayer : nil) { player.trackSampleRate }
         let resolver = ArtworkResolver(sources: sources)
         self.artwork = ArtworkStore { entry in await resolver.resolve(entry) }
         self.artworkResolver = resolver
@@ -131,6 +147,7 @@ final class AppModel {
         self.windowMode = WindowMode(rawValue: defaults.string(forKey: "windowMode") ?? "") ?? .player
         self.showsArtwork = defaults.bool(forKey: "showsArtwork")
         self.showsSpectrum = defaults.object(forKey: "showsSpectrum") as? Bool ?? true
+        self.matchesOutputRate = defaults.object(forKey: "matchesOutputRate") as? Bool ?? true
         // Before Now Playing, so it starts with the track of the last session.
         if systemIntegration {
             memory = PlayerMemory(player: player, defaults: defaults) { sources.remembers($0) }
@@ -138,6 +155,16 @@ final class AppModel {
         player.onTrackStarted = { [unowned self] entry in
             let kind = self.sources.source(entry.sourceID)?.kind.rawValue ?? "unknown"
             count("played.\(kind).\(entry.format.lowercased())")
+        }
+        // Only the real app has an output to set: `output` has no device in tests and snapshots.
+        player.onTrackRate = { [unowned self] _ in matchOutputRate() }
+        output.onDeviceChange = { [unowned self] in if player.isPlaying { matchOutputRate() } }
+        if systemIntegration, !underTest {
+            NotificationCenter.default.addObserver(
+                forName: NSApplication.willTerminateNotification, object: nil, queue: .main
+            ) { [weak self] _ in
+                MainActor.assumeIsolated { self?.outputRate.restore() }
+            }
         }
         if systemIntegration, !underTest, let reports {
             count("launch")
@@ -189,6 +216,23 @@ final class AppModel {
         }
     }
 
+    // MARK: Output rate
+
+    /// Sets the device the sound goes to at the current track's sample rate, when the setting is
+    /// on and that device is a wired one. A device that refuses is only written down: the music
+    /// plays on, resampled by macOS. Plan in docs/plans/dac-sample-rate.md.
+    private func matchOutputRate() {
+        guard matchesOutputRate, let track = player.trackSampleRate, let device = output.localDevice() else { return }
+        switch outputRate.match(track: track, on: device) {
+        case .asked:
+            count("output-rate.set")
+        case .refused(let rate, let status):
+            Log.shared.error(.player, "output-rate", detail: "\(AudioFormat.kHz(rate)) kHz, status \(status)")
+        case .leftAlone, .unchanged:
+            break
+        }
+    }
+
     // MARK: Reports
 
     /// Counts a use of a feature, when the user agreed to report them. `event` is a fixed word.
@@ -205,6 +249,7 @@ final class AppModel {
         ]
         if showsArtwork { settings.append("state.artwork") }
         if showsSpectrum { settings.append("state.spectrum") }
+        if matchesOutputRate { settings.append("state.output-rate") }
         if player.equalizer.enabled { settings.append("state.eq") }
         if player.shuffle { settings.append("state.shuffle") }
         settings += Set(sources.sources.map(\.kind.rawValue)).map { "state.source.\($0)" }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.17 — the output follows the track
+
+- Mac: on a DAC, wired headphones or the Mac's own speakers, NuVa sets the output to each track's sample rate when the device offers it, so a 96 kHz file is no longer converted to whatever the device was left at. If the device doesn't offer the track's rate, it gets the closest that loses nothing: a whole multiple (88.2 for 44.1), else the next rate up, else the highest it has. On by default; **Controls › Match Output to Track** turns it off.
+- Mac: NuVa puts the device back at the rate it had when it quits, or when you turn the setting off. A rate you chose yourself in the meantime is left alone.
+- Mac: the display says when macOS is converting the sample rate: `96 → 48 kHz` beside the output's name, and in words in its tooltip. When track and device agree it shows the one rate, as before.
+- Mac: AirPlay and Bluetooth are not touched: their rate isn't NuVa's to set.
+- Mac: on macOS 27 the display kept naming the Mac's own output after an AirPlay speaker was chosen from it. It names the speaker again.
+
 ## 1.16 — it remembers, and it says what went wrong
 
 - Mac: NuVa reopens where you left off: the queue, the track and the place in it, the volume, repeat and shuffle. It opens stopped; play carries on from there.

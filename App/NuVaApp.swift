@@ -127,6 +127,7 @@ struct NuVaCommands: Commands {
                 .disabled(typing)
             Button("Equalizador…") { model.showsEqualizer = true }
                 .keyboardShortcut("e", modifiers: [.command, .option])
+            Toggle("Ajustar a saída à faixa", isOn: Binding(get: { model.matchesOutputRate }, set: { model.matchesOutputRate = $0 }))
             Divider()
             Button("Repetir") { model.player.repeatMode = model.player.repeatMode.next }
                 .keyboardShortcut("r")

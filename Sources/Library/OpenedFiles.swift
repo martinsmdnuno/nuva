@@ -18,6 +18,9 @@ final class OpenedFiles: MusicSource {
         return Entry(sourceID: id, path: path, name: url.lastPathComponent, kind: .track)
     }
 
+    /// The file behind a track, to show in the Finder.
+    func file(_ track: Entry) -> URL? { files.withLock { $0[track.path] } }
+
     func list(_ path: String) async throws -> [Entry] { [] }
 
     func url(for track: Entry) async throws -> URL {

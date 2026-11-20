@@ -60,6 +60,18 @@ final class SourceStore {
         id == opened.id ? opened : sources.first { $0.id == id }
     }
 
+    /// Where a track or folder is on this Mac's disks, to show in the Finder. Nil on a server or a CD.
+    func fileOnDisk(_ entry: Entry) -> URL? {
+        switch source(entry.sourceID) {
+        case let local as LocalSource:
+            local.root.appendingPathComponent(entry.path, isDirectory: entry.kind == .folder)
+        case let opened as OpenedFiles:
+            opened.file(entry)
+        default:
+            nil
+        }
+    }
+
     /// The Local source that holds a file or folder on disk, and its path in it ("" is the source's
     /// own folder). The deepest source wins when one is inside another.
     func locate(_ url: URL) -> (source: LocalSource, path: String)? {

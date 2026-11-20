@@ -92,6 +92,9 @@ struct NuVaCommands: Commands {
     @Environment(\.openWindow) private var openWindow
 
     var body: some Commands {
+        CommandGroup(replacing: .appInfo) {
+            Button("Acerca da NuVa") { AboutPanel.show() }
+        }
         CommandGroup(after: .appInfo) {
             Button("Procurar atualizações…") { UpdateChecker.shared.checkNow() }
             Button("Termos e privacidade") { openWindow(id: "terms") }
@@ -173,6 +176,9 @@ struct NuVaCommands: Commands {
                 NotificationCenter.default.post(name: .revealCurrentTrack, object: nil)
             }
             .keyboardShortcut("l")
+            Button("Mostrar faixa no Finder") { model.reveal(model.player.current?.entry) }
+                .keyboardShortcut("r", modifiers: [.command, .shift])
+                .disabled(!model.canReveal(model.player.current?.entry))
             Button("Limpar fila") { model.player.clear() }
                 .keyboardShortcut(.delete, modifiers: [.command, .option])
                 .disabled(model.player.queue.isEmpty)

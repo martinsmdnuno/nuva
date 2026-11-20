@@ -273,6 +273,22 @@
         }
       }
     },
+    "Acerca da NuVa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About NuVa"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Acerca da NuVa"
+          }
+        }
+      }
+    },
     "Adicionar Jellyfin": {
       "localizations": {
         "en": {
@@ -765,6 +781,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Controlos"
+          }
+        }
+      }
+    },
+    "Código-fonte no GitHub": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source code on GitHub"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Código-fonte no GitHub"
           }
         }
       }
@@ -1361,6 +1393,22 @@
         }
       }
     },
+    "Mostrar faixa no Finder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show Track in Finder"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar faixa no Finder"
+          }
+        }
+      }
+    },
     "Mostrar fila": {
       "localizations": {
         "en": {
@@ -1405,6 +1453,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mostrar fila ⌘B"
+          }
+        }
+      }
+    },
+    "Mostrar no Finder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show in Finder"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar no Finder"
           }
         }
       }
@@ -2509,6 +2573,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Termos e privacidade"
+          }
+        }
+      }
+    },
+    "Tipos de letra Inter, IBM Plex, DM Sans, DM Mono e Share Tech, sob a SIL Open Font License.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inter, IBM Plex, DM Sans, DM Mono and Share Tech typefaces, under the SIL Open Font License."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tipos de letra Inter, IBM Plex, DM Sans, DM Mono e Share Tech, sob a SIL Open Font License."
+          }
+        }
+      }
+    },
+    "Toca a música das tuas pastas, tal como estão.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plays the music in your folders, as they are."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toca a música das tuas pastas, tal como estão."
           }
         }
       }

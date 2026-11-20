@@ -367,6 +367,22 @@ final class AppModel {
         if windowMode == .browser { windowMode = .player }
     }
 
+    /// Whether a track or folder is a file on this Mac's disks, so the Finder can show it.
+    func canReveal(_ entry: Entry?) -> Bool {
+        entry.flatMap(sources.fileOnDisk) != nil
+    }
+
+    /// Shows a track or folder in the Finder, selected.
+    func reveal(_ entry: Entry?) {
+        guard let entry, let url = sources.fileOnDisk(entry) else { return }
+        count("reveal")
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            report(SourceError.missingFolder(entry.kind == .folder ? entry.name : entry.folderName).localizedDescription)
+            return
+        }
+        NSWorkspace.shared.activateFileViewerSelecting([url])
+    }
+
     /// Opens the sheet to add a Jellyfin server.
     func addJellyfin() {
         windowMode = .browser

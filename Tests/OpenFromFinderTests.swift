@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import Testing
 @testable import NuVa
@@ -97,5 +98,32 @@ struct OpenFromFinderTests {
         #expect(found.source.id == inner.id)
         #expect(found.path == "Tusk/1 A.flac")
         #expect(model.sources.locate(FileManager.default.temporaryDirectory) == nil)
+    }
+
+    /// Show in Finder: a file on this Mac's disks has a place to show, a track from elsewhere has none.
+    @Test func onlyFilesOnDiskCanBeShownInTheFinder() async throws {
+        let root = try album(["1 A.flac"])
+        defer { try? FileManager.default.removeItem(at: root) }
+        let (model, done) = model()
+        defer { done() }
+        let source = try model.sources.addLocal(root)
+        let track = Entry(sourceID: source.id, path: "Fleetwood Mac/Tusk/1 A.flac", name: "1 A.flac", kind: .track)
+        #expect(model.sources.fileOnDisk(track)?.standardizedFileURL.path
+            == root.appendingPathComponent("Fleetwood Mac/Tusk/1 A.flac").standardizedFileURL.path)
+        #expect(model.canReveal(track))
+
+        let alone = model.sources.opened.add(root.appendingPathComponent("Fleetwood Mac/Tusk/1 A.flac"))
+        #expect(model.canReveal(alone))
+        #expect(!model.canReveal(Entry(sourceID: UUID(), path: "x/1 A.flac", name: "1 A.flac", kind: .track)))
+        #expect(!model.canReveal(nil))
+    }
+
+    @Test func theAboutPanelLinksToTheSiteAndTheSource() {
+        let credits = AboutPanel.credits
+        var links: [String] = []
+        credits.enumerateAttribute(.link, in: NSRange(location: 0, length: credits.length)) { value, _, _ in
+            if let url = value as? URL { links.append(url.absoluteString) }
+        }
+        #expect(links == [AboutPanel.site, AboutPanel.repository])
     }
 }

@@ -161,9 +161,11 @@ struct BrowserView: View {
                 Task { await model.playFolder(BrowserLocation(sourceID: e.sourceID, path: e.path)) }
             }
             Button("Adicionar à fila") { Task { await model.enqueue(e) } }
+            if model.canReveal(e) { Button("Mostrar no Finder") { model.reveal(e) } }
         case .entry(let e):
             Button("Tocar") { activate(row) }
             Button("Adicionar à fila") { Task { await model.enqueue(e) } }
+            if model.canReveal(e) { Button("Mostrar no Finder") { model.reveal(e) } }
         }
     }
 

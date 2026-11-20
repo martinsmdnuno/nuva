@@ -80,6 +80,9 @@ struct QueueList: View {
                         .disabled(index == 0)
                     Button("Mover para baixo ⌥⌘↓") { move(item.id, by: 1) }
                         .disabled(index == player.queue.count - 1)
+                    if model.canReveal(item.entry) {
+                        Button("Mostrar no Finder") { model.reveal(item.entry) }
+                    }
                     Divider()
                     Button("Remover da fila") { remove(item.id) }
                 }

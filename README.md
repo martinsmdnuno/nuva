@@ -192,12 +192,14 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 
 - Plays FLAC, ALAC, MP3, AAC/M4A, WAV and AIFF.
 - Folders on your Mac, on an external disk or on a mounted network share (SMB), and audio CDs.
+- Opens from the Finder: drag a folder or a track onto the window or the Dock icon, or choose NuVa in **Open With**. A folder that isn't a source yet becomes one; a track inside a source plays with the rest of its folder queued. **Controls › Show Track in Finder** (⇧⌘R) goes the other way.
 - Queue: play a folder, add more, drag to reorder, delete to remove.
 - Repeat (all or one), shuffle, seek, and a volume knob you can drag, scroll or turn with ⌘↑ ⌘↓.
 - On a DAC, wired headphones or the Mac's own speakers, the output follows each track's sample rate: a 96 kHz file plays at 96 kHz when the device offers it, instead of being converted by macOS. When macOS is converting, the display says so (`96 → 48 kHz`). NuVa puts the device back as it was when it quits; turn it off in **Controls › Match Output to Track**. AirPlay and Bluetooth are left alone.
 - A 10-band equalizer with presets, and a spectrum meter on the display that follows what you hear, also over AirPlay (**View › Show Spectrum**, ⌥⌘V).
 - Optional album artwork: the image in the folder, or found online from the folder names. Never from tags.
 - Media keys, Control Center, the lock screen and AirPods controls.
+- Right-click the Dock icon for the track that is playing and play, next and previous.
 - Keyboard first: every action has a shortcut. VoiceOver reads the keys, the sliders and every row.
 - Keeps going: a damaged file or a server that went offline is tried once more, then skipped, and the display says which track couldn't play. A disk or NAS that wasn't connected comes back when it's mounted.
 - Reopens where you left off: the queue, the track and the place in it, the volume, repeat and shuffle, waiting for you to press play.
@@ -216,6 +218,7 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 | Folders on the computer, external disks and network shares | ✓ | — | ✓ |
 | Jellyfin by its real folders, streaming the original file | ✓ | ✓ | ✓ |
 | Audio CDs, named from MusicBrainz | ✓ | — | ✓ |
+| Opens a folder or a track from the file manager (Open With, a drop on the app) and shows a track in it | ✓ | — | later |
 | FLAC, 24-bit included, through the system's own audio engine | ✓ | ✓ | ✓ |
 | A wired output follows each track's sample rate, and the display says when the system converts it | ✓ | — | — |
 | AirPlay 2 to a WiiM, HomePod or Apple TV | ✓ | — | — |
@@ -288,6 +291,7 @@ On Windows, every shortcut is the same with **Ctrl** for ⌘ and **Ctrl+Shift** 
 | ⌥⌘A | Show or hide folder artwork |
 | ⌥⌘V | Show or hide the spectrum meter |
 | ⌘L | Go to the current track |
+| ⇧⌘R | Show the current track in the Finder |
 | ⌥⌘↑ · ⌥⌘↓ | Move the selected track up · down in the queue |
 | Delete · ⌥⌘⌫ | Remove the selected track · clear the queue |
 | Enter · ⌘Enter | Play the selection · add it to the queue |
@@ -340,6 +344,7 @@ Toca FLAC pelo motor de áudio de cada sistema (o da própria Apple, no Mac), en
 - **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A). Usa a imagem da pasta (`cover`, `folder`, `front`, `album` ou `capa`); se não houver, procura no MusicBrainz pelo nome das pastas. Nunca das tags. No Jellyfin a regra é a mesma: a imagem que está na pasta do álbum, nunca uma que o Jellyfin tirou das tags. Capa errada ou em falta: carrega na capa e corrige o artista ou o álbum, ou escolhe uma imagem. Desligado por defeito.
 - **CDs áudio, como um leitor de CDs.** Mete um disco no leitor e a NuVa toca-o logo. Os nomes do álbum e das faixas vêm do MusicBrainz, pelo índice do disco (um CD não traz nomes). Ejetar com ⌘E. Para abrir a NuVa sempre que entra um CD: Definições do Sistema › CDs e DVDs › Ao inserir um CD de música › Abrir outra aplicação… › NuVa.
 - **Avisa quando há versão nova** (verifica no GitHub uma vez por dia, sem descarregar nada). [Termos e privacidade](TERMS.md) em NuVa › Termos e privacidade.
+- **Abre a partir do Finder:** arrasta uma pasta ou uma faixa para a janela ou para o ícone no Dock, ou escolhe a NuVa em Abrir com. Uma pasta que ainda não é fonte passa a ser; uma faixa dentro de uma fonte toca com o resto da pasta na fila. Controlos › Mostrar faixa no Finder (⇧⌘R) faz o caminho inverso. Clique direito no ícone do Dock: a faixa a tocar e tocar, seguinte e anterior.
 - **Teclas como num deck:** aleatório e repetir à esquerda, tocar ao centro, botão de volume à direita.
 - **A saída acompanha a faixa.** Num DAC, em auscultadores com fio ou nas colunas do Mac, a saída fica na frequência de cada faixa: um ficheiro a 96 kHz toca a 96 kHz quando o dispositivo a oferece, em vez de ser convertido pelo macOS. Quando o macOS está a converter, o visor diz (`96 → 48 kHz`). Ao sair, a NuVa deixa o dispositivo como estava; desliga-se em Controlos › Ajustar a saída à faixa. AirPlay e Bluetooth ficam como estão.
 - **Equalizador de 10 bandas** (carrega em "EQ" no visor ou ⌥⌘E) e **espectro no visor**: colunas de segmentos âmbar, uma por banda, que seguem o que estás a ouvir, também em AirPlay (Visualização › Mostrar espectro, ⌥⌘V).
@@ -373,6 +378,7 @@ Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnun
 | Pastas no computador, discos externos e partilhas de rede | ✓ | — | ✓ |
 | Jellyfin pelas pastas reais, com o ficheiro original | ✓ | ✓ | ✓ |
 | CDs áudio, com os nomes do MusicBrainz | ✓ | — | ✓ |
+| Abre uma pasta ou uma faixa a partir do gestor de ficheiros (Abrir com, largar na app) e mostra lá uma faixa | ✓ | — | mais tarde |
 | FLAC, 24 bits incluídos, pelo motor de áudio do próprio sistema | ✓ | ✓ | ✓ |
 | Uma saída por cabo acompanha a frequência de cada faixa, e o visor diz quando o sistema a converte | ✓ | — | — |
 | AirPlay 2 para um WiiM, HomePod ou Apple TV | ✓ | — | — |
@@ -415,4 +421,4 @@ Para a TV, vê [Na TV](#na-tv-nuva-para-android-tv); para o PC, [No PC](#no-pc-n
 
 Só é preciso uma vez.
 
-Atalhos (no Windows, Ctrl em vez de ⌘ e Ctrl+Shift em vez de ⌥⌘; F11 também abre o Ambiente): Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⇧⌘→ ⇧⌘← avançar/recuar 10 s · ⌘. parar · ⌘↑ ⌘↓ volume · ⌘R ⌥⌘S repetir, aleatório · ⌥⌘↑ ⌥⌘↓ mover na fila · ⌥⌘⌫ limpar fila · ⌥⌘E equalizador · ⌘B fila ou pastas · ⌘1 ⌘2 ⌘3 fila, pastas, compacto · ⌘4 ambiente · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌥⌘V espectro · ⌘L faixa atual · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin · ⌘E ejetar CD.
+Atalhos (no Windows, Ctrl em vez de ⌘ e Ctrl+Shift em vez de ⌥⌘; F11 também abre o Ambiente): Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⇧⌘→ ⇧⌘← avançar/recuar 10 s · ⌘. parar · ⌘↑ ⌘↓ volume · ⌘R ⌥⌘S repetir, aleatório · ⌥⌘↑ ⌥⌘↓ mover na fila · ⌥⌘⌫ limpar fila · ⌥⌘E equalizador · ⌘B fila ou pastas · ⌘1 ⌘2 ⌘3 fila, pastas, compacto · ⌘4 ambiente · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌥⌘V espectro · ⌘L faixa atual · ⇧⌘R faixa no Finder · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin · ⌘E ejetar CD.

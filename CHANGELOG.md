@@ -2,6 +2,11 @@
 
 ## 1.18 — the basics, done well
 
+- Mac: NuVa opens music from the Finder. Drag a folder or a track onto the window or the Dock icon, or choose NuVa in **Open With**, and it plays. A folder that isn't a source yet is added as one; a track inside a source plays with the rest of its folder queued; a track from anywhere else plays on its own, because macOS hands NuVa that file only.
+- Mac: **Controls › Show Track in Finder** (⇧⌘R), and **Show in Finder** on a right-click in the queue and the folders, for music on your disks.
+- Mac: right-click the Dock icon for the track that is playing and play, next and previous.
+- Mac: **About NuVa** says what NuVa is and links to the site and the source code.
+- Mac: VoiceOver names the keys that were only a symbol: up, eject and folders, and the mini player's keys.
 - Mac: the disk image you download now mounts with NuVa's own disk icon (an aluminium drive with the display, the three bars and the LED) instead of the system's blank one.
 
 ## 1.17 — the output follows the track, and one track runs into the next

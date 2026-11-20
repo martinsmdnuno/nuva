@@ -47,6 +47,7 @@ protocol MusicSource {
 ## Scope
 In:
 - Local sources (NSOpenPanel) and Jellyfin, remembered between launches.
+- From the Finder (`AppModel.open`): Open With, a drop on the Dock icon or on the window replaces the queue and plays. A folder outside every source is added as a Local source; a track inside a source plays with its folder queued; a track outside every source plays alone and is never saved (`OpenedFiles`: the sandbox hands over that file only). Document types are Alternate, in `project.yml`'s `info` (XcodeGen writes the git-ignored `App/Info.plist`). Show in Finder (⇧⌘R, context menus) for files on disk only; a Dock menu with the track and the three keys.
 - Browse folders, play a folder, queue (add, remove, reorder).
 - Play/pause, previous, next, seek, volume, repeat, shuffle.
 - Media keys and macOS Now Playing.

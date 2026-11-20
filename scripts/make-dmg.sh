@@ -63,7 +63,22 @@ TXT
 mkdir -p dist
 DMG="dist/NuVa-$VERSION.dmg"
 rm -f "$DMG"
-hdiutil create -volname "NuVa $VERSION" -srcfolder "$STAGE" -fs HFS+ -format UDZO -ov "$DMG" -quiet
+# The mounted volume shows NuVa's own disk (docs/brand/VolumeIcon.icns, drawn by make-icons.swift)
+# instead of the system's. The "has a custom icon" flag lives on the volume's root folder and
+# hdiutil doesn't copy it from the staging folder, so the image is first made writable, flagged
+# while mounted, and only then compressed.
+cp docs/brand/VolumeIcon.icns "$STAGE/.VolumeIcon.icns"
+RW=$(mktemp -d)
+MOUNT=$RW/volume
+trap 'hdiutil detach "$MOUNT" -quiet 2>/dev/null || true; rm -rf "$STAGE" "$RW"' EXIT
+hdiutil create -volname "NuVa $VERSION" -srcfolder "$STAGE" -fs HFS+ -format UDRW -ov "$RW/rw.dmg" -quiet
+hdiutil attach "$RW/rw.dmg" -nobrowse -noautoopen -mountpoint "$MOUNT" -quiet
+# Finder info of the root folder, with kHasCustomIcon (0x0400) in its flags.
+xattr -wx com.apple.FinderInfo 0000000000000000040000000000000000000000000000000000000000000000 "$MOUNT"
+# No .fseventsd in the image the user opens.
+rm -rf "$MOUNT/.fseventsd"
+hdiutil detach "$MOUNT" -quiet
+hdiutil convert "$RW/rw.dmg" -format UDZO -imagekey zlib-level=9 -ov -o "$DMG" -quiet
 hdiutil verify "$DMG" -quiet
 # Fixed-name copy for GitHub: releases/latest/download/NuVa.dmg always points to the latest.
 cp "$DMG" dist/NuVa.dmg

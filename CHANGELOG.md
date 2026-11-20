@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18 — the basics, done well
+
+- Mac: the disk image you download now mounts with NuVa's own disk icon (an aluminium drive with the display, the three bars and the LED) instead of the system's blank one.
+
 ## 1.17 — the output follows the track, and one track runs into the next
 
 - Mac: on a DAC, wired headphones or the Mac's own speakers, NuVa sets the output to each track's sample rate when the device offers it, so a 96 kHz file is no longer converted to whatever the device was left at. If the device doesn't offer the track's rate, it gets the closest that loses nothing: a whole multiple (88.2 for 44.1), else the next rate up, else the highest it has. On by default; **Controls › Match Output to Track** turns it off.

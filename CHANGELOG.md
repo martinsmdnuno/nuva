@@ -1,7 +1,12 @@
 # Changelog
 
-## 1.17 — one track runs into the next
+## 1.17 — the output follows the track, and one track runs into the next
 
+- Mac: on a DAC, wired headphones or the Mac's own speakers, NuVa sets the output to each track's sample rate when the device offers it, so a 96 kHz file is no longer converted to whatever the device was left at. If the device doesn't offer the track's rate, it gets the closest that loses nothing: a whole multiple (88.2 for 44.1), else the next rate up, else the highest it has. On by default; **Controls › Match Output to Track** turns it off.
+- Mac: NuVa puts the device back at the rate it had when it quits, or when you turn the setting off. A rate you chose yourself in the meantime is left alone.
+- Mac: the display says when macOS is converting the sample rate: `96 → 48 kHz` beside the output's name, and in words in its tooltip. When track and device agree it shows the one rate, as before.
+- Mac: AirPlay and Bluetooth are not touched: their rate isn't NuVa's to set.
+- Mac: on macOS 27 the display kept naming the Mac's own output after an AirPlay speaker was chosen from it. It names the speaker again.
 - Mac: tracks of the same format now follow each other with no pause. Until now the sound started afresh on every track: about half a second of silence between tracks on any output, and over AirPlay the first moments of each track were lost as well. A track in another format (another sample rate, say) still starts afresh.
 - Mac: over AirPlay on macOS 27 the spectrum and the ambient meters stood still, because AirPlay is now handed minutes of sound ahead of the speakers. They follow what you hear again.
 

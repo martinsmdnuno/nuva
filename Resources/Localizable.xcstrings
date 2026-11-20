@@ -193,6 +193,22 @@
         }
       }
     },
+    "A saída está na frequência da faixa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The output is at the track’s sample rate"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A saída está na frequência da faixa"
+          }
+        }
+      }
+    },
     "Abrir NuVa": {
       "localizations": {
         "en": {
@@ -397,6 +413,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajudar a melhorar a NuVa?"
+          }
+        }
+      }
+    },
+    "Ajustar a saída à faixa": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Match Output to Track"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustar a saída à faixa"
           }
         }
       }
@@ -1645,6 +1677,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Não foi possível tocar %@"
+          }
+        }
+      }
+    },
+    "O macOS converte a faixa de %@ para %@ kHz": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS converts the track from %@ to %@ kHz"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O macOS converte a faixa de %@ para %@ kHz"
           }
         }
       }

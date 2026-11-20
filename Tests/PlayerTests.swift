@@ -119,6 +119,24 @@ struct PlayerTests {
         #expect(abs(changes[1].timeIntervalSince(changes[0]) - 1.5) < 0.12)
     }
 
+    @Test func tellsEachTracksSampleRateAsItBecomesCurrent() async throws {
+        let (dir, entries) = try makeFlacs(2, seconds: 1)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let player = makePlayer(dir)
+        var told: [Double] = []
+        player.onTrackRate = { told.append($0) }
+
+        player.setQueue(entries)
+        try await wait { player.isPlaying }
+        // Known before the track starts, so the output can be set first.
+        #expect(player.trackSampleRate == 44_100)
+        #expect(told == [44_100])
+        try await wait { player.current?.entry == entries[1] }
+        #expect(told == [44_100, 44_100])
+        player.clear()
+        #expect(player.trackSampleRate == nil)
+    }
+
     @Test func repeatAllWrapsAround() async throws {
         let (dir, entries) = try makeFlacs(2, seconds: 1)
         defer { try? FileManager.default.removeItem(at: dir) }

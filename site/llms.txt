@@ -24,6 +24,7 @@
 | Jellyfin by its real folders, streaming the original file | ✓ | ✓ | ✓ |
 | Audio CDs, named from MusicBrainz | ✓ | — | ✓ |
 | FLAC, 24-bit included, through the system's own audio engine | ✓ | ✓ | ✓ |
+| A wired output follows each track's sample rate, and the display says when the system converts it | ✓ | — | — |
 | AirPlay 2 to a WiiM, HomePod or Apple TV | ✓ | — | — |
 | Queue: play a folder, add, reorder, remove | ✓ | ✓ | ✓ |
 | Repeat, shuffle, seek and 10-second skips | ✓ | ✓ | ✓ |

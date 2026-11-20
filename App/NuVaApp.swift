@@ -12,7 +12,7 @@ struct NuVaApp: App {
         #endif
         let model = AppModel(systemIntegration: true)
         _model = State(initialValue: model)
-        AppDelegate.open = { urls in Task { await model.open(urls) } }
+        AppDelegate.model = model
     }
 
     var body: some Scene {
@@ -45,13 +45,38 @@ struct NuVaApp: App {
 
 /// Closing the window doesn't quit the app: the music keeps playing and NuVa stays in the menu bar.
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    /// Plays what the Finder hands over; set by the app once the model exists.
-    @MainActor static var open: (([URL]) -> Void)?
+    /// The app's model, for what reaches the delegate and not a view: the Finder and the Dock.
+    @MainActor static weak var model: AppModel?
 
     /// "Open With", a double-click on a file NuVa is the default for, or a drop on the Dock icon.
     func application(_ application: NSApplication, open urls: [URL]) {
-        Self.open?(urls)
+        guard let model = Self.model else { return }
+        Task { await model.open(urls) }
     }
+
+    /// Right-click on the Dock icon: what is playing, and the three keys.
+    func applicationDockMenu(_ sender: NSApplication) -> NSMenu? {
+        guard let player = Self.model?.player, !player.queue.isEmpty else { return nil }
+        let menu = NSMenu()
+        if let entry = player.current?.entry {
+            menu.addItem(withTitle: entry.title, action: nil, keyEquivalent: "")
+            if !entry.folderLine.isEmpty { menu.addItem(withTitle: entry.folderLine, action: nil, keyEquivalent: "") }
+            menu.addItem(.separator())
+        }
+        let keys: [(String, Selector)] = [
+            (player.isPlaying ? String(localized: "Pausa") : String(localized: "Tocar"), #selector(dockPlayPause)),
+            (String(localized: "Seguinte"), #selector(dockNext)),
+            (String(localized: "Anterior"), #selector(dockPrevious)),
+        ]
+        for (title, action) in keys {
+            menu.addItem(withTitle: title, action: action, keyEquivalent: "").target = self
+        }
+        return menu
+    }
+
+    @MainActor @objc private func dockPlayPause() { Self.model?.player.togglePlayPause() }
+    @MainActor @objc private func dockNext() { Self.model?.player.next() }
+    @MainActor @objc private func dockPrevious() { Self.model?.player.previous() }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         SkinStore.shared.applyAppearance()

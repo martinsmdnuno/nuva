@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.20 — the newest first, everywhere
+
+- Android TV: the clock key beside the menu key puts the folders with the newest music first, so last night's downloads are at the top. Its LED is on while it's in use; press it again for names. The TV remembers the choice.
+- Windows: the same, with the clock key beside Play Folder, View › Recent Folders First or Ctrl+Shift+N.
+- Both go by the folders' own dates, never tags, as the Mac does: on Jellyfin, when the server found the music; on a Windows disk, when music last landed in a folder. Tracks inside an album keep their order.
+
 ## 1.19 — the newest first
 
 - Mac: the folders can put the newest music first, so last night's downloads are at the top: the clock key beside Play Folder, View › Recent Folders First or ⌥⌘N. Its LED is on while it's in use; press it again for names, as before. NuVa remembers the choice.

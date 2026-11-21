@@ -66,8 +66,8 @@
   "features": [
     { "id": "folders", "en": "Folders as they are: a folder is an album, natural sort, never tags", "pt": "Pastas como estão: uma pasta é um álbum, ordem natural, nunca tags",
       "mac": "yes", "tv": "yes", "windows": "yes" },
-    { "id": "recent-folders", "en": "Recent folders first: the newest music at the top (⌥⌘N)", "pt": "Pastas recentes primeiro: a música mais nova no topo (⌥⌘N)",
-      "mac": "yes", "tv": "planned", "windows": "planned" },
+    { "id": "recent-folders", "en": "Recent folders first: the newest music at the top", "pt": "Pastas recentes primeiro: a música mais nova no topo",
+      "mac": "yes", "tv": "yes", "windows": "yes" },
     { "id": "display-names", "en": "The display names the artist's and album's folders, scrolling when they're too long", "pt": "O visor mostra as pastas do artista e do álbum, a rolar quando não cabem",
       "mac": "yes", "tv": "yes", "windows": "planned" },
     { "id": "quality", "en": "Format, bitrate, bit depth and sample rate on the display", "pt": "Formato, bitrate, bits e frequência no visor",

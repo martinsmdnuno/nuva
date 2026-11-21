@@ -178,7 +178,7 @@ Rave, Neon Tokyo, Tropicália and Velvet, each glowing in its own colours and at
 </tr>
 </table>
 
-The same player for the living room, on an Android TV box or a TV with Android TV (8.1 or later). It plays your **Jellyfin** server by its real folders and streams the original files: FLAC, 24-bit included, through Android's own player and decoders. It has what the Mac app has where a TV allows: the display with the spectrum, the 10-band equalizer, the queue, repeat and shuffle, all six ambient faces with OLED protection, album artwork with the cover's glow, all seven skins (Rave's glow pulses with the beat across the whole room) and font sets. While music plays the TV never sleeps nor starts its screensaver. The remote does everything: queue and folders are two tabs at the top of the right column, one mode key moves through normal, shuffle, repeat all and repeat one, and OK on the position bar lets ← → move through the track, 10 seconds a press (↓ does it in ambient mode). Hold OK to add to the queue, or to move and remove; Back asks before leaving. A badge shows the format, bitrate, bit depth and sample rate. Covers come first from the image in the album's folder on the server, and without one a soft glow in the skin's light sits behind the ambient faces. It reopens where you were.
+The same player for the living room, on an Android TV box or a TV with Android TV (8.1 or later). It plays your **Jellyfin** server by its real folders and streams the original files: FLAC, 24-bit included, through Android's own player and decoders. It has what the Mac app has where a TV allows: the display with the spectrum, the 10-band equalizer, the queue, repeat and shuffle, all six ambient faces with OLED protection, album artwork with the cover's glow, all seven skins (Rave's glow pulses with the beat across the whole room) and font sets. While music plays the TV never sleeps nor starts its screensaver. The remote does everything: queue and folders are two tabs at the top of the right column, one mode key moves through normal, shuffle, repeat all and repeat one, and OK on the position bar lets ← → move through the track, 10 seconds a press (↓ does it in ambient mode). Hold OK to add to the queue, or to move and remove; Back asks before leaving. The clock key beside the menu key puts the folders with the newest music first, for last night's downloads. A badge shows the format, bitrate, bit depth and sample rate. Covers come first from the image in the album's folder on the server, and without one a soft glow in the skin's light sits behind the ambient faces. It reopens where you were.
 
 To install it, open the **Downloader** app on the TV (free, in the Play Store) and type `nuva.martinsnuno.com/tv`. Or download [NuVa-AndroidTV.apk](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk) and copy it with a USB stick. Android asks once to allow apps from Downloader (or from the file manager).
 
@@ -213,7 +213,7 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 | | Mac | Android TV | Windows |
 |---|:-:|:-:|:-:|
 | Folders as they are: a folder is an album, natural sort, never tags | ✓ | ✓ | ✓ |
-| Recent folders first: the newest music at the top (⌥⌘N) | ✓ | later | later |
+| Recent folders first: the newest music at the top | ✓ | ✓ | ✓ |
 | The display names the artist's and album's folders, scrolling when they're too long | ✓ | ✓ | later |
 | Format, bitrate, bit depth and sample rate on the display | ✓ | ✓ | ✓ |
 | Folders on the computer, external disks and network shares | ✓ | — | ✓ |
@@ -359,7 +359,7 @@ Toca FLAC pelo motor de áudio de cada sistema (o da própria Apple, no Mac), en
 
 ### Na TV: NuVa para Android TV
 
-O mesmo leitor para a sala, numa box Android TV ou numa TV com Android TV (8.1 ou posterior). Toca o teu servidor **Jellyfin** pelas pastas reais e os ficheiros originais: FLAC, 24 bits incluídos, pelo leitor e pelos descodificadores do próprio Android. Tem o que a app do Mac tem onde uma TV deixa: o visor com o espectro, o equalizador de 10 bandas, a fila, repetir e aleatório, as seis faces do modo Ambiente com proteção OLED, as capas com o brilho do álbum, as skins e as fontes. O comando faz tudo: a fila e as pastas são dois separadores no topo da coluna da direita, uma tecla de modo passa por normal, aleatório, repetir tudo e repetir faixa, e OK na barra de posição deixa ← → andar pela faixa, 10 segundos de cada vez (no modo Ambiente, com ↓). Manter OK carregado junta à fila, ou move e tira; Voltar pergunta antes de sair. Um selo mostra o formato, o bitrate, os bits e a frequência. As capas vêm primeiro da imagem na pasta do álbum, no servidor, e sem capa um brilho suave na luz da skin fica atrás das faces do Ambiente. Volta a abrir onde estavas.
+O mesmo leitor para a sala, numa box Android TV ou numa TV com Android TV (8.1 ou posterior). Toca o teu servidor **Jellyfin** pelas pastas reais e os ficheiros originais: FLAC, 24 bits incluídos, pelo leitor e pelos descodificadores do próprio Android. Tem o que a app do Mac tem onde uma TV deixa: o visor com o espectro, o equalizador de 10 bandas, a fila, repetir e aleatório, as seis faces do modo Ambiente com proteção OLED, as capas com o brilho do álbum, as skins e as fontes. O comando faz tudo: a fila e as pastas são dois separadores no topo da coluna da direita, uma tecla de modo passa por normal, aleatório, repetir tudo e repetir faixa, e OK na barra de posição deixa ← → andar pela faixa, 10 segundos de cada vez (no modo Ambiente, com ↓). Manter OK carregado junta à fila, ou move e tira; Voltar pergunta antes de sair. A tecla do relógio, ao lado da do menu, põe primeiro as pastas com música mais recente, para o que descarregaste ontem. Um selo mostra o formato, o bitrate, os bits e a frequência. As capas vêm primeiro da imagem na pasta do álbum, no servidor, e sem capa um brilho suave na luz da skin fica atrás das faces do Ambiente. Volta a abrir onde estavas.
 
 Para instalar, abre a app **Downloader** na TV (gratuita, na Play Store) e escreve `nuva.martinsnuno.com/tv`. Ou descarrega o [NuVa-AndroidTV.apk](https://github.com/martinsmdnuno/nuva/releases/latest/download/NuVa-AndroidTV.apk) e copia-o com uma pen USB. O Android pede uma vez para permitir apps vindas do Downloader (ou do gestor de ficheiros).
 
@@ -375,7 +375,7 @@ Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnun
 | | Mac | Android TV | Windows |
 |---|:-:|:-:|:-:|
 | Pastas como estão: uma pasta é um álbum, ordem natural, nunca tags | ✓ | ✓ | ✓ |
-| Pastas recentes primeiro: a música mais nova no topo (⌥⌘N) | ✓ | mais tarde | mais tarde |
+| Pastas recentes primeiro: a música mais nova no topo | ✓ | ✓ | ✓ |
 | O visor mostra as pastas do artista e do álbum, a rolar quando não cabem | ✓ | ✓ | mais tarde |
 | Formato, bitrate, bits e frequência no visor | ✓ | ✓ | ✓ |
 | Pastas no computador, discos externos e partilhas de rede | ✓ | — | ✓ |
@@ -424,4 +424,4 @@ Para a TV, vê [Na TV](#na-tv-nuva-para-android-tv); para o PC, [No PC](#no-pc-n
 
 Só é preciso uma vez.
 
-Atalhos (no Windows, Ctrl em vez de ⌘ e Ctrl+Shift em vez de ⌥⌘; F11 também abre o Ambiente): Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⇧⌘→ ⇧⌘← avançar/recuar 10 s · ⌘. parar · ⌘↑ ⌘↓ volume · ⌘R ⌥⌘S repetir, aleatório · ⌥⌘↑ ⌥⌘↓ mover na fila · ⌥⌘⌫ limpar fila · ⌥⌘E equalizador · ⌘B fila ou pastas · ⌥⌘N pastas recentes primeiro (Mac) · ⌘1 ⌘2 ⌘3 fila, pastas, compacto · ⌘4 ambiente · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌥⌘V espectro · ⌘L faixa atual · ⇧⌘R faixa no Finder · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin · ⌘E ejetar CD.
+Atalhos (no Windows, Ctrl em vez de ⌘ e Ctrl+Shift em vez de ⌥⌘; F11 também abre o Ambiente): Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⇧⌘→ ⇧⌘← avançar/recuar 10 s · ⌘. parar · ⌘↑ ⌘↓ volume · ⌘R ⌥⌘S repetir, aleatório · ⌥⌘↑ ⌥⌘↓ mover na fila · ⌥⌘⌫ limpar fila · ⌥⌘E equalizador · ⌘B fila ou pastas · ⌥⌘N pastas recentes primeiro · ⌘1 ⌘2 ⌘3 fila, pastas, compacto · ⌘4 ambiente · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌥⌘V espectro · ⌘L faixa atual · ⇧⌘R faixa no Finder · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin · ⌘E ejetar CD.

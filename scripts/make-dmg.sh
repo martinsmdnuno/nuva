@@ -68,6 +68,11 @@ rm -f "$DMG"
 # hdiutil doesn't copy it from the staging folder, so the image is first made writable, flagged
 # while mounted, and only then compressed.
 cp docs/brand/VolumeIcon.icns "$STAGE/.VolumeIcon.icns"
+# The window opens laid out: icons at 96, the app on the left, Applications on the right, the read-me
+# below. docs/brand/dmg-DS_Store is the Finder's own record of that, saved once from a volume with
+# these three names (see CLAUDE.md, Releases); it holds no picture, so it doesn't depend on the
+# volume's name, which changes with every version.
+cp docs/brand/dmg-DS_Store "$STAGE/.DS_Store"
 RW=$(mktemp -d)
 MOUNT=$RW/volume
 trap 'hdiutil detach "$MOUNT" -quiet 2>/dev/null || true; rm -rf "$STAGE" "$RW"' EXIT

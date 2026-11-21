@@ -38,7 +38,7 @@ final class LocalSource: MusicSource {
 
     func list(_ path: String) async throws -> [Entry] {
         let dir = path.isEmpty ? root : root.appendingPathComponent(path, isDirectory: true)
-        let keys: [URLResourceKey] = [.isDirectoryKey, .isHiddenKey]
+        let keys: [URLResourceKey] = [.isDirectoryKey, .isHiddenKey, .contentModificationDateKey, .addedToDirectoryDateKey]
         let items: [URL]
         do {
             items = try FileManager.default.contentsOfDirectory(
@@ -47,10 +47,16 @@ final class LocalSource: MusicSource {
             throw SourceError.missingFolder(path.isEmpty ? name : (path as NSString).lastPathComponent)
         }
         let entries = items.compactMap { url -> Entry? in
-            let isDir = (try? url.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
+            let values = try? url.resourceValues(forKeys: Set(keys))
+            let isDir = values?.isDirectory ?? false
             let fileName = url.lastPathComponent
             let rel = path.isEmpty ? fileName : "\(path)/\(fileName)"
-            if isDir { return Entry(sourceID: id, path: rel, name: fileName, kind: .folder) }
+            if isDir {
+                // A folder changes when music lands in it (an album in the artist's folder, files in the
+                // album's); a folder moved in whole keeps its old date but is new to its parent.
+                let added = [values?.contentModificationDate, values?.addedToDirectoryDate].compactMap { $0 }.max()
+                return Entry(sourceID: id, path: rel, name: fileName, kind: .folder, added: added)
+            }
             guard Playable.isPlayable(fileName) else { return nil }
             return Entry(sourceID: id, path: rel, name: fileName, kind: .track)
         }

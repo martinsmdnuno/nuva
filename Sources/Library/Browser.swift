@@ -21,7 +21,15 @@ struct FolderTracks: Sendable {
 @Observable
 final class Browser {
     private(set) var location: BrowserLocation?
+    /// The folder's entries, folders in `folderOrder`.
     private(set) var entries: [Entry] = []
+    /// Names (as they are) or the newest music first; remembered (`folderOrder`).
+    var folderOrder: FolderOrder {
+        didSet {
+            defaults.set(folderOrder.rawValue, forKey: "folderOrder")
+            entries = entries.sorted(by: folderOrder)
+        }
+    }
     private(set) var errorMessage: String?
     /// Listing the folder (a slow server or network disk).
     private(set) var isLoading = false
@@ -29,10 +37,17 @@ final class Browser {
     private(set) var summaries: [Entry.ID: String] = [:]
 
     @ObservationIgnored private let sources: SourceStore
+    @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private var loadToken = 0
 
-    init(sources: SourceStore) {
+    init(sources: SourceStore, defaults: UserDefaults = .standard) {
         self.sources = sources
+        self.defaults = defaults
+        self.folderOrder = FolderOrder(rawValue: defaults.string(forKey: "folderOrder") ?? "") ?? .name
+    }
+
+    func toggleFolderOrder() {
+        folderOrder = folderOrder == .recent ? .name : .recent
     }
 
     var source: (any MusicSource)? { location.flatMap { sources.source($0.sourceID) } }
@@ -59,7 +74,7 @@ final class Browser {
             do {
                 let items = try await source.list(location.path)
                 guard token == loadToken else { return }
-                entries = items
+                entries = items.sorted(by: folderOrder)
             } catch {
                 Log.shared.error(.source, "list-failed", error, detail: location.path)
                 guard token == loadToken else { return }

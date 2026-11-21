@@ -22,7 +22,7 @@ final class FakeJellyfin: URLProtocol, @unchecked Sendable {
         case ("/jf/UserViews", _):
             body = #"{"Items":[{"Id":"lib","Name":"Música","CollectionType":"music","IsFolder":true},{"Id":"mov","Name":"Filmes","CollectionType":"movies","IsFolder":true}]}"#
         case ("/jf/Items", "lib"):
-            body = #"{"Items":[{"Id":"art","Name":"Artista X","IsFolder":true,"Path":"/music/Artist"}]}"#
+            body = #"{"Items":[{"Id":"art","Name":"Artista X","IsFolder":true,"Path":"/music/Artist","DateCreated":"2024-01-02T03:04:05.1234567Z","DateLastMediaAdded":"2026-11-20T21:00:00.0000000Z"}]}"#
         case ("/jf/Items", "art"):
             body = #"{"Items":[{"Id":"alb","Name":"Nome das tags","IsFolder":true,"Path":"/music/Artist/2001 Álbum"}]}"#
         case ("/jf/Items", "alb"):
@@ -60,7 +60,10 @@ struct JellyfinTests {
 
     @Test func browsesDiskFoldersNotTags() async throws {
         let jf = source()
-        #expect(try await jf.list("").map(\.name) == ["Artist"])
+        let root = try await jf.list("")
+        #expect(root.map(\.name) == ["Artist"])
+        // The newer of the two dates: when an album last landed in the artist's folder.
+        #expect(root[0].added == JellyfinSource.date("2026-11-20T21:00:00Z"))
         #expect(try await jf.list("Artist").map(\.name) == ["2001 Álbum"])
         let album = try await jf.list("Artist/2001 Álbum")
         #expect(album.map(\.name) == ["CD1", "CD2"])
@@ -96,5 +99,14 @@ struct JellyfinTests {
         ]
         #expect(JellyfinSource.folderImage(among: images, in: #"D:\Music\Tusk\"#)?.type == "Thumb")
         #expect(JellyfinSource.folderImage(among: images, in: "/music/Tusk") == nil)
+    }
+
+    @Test func readsJellyfinDates() {
+        let expected = Date(timeIntervalSince1970: 1_731_582_413)  // 2024-11-14T11:06:53Z
+        #expect(JellyfinSource.date("2024-11-14T11:06:53.1234567Z") == expected)
+        #expect(JellyfinSource.date("2024-11-14T11:06:53Z") == expected)
+        #expect(JellyfinSource.date("2024-11-14T11:06:53") == expected)
+        #expect(JellyfinSource.date("2024-11-14T12:06:53.5+01:00") == expected)
+        #expect(JellyfinSource.date("0001-01-01") == nil)
     }
 }

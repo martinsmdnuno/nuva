@@ -10,6 +10,9 @@ struct Entry: Identifiable, Hashable, Sendable, Codable {
     let kind: Kind
     /// Duration in seconds when the source already knows it (Jellyfin); nil for the Local source.
     var duration: Double? = nil
+    /// When the folder last got new music (the source's own dates: the disk's, or Jellyfin's).
+    /// Only for folders, only to sort them by "Recent First"; nil when the source doesn't know.
+    var added: Date? = nil
 
     var id: String { "\(sourceID.uuidString)/\(path)" }
 
@@ -152,11 +155,33 @@ enum Playable {
     }
 }
 
+/// How the browser orders folders. Tracks always keep the natural order (the album's order).
+enum FolderOrder: String, Sendable {
+    /// Natural name order, as the folders are.
+    case name
+    /// Folders with the newest music first ("the last downloads"); unknown dates last, by name.
+    case recent
+}
+
 extension [Entry] {
     /// Folders first, then tracks; within each group, natural name order.
     func naturallySorted() -> [Entry] {
         sorted { a, b in
             if a.kind != b.kind { return a.kind == .folder }
+            return a.name.localizedStandardCompare(b.name) == .orderedAscending
+        }
+    }
+
+    /// Folders first, in `order`; then tracks, in natural order.
+    func sorted(by order: FolderOrder) -> [Entry] {
+        guard order == .recent else { return naturallySorted() }
+        return sorted { a, b in
+            if a.kind != b.kind { return a.kind == .folder }
+            if a.kind == .folder, a.added != b.added {
+                guard let x = a.added else { return false }
+                guard let y = b.added else { return true }
+                return x > y
+            }
             return a.name.localizedStandardCompare(b.name) == .orderedAscending
         }
     }

@@ -125,6 +125,10 @@ struct NuVaCommands: Commands {
             Menu("Opções do Ambiente") { AmbientMenuItems(model: model) }
             Button(model.windowMode == .browser ? String(localized: "Mostrar fila") : String(localized: "Mostrar pastas")) { model.toggleBrowser() }
                 .keyboardShortcut("b")
+            Toggle("Pastas recentes primeiro", isOn: Binding(
+                get: { model.browser.folderOrder == .recent },
+                set: { model.browser.folderOrder = $0 ? .recent : .name }))
+                .keyboardShortcut("n", modifiers: [.command, .option])
             Toggle("Mostrar capas", isOn: Binding(get: { model.showsArtwork }, set: { model.showsArtwork = $0 }))
                 .keyboardShortcut("a", modifiers: [.command, .option])
             Button("Capa errada ou em falta…") { model.fixingArtwork = model.player.current?.entry }

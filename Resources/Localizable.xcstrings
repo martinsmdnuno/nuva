@@ -2960,6 +2960,54 @@
           }
         }
       }
+    },
+    "Pastas recentes primeiro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recent Folders First"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pastas recentes primeiro"
+          }
+        }
+      }
+    },
+    "Pastas recentes primeiro ⌥⌘N": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recent folders first ⌥⌘N"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pastas recentes primeiro ⌥⌘N"
+          }
+        }
+      }
+    },
+    "Ordenar pastas pelo nome ⌥⌘N": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sort folders by name ⌥⌘N"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ordenar pastas pelo nome ⌥⌘N"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

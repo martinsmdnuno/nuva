@@ -28,10 +28,18 @@ actor JellyfinSource: MusicSource {
         let container: String?
         let runTimeTicks: Int64?
         let collectionType: String?
+        var dateCreated: String? = nil
+        var dateLastMediaAdded: String? = nil
 
         enum CodingKeys: String, CodingKey {
             case id = "Id", name = "Name", isFolder = "IsFolder", path = "Path", container = "Container"
             case runTimeTicks = "RunTimeTicks", collectionType = "CollectionType"
+            case dateCreated = "DateCreated", dateLastMediaAdded = "DateLastMediaAdded"
+        }
+
+        /// The newer of when Jellyfin found the folder and when it last found music in it.
+        var added: Date? {
+            [dateCreated, dateLastMediaAdded].compactMap { $0.flatMap(JellyfinSource.date) }.max()
         }
 
         /// Path with forward slashes (Windows servers use `\`).
@@ -93,19 +101,23 @@ actor JellyfinSource: MusicSource {
 
         // Direct children of `path`; deeper items (an album with CD1/CD2) yield folders from the path.
         var result: [Entry] = []
-        var seen: Set<String> = []
+        var folders: [String: Int] = [:]
+        // A folder seen twice (itself and through a deeper item) keeps the newest date.
+        func addFolder(_ path: String, _ name: String, _ added: Date?) {
+            if let index = folders[path] {
+                result[index].added = [result[index].added, added].compactMap { $0 }.max()
+            } else {
+                folders[path] = result.count
+                result.append(Entry(sourceID: id, path: path, name: name, kind: .folder, added: added))
+            }
+        }
         let prefix = path.isEmpty ? "" : path + "/"
         for (item, rel) in placed where rel.hasPrefix(prefix) {
             let rest = rel.dropFirst(prefix.count)
             if let slash = rest.firstIndex(of: "/") {
-                let sub = prefix + rest[..<slash]
-                if seen.insert(sub).inserted {
-                    result.append(Entry(sourceID: id, path: sub, name: String(rest[..<slash]), kind: .folder))
-                }
+                addFolder(prefix + rest[..<slash], String(rest[..<slash]), item.added)
             } else if item.isFolder == true {
-                if seen.insert(rel).inserted {
-                    result.append(Entry(sourceID: id, path: rel, name: String(rest), kind: .folder))
-                }
+                addFolder(rel, String(rest), item.added)
             } else if Playable.isPlayable(rel) {
                 let duration = item.runTimeTicks.map { Double($0) / 10_000_000 }
                 result.append(Entry(sourceID: id, path: rel, name: String(rest), kind: .track, duration: duration))
@@ -258,7 +270,7 @@ actor JellyfinSource: MusicSource {
         let userID = try await currentSession().userID
         let query = [
             URLQueryItem(name: "parentId", value: parentID),
-            URLQueryItem(name: "fields", value: "Path"),
+            URLQueryItem(name: "fields", value: "Path,DateCreated,DateLastMediaAdded"),
             URLQueryItem(name: "enableImages", value: "false"),
             URLQueryItem(name: "enableUserData", value: "false"),
         ]
@@ -340,6 +352,13 @@ actor JellyfinSource: MusicSource {
             throw SourceError.unexpectedResponse
         }
         return Session(token: response.AccessToken, userID: response.User.Id)
+    }
+
+    /// Jellyfin's dates ("2025-03-14T09:26:53.1234567Z", seven decimals or none), to a Date.
+    static func date(_ text: String) -> Date? {
+        let whole = text.replacingOccurrences(of: #"\.\d+"#, with: "", options: .regularExpression)
+        let zoned = whole.hasSuffix("Z") || whole.range(of: #"[+-]\d{2}:?\d{2}$"#, options: .regularExpression) != nil
+        return try? Date(zoned ? whole : whole + "Z", strategy: .iso8601)
     }
 
     private static func authorization(deviceID: String, token: String?) -> String {

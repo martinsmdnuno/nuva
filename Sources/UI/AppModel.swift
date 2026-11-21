@@ -137,7 +137,7 @@ final class AppModel {
         self.player = PlayerController(resolve: resolve, equalizer: Equalizer(defaults: defaults))
         self.player.onStreamFailure = { entry in await sources.streamFailed(for: entry) }
         self.durations = TrackDurations(resolve: resolve)
-        self.browser = Browser(sources: sources)
+        self.browser = Browser(sources: sources, defaults: defaults)
         let player = self.player
         self.output = OutputRoute(player: systemIntegration ? player.avPlayer : nil) { player.trackSampleRate }
         let resolver = ArtworkResolver(sources: sources)

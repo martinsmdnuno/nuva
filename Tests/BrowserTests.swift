@@ -84,4 +84,45 @@ struct BrowserTests {
         await model.playFolder(BrowserLocation(sourceID: source.id, path: "Gone"))
         #expect(model.notice?.message == String(localized: "Não foi possível abrir a pasta"))
     }
+
+    @Test func recentFirstPutsTheNewestFoldersFirstAndKeepsTracksInOrder() async throws {
+        let fm = FileManager.default
+        let root = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? fm.removeItem(at: root) }
+        let now = Date()
+        // All the folders were just added to their parent, so dates ahead of now let the last change decide.
+        for (name, ahead) in [("Air", 1.0), ("Beck", 3.0), ("Cream", 2.0)] {
+            let dir = root.appendingPathComponent(name)
+            try fm.createDirectory(at: dir, withIntermediateDirectories: true)
+            try fm.setAttributes([.modificationDate: now.addingTimeInterval(ahead * 86_400)], ofItemAtPath: dir.path)
+        }
+        for n in ["2 B.flac", "1 A.flac"] { fm.createFile(atPath: root.appendingPathComponent(n).path, contents: nil) }
+
+        let suite = "browser-tests-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let store = SourceStore(defaults: defaults)
+        let source = try store.addLocal(root)
+        let browser = Browser(sources: store, defaults: defaults)
+        #expect(browser.folderOrder == .name)
+
+        browser.open(BrowserLocation(sourceID: source.id, path: ""))
+        while browser.isLoading { await Task.yield() }
+        #expect(browser.entries.map(\.name) == ["Air", "Beck", "Cream", "1 A.flac", "2 B.flac"])
+
+        browser.toggleFolderOrder()
+        #expect(browser.entries.map(\.name) == ["Beck", "Cream", "Air", "1 A.flac", "2 B.flac"])
+        // Remembered by the next launch.
+        #expect(Browser(sources: store, defaults: defaults).folderOrder == .recent)
+    }
+
+    @Test func recentFirstPutsUnknownDatesLastByName() {
+        let id = UUID()
+        func folder(_ name: String, _ days: Double?) -> Entry {
+            Entry(sourceID: id, path: name, name: name, kind: .folder, added: days.map { Date(timeIntervalSince1970: $0 * 86_400) })
+        }
+        let entries = [folder("Zé", nil), folder("Alva", nil), folder("Old", 1), folder("New", 9)]
+        #expect(entries.sorted(by: .recent).map(\.name) == ["New", "Old", "Alva", "Zé"])
+        #expect(entries.sorted(by: .name).map(\.name) == ["Alva", "New", "Old", "Zé"])
+    }
 }

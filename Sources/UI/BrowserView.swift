@@ -232,8 +232,8 @@ struct BrowserView: View {
     }
 }
 
-/// The browser's keys, in the header row above the folders: up, where you are, Play Folder and,
-/// for a CD, eject. They stand in for the "pastas" and "fila" labels while the folders show.
+/// The browser's keys, in the header row above the folders: up, where you are, the folder order,
+/// Play Folder and, for a CD, eject. They stand in for the "pastas" and "fila" labels while the folders show.
 struct BrowserControls: View {
     @Environment(AppModel.self) private var model
 
@@ -261,6 +261,20 @@ struct BrowserControls: View {
                 .contentTransition(.opacity)
                 .motion(Motion.state, value: browser.title)
             Spacer(minLength: Space.s2)
+            if browser.location != nil {
+                // Newest music first (the last downloads) or names as they are; the LED is on for newest.
+                // The LED floats above the key, in line with the folders key's, so the row keeps its height.
+                let recent = browser.folderOrder == .recent
+                Button { browser.toggleFolderOrder() } label: { Image(systemName: "clock.arrow.circlepath") }
+                    .buttonStyle(.key(.mode))
+                    .keyFocus()
+                    .help(recent ? String(localized: "Ordenar pastas pelo nome ⌥⌘N") : String(localized: "Pastas recentes primeiro ⌥⌘N"))
+                    .accessibilityLabel(String(localized: "Pastas recentes primeiro"))
+                    .accessibilityValue(recent ? String(localized: "ligado") : String(localized: "desligado"))
+                    .overlay(alignment: .top) {
+                        LED(isOn: recent).offset(y: -(Size.led + Space.s1))
+                    }
+            }
             if let location = browser.location {
                 Button("Tocar pasta") { Task { await model.playFolder(location) } }
                     .buttonStyle(.keyText)

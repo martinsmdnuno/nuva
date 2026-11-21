@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.21 — no crash between tracks
+
+- Mac: NuVa could quit suddenly while the spectrum meter was on the display, at the moment one track gave way to the next. For an instant the player has no time to give, and the meter took that for a number. It now waits for the next real moment instead, on the display and on the ambient faces' meters.
+
 ## 1.20 — the newest first, everywhere
 
 - Android TV: the clock key beside the menu key puts the folders with the newest music first, so last night's downloads are at the top. Its LED is on while it's in use; press it again for names. The TV remembers the choice.

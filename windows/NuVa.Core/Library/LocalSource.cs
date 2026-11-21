@@ -42,7 +42,12 @@ public sealed class LocalSource(Guid id, string name, string root) : IMusicSourc
             if ((item.Attributes & (FileAttributes.Hidden | FileAttributes.System)) != 0 || item.Name.StartsWith('.')) continue;
             var rel = Paths.Join(path, item.Name);
             if ((item.Attributes & FileAttributes.Directory) != 0)
-                entries.Add(new Entry(Id, rel, item.Name, EntryKind.Folder));
+            {
+                // A folder changes when music lands in it (an album in the artist's folder, files in the
+                // album's); a folder copied in whole is new by its creation time.
+                var added = item.LastWriteTimeUtc > item.CreationTimeUtc ? item.LastWriteTimeUtc : item.CreationTimeUtc;
+                entries.Add(new Entry(Id, rel, item.Name, EntryKind.Folder, Added: new DateTimeOffset(added, TimeSpan.Zero)));
+            }
             else if (Playable.IsPlayable(item.Name))
                 entries.Add(new Entry(Id, rel, item.Name, EntryKind.Track));
         }

@@ -44,7 +44,7 @@ public sealed class AppModel
                 : null,
         };
         JellyfinSource.ClientVersion = App.Version;
-        Browser = new Browser(Sources);
+        Browser = new Browser(Sources) { FolderOrder = settings.Get("folderOrder", "name") == "recent" ? FolderOrder.Recent : FolderOrder.Name };
         Equalizer = new Equalizer(settings);
         Output = new GraphOutput();
         Pipeline = new Pipeline(new DecoderFactory(), Output, new Tap(Equalizer, Spectrum));
@@ -104,6 +104,14 @@ public sealed class AppModel
     {
         get => showsRemaining;
         set { showsRemaining = value; Settings.Set("showsRemaining", value); }
+    }
+
+    /// <summary>Folders by name or the newest music first (the clock key, Ctrl+Shift+N); remembered.</summary>
+    public void ToggleFolderOrder()
+    {
+        Browser.FolderOrder = Browser.FolderOrder == FolderOrder.Recent ? FolderOrder.Name : FolderOrder.Recent;
+        Settings.Set("folderOrder", Browser.FolderOrder == FolderOrder.Recent ? "recent" : "name");
+        Changed?.Invoke();
     }
 
     public void Notify() => Changed?.Invoke();

@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using NuVa.Core;
+using NuVa.Core.Library;
 
 namespace NuVa.UI;
 
@@ -91,9 +92,21 @@ public sealed class QueueHeader : DockPanel
         }
         if (browser.Location is { } location)
         {
+            // Newest music first (the last downloads) or names as they are; the LED is on for newest.
+            // The LED sits above the key, in line with the folders key's; the negative margin keeps the row's height.
+            var recent = browser.FolderOrder == FolderOrder.Recent;
+            var order = new KeyWithLed(new KeyButton(Tone.Mode, Icon.Recent,
+                (recent ? L.T("Ordenar pastas pelo nome") : L.T("Pastas recentes primeiro")) + " Ctrl+Shift+N", model.ToggleFolderOrder), true)
+            {
+                Margin = new Thickness(Space.S2, -(Space.Led + Space.S1), 0, 0),
+                VerticalAlignment = VerticalAlignment.Bottom,
+            };
+            order.Led!.Set(recent);
+            SetDock(order, Dock.Right);
             var playFolder = new KeyButton(L.T("Tocar pasta"), null, () => _ = model.PlayFolder(location)) { Margin = new Thickness(Space.S2, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
             SetDock(playFolder, Dock.Right);
             row.Children.Add(playFolder);
+            row.Children.Add(order);
         }
         var title = Text.Make(browser.Title, TextStyle.Label, Token.Ink);
         title.VerticalAlignment = VerticalAlignment.Center;

@@ -16,6 +16,19 @@ public sealed class Browser(SourceStore sources)
     /// <summary>Null: the list of sources.</summary>
     public BrowserLocation? Location { get; private set; }
     public IReadOnlyList<Entry> Entries { get; private set; } = [];
+
+    private FolderOrder folderOrder;
+    /// <summary>Names (as they are) or the newest music first. The app remembers it.</summary>
+    public FolderOrder FolderOrder
+    {
+        get => folderOrder;
+        set
+        {
+            folderOrder = value;
+            Entries = Entries.SortedBy(value);
+            Changed?.Invoke();
+        }
+    }
     public string? ErrorMessage { get; private set; }
     public bool IsLoading { get; private set; }
     /// <summary>Summary per folder id: "12 faixas", "2 pastas".</summary>
@@ -48,7 +61,7 @@ public sealed class Browser(SourceStore sources)
         {
             var items = await source.List(location.Path);
             if (token != loadToken) return;
-            Entries = items;
+            Entries = items.SortedBy(folderOrder);
         }
         catch (Exception e)
         {

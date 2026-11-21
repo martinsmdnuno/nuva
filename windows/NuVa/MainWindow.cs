@@ -323,6 +323,7 @@ public sealed class MainWindow : Window
             Key.O => app.AddJellyfin,
             Key.S => () => player.Shuffle = !player.Shuffle,
             Key.A => () => model.ShowsArtwork = !model.ShowsArtwork,
+            Key.N => model.ToggleFolderOrder,
             Key.V => () => model.ShowsSpectrum = !model.ShowsSpectrum,
             Key.D1 or Key.NumPad1 => () => app.SetSkin(Skin.All[0]),
             Key.D2 or Key.NumPad2 => () => app.SetSkin(Skin.All[1]),

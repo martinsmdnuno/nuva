@@ -132,6 +132,39 @@ public static class LibraryTests
         third.Load();
         Assert.Equal(1, third.Failed.Count);
     }
+
+    [Test]
+    public static void RecentFirstPutsTheNewestFoldersFirstAndKeepsTracksInOrder()
+    {
+        var id = Guid.NewGuid();
+        Entry Folder(string name, int? day) => new(id, name, name, EntryKind.Folder, Added: day is { } d ? new DateTimeOffset(2026, 1, d, 0, 0, 0, TimeSpan.Zero) : null);
+        Entry Track(string name) => new(id, name, name, EntryKind.Track);
+        List<Entry> entries = [Folder("Zé", null), Folder("Old", 1), Track("2 B.flac"), Folder("New", 9), Folder("Alva", null), Track("1 A.flac")];
+        Assert.Sequence(["New", "Old", "Alva", "Zé", "1 A.flac", "2 B.flac"], entries.SortedBy(FolderOrder.Recent).Select(e => e.Name));
+        Assert.Sequence(["Alva", "New", "Old", "Zé", "1 A.flac", "2 B.flac"], entries.SortedBy(FolderOrder.Name).Select(e => e.Name));
+    }
+
+    [Test]
+    public static void LocalFoldersAreAsNewAsTheirLastChange()
+    {
+        var root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        try
+        {
+            var now = DateTime.UtcNow;
+            foreach (var (name, ahead) in new[] { ("Air", 1), ("Beck", 3), ("Cream", 2) })
+            {
+                var dir = Directory.CreateDirectory(Path.Combine(root, name));
+                // Dates ahead of now, so the last change decides whatever the creation time.
+                Directory.SetLastWriteTimeUtc(dir.FullName, now.AddDays(ahead));
+            }
+            var source = new LocalSource(Guid.NewGuid(), "Música", root);
+            Assert.Sequence(["Beck", "Cream", "Air"], source.List("").Result.SortedBy(FolderOrder.Recent).Select(e => e.Name));
+        }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
+    }
 }
 
 public sealed class MemoryCredentials : ICredentialStore
@@ -164,4 +197,5 @@ public static class LocationTests
             Directory.Delete(root, true);
         }
     }
+
 }

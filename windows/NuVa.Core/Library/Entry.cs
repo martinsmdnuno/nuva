@@ -10,7 +10,9 @@ namespace NuVa.Core.Library;
 public enum EntryKind { Folder, Track }
 
 /// <summary>A folder or a track inside a source. The path is relative to the source root, with '/' between folders.</summary>
-public sealed record Entry(Guid SourceId, string Path, string Name, EntryKind Kind, double? Duration = null)
+/// <param name="Added">When the folder last got new music (the source's own dates: the disk's, or Jellyfin's).
+/// Only for folders, only to sort them by "Recent first"; null when the source doesn't know.</param>
+public sealed record Entry(Guid SourceId, string Path, string Name, EntryKind Kind, double? Duration = null, DateTimeOffset? Added = null)
 {
     public string Id => $"{SourceId}/{Path}";
 
@@ -204,4 +206,20 @@ public static class EntryOrder
     /// <summary>Folders first, then tracks; within each group, natural name order.</summary>
     public static List<Entry> NaturallySorted(this IEnumerable<Entry> entries) =>
         entries.OrderBy(e => e.Kind == EntryKind.Folder ? 0 : 1).ThenBy(e => e.Name, NaturalComparer.Instance).ToList();
+
+    /// <summary>Folders first, in <paramref name="order"/>; then tracks, in natural order.</summary>
+    public static List<Entry> SortedBy(this IEnumerable<Entry> entries, FolderOrder order) =>
+        order == FolderOrder.Name ? entries.NaturallySorted()
+        : entries.OrderBy(e => e.Kind == EntryKind.Folder ? 0 : 1)
+            .ThenBy(e => e.Kind == EntryKind.Folder && e.Added is { } added ? -added.UtcTicks : long.MaxValue)
+            .ThenBy(e => e.Name, NaturalComparer.Instance).ToList();
+}
+
+/// <summary>How the browser orders folders. Tracks always keep the natural order (the album's order).</summary>
+public enum FolderOrder
+{
+    /// <summary>Natural name order, as the folders are.</summary>
+    Name,
+    /// <summary>Folders with the newest music first ("the last downloads"); unknown dates last, by name.</summary>
+    Recent,
 }

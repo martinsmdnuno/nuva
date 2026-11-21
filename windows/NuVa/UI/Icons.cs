@@ -13,7 +13,7 @@ namespace NuVa.UI;
 public enum Icon
 {
     Play, Pause, Previous, Next, Shuffle, Repeat, RepeatOne, Folders, Back, Folder, Drive, Server, Disc,
-    Eject, Speaker, Ambient, Leave, Menu, Check,
+    Eject, Speaker, Ambient, Leave, Menu, Check, Recent,
 }
 
 public static class Icons
@@ -35,6 +35,8 @@ public static class Icons
             // sidebar.left: a window with its sidebar.
             Icon.Folders => ("M3,5 L21,5 L21,19 L3,19 Z M9,5 L9,19 M5,8.5 L7,8.5 M5,11.5 L7,11.5", false),
             Icon.Back => ("M15,5 L8,12 L15,19", false),
+            // clock.arrow.circlepath: a clock with an arrow round it.
+            Icon.Recent => ("M4.5,12 A7.5,7.5 0 1 1 7,17.6 M2.5,10 L4.5,12.5 L6.8,10.3 M12,8 L12,12 L14.8,13.8", false),
             Icon.Folder => ("M3,7 L3,18 L21,18 L21,9 L11,9 L9,7 Z", false),
             Icon.Drive => ("M3,8 L21,8 L21,16 L3,16 Z M17,12 L17.5,12", false),
             Icon.Server => ("M4,4 L20,4 L20,10 L4,10 Z M4,14 L20,14 L20,20 L4,20 Z M7,7 L8,7 M7,17 L8,17", false),

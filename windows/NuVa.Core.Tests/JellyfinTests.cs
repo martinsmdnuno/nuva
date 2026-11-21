@@ -38,7 +38,7 @@ public static class JellyfinTests
             if (path.EndsWith("/Users/AuthenticateByName")) return (200, Auth);
             if (path.EndsWith("/UserViews")) return (200, """{"Items":[{"Id":"lib","Name":"Music","CollectionType":"music"},{"Id":"mov","Name":"Films","CollectionType":"movies"}]}""");
             if (path.EndsWith("/Items") && query.Contains("parentId=lib"))
-                return (200, """{"Items":[{"Id":"a1","Name":"Fleetwood Mac","IsFolder":true,"Path":"D:\\Music\\Fleetwood Mac"}]}""");
+                return (200, """{"Items":[{"Id":"a1","Name":"Fleetwood Mac","IsFolder":true,"Path":"D:\\Music\\Fleetwood Mac","DateCreated":"2024-01-02T03:04:05.1234567Z","DateLastMediaAdded":"2026-11-20T21:00:00.0000000Z"}]}""");
             if (path.EndsWith("/Items") && query.Contains("parentId=a1"))
                 return (200, """{"Items":[{"Id":"r1","Name":"Rumours","IsFolder":true,"Path":"D:\\Music\\Fleetwood Mac\\Rumours (1977)"},{"Id":"t9","Name":"Notes","IsFolder":false,"Path":"D:\\Music\\Fleetwood Mac\\notes.txt"}]}""");
             if (path.EndsWith("/Items") && query.Contains("parentId=r1"))
@@ -55,6 +55,8 @@ public static class JellyfinTests
         var (source, _) = Make();
         var root = source.List("").Result;
         Assert.Sequence(["Fleetwood Mac"], root.Select(e => e.Name));
+        // The newer of the two dates: when an album last landed in the artist's folder.
+        Assert.Equal(new DateTimeOffset(2026, 11, 20, 21, 0, 0, TimeSpan.Zero), root[0].Added);
         var artist = source.List("Fleetwood Mac").Result;
         // Folder names as on the disk ("Rumours (1977)"), never Jellyfin's album name.
         Assert.Sequence(["Rumours (1977)"], artist.Select(e => e.Name));
@@ -103,5 +105,17 @@ public static class JellyfinTests
         {
             Assert.True(e.InnerException is SourceException, e.InnerException?.GetType().Name ?? "");
         }
+    }
+
+    [Test]
+    public static void ReadsJellyfinDates()
+    {
+        var expected = new DateTimeOffset(2024, 11, 14, 11, 6, 53, TimeSpan.Zero);
+        Assert.Equal(expected.AddTicks(1234567), JellyfinSource.ParseDate("2024-11-14T11:06:53.1234567Z"));
+        Assert.Equal(expected, JellyfinSource.ParseDate("2024-11-14T11:06:53Z"));
+        Assert.Equal(expected, JellyfinSource.ParseDate("2024-11-14T11:06:53"));
+        Assert.Equal(expected.AddMilliseconds(500), JellyfinSource.ParseDate("2024-11-14T12:06:53.5+01:00"));
+        Assert.Equal(null, JellyfinSource.ParseDate("0001-01-01T00:00:00.0000000Z"));
+        Assert.Equal(null, JellyfinSource.ParseDate(null));
     }
 }

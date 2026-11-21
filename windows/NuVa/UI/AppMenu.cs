@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using NuVa.Core;
+using NuVa.Core.Library;
 using NuVa.Core.Player;
 
 namespace NuVa.UI;
@@ -50,6 +51,7 @@ public static class AppMenu
             AmbientOptions(app),
             new Separator(),
             Item((model.WindowMode == WindowMode.Browser ? L.T("Mostrar fila") : L.T("Mostrar pastas")) + "\tCtrl+B", model.ToggleBrowser),
+            Item(L.T("Pastas recentes primeiro") + "\tCtrl+Shift+N", model.ToggleFolderOrder, check: model.Browser.FolderOrder == FolderOrder.Recent),
             Item(L.T("Mostrar capas") + "\tCtrl+Shift+A", () => model.ShowsArtwork = !model.ShowsArtwork, check: model.ShowsArtwork),
             Item(L.T("Capa errada ou em falta…"), app.FixArtwork, app.CanFixArtwork),
             Item(L.T("Mostrar espectro") + "\tCtrl+Shift+V", () => model.ShowsSpectrum = !model.ShowsSpectrum, check: model.ShowsSpectrum),

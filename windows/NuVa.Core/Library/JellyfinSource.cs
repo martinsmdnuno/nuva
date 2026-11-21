@@ -28,6 +28,12 @@ public sealed class JellyfinSource : IMusicSource
         [JsonPropertyName("Container")] public string? Container { get; set; }
         [JsonPropertyName("RunTimeTicks")] public long? RunTimeTicks { get; set; }
         [JsonPropertyName("CollectionType")] public string? CollectionType { get; set; }
+        [JsonPropertyName("DateCreated")] public string? DateCreated { get; set; }
+        [JsonPropertyName("DateLastMediaAdded")] public string? DateLastMediaAdded { get; set; }
+
+        /// <summary>The newer of when Jellyfin found the folder and when it last found music in it.</summary>
+        public DateTimeOffset? Added =>
+            new[] { DateCreated, DateLastMediaAdded }.Select(ParseDate).Where(d => d != null).Max();
 
         /// <summary>Path with forward slashes (Windows servers use '\').</summary>
         public string? UnixPath => Path?.Replace('\\', '/');
@@ -132,22 +138,29 @@ public sealed class JellyfinSource : IMusicSource
 
         // Direct children of path; deeper items (an album with CD1/CD2) yield folders from the path.
         var result = new List<Entry>();
-        var seen = new HashSet<string>();
+        var folders = new Dictionary<string, int>();
+        // A folder seen twice (itself and through a deeper item) keeps the newest date.
+        void AddFolder(string folder, string name, DateTimeOffset? added)
+        {
+            if (folders.TryGetValue(folder, out var index))
+            {
+                var known = result[index].Added;
+                if (added != null && (known == null || added > known)) result[index] = result[index] with { Added = added };
+            }
+            else
+            {
+                folders[folder] = result.Count;
+                result.Add(new Entry(Id, folder, name, EntryKind.Folder, Added: added));
+            }
+        }
         var prefix = path.Length == 0 ? "" : path + "/";
         foreach (var (item, rel) in placed)
         {
             if (!rel.StartsWith(prefix, StringComparison.Ordinal)) continue;
             var rest = rel[prefix.Length..];
             var slash = rest.IndexOf('/');
-            if (slash >= 0)
-            {
-                var sub = prefix + rest[..slash];
-                if (seen.Add(sub)) result.Add(new Entry(Id, sub, rest[..slash], EntryKind.Folder));
-            }
-            else if (item.IsFolder == true)
-            {
-                if (seen.Add(rel)) result.Add(new Entry(Id, rel, rest, EntryKind.Folder));
-            }
+            if (slash >= 0) AddFolder(prefix + rest[..slash], rest[..slash], item.Added);
+            else if (item.IsFolder == true) AddFolder(rel, rest, item.Added);
             else if (Playable.IsPlayable(rel))
             {
                 double? duration = item.RunTimeTicks is { } ticks ? ticks / 10_000_000.0 : null;
@@ -183,6 +196,12 @@ public sealed class JellyfinSource : IMusicSource
         session = null;
         return Task.CompletedTask;
     }
+
+    /// <summary>Jellyfin's dates ("2025-03-14T09:26:53.1234567Z", seven decimals, a zone or none), as UTC.</summary>
+    public static DateTimeOffset? ParseDate(string? text) =>
+        text != null && DateTimeOffset.TryParse(text, System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.AssumeUniversal | System.Globalization.DateTimeStyles.AdjustToUniversal, out var date)
+            && date.Year > 1 ? date : null;
 
     // MARK: Folder tree
 
@@ -268,7 +287,7 @@ public sealed class JellyfinSource : IMusicSource
     {
         if (cache.TryGetValue(parentId, out var hit) && DateTime.UtcNow - hit.At < cacheTtl) return hit.Items;
         var userId = (await CurrentSession()).UserId;
-        (string, string)[] query = [("parentId", parentId), ("fields", "Path"), ("enableImages", "false"), ("enableUserData", "false")];
+        (string, string)[] query = [("parentId", parentId), ("fields", "Path,DateCreated,DateLastMediaAdded"), ("enableImages", "false"), ("enableUserData", "false")];
         List<Item> result;
         if (!legacyRoutes)
         {

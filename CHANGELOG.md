@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.1 — the disk image opens laid out
+
+- Mac: the disk image's window opens as large icons, with NuVa on the left, the Applications shortcut on the right and the read-me below, instead of however the Finder last showed a window.
+
 ## 1.18 — the basics, done well
 
 - Mac: NuVa opens music from the Finder. Drag a folder or a track onto the window or the Dock icon, or choose NuVa in **Open With**, and it plays. A folder that isn't a source yet is added as one; a track inside a source plays with the rest of its folder queued; a track from anywhere else plays on its own, because macOS hands NuVa that file only.

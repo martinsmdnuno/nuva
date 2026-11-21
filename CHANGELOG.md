@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.19 — the newest first
+
+- Mac: the folders can put the newest music first, so last night's downloads are at the top: the clock key beside Play Folder, View › Recent Folders First or ⌥⌘N. Its LED is on while it's in use; press it again for names, as before. NuVa remembers the choice.
+- It goes by the folders' own dates, never tags: on a disk, when music last landed in a folder (an album in the artist's folder counts for the artist); on Jellyfin, when the server found it. Tracks inside an album keep their order.
+
 ## 1.18 — the basics, done well
 
 - Mac: NuVa opens music from the Finder. Drag a folder or a track onto the window or the Dock icon, or choose NuVa in **Open With**, and it plays. A folder that isn't a source yet is added as one; a track inside a source plays with the rest of its folder queued; a track from anywhere else plays on its own, because macOS hands NuVa that file only.

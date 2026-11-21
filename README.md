@@ -101,7 +101,7 @@ Turn on **View › Show Artwork** (⌥⌘A) and NuVa shows the album cover in a 
 
 <p align="center"><img src="docs/screenshots/browser.png" width="760" alt="The folders in the queue's place, below the keys"></p>
 
-Press the **folders** key or **⌘B** and your folders take the queue's place, below the keys; press it again for the queue. Each folder shows how many tracks it holds; double-click one to play it from the top (the queue comes back with it), or **⌘Enter** to add it to the queue. Drag the window taller to see the whole album at once, or wider for long file names.
+Press the **folders** key or **⌘B** and your folders take the queue's place, below the keys; press it again for the queue. Each folder shows how many tracks it holds; double-click one to play it from the top (the queue comes back with it), or **⌘Enter** to add it to the queue. The clock key beside **Play Folder** (or **⌥⌘N**) puts the folders with the newest music first, so last night's downloads are at the top; its LED stays on until you press it again for names. Drag the window taller to see the whole album at once, or wider for long file names.
 
 ## Audio CDs, like a CD player
 
@@ -213,6 +213,7 @@ To install it, download **[NuVa-Windows.zip](https://github.com/martinsmdnuno/nu
 | | Mac | Android TV | Windows |
 |---|:-:|:-:|:-:|
 | Folders as they are: a folder is an album, natural sort, never tags | ✓ | ✓ | ✓ |
+| Recent folders first: the newest music at the top (⌥⌘N) | ✓ | later | later |
 | The display names the artist's and album's folders, scrolling when they're too long | ✓ | ✓ | later |
 | Format, bitrate, bit depth and sample rate on the display | ✓ | ✓ | ✓ |
 | Folders on the computer, external disks and network shares | ✓ | — | ✓ |
@@ -285,6 +286,7 @@ On Windows, every shortcut is the same with **Ctrl** for ⌘ and **Ctrl+Shift** 
 | ⌘R · ⌥⌘S | Repeat · shuffle |
 | ⌥⌘E | Equalizer |
 | ⌘B | Swap the queue and the folders |
+| ⌥⌘N | Recent folders first, or by name |
 | ⌘1 · ⌘2 · ⌘3 | Queue · folders · compact |
 | ⌘4 | Ambient (full screen; ← → faces, ⇧⌘← ⇧⌘→ 10 seconds, Esc leaves) |
 | ⌥⌘1 · ⌥⌘2 … | Skin (also in View ▸ Skin) |
@@ -338,7 +340,7 @@ Toca FLAC pelo motor de áudio de cada sistema (o da própria Apple, no Mac), en
 - **Soa como deve.** FLAC, ALAC, WAV e AIFF pelo AVFoundation, o mesmo motor do QuickTime.
 - **AirPlay 2.** WiiM, HomePod, Apple TV ou qualquer coluna AirPlay: carrega na saída que aparece no visor. Uma coluna AirPlay pode perder o primeiro meio segundo da faixa que pões a tocar à mão, enquanto o stream abre; as faixas seguintes do mesmo formato chegam inteiras.
 - **Jellyfin sem confusão.** Navega pelas pastas reais do servidor e toca os ficheiros originais.
-- **Uma janela pequena.** As pastas aparecem no lugar da fila (⌘B troca as duas) e há um modo compacto. A janela estica na vertical para veres o álbum inteiro, e na horizontal para nomes compridos. No visor, por baixo do título, as pastas do artista e do álbum ("Fleetwood Mac · Rumours"), que rolam quando não cabem, como num visor de hi-fi.
+- **Uma janela pequena.** As pastas aparecem no lugar da fila (⌘B troca as duas) e há um modo compacto. A tecla do relógio (⌥⌘N) põe primeiro as pastas com música mais recente, para ouvires o que descarregaste ontem. A janela estica na vertical para veres o álbum inteiro, e na horizontal para nomes compridos. No visor, por baixo do título, as pastas do artista e do álbum ("Fleetwood Mac · Rumours"), que rolam quando não cabem, como num visor de hi-fi.
 - **Skins:** Rams (claro ou escuro, como o sistema), Graphite Orange e Phosphor (sempre escuras), em Visualização › Skin. Cinco pares de fontes em Visualização › Fonte: Inter + IBM Plex Mono, SF Pro + SF Mono, IBM Plex Sans (para a Rams), DM Sans (para a Graphite Orange) e Share Tech (para a Phosphor).
 - **Modo Ambiente** (⌘4): o ecrã inteiro passa a ser o mostrador da NuVa, na skin atual. Seis faces, ← → trocam: a faixa e o tempo em grande, um relógio, o espectro de 28 bandas, os medidores esquerdo e direito, dois VU de ponteiro que se mexem como os verdadeiros e duas válvulas que acendem com cada canal, a 120 Hz nos ecrãs que o têm. Com as capas ligadas, o ecrã ganha as cores do álbum, num brilho desfocado feito da própria capa; na face do ecrã, respira com os graves. Um álbum sem capa brilha com as luzes da própria skin. ⇧⌘← e ⇧⌘→ andam 10 segundos pela faixa. Esc sai. Pode ir para outro ecrã ou uma TV. Protege ecrãs OLED: a imagem desloca-se devagar, o que é fixo fica mais escuro, a face muda a cada 20 minutos e, ao fim de uma hora sem mexer, só fica uma pequena luz.
 - **Capas, se quiseres:** Visualização › Mostrar capas (⌥⌘A). Usa a imagem da pasta (`cover`, `folder`, `front`, `album` ou `capa`); se não houver, procura no MusicBrainz pelo nome das pastas. Nunca das tags. No Jellyfin a regra é a mesma: a imagem que está na pasta do álbum, nunca uma que o Jellyfin tirou das tags. Capa errada ou em falta: carrega na capa e corrige o artista ou o álbum, ou escolhe uma imagem. Desligado por defeito.
@@ -373,6 +375,7 @@ Para instalar, descarrega o **[NuVa-Windows.zip](https://github.com/martinsmdnun
 | | Mac | Android TV | Windows |
 |---|:-:|:-:|:-:|
 | Pastas como estão: uma pasta é um álbum, ordem natural, nunca tags | ✓ | ✓ | ✓ |
+| Pastas recentes primeiro: a música mais nova no topo (⌥⌘N) | ✓ | mais tarde | mais tarde |
 | O visor mostra as pastas do artista e do álbum, a rolar quando não cabem | ✓ | ✓ | mais tarde |
 | Formato, bitrate, bits e frequência no visor | ✓ | ✓ | ✓ |
 | Pastas no computador, discos externos e partilhas de rede | ✓ | — | ✓ |
@@ -421,4 +424,4 @@ Para a TV, vê [Na TV](#na-tv-nuva-para-android-tv); para o PC, [No PC](#no-pc-n
 
 Só é preciso uma vez.
 
-Atalhos (no Windows, Ctrl em vez de ⌘ e Ctrl+Shift em vez de ⌥⌘; F11 também abre o Ambiente): Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⇧⌘→ ⇧⌘← avançar/recuar 10 s · ⌘. parar · ⌘↑ ⌘↓ volume · ⌘R ⌥⌘S repetir, aleatório · ⌥⌘↑ ⌥⌘↓ mover na fila · ⌥⌘⌫ limpar fila · ⌥⌘E equalizador · ⌘B fila ou pastas · ⌘1 ⌘2 ⌘3 fila, pastas, compacto · ⌘4 ambiente · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌥⌘V espectro · ⌘L faixa atual · ⇧⌘R faixa no Finder · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin · ⌘E ejetar CD.
+Atalhos (no Windows, Ctrl em vez de ⌘ e Ctrl+Shift em vez de ⌥⌘; F11 também abre o Ambiente): Espaço tocar/pausa · ⌘→ ⌘← seguinte/anterior · ⇧⌘→ ⇧⌘← avançar/recuar 10 s · ⌘. parar · ⌘↑ ⌘↓ volume · ⌘R ⌥⌘S repetir, aleatório · ⌥⌘↑ ⌥⌘↓ mover na fila · ⌥⌘⌫ limpar fila · ⌥⌘E equalizador · ⌘B fila ou pastas · ⌥⌘N pastas recentes primeiro (Mac) · ⌘1 ⌘2 ⌘3 fila, pastas, compacto · ⌘4 ambiente · ⌥⌘1 ⌥⌘2 … skin · ⌥⌘A capas · ⌥⌘V espectro · ⌘L faixa atual · ⇧⌘R faixa no Finder · ⌘O adicionar pasta · ⇧⌘O adicionar Jellyfin · ⌘E ejetar CD.

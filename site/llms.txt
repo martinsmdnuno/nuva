@@ -18,6 +18,7 @@
 | | Mac | Android TV | Windows |
 |---|:-:|:-:|:-:|
 | Folders as they are: a folder is an album, natural sort, never tags | ✓ | ✓ | ✓ |
+| Recent folders first: the newest music at the top (⌥⌘N) | ✓ | later | later |
 | The display names the artist's and album's folders, scrolling when they're too long | ✓ | ✓ | later |
 | Format, bitrate, bit depth and sample rate on the display | ✓ | ✓ | ✓ |
 | Folders on the computer, external disks and network shares | ✓ | — | ✓ |

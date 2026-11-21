@@ -69,7 +69,8 @@ struct SpectrumView: View {
     }
 
     private static func litSegments(_ level: Float) -> Int {
-        Int((level * Float(segments)).rounded())
+        // Int() traps on NaN; a level that is no number lights nothing.
+        level.isFinite ? Int((min(max(level, 0), 1) * Float(segments)).rounded()) : 0
     }
 
     /// For snapshots (README images): a plausible album moment.

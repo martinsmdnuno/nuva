@@ -516,9 +516,10 @@ private struct AmbientMetersFace: View {
             let gap = unit * 0.45
             let width = (size.width - gap * CGFloat(Self.segments - 1)) / CGFloat(Self.segments)
             // The segment at the level's edge lights in part, so the bar glides instead of stepping.
-            let exact = level * Float(Self.segments)
+            // Int() traps on NaN; a level that is no number lights nothing.
+            let exact = level.isFinite ? min(max(level, 0), 1) * Float(Self.segments) : 0
             let lit = Int(exact)
-            let held = Int((peak * Float(Self.segments)).rounded()) - 1
+            let held = peak.isFinite ? Int((min(max(peak, 0), 1) * Float(Self.segments)).rounded()) - 1 : -1
             for s in 0..<Self.segments {
                 let rect = CGRect(x: CGFloat(s) * (width + gap), y: 0, width: width, height: size.height)
                 let segment = Path(roundedRect: rect, cornerRadius: unit * 0.15)

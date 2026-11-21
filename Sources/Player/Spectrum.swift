@@ -103,7 +103,7 @@ final class SpectrumShared: Sendable {
     ) {
         // Unchecked: the pointer is only read inside the lock, on the calling thread.
         // A time before the track's start isn't a moment the meters will ask for.
-        guard time >= 0, time.isFinite else { return }
+        guard time >= 0, time < Self.maxTime else { return }
         state.withLockUnchecked { s in
             let i = Self.slot(time)
             s.times[i] = time
@@ -142,10 +142,13 @@ final class SpectrumShared: Sendable {
     private static func bracket(in s: State, at time: Double, tolerance: Double) -> (before: Int, after: Int, weight: Float)? {
         var before: Int?, after: Int?
         var early = -Double.infinity, late = Double.infinity
+        // Checked before converting to Int, which traps on NaN, infinity or a value past Int's range
+        // (the player's time is NaN for a moment while an item is replaced).
+        guard time.isFinite, tolerance.isFinite, tolerance >= 0, abs(time) + tolerance < maxTime else { return nil }
         // Only the slots of the times within `tolerance` (all of them, for a tolerance that wide).
         let first = Int(((time - tolerance) * Double(slotsPerSecond)).rounded(.down))
         let last = Int(((time + tolerance) * Double(slotsPerSecond)).rounded(.up))
-        guard time.isFinite, last >= 0 else { return nil }
+        guard last >= 0 else { return nil }
         for k in max(0, first)...min(last, max(0, first) + capacity - 1) {
             let i = k % capacity
             let t = s.times[i]
@@ -160,6 +163,9 @@ final class SpectrumShared: Sendable {
         case (nil, nil): return nil
         }
     }
+
+    /// Far beyond any track (about 31 years), and small enough that slot numbers stay well inside Int.
+    private static let maxTime = 1e9
 
     private static func slot(_ time: Double) -> Int {
         Int((time * Double(slotsPerSecond)).rounded()) % capacity

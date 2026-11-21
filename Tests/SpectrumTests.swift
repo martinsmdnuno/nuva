@@ -55,6 +55,20 @@ struct SpectrumTests {
         #expect(shared.levels(at: 11) == nil)
     }
 
+    /// The player's time is NaN for a moment while an item is replaced; 1.20 trapped on it.
+    @Test(arguments: [Double.nan, .infinity, -.infinity, 1e300, -1e300])
+    func lookupAtATimeThatIsNoMomentIsNil(_ time: Double) {
+        let shared = SpectrumShared()
+        let a: [Float] = Array(repeating: -10, count: SpectrumShared.bands)
+        a.withUnsafeBufferPointer { shared.write(time: 10, levels: $0) }
+        a.withUnsafeBufferPointer { shared.write(time: time, levels: $0) }
+        #expect(shared.levels(at: time) == nil)
+        #expect(shared.fineLevels(at: time) == nil)
+        #expect(shared.stereo(at: time) == nil)
+        #expect(shared.levels(at: 10, tolerance: .nan) == nil)
+        #expect(shared.levels(at: 10) == a)
+    }
+
     @Test func lookupBlendsTheMeasurementsAroundTheTime() {
         let shared = SpectrumShared()
         let a: [Float] = Array(repeating: -10, count: SpectrumShared.bands)

@@ -43,7 +43,33 @@ class LibraryTest {
         assertEquals("http://192.168.1.2:8096", JellyfinSource.normalise("192.168.1.2:8096"))
         assertEquals("https://jellyfin.local:8920", JellyfinSource.normalise("jellyfin.local:8920"))
     }
+
+    @Test fun recentFirstPutsTheNewestFoldersFirstAndKeepsTracksInOrder() {
+        val entries = listOf(
+            Entry("Zé", "Zé", true), Entry("Old", "Old", true, added = 1_000), Entry("2 B.flac", "2 B.flac", false),
+            Entry("New", "New", true, added = 9_000), Entry("Alva", "Alva", true), Entry("1 A.flac", "1 A.flac", false),
+        )
+        assertEquals(listOf("New", "Old", "Alva", "Zé", "1 A.flac", "2 B.flac"), entries.sortedBy(FolderOrder.Recent).map { it.name })
+        assertEquals(listOf("Alva", "New", "Old", "Zé", "1 A.flac", "2 B.flac"), entries.sortedBy(FolderOrder.Name).map { it.name })
+    }
+
+    @Test fun readsJellyfinDates() {
+        val expected = 1_731_582_413_000L // 2024-11-14T11:06:53Z
+        assertEquals(expected + 123, JellyfinSource.date("2024-11-14T11:06:53.1234567Z"))
+        assertEquals(expected, JellyfinSource.date("2024-11-14T11:06:53Z"))
+        assertEquals(expected, JellyfinSource.date("2024-11-14T11:06:53"))
+        assertEquals(expected + 500, JellyfinSource.date("2024-11-14T12:06:53.5+01:00"))
+        assertEquals(null, JellyfinSource.date("0001-01-01"))
+    }
+
+    @Test fun aFolderIsAsNewAsTheLastMusicJellyfinFoundInIt() {
+        val item = JellyfinSource.Item.from(org.json.JSONObject(
+            """{"Id":"a","Name":"Artist","IsFolder":true,"DateCreated":"2024-01-02T03:04:05.1234567Z","DateLastMediaAdded":"2026-11-20T21:00:00.0000000Z"}""",
+        ))
+        assertEquals(JellyfinSource.date("2026-11-20T21:00:00Z"), item.added)
+    }
 }
+
 
 class ArtistLineTest {
     @Test fun artistAndAlbumComeFromTheFolders() {
@@ -56,4 +82,5 @@ class ArtistLineTest {
         // A library-level folder is not an artist.
         assertEquals("Fleetwood Mac - Rumours", Entry("Music/Fleetwood Mac - Rumours/01.flac", "01.flac", false).folderLine)
     }
+
 }

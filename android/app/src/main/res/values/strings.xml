@@ -102,6 +102,8 @@
         <item quantity="other">%d tracks added</item>
     </plurals>
     <string name="menu">Menu</string>
+    <string name="recent_first">Recent folders first</string>
+    <string name="folders_by_name">Sort folders by name</string>
     <string name="update_to">Update to %1$s</string>
     <string name="downloading">Downloading… %1$d%%</string>
     <string name="allow_install">Allow NuVa to install apps, then choose Update again</string>

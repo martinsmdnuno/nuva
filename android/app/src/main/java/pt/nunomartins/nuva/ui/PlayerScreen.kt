@@ -66,6 +66,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
+import pt.nunomartins.nuva.library.FolderOrder
 import pt.nunomartins.nuva.AppModel
 import pt.nunomartins.nuva.Overlay
 import pt.nunomartins.nuva.R
@@ -84,6 +85,17 @@ fun BrowserScreen(model: AppModel) {
         Row(Modifier.fillMaxWidth().height(56.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.app_name), Type.title.copy(color = Tokens.ink))
             Spacer(Modifier.weight(1f))
+            // Newest music first (the last downloads) or names as they are; the LED is on for newest.
+            // It floats above the key, so the header keeps its height.
+            val recent = model.folderOrder == FolderOrder.Recent
+            Box {
+                Key(
+                    Tone.Mode, 56.dp, { model.toggleFolderOrder() }, icon = Icons.recent, height = 48.dp,
+                    description = stringResource(if (recent) R.string.folders_by_name else R.string.recent_first),
+                )
+                Box(Modifier.align(Alignment.TopCenter).offset(y = (-13).dp)) { Led(recent) }
+            }
+            Spacer(Modifier.width(16.dp))
             Key(Tone.Mode, 56.dp, { model.overlay = Overlay.Menu }, icon = Icons.menu, description = stringResource(R.string.menu), height = 48.dp)
         }
         Folders(model, state)

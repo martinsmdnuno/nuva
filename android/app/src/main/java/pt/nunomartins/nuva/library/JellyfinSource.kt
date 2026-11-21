@@ -36,6 +36,8 @@ class JellyfinSource(
         val collectionType: String?,
         /** The file's size, from its first media source. */
         val size: Long? = null,
+        /** The newer of when Jellyfin found the folder and when it last found music in it (epoch ms). */
+        val added: Long? = null,
     ) {
         /** Path with forward slashes (Windows servers use `\`). */
         val unixPath: String? get() = path?.replace('\\', '/')
@@ -49,6 +51,8 @@ class JellyfinSource(
                 container = json.optStringOrNull("Container"),
                 runTimeTicks = if (json.has("RunTimeTicks") && !json.isNull("RunTimeTicks")) json.getLong("RunTimeTicks") else null,
                 collectionType = json.optStringOrNull("CollectionType"),
+                added = listOfNotNull(json.optStringOrNull("DateCreated"), json.optStringOrNull("DateLastMediaAdded"))
+                    .mapNotNull(::date).maxOrNull(),
                 size = json.optJSONArray("MediaSources")?.optJSONObject(0)?.let { if (it.has("Size") && !it.isNull("Size")) it.getLong("Size") else null },
             )
         }
@@ -117,18 +121,25 @@ class JellyfinSource(
 
         // Direct children of `path`; deeper items (an album with CD1/CD2) yield folders from the path.
         val result = mutableListOf<Entry>()
-        val seen = mutableSetOf<String>()
+        val folders = mutableMapOf<String, Int>()
+        // A folder seen twice (itself and through a deeper item) keeps the newest date.
+        fun addFolder(folder: String, name: String, added: Long?) {
+            val index = folders[folder]
+            if (index == null) {
+                folders[folder] = result.size
+                result.add(Entry(folder, name, isFolder = true, added = added))
+            } else {
+                result[index] = result[index].copy(added = listOfNotNull(result[index].added, added).maxOrNull())
+            }
+        }
         val prefix = if (path.isEmpty()) "" else "$path/"
         for ((item, rel) in placed) {
             if (!rel.startsWith(prefix)) continue
             val rest = rel.substring(prefix.length)
             val slash = rest.indexOf('/')
             when {
-                slash >= 0 -> {
-                    val sub = prefix + rest.substring(0, slash)
-                    if (seen.add(sub)) result.add(Entry(sub, rest.substring(0, slash), isFolder = true))
-                }
-                item.isFolder -> if (seen.add(rel)) result.add(Entry(rel, rest, isFolder = true))
+                slash >= 0 -> addFolder(prefix + rest.substring(0, slash), rest.substring(0, slash), item.added)
+                item.isFolder -> addFolder(rel, rest, item.added)
                 Playable.isPlayable(rel) ->
                     result.add(Entry(rel, rest, isFolder = false, duration = item.runTimeTicks?.let { it / 10_000_000.0 }, size = item.size))
             }
@@ -183,7 +194,7 @@ class JellyfinSource(
     }
 
     private suspend fun items(parentId: String): List<Item> {
-        val query = mapOf("parentId" to parentId, "fields" to "Path,MediaSources", "enableImages" to "false", "enableUserData" to "false")
+        val query = mapOf("parentId" to parentId, "fields" to "Path,MediaSources,DateCreated,DateLastMediaAdded", "enableImages" to "false", "enableUserData" to "false")
         if (!legacyRoutes) {
             try {
                 return get("Items", query + ("userId" to session.userId))
@@ -208,6 +219,11 @@ class JellyfinSource(
     }
 
     companion object {
+        /** Jellyfin's dates ("2025-03-14T09:26:53.1234567Z", seven decimals, a zone or none) in epoch ms. */
+        fun date(text: String): Long? =
+            runCatching { java.time.OffsetDateTime.parse(text).toInstant().toEpochMilli() }.getOrNull()
+                ?: runCatching { java.time.LocalDateTime.parse(text).toInstant(java.time.ZoneOffset.UTC).toEpochMilli() }.getOrNull()
+
         /** Relative path of an item: the part of `Path` below the anchor folder or, without one, the last name. */
         fun relativePath(item: Item, anchorRel: String, anchorAbs: String?): String {
             val path = item.unixPath

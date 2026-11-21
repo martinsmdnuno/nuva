@@ -22,6 +22,8 @@ import pt.nunomartins.nuva.artwork.ArtworkResolver
 import pt.nunomartins.nuva.artwork.CoverArtArchive
 import pt.nunomartins.nuva.library.Account
 import pt.nunomartins.nuva.library.Entry
+import pt.nunomartins.nuva.library.FolderOrder
+import pt.nunomartins.nuva.library.sortedBy
 import pt.nunomartins.nuva.library.JellyfinSource
 import pt.nunomartins.nuva.library.SourceException
 import pt.nunomartins.nuva.player.PlayerModel
@@ -88,6 +90,9 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         private set
     var showSpectrum by mutableStateOf(prefs.getBoolean("spectrum", true))
         private set
+    /** Folders by name or the newest music first (the key beside the menu); remembered. */
+    var folderOrder by mutableStateOf(if (prefs.getString("folderOrder", null) == "recent") FolderOrder.Recent else FolderOrder.Name)
+        private set
     /** A minute untouched while music plays: the screen becomes the display. */
     var autoAmbient by mutableStateOf(prefs.getBoolean("autoAmbient", true))
         private set
@@ -130,6 +135,13 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         val on = !showSpectrum
         showSpectrum = on
         prefs.edit().putBoolean("spectrum", on).apply()
+    }
+
+    fun toggleFolderOrder() {
+        val order = if (folderOrder == FolderOrder.Recent) FolderOrder.Name else FolderOrder.Recent
+        folderOrder = order
+        prefs.edit().putString("folderOrder", if (order == FolderOrder.Recent) "recent" else "name").apply()
+        entries = entries.sortedBy(order)
     }
 
     fun toggleAutoAmbient() {
@@ -219,7 +231,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         error = null
         viewModelScope.launch {
             try {
-                entries = source.list(folder)
+                entries = source.list(folder).sortedBy(folderOrder)
                 path = folder
                 prefs.edit().putString("folder", folder).apply()
                 focusPath = focus

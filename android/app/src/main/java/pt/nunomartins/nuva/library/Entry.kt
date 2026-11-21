@@ -13,6 +13,9 @@ data class Entry(
     val duration: Double? = null,
     /** The file's size in bytes, when the server gives it (for the bitrate on the display). */
     val size: Long? = null,
+    /** When the folder last got new music (Jellyfin's dates), in epoch milliseconds. Only for folders,
+     *  only to sort them by "Recent first"; null when the server doesn't say. */
+    val added: Long? = null,
 ) {
     /** Uppercase extension, for the display ("FLAC"). */
     val format: String get() = name.substringAfterLast('.', "").uppercase()
@@ -88,6 +91,23 @@ object NaturalOrder : Comparator<String> {
 /** Folders first, then tracks; within each group, natural name order. */
 fun List<Entry>.naturallySorted(): List<Entry> =
     sortedWith(compareBy<Entry> { !it.isFolder }.thenBy(NaturalOrder) { it.name })
+
+/** How the folders are ordered. Tracks always keep the natural order (the album's order). */
+enum class FolderOrder {
+    /** Natural name order, as the folders are. */
+    Name,
+    /** Folders with the newest music first ("the last downloads"); unknown dates last, by name. */
+    Recent,
+}
+
+/** Folders first, in `order`; then tracks, in natural order. */
+fun List<Entry>.sortedBy(order: FolderOrder): List<Entry> =
+    if (order == FolderOrder.Name) naturallySorted()
+    else sortedWith(
+        compareBy<Entry> { !it.isFolder }
+            .thenBy { if (it.isFolder && it.added != null) -it.added else Long.MAX_VALUE }
+            .thenBy(NaturalOrder) { it.name },
+    )
 
 class SourceException(val reason: Reason, val status: Int = 0) : Exception(reason.name) {
     enum class Reason { ServerUnavailable, LoginFailed, NoMusicLibrary, UnexpectedResponse, MissingFolder, HttpStatus }

@@ -70,6 +70,12 @@ object Icons {
         moveTo(5f, 9f); lineTo(7f, 9f); moveTo(5f, 12f); lineTo(7f, 12f)
     }
     val menu = icon("menu", false) { moveTo(4f, 7f); lineTo(20f, 7f); moveTo(4f, 12f); lineTo(20f, 12f); moveTo(4f, 17f); lineTo(20f, 17f) }
+    /** The folder order key: a clock with an arrow round it (SF's clock.arrow.circlepath). */
+    val recent = icon("recent", false) {
+        moveTo(4.5f, 12f); arcTo(7.5f, 7.5f, 0f, true, true, 7f, 17.6f)
+        moveTo(2.5f, 10f); lineTo(4.5f, 12.5f); lineTo(6.8f, 10.3f)
+        moveTo(12f, 8f); lineTo(12f, 12f); lineTo(14.8f, 13.8f)
+    }
     val back = icon("back", false) { moveTo(15f, 5f); lineTo(8f, 12f); lineTo(15f, 19f) }
     val folder = icon("folder", false) {
         moveTo(3f, 7f); lineTo(3f, 18f); lineTo(21f, 18f); lineTo(21f, 9f); lineTo(11f, 9f); lineTo(9f, 7f); close()
